@@ -5,6 +5,8 @@ import { saveAs } from 'file-saver';
 import Excel from 'exceljs';
 import { Modal, ModalBody, ModalHeader, ModalFooter } from 'reactstrap';
 import * as XLSX from 'xlsx';
+import { Link } from "react-router-dom";
+
 import {convertDateFormatfull, convertDateFormat} from '../../helper/basicFunction'
 
 const DefaultNotif = React.lazy(() => import('../../views/DefaultView/DefaultNotif'));
@@ -633,6 +635,7 @@ class MYASGDetail extends Component {
                         <th>Item</th>
                         <th>PR</th>
                         <th></th>
+                        <th></th>
                         {/* }<th>PR</th>
                         <th>PO</th>
                         <th>PO Item</th> */}
@@ -656,6 +659,11 @@ class MYASGDetail extends Component {
                           <td>{e.currency}</td>
                           <td>{e.item}</td>
                           <td>{e.pr}</td>
+                          <td>
+                            <Link to={'/lmr-detail/'+this.props.match.params.id+'/gr-detail/'+e._id}>
+                              <Button color="info" size="sm" ><i className="fa fa-info-circle"></i></Button>
+                            </Link>                            
+                          </td>
                           <td>
                             <Button color="danger" size="sm" value={e._id} onClick={this.deleteChild}><i className="fa fa-eraser"></i></Button>
                           </td>
