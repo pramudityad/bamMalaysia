@@ -1,0 +1,47 @@
+.srd-diagram {
+    height: 100%;
+}
+
+/* .srd-default-node {
+    background-color: rgb(116, 185, 255);
+} */
+
+.srd-default-node{
+    border: solid 1px black;
+}
+
+.srd-default-node__in {
+    background-color: rgba(2,136,209 ,1);
+    border-radius: 0px 0px 0px 5px ;
+    font-size: 15px;
+    min-width: 60px;
+    padding: 2px;
+}
+
+.srd-default-node__out {
+    background-color: rgba(229,57,53 ,1);
+    border-radius: 0px 0px 5px 0px ;
+    font-size: 15px;
+    min-width: 60px;
+    padding: 2px;
+}
+
+.srd-node--selected>* {
+    border: solid 1px black;
+}
+
+.srd-port {
+    margin: 5px 0 5px 0;
+}
+
+.srd-default-node__name {
+    border-radius: 5px 5px 0px 0px;
+    font-size: 15px;
+    color: black;
+    background-color: rgba(224,224,224 ,1);
+    text-align: center;
+}
+
+.srd-default-port> .name {
+    margin: 0px 5px 0px 5px;
+}
