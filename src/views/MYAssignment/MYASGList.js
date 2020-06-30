@@ -209,7 +209,7 @@ class MYASGList extends Component {
                   </tbody>
                 </Table>
                 <div style={{ margin: "8px 0px" }}>
-                  <small>Showing {this.state.mr_all.length} entries</small>
+                  <small>Showing {this.state.totalData} entries</small>
                 </div>
                 <Pagination
                   activePage={this.state.activePage}
