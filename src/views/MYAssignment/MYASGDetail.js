@@ -653,7 +653,7 @@ class MYASGDetail extends Component {
                           <td>{e.qty}</td>
                           <td>{e.unit_price}</td>
                           <td>{e.tax_code}</td>
-                          <td>{e.delivery_date}</td>
+                          <td>{convertDateFormat(e.delivery_date)}</td>
                           <td>{e.total_price}</td>
                           <td>{e.total_value}</td>
                           <td>{e.currency}</td>

@@ -782,7 +782,7 @@ class MYASGDetail extends Component {
               <CardHeader>
                 <span style={{ lineHeight: "2", fontSize: "17px" }}>
                   {" "}
-                  LMR Detail{" "}
+                  GR Detail{" "}
                 </span>
                 <div
                   className="card-header-actions"
@@ -936,7 +936,7 @@ class MYASGDetail extends Component {
                                 fontWeight: "500",
                               }}
                             >
-                              GR INFORMATION
+                              <b>GR INFORMATION</b>
                             </td>
                           </tr>      
                           <tr style={{ fontWeight: "425", fontSize: "15px" }}>
@@ -945,263 +945,22 @@ class MYASGDetail extends Component {
                             <td>{this.state.lmr_detail.lmr_id}</td>
                           </tr>
                           <tr style={{ fontWeight: "425", fontSize: "15px" }}>
-                            <td>Vendor</td>
-                            <td>:</td>
-                            <td>{this.state.lmr_detail.vendor_name}</td>
-                          </tr>
-                          <tr style={{ fontWeight: "425", fontSize: "15px" }}>
                             <td>Project</td>
                             <td>:</td>
                             <td>{this.state.lmr_detail.project_name}</td>
                           </tr>
+                          <tr style={{ fontWeight: "425", fontSize: "15px" }}>
+                            <td>Vendor</td>
+                            <td>:</td>
+                            <td>{this.state.lmr_detail.vendor_name}</td>
+                          </tr>                          
                         </tbody>
                       </table>
                     </Col>
                   </Row>
                 </div>
 
-                <div class="divtable">
-                  <Table hover bordered responsive size="sm" width="100%">
-                    <thead class="table-commercial__header--fixed">
-                      <tr>
-                        <th>SO # /NW #</th>
-                        <th>Activity</th>
-                        <th>Material #</th>
-                        <th>Description</th>
-                        <th>Site ID</th>
-                        <th>Quantity</th>
-                        <th>Price</th>
-                        <th>Tax Code</th>
-                        <th>Delivery Date</th>
-                        <th>Total price</th>
-                        <th>Total Value</th>
-                        <th>Currency</th>
-                        <th>Item</th>
-                        <th>PR</th>
-                        <th></th>
-                        {/* }<th>PR</th>
-                        <th>PO</th>
-                        <th>PO Item</th> */}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {this.state.lmr_detail.detail !== undefined ? (
-                        this.state.lmr_detail.detail.map((e) => (
-                          <tr>
-                            <td>{e.nw}</td>
-                            <td>{e.activity}</td>
-                            <td>{e.material}</td>
-                            <td>{e.description}</td>
-                            <td>{e.site_id}</td>
-                            <td>{e.qty}</td>
-                            <td>{e.unit_price}</td>
-                            <td>{e.tax_code}</td>
-                            <td>{convertDateFormat(e.delivery_date)}</td>
-                            <td>{e.total_price}</td>
-                            <td>{e.total_value}</td>
-                            <td>{e.currency}</td>
-                            <td>{e.item}</td>
-                            <td>{e.pr}</td>
-                            <td>
-                              <Button
-                                color="danger"
-                                size="sm"
-                                value={e._id}
-                                onClick={this.deleteChild}
-                              >
-                                <i className="fa fa-eraser"></i>
-                              </Button>
-                            </td>
-                            {/*}<td>{e.pr}</td>
-                          <td>{e.po}</td>
-                          <td>{e.item}</td>*/}
-                          </tr>
-                        ))
-                      ) : (
-                        <Fragment></Fragment>
-                      )}
-                      <tr>
-                        <td colSpan="15" style={{ textAlign: "left" }}>
-                          <Button
-                            color="primary"
-                            size="sm"
-                            onClick={this.addLMR}
-                          >
-                            <i className="fa fa-plus">&nbsp;</i> LMR CHild
-                          </Button>
-                        </td>
-                      </tr>
-                      {this.state.creation_lmr_child_form.map((lmr, i) => (
-                        <tr>
-                          <td>
-                            <input
-                              type="text"
-                              name={i + " /// so_or_nw"}
-                              id={i + " /// so_or_nw"}
-                              value={lmr.so_or_nw}
-                              onChange={this.handleChangeFormLMRChildMultiple}
-                              style={{ width: "100%" }}
-                            />
-                          </td>
-                          <td>
-                            <input
-                              type="text"
-                              name={i + " /// activity"}
-                              id={i + " /// activity"}
-                              value={lmr.activity}
-                              onChange={this.handleChangeFormLMRChildMultiple}
-                              style={{ width: "100%" }}
-                            />
-                          </td>
-                          <td>
-                            <input
-                              type="text"
-                              name={i + " /// material"}
-                              id={i + " /// material"}
-                              value={lmr.material}
-                              onChange={this.handleChangeFormLMRChildMultiple}
-                              style={{ width: "100%" }}
-                            />
-                          </td>
-                          <td>
-                            <input
-                              type="textarea"
-                              name={i + " /// description"}
-                              id={i + " /// description"}
-                              value={lmr.description}
-                              onChange={this.handleChangeFormLMRChildMultiple}
-                              style={{ width: "100%" }}
-                            />
-                          </td>
-                          <td>
-                            <input
-                              type="text"
-                              name={i + " /// site_id"}
-                              id={i + " /// site_id"}
-                              value={lmr.site_id}
-                              onChange={this.handleChangeFormLMRChildMultiple}
-                              style={{ width: "100%" }}
-                            />
-                          </td>
-                          <td>
-                            <input
-                              type="number"
-                              name={i + " /// quantity"}
-                              id={i + " /// quantity"}
-                              value={lmr.quantity}
-                              onChange={this.handleChangeFormLMRChildMultiple}
-                              style={{ width: "100%" }}
-                            />
-                          </td>
-                          <td>
-                            <input
-                              type="number"
-                              name={i + " /// price"}
-                              id={i + " /// price"}
-                              value={lmr.price}
-                              onChange={this.handleChangeFormLMRChildMultiple}
-                              style={{ width: "100%" }}
-                            />
-                          </td>
-                          <td>
-                            <input
-                              type="text"
-                              name={i + " /// tax_code"}
-                              id={i + " /// tax_code"}
-                              value={lmr.tax_code}
-                              onChange={this.handleChangeFormLMRChildMultiple}
-                              style={{ width: "100%" }}
-                            />
-                          </td>
-                          <td>
-                            <input
-                              type="date"
-                              name={i + " /// delivery_date"}
-                              id={i + " /// delivery_date"}
-                              value={lmr.delivery_date}
-                              onChange={this.handleChangeFormLMRChildMultiple}
-                              style={{ width: "100%" }}
-                            />
-                          </td>
-                          <td>
-                            <input
-                              type="number"
-                              name={i + " /// total_price"}
-                              id={i + " /// total_price"}
-                              value={lmr.total_price}
-                              onChange={this.handleChangeFormLMRChildMultiple}
-                              style={{ width: "100%" }}
-                            />
-                          </td>
-                          <td>
-                            <input
-                              type="number"
-                              name={i + " /// total_value"}
-                              id={i + " /// total_value"}
-                              value={lmr.total_value}
-                              onChange={this.handleChangeFormLMRChildMultiple}
-                              style={{ width: "100%" }}
-                            />
-                          </td>
-                          <td>
-                            <input
-                              type="text"
-                              name={i + " /// currency"}
-                              id={i + " /// currency"}
-                              value={lmr.currency}
-                              onChange={this.handleChangeFormLMRChildMultiple}
-                              style={{ width: "100%" }}
-                            />
-                          </td>
-                          <td>
-                            <input
-                              type="number"
-                              name={i + " /// item"}
-                              id={i + " /// item"}
-                              value={lmr.item}
-                              onChange={this.handleChangeFormLMRChildMultiple}
-                              style={{ width: "100%" }}
-                            />
-                          </td>
-                          <td>
-                            <input
-                              type="text"
-                              name={i + " /// pr"}
-                              id={i + " /// pr"}
-                              value={lmr.pr}
-                              onChange={this.handleChangeFormLMRChildMultiple}
-                              style={{ width: "100%" }}
-                            />
-                          </td>
-                          <td></td>
-                        </tr>
-                      ))}
-                      {this.state.creation_lmr_child_form.length !== 0 && (
-                        <Fragment>
-                          <tr>
-                            <td colSpan="15" style={{ textAlign: "right" }}>
-                              &nbsp;
-                            </td>
-                          </tr>
-                          <tr>
-                            <td colSpan="15" style={{ textAlign: "right" }}>
-                              <Button
-                                color="success"
-                                size="sm"
-                                onClick={this.createLMRChild}
-                              >
-                                <i
-                                  className="fa fa-plus-square"
-                                  style={{ marginRight: "8px" }}
-                                ></i>
-                                Save LMR Child
-                              </Button>
-                            </td>
-                          </tr>
-                        </Fragment>
-                      )}
-                    </tbody>
-                  </Table>
+                <div class="divtable">  
                   <Table hover bordered responsive size="sm" width="100%">
                     <thead class="table-commercial__header--fixed">
                       <tr>
@@ -1220,9 +979,6 @@ class MYASGDetail extends Component {
                         <th>GR_Document_No</th>
                         <th>GR_Document_Date</th>
                         <th>GR_Document_Qty</th>
-                        {/* }<th>PR</th>
-                        <th>PO</th>
-                        <th>PO Item</th> */}
                       </tr>
                     </thead>
                     <tbody></tbody>

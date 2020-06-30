@@ -1,5 +1,4 @@
 import axios from "axios";
-import React from "react";
 
 const API_URL_NODE = "https://api2-dev.bam-id.e-dpm.com/bamidapi";
 const API_URL_XL = "https://api-dev.xl.pdb.e-dpm.com/xlpdbapi";
