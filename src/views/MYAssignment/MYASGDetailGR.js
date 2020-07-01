@@ -807,15 +807,6 @@ class MYASGDetail extends Component {
                       </DropdownMenu>
                     </Dropdown>
                   </div>
-                  <Button
-                    block
-                    color="success"
-                    size="sm"
-                    onClick={this.toggleCollapse}
-                    id="toggleCollapse2"
-                  >
-                    Add Child
-                  </Button>
                 </div>
               </CardHeader>
               <Collapse isOpen={this.state.collapse_add_child}>
