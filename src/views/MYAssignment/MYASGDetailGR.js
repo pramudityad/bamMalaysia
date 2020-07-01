@@ -25,8 +25,7 @@ import Excel from "exceljs";
 import { Modal, ModalBody, ModalHeader, ModalFooter } from "reactstrap";
 import * as XLSX from "xlsx";
 import { Link } from "react-router-dom";
-import {convertDateFormat} from '../../helper/basicFunction'
-
+import { convertDateFormat } from "../../helper/basicFunction";
 
 const DefaultNotif = React.lazy(() =>
   import("../../views/DefaultView/DefaultNotif")
@@ -69,9 +68,23 @@ class MYASGDetail extends Component {
       action_status: null,
       collapse_add_child: false,
       creation_lmr_child_form: [],
+      Dataform: {
+        plant: "",
+        request_type: "",
+        po_number: "",
+        po_item: "",
+        po_price: "",
+        po_qty: "",
+        required_gr_qty: "",
+        dn_no: "",
+        wcn_link: "",
+        item_status: "",
+        work_status: "",
+      },
     };
     this.toggleAddNew = this.toggleAddNew.bind(this);
     this.handleChangeFormLMRChild = this.handleChangeFormLMRChild.bind(this);
+    this.handleInput = this.handleInput.bind(this);
     this.addLMRChildForm = this.addLMRChildForm.bind(this);
 
     this.toggleAddChild = this.toggleAddChild.bind(this);
@@ -79,6 +92,7 @@ class MYASGDetail extends Component {
     this.toggleLoading = this.toggleLoading.bind(this);
     this.deleteChild = this.deleteChild.bind(this);
     this.addLMR = this.addLMR.bind(this);
+    this.toggleaddGR = this.toggleaddGR.bind(this);
     this.createLMRChild = this.createLMRChild.bind(this);
     this.handleChangeFormLMRChildMultiple = this.handleChangeFormLMRChildMultiple.bind(
       this
@@ -632,6 +646,20 @@ class MYASGDetail extends Component {
     this.setState({ lmr_child_form: lmr_child_form });
   }
 
+  handleInput(e) {
+    const value = e.target.value;
+    const name = e.target.name;
+    this.setState(
+      (prevState) => ({
+        Dataform: {
+          ...prevState.Dataform,
+          [name]: value,
+        },
+      }),
+      () => console.log(this.state.Dataform)
+    );
+  }
+
   async deleteChild(e) {
     this.toggleLoading();
     const value = e.currentTarget.value;
@@ -676,6 +704,12 @@ class MYASGDetail extends Component {
     let dataLMR = this.state.creation_lmr_child_form;
     dataLMR.push({});
     this.setState({ creation_lmr_child_form: dataLMR });
+  }
+
+  toggleaddGR() {
+    this.setState((prevState) => ({
+      modalAddChild: !prevState.modalAddChild,
+    }));
   }
 
   handleChangeFormLMRChildMultiple(e) {
@@ -770,6 +804,7 @@ class MYASGDetail extends Component {
   }
 
   render() {
+    const Dataform = this.state.Dataform;
     return (
       <div>
         <DefaultNotif
@@ -807,6 +842,12 @@ class MYASGDetail extends Component {
                       </DropdownMenu>
                     </Dropdown>
                   </div>
+                  <Button color="success" size="sm" onClick={this.toggleaddGR}>
+                    <i className="fa fa-wpforms" aria-hidden="true">
+                      {" "}
+                    </i>{" "}
+                    &nbsp;Create GR
+                  </Button>
                 </div>
               </CardHeader>
               <Collapse isOpen={this.state.collapse_add_child}>
@@ -929,7 +970,7 @@ class MYASGDetail extends Component {
                             >
                               <b>GR INFORMATION</b>
                             </td>
-                          </tr>      
+                          </tr>
                           <tr style={{ fontWeight: "425", fontSize: "15px" }}>
                             <td>LMR ID</td>
                             <td>:</td>
@@ -944,14 +985,14 @@ class MYASGDetail extends Component {
                             <td>Vendor</td>
                             <td>:</td>
                             <td>{this.state.lmr_detail.vendor_name}</td>
-                          </tr>                          
+                          </tr>
                         </tbody>
                       </table>
                     </Col>
                   </Row>
                 </div>
 
-                <div class="divtable">  
+                <div class="divtable">
                   <Table hover bordered responsive size="sm" width="100%">
                     <thead class="table-commercial__header--fixed">
                       <tr>
@@ -964,6 +1005,7 @@ class MYASGDetail extends Component {
                         <th>Required GR Qty</th>
                         <th>DN No</th>
                         <th>Item_Status</th>
+                        <th>Work_Status</th>
                         <th>Error_Message</th>
                         <th>Error_Type</th>
                         <th>Total_GR_Qty</th>
@@ -1042,32 +1084,51 @@ class MYASGDetail extends Component {
           className={this.props.className}
           size="lg"
         >
-          <ModalHeader toggle={this.toggleAddChild}>LMR Child</ModalHeader>
+          <ModalHeader toggle={this.toggleAddChild}>Create GR</ModalHeader>
           <ModalBody>
             <div>
               <Form>
                 <Row form>
                   <Col md={6}>
                     <FormGroup>
-                      <Label>SO / NW</Label>
+                      <Label>Plant</Label>
                       <Input
                         type="text"
-                        name="so_or_nw"
-                        id="so_or_nw"
-                        value={this.state.lmr_child_form.so_or_nw}
-                        onChange={this.handleChangeFormLMRChild}
+                        name="plant"
+                        id="plant"
+                        value={Dataform.plant}
+                        onChange={this.handleInput}
+                        readOnly
                       />
                     </FormGroup>
                   </Col>
                   <Col md={6}>
                     <FormGroup>
-                      <Label>Activity</Label>
+                      <Label>Request Type</Label>
+                      <Input
+                        type="select"
+                        name="request_type"
+                        id="request_type"
+                        value={Dataform.request_type}
+                        onChange={this.handleInput}
+                      >
+                        <option value="" disabled selected hidden>
+                          Select Request Type
+                        </option>
+                      </Input>
+                    </FormGroup>
+                  </Col>
+                </Row>
+                <Row form>
+                  <Col md={6}>
+                    <FormGroup>
+                      <Label>PO Number</Label>
                       <Input
                         type="text"
-                        name="activity"
-                        id="activity"
-                        value={this.state.lmr_child_form.activity}
-                        onChange={this.handleChangeFormLMRChild}
+                        name="po_number"
+                        id="po_number"
+                        value={Dataform.po_number}
+                        onChange={this.handleInput}
                       />
                     </FormGroup>
                   </Col>
@@ -1075,13 +1136,13 @@ class MYASGDetail extends Component {
                 <Row form>
                   <Col md={6}>
                     <FormGroup>
-                      <Label>Material</Label>
+                      <Label>PO Item</Label>
                       <Input
                         type="text"
-                        name="material"
-                        id="material"
-                        value={this.state.lmr_child_form.material}
-                        onChange={this.handleChangeFormLMRChild}
+                        name="po_item"
+                        id="po_item"
+                        value={Dataform.po_item}
+                        onChange={this.handleInput}
                       />
                     </FormGroup>
                   </Col>
@@ -1089,61 +1150,27 @@ class MYASGDetail extends Component {
                 <Row form>
                   <Col md={6}>
                     <FormGroup>
-                      <Label>Description</Label>
-                      <Input
-                        type="text"
-                        name="description"
-                        id="description"
-                        value={this.state.lmr_child_form.description}
-                        onChange={this.handleChangeFormLMRChild}
-                      />
-                    </FormGroup>
-                  </Col>
-                </Row>
-                <Row form>
-                  <Col md={6}>
-                    <FormGroup>
-                      <Label>Site ID</Label>
-                      <Input
-                        type="text"
-                        name="site_id"
-                        id="site_id"
-                        value={this.state.lmr_child_form.site_id}
-                        onChange={this.handleChangeFormLMRChild}
-                      />
-                    </FormGroup>
-                  </Col>
-                </Row>
-                <Row form>
-                  <Col md={6}>
-                    <FormGroup>
-                      <Label>Quantity</Label>
+                      <Label>PO Price</Label>
                       <Input
                         type="number"
-                        name="quantity"
-                        id="quantity"
-                        value={this.state.lmr_child_form.quantity}
-                        onChange={this.handleChangeFormLMRChild}
+                        name="po_price"
+                        id="po_price"
+                        value={Dataform.po_price}
+                        onChange={this.handleInput}
                       />
                     </FormGroup>
                   </Col>
-                  {/*}<Col md={6}>
-                    <FormGroup>
-                      <Label>Unit</Label>
-                      <Input type="text" name="item" id="item" value={this.state.lmr_child_form.item} onChange={this.handleChangeFormLMRChild}/>
-                    </FormGroup>
-                  </Col> */}
                 </Row>
                 <Row form>
                   <Col md={6}>
                     <FormGroup>
-                      <Label>Price</Label>
+                      <Label>PO Qty</Label>
                       <Input
                         type="number"
-                        name="price"
-                        id="price"
-                        value={this.state.lmr_child_form.price}
-                        onChange={this.handleChangeFormLMRChild}
+                        name="po_qty"
+                        id="po_qty"
+                        value={Dataform.po_qty}
+                        onChange={this.handleInput}
                       />
                     </FormGroup>
                   </Col>
@@ -1151,13 +1178,27 @@ class MYASGDetail extends Component {
                 <Row form>
                   <Col md={6}>
                     <FormGroup>
-                      <Label>Tax Code</Label>
+                      <Label>Requited GR Qty</Label>
+                      <Input
+                        type="number"
+                        name="required_gr_qty"
+                        id="required_gr_qty"
+                        value={Dataform.required_gr_qty}
+                        onChange={this.handleInput}
+                      />
+                    </FormGroup>
+                  </Col>
+                </Row>
+                <Row form>
+                  <Col md={6}>
+                    <FormGroup>
+                      <Label>DN No</Label>
                       <Input
                         type="text"
-                        name="tax_code"
-                        id="tax_code"
-                        value={this.state.lmr_child_form.tax_code}
-                        onChange={this.handleChangeFormLMRChild}
+                        name="dn_no"
+                        id="dn_no"
+                        value={Dataform.dn_no}
+                        onChange={this.handleInput}
                       />
                     </FormGroup>
                   </Col>
@@ -1165,13 +1206,13 @@ class MYASGDetail extends Component {
                 <Row form>
                   <Col md={6}>
                     <FormGroup>
-                      <Label>Delivery Date</Label>
+                      <Label>WCN Link</Label>
                       <Input
-                        type="date"
-                        name="delivery_date"
-                        id="delivery_date"
-                        value={this.state.lmr_child_form.delivery_date}
-                        onChange={this.handleChangeFormLMRChild}
+                        type="file"
+                        name="wcn_link"
+                        id="wcn_link"
+                        value={Dataform.wcn_link}
+                        onChange={this.handleInput}
                       />
                     </FormGroup>
                   </Col>
@@ -1179,37 +1220,25 @@ class MYASGDetail extends Component {
                 <Row form>
                   <Col md={4}>
                     <FormGroup>
-                      <Label>Total Price</Label>
-                      <Input
-                        type="number"
-                        name="total_price"
-                        id="total_price"
-                        value={this.state.lmr_child_form.total_price}
-                        onChange={this.handleChangeFormLMRChild}
-                      />
-                    </FormGroup>
-                  </Col>
-                  <Col md={4}>
-                    <FormGroup>
-                      <Label>Total Value</Label>
-                      <Input
-                        type="number"
-                        name="total_value"
-                        id="total_value"
-                        value={this.state.lmr_child_form.total_value}
-                        onChange={this.handleChangeFormLMRChild}
-                      />
-                    </FormGroup>
-                  </Col>
-                  <Col md={4}>
-                    <FormGroup>
-                      <Label>Currency</Label>
+                      <Label>Item Status</Label>
                       <Input
                         type="text"
-                        name="currency"
-                        id="currency"
-                        value={this.state.lmr_child_form.currency}
-                        onChange={this.handleChangeFormLMRChild}
+                        name="item_status"
+                        id="item_status"
+                        value={Dataform.item_status}
+                        onChange={this.handleInput}
+                      />
+                    </FormGroup>
+                  </Col>
+                  <Col md={4}>
+                    <FormGroup>
+                      <Label>Work Status</Label>
+                      <Input
+                        type="text"
+                        name="work_status"
+                        id="work_status"
+                        value={Dataform.work_status}
+                        onChange={this.handleInput}
                       />
                     </FormGroup>
                   </Col>
