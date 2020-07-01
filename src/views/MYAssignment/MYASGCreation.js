@@ -122,43 +122,19 @@ class MYASGCreation extends Component {
       list_project: [],
       creation_lmr_child_form: [],
 
-      list_tower: [],
-      list_tower_selection: [],
-      list_project_selection: [],
-      list_warehouse: [],
       form_checking: {},
       list_cd_id: [],
       cd_id_selected: null,
       data_cd_id_selected: null,
-      project_selected: null,
-      project_name_selected: null,
-      list_tssr: [],
-      list_tssr_for_selection: [],
-      id_tssr_selected: null,
-      data_tssr_selected: null,
-      tssr_BOM_data_NE: null,
-      tssr_BOM_data_FE: null,
-      list_pp_material_tssr: [],
       redirectSign: false,
       action_status: null,
       action_message: null,
-      toggle_display: "new",
-      identifier_by: "tower_id",
-      tower_selected_id: null,
       vendor_list: [],
       material_list: [],
       validation_form: {},
       current_material_select : null,
     };
-    this.handleChangeFormMRCreation = this.handleChangeFormMRCreation.bind(this);
-    this.handleChangeMRType = this.handleChangeMRType.bind(this);
-    this.handleChangeProject = this.handleChangeProject.bind(this);
     this.handleChangeCD = this.handleChangeCD.bind(this);
-    this.showHide = this.showHide.bind(this);
-    this.handleChangeProjectXL = this.handleChangeProjectXL.bind(this);
-    this.handleChangeTowerXL = this.handleChangeTowerXL.bind(this);
-    this.handleChangeIdentifierBy = this.handleChangeIdentifierBy.bind(this);
-    this.loadOptionsTowerID = this.loadOptionsTowerID.bind(this);
     this.loadOptionsCDID = this.loadOptionsCDID.bind(this);
 
     this.handleChangeFormLMR = this.handleChangeFormLMR.bind(this);
@@ -212,7 +188,7 @@ class MYASGCreation extends Component {
     }
   }
 
-  async getDatafromAPIXL(url) {
+  async getDatafromAPIMY(url) {
     try {
       let respond = await axios.get(API_URL_MAS + url, {
         headers: { "Content-Type": "application/json" },
@@ -252,127 +228,11 @@ class MYASGCreation extends Component {
   }
 
   getDataCD() {
-    this.getDatafromAPIXL("/custdel_op").then((resCD) => {
+    this.getDatafromAPIMY("/custdel_op").then((resCD) => {
       if (resCD.data !== undefined) {
         this.setState({ list_cd_id: resCD.data._items });
       }
     });
-  }
-
-  getDataCDProject() {
-    const project_id = this.state.data_cd_id_selected.CD_Info_Project;
-    this.getDatafromAPIXL("/project_op/" + project_id).then((resCD) => {
-      if (resCD.data !== undefined) {
-        this.setState({
-          project_selected: resCD.data._id,
-          project_name_selected: resCD.data.Project,
-        });
-      }
-    });
-  }
-
-  handleChangeIdentifierBy(e) {
-    const value = e.target.value;
-    this.setState({ identifier_by: value });
-  }
-
-  handleChangeTSSR = (newValue) => {
-    const _id_tssr = newValue.value;
-    const data_tssr_selection = this.state.list_tssr.find(
-      (e) => e._id === _id_tssr
-    );
-    this.setState(
-      { id_tssr_selected: _id_tssr, data_tssr_selected: data_tssr_selection },
-      () => {
-        this.getTSSRBOM();
-      }
-    );
-  };
-
-  handleChangeMRType(e) {
-    const value = e.target.value;
-    this.setState({ mr_type: value });
-  }
-
-  handleChangeFormMRCreation(e) {
-    const value = e.target.value;
-    const index = e.target.name;
-    let dataForm = this.state.create_mr_form;
-    dataForm[parseInt(index)] = value;
-    const indexOpt = e.target.selectedIndex;
-    if (indexOpt !== undefined) {
-      let dataFormName = this.state.create_mr_name_form;
-      const textOpt = e.target[indexOpt].text;
-      dataFormName[parseInt(index)] = textOpt;
-      this.setState({ create_mr_name_form: dataFormName });
-    }
-    this.setState({ create_mr_form: dataForm }, () => {
-      console.log(
-        "PPForm",
-        this.state.create_mr_form,
-        this.state.create_mr_name_form
-      );
-    });
-  }
-
-  preparingDataMR() {
-    const dateNow = new Date();
-    const dataRandom = Math.floor(Math.random() * 100)
-      .toString()
-      .padStart(4, "0");
-    const numberTSSR =
-      dateNow.getFullYear().toString() +
-      (dateNow.getMonth() + 1).toString().padStart(2, "0") +
-      dateNow.getDate().toString().padStart(2, "0") +
-      dataRandom.toString();
-    return numberTSSR;
-  }
-
-  selectedDatetoFormat(date) {
-    let dateSplit = date.split("-");
-    return dateSplit[0] + "-" + dateSplit[1] + "-" + dateSplit[2];
-  }
-
-  handleCheckingForm() {
-    const dataForm = this.state.create_mr_form;
-    const dataFormName = this.state.create_mr_name_form;
-    let dataValidate = {};
-    let checkerror = [];
-    let dataFormHeader = [
-      "project_name",
-      "mr_type",
-      "mr_delivery_type",
-      "origin_warehouse",
-      "etd",
-      "eta",
-      "deliver_by",
-      "created_based",
-      "identifier",
-    ];
-    let dataFormInputan = [
-      this.state.project_name_selected,
-      dataForm[3],
-      dataForm[4],
-      dataForm[8],
-      dataForm[5],
-      dataForm[6],
-      dataForm[7],
-      this.state.identifier_by,
-      this.state.tower_selected_id,
-    ];
-    for (let i = 0; i < dataFormHeader.length; i++) {
-      if (dataFormInputan[i] === undefined || dataFormInputan[i] === null) {
-        dataValidate[dataFormHeader[i]] = false;
-        checkerror.push(false);
-      }
-    }
-    this.setState({ validation_form: dataValidate });
-    console.log("dataValidate", dataValidate);
-    if (checkerror.length !== 0) {
-      return true;
-    } else {
-      return false;
-    }
   }
 
   componentDidMount() {
@@ -383,7 +243,7 @@ class MYASGCreation extends Component {
   }
 
   getVendorList() {
-    this.getDatafromAPIXL("/vendor_data").then((res) => {
+    this.getDatafromAPIMY("/vendor_data").then((res) => {
       if (res.data !== undefined) {
         const items = res.data._items;
         this.setState({ vendor_list: items });
@@ -393,7 +253,7 @@ class MYASGCreation extends Component {
   }
 
   getMaterialList() {
-    // this.getDatafromAPIXL("/vendor_data").then((res) => {
+    // this.getDatafromAPIMY("/vendor_data").then((res) => {
     //   if (res.data !== undefined) {
     //     const items = res.data._items;
     //     this.setState({ vendor_list: items });
@@ -402,20 +262,8 @@ class MYASGCreation extends Component {
     this.setState({material_list : MaterialDB});
   }
 
-  getDataTower() {
-    this.getDatafromAPIXL(
-      '/tower_site_sorted_non_page?projection={"tower_id" : 1}'
-    ).then((resTower) => {
-      if (resTower.data !== undefined) {
-        this.setState({ list_tower: resTower.data._items }, () => {
-          this.filterDataTower("");
-        });
-      }
-    });
-  }
-
   getDataProject() {
-    // this.getDatafromAPIXL('/project_sorted_non_page').then( resProject => {
+    // this.getDatafromAPIMY('/project_sorted_non_page').then( resProject => {
     //   if(resProject.data !== undefined){
     //     this.setState({ list_project : resProject.data._items }, () => {
     //       this.filterDataProject("");
@@ -423,55 +271,6 @@ class MYASGCreation extends Component {
     //   }
     // })
     this.setState({ list_project: projectList });
-  }
-
-  filterDataTower = (inputValue) => {
-    const list = [];
-    this.state.list_tower.map((i) =>
-      list.push({ label: i.tower_id, value: i.tower_id })
-    );
-    this.setState({ list_tower_selection: list });
-    if (inputValue.length === 0) {
-      return list;
-    } else {
-      return this.state.list_tower_selection.filter((i) =>
-        i.label.toLowerCase().includes(inputValue.toLowerCase())
-      );
-    }
-  };
-
-  filterDataProject = (inputValue) => {
-    const list = [];
-    this.state.list_project.map((i) =>
-      list.push({ label: i.Project, value: i.Project })
-    );
-    this.setState({ list_project_selection: list });
-    if (inputValue.length === 0) {
-      return list;
-    } else {
-      return this.state.list_project_selection.filter((i) =>
-        i.label.toLowerCase().includes(inputValue.toLowerCase())
-      );
-    }
-  };
-
-  handleChangeProjectXL(e) {
-    this.setState({
-      project_selected: e.value,
-      project_name_selected: e.value,
-    });
-    return e;
-  }
-
-  handleChangeProject(e) {
-    const value = e.target.value;
-    const index = e.target.selectedIndex;
-    const text = e.target[index].text;
-    let lmr_form = this.state.lmr_form;
-    lmr_form["project_name"] = text;
-    lmr_form["id_project_doc"] = value;
-    this.setState({ lmr_form: lmr_form });
-    console.log("lmr_form", lmr_form);
   }
 
   handleChangeVendor(e) {
@@ -499,33 +298,13 @@ class MYASGCreation extends Component {
     );
   }
 
-  async loadOptionsTowerID(inputValue) {
-    if (!inputValue || inputValue.length < 3) {
-      return [];
-    } else {
-      let tower_id_list = [];
-      // const getSSOWID = await this.getDatafromAPIXL('/ssow_sorted_nonpage?where={"ssow_id":{"$regex":"'+inputValue+'", "$options":"i"}, "sow_type":"'+this.state.list_activity_selected.CD_Info_SOW_Type +'"}');
-      const getTowerID = await this.getDatafromAPIXL(
-        '/tower_site_sorted_non_page?where={"tower_id":{"$regex":"' +
-          inputValue +
-          '", "$options":"i"}}'
-      );
-      if (getTowerID !== undefined && getTowerID.data !== undefined) {
-        getTowerID.data._items.map((tower) =>
-          tower_id_list.push({ label: tower.tower_id, value: tower.tower_id })
-        );
-      }
-      return tower_id_list;
-    }
-  }
-
   async loadOptionsCDID(inputValue) {
     if (!inputValue) {
       return [];
     } else {
       let wp_id_list = [];
-      // const getSSOWID = await this.getDatafromAPIXL('/ssow_sorted_nonpage?where={"ssow_id":{"$regex":"'+inputValue+'", "$options":"i"}, "sow_type":"'+this.state.list_activity_selected.CD_Info_SOW_Type +'"}');
-      const getWPID = await this.getDatafromAPIXL(
+      // const getSSOWID = await this.getDatafromAPIMY('/ssow_sorted_nonpage?where={"ssow_id":{"$regex":"'+inputValue+'", "$options":"i"}, "sow_type":"'+this.state.list_activity_selected.CD_Info_SOW_Type +'"}');
+      const getWPID = await this.getDatafromAPIMY(
         '/custdel_sorted_non_page?where={"WP_ID":{"$regex":"' +
           inputValue +
           '", "$options":"i"}}'
@@ -540,64 +319,6 @@ class MYASGCreation extends Component {
       }
       return wp_id_list;
     }
-  }
-
-  handleChangeTowerXL(e) {
-    console.log(" e.value", e.value);
-    this.setState({ tower_selected_id: e.value });
-    return e;
-  }
-
-  showHide(e) {
-    if (e.target.value === "Relocation") {
-      this.setState({ toggle_display: "relocation" });
-    } else if (e.target.value === "Return") {
-      this.setState({ toggle_display: "return" });
-    } else {
-      this.setState({ toggle_display: "new" });
-    }
-  }
-
-  selectMRType(TypeDel) {
-    let delType = null;
-    switch (TypeDel) {
-      case "New":
-        delType = 1;
-        break;
-      case "Upgrade":
-        delType = 2;
-        break;
-      case "Relocation":
-        delType = 3;
-        break;
-      case "Return":
-        delType = 4;
-        break;
-      default:
-        delType = 1;
-    }
-    return delType;
-  }
-
-  selectDeliveryType(TypeDel) {
-    let delType = null;
-    switch (TypeDel) {
-      case "Warehouse to Site":
-        delType = 1;
-        break;
-      case "Site to Warehouse":
-        delType = 2;
-        break;
-      case "Site to Site":
-        delType = 3;
-        break;
-      case "Warehouse to Warehouse":
-        delType = 4;
-        break;
-      default:
-        delType = 1;
-    }
-    return delType;
   }
 
   handleChangeFormLMR(e) {
