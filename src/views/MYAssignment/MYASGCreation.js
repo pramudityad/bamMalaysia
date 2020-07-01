@@ -86,6 +86,29 @@ const vendorList = [
   },
 ];
 
+const MaterialDB = [
+  {
+    "MM_Code" : "MM Code",
+    "BB_Sub" : "BB_sub",
+    "SoW_Description" : "SoW Description",
+    "UoM" : "UoM",
+    "Region" : "Region",
+    "Unit_Price" : 100,
+    "MM_Description" : "MM Description",
+    "Acceptance" : "Acceptance"
+  },
+  {
+    "MM_Code" : "MM Code1",
+    "BB_Sub" : "BB_sub1",
+    "SoW_Description" : "SoW Description1",
+    "UoM" : "UoM1",
+    "Region" : "Region1",
+    "Unit_Price" : 200,
+    "MM_Description" : "MM Description1",
+    "Acceptance" : "Acceptance1"
+  }
+]
+
 class MYASGCreation extends Component {
   constructor(props) {
     super(props);
@@ -93,8 +116,9 @@ class MYASGCreation extends Component {
     this.state = {
       // tokenUser: this.props.dataLogin.token,
       tokenUser: BearerToken,
-      lmr_form: {},
+      lmr_form: {"pgr" : "MP2", "gl_account" : "402102"},
       modal_loading: false,
+      modal_material: false,
       list_project: [],
       creation_lmr_child_form: [],
 
@@ -122,11 +146,11 @@ class MYASGCreation extends Component {
       identifier_by: "tower_id",
       tower_selected_id: null,
       vendor_list: [],
+      material_list: [],
       validation_form: {},
+      current_material_select : null,
     };
-    this.handleChangeFormMRCreation = this.handleChangeFormMRCreation.bind(
-      this
-    );
+    this.handleChangeFormMRCreation = this.handleChangeFormMRCreation.bind(this);
     this.handleChangeMRType = this.handleChangeMRType.bind(this);
     this.handleChangeProject = this.handleChangeProject.bind(this);
     this.handleChangeCD = this.handleChangeCD.bind(this);
@@ -143,11 +167,24 @@ class MYASGCreation extends Component {
     this.handleChangeVendor = this.handleChangeVendor.bind(this);
     this.addLMR = this.addLMR.bind(this);
     this.handleChangeFormLMRChild = this.handleChangeFormLMRChild.bind(this);
+    this.toggleMaterial = this.toggleMaterial.bind(this);
+    this.handleChangeMaterial = this.handleChangeMaterial.bind(this);
   }
 
   toggleLoading() {
     this.setState((prevState) => ({
       modal_loading: !prevState.modal_loading,
+    }));
+  }
+
+  toggleMaterial(number_child_form) {
+    if(number_child_form !== undefined && isNaN(number_child_form) === false){
+      this.setState({current_material_select : number_child_form});
+    }else{
+      this.setState({current_material_select : null});
+    }
+    this.setState((prevState) => ({
+      modal_material: !prevState.modal_material,
     }));
   }
 
@@ -341,6 +378,7 @@ class MYASGCreation extends Component {
   componentDidMount() {
     this.getVendorList();
     this.getDataProject();
+    this.getMaterialList();
     document.title = "LMR Creation | BAM";
   }
 
@@ -352,6 +390,16 @@ class MYASGCreation extends Component {
       }
     });
     // this.setState({vendor_list : vendorList});
+  }
+
+  getMaterialList() {
+    // this.getDatafromAPIXL("/vendor_data").then((res) => {
+    //   if (res.data !== undefined) {
+    //     const items = res.data._items;
+    //     this.setState({ vendor_list: items });
+    //   }
+    // });
+    this.setState({material_list : MaterialDB});
   }
 
   getDataTower() {
@@ -434,7 +482,7 @@ class MYASGCreation extends Component {
     );
     lmr_form["vendor_code"] = dataVendor.Vendor_Code;
     lmr_form["vendor_name"] = dataVendor.Name;
-    lmr_form["vendor_address"] = dataVendor.vendor_address;
+    lmr_form["vendor_email"] = dataVendor.Email;
     this.setState({ lmr_form: lmr_form });
   }
 
@@ -579,7 +627,7 @@ class MYASGCreation extends Component {
       payment_term: this.state.lmr_form.payment_term,
       vendor_code: this.state.lmr_form.vendor_code,
       vendor_name: this.state.lmr_form.vendor_name,
-      vendor_address: this.state.lmr_form.vendor_address,
+      vendor_email: this.state.lmr_form.vendor_email,
       l1_approver: this.state.lmr_form.l1_approver,
       l2_approver: this.state.lmr_form.l2_approver,
       l3_approver: this.state.lmr_form.l3_approver,
@@ -641,7 +689,7 @@ class MYASGCreation extends Component {
 
   addLMR() {
     let dataLMR = this.state.creation_lmr_child_form;
-    dataLMR.push({});
+    dataLMR.push({"tax_code" : "I0", "currency" : "MYR"});
     this.setState({ creation_lmr_child_form: dataLMR });
   }
 
@@ -652,7 +700,23 @@ class MYASGCreation extends Component {
     let idx = idxField[0];
     let field = idxField[1];
     dataLMR[parseInt(idx)][field] = value;
+    if(field === "quantity" && isNaN(dataLMR[parseInt(idx)].price) === false){
+      dataLMR[parseInt(idx)]["total_amount"] = value*dataLMR[parseInt(idx)].price;
+    }
     this.setState({ creation_lmr_child_form: dataLMR });
+  }
+
+  
+  handleChangeMaterial(e){
+    const value = e.target.value;
+    const data_material = this.state.material_list.find(e => e.MM_Code === value);
+    let dataLMR = this.state.creation_lmr_child_form;
+    dataLMR[parseInt(this.state.current_material_select)]["material"] = data_material.MM_Code;
+    dataLMR[parseInt(this.state.current_material_select)]["description"] = data_material.MM_Description;
+    dataLMR[parseInt(this.state.current_material_select)]["price"] = data_material.Unit_Price;
+    dataLMR[parseInt(this.state.current_material_select)]["quantity"] = 0;
+    this.setState({creation_lmr_child_form : dataLMR});
+    this.toggleMaterial();
   }
 
   render() {
@@ -676,6 +740,98 @@ class MYASGCreation extends Component {
               </CardHeader>
               <CardBody>
                 <Form>
+                <Row form>
+                    <Col md={3}>
+                      <FormGroup>
+                        <Label>Request Type</Label>
+                        <Input
+                            type="select"
+                            name="Request_Type"
+                            id="Request_Type"
+                            value={this.state.lmr_form.Request_Type}
+                            onChange={this.handleChangeFormLMR}
+                          >
+                          <option value={null} selected>
+                          </option>
+                          <option value="Add" >
+                            Add
+                          </option>
+                          <option value="Change" >
+                            Change
+                          </option>
+                          <option value="Delete" >
+                            Delete
+                          </option>
+                        </Input>
+                      </FormGroup>
+                    </Col>
+                    <Col md={3}>
+                      <FormGroup>
+                        <Label>Item Category</Label>
+                        <Input
+                            type="select"
+                            name="Item_Category"
+                            id="Item_Category"
+                            value={this.state.lmr_form.Item_Category}
+                            onChange={this.handleChangeFormLMR}
+                          >
+                          <option value={null} selected >
+                            
+                          </option>
+                          <option value="Service" >
+                            Service
+                          </option>
+                          <option value="3PP HW" >
+                            3PP HW
+                          </option>
+                        </Input>
+                      </FormGroup>
+                    </Col>
+                    <Col md={3}>
+                      <FormGroup>
+                        <Label>LMR Type</Label>
+                        <Input
+                            type="select"
+                            name="LMR_Type"
+                            id="LMR_Type"
+                            value={this.state.lmr_form.LMR_Type}
+                            onChange={this.handleChangeFormLMR}
+                          >
+                          <option value={null} selected >
+                            
+                          </option>
+                          <option value="Cost Collector" >
+                            Cost Collector
+                          </option>
+                          <option value="Per Site" >
+                            Per Site
+                          </option>
+                        </Input>
+                      </FormGroup>
+                    </Col>
+                    <Col md={3}>
+                      <FormGroup>
+                        <Label>Plan Cost Reduction</Label>
+                        <Input
+                            type="select"
+                            name="Plan_Cost_Reduction"
+                            id="Plan_Cost_Reduction"
+                            value={this.state.lmr_form.Plan_Cost_Reduction}
+                            onChange={this.handleChangeFormLMR}
+                          >
+                          <option value={null} selected >
+                            
+                          </option>
+                          <option value="Yes" >
+                            Yes
+                          </option>
+                          <option value="No" >
+                            No
+                          </option>
+                        </Input>
+                      </FormGroup>
+                    </Col>
+                  </Row>
                   <Row form>
                     <Col md={4}>
                       <FormGroup>
@@ -686,6 +842,7 @@ class MYASGCreation extends Component {
                           id="lmr_issued_by"
                           value={this.state.lmr_form.lmr_issued_by}
                           onChange={this.handleChangeFormLMR}
+                          disabled
                         />
                       </FormGroup>
                     </Col>
@@ -705,18 +862,12 @@ class MYASGCreation extends Component {
                       <FormGroup>
                         <Label>GL Account</Label>
                         <Input
-                          type="select"
+                          type="text"
                           name="gl_account"
                           id="gl_account"
                           value={this.state.lmr_form.gl_account}
                           onChange={this.handleChangeFormLMR}
                         >
-                          <option value="" disabled selected hidden>
-                            Select GL Account
-                          </option>
-                          {/* {this.state.vendor_list.map((e) => (
-                            <option value={e.Vendor_Code}>{e.Name}</option>
-                          ))} */}
                         </Input>
                       </FormGroup>
                     </Col>
@@ -732,7 +883,7 @@ class MYASGCreation extends Component {
                           value={this.state.lmr_form.project_name}
                           onChange={this.handleChangeFormLMR}
                         >
-                        <option value="" disabled selected hidden>
+                          <option value="" disabled selected hidden>
                             Select Project Name
                           </option>
                           {/* {this.state.vendor_list.map((e) => (
@@ -801,19 +952,19 @@ class MYASGCreation extends Component {
                     </Col>
                     <Col md={4}>
                       <FormGroup>
-                        <Label>Vendor Address</Label>
+                        <Label>Vendor Email</Label>
                         <Input
-                          type="textarea"
-                          name="vendor_address"
-                          id="vendor_address"
-                          value={this.state.lmr_form.vendor_address}
+                          type="text"
+                          name="vendor_email"
+                          id="vendor_email"
+                          value={this.state.lmr_form.vendor_email}
                           onChange={this.handleChangeFormLMR}
                         />
                       </FormGroup>
                     </Col>
                   </Row>
                   <Row form>
-                    <Col md={4}>
+                    <Col md={3}>
                       <FormGroup>
                         <Label>L1 Approver / PM</Label>
                         <Input
@@ -825,9 +976,9 @@ class MYASGCreation extends Component {
                         />
                       </FormGroup>
                     </Col>
-                    <Col md={4}>
+                    <Col md={3}>
                       <FormGroup>
-                        <Label>L2 Approver / PM</Label>
+                        <Label>L2 Approver</Label>
                         <Input
                           type="text"
                           name="l2_approver"
@@ -837,14 +988,38 @@ class MYASGCreation extends Component {
                         />
                       </FormGroup>
                     </Col>
-                    <Col md={4}>
+                    <Col md={2}>
                       <FormGroup>
-                        <Label>L3 Approver / PM</Label>
+                        <Label>L3 Approver</Label>
                         <Input
                           type="text"
                           name="l3_approver"
                           id="l3_approver"
                           value={this.state.lmr_form.l3_approver}
+                          onChange={this.handleChangeFormLMR}
+                        />
+                      </FormGroup>
+                    </Col>
+                    <Col md={2}>
+                      <FormGroup>
+                        <Label>L4 Approver</Label>
+                        <Input
+                          type="text"
+                          name="l4_approver"
+                          id="l4_approver"
+                          value={this.state.lmr_form.l4_approver}
+                          onChange={this.handleChangeFormLMR}
+                        />
+                      </FormGroup>
+                    </Col>
+                    <Col md={2}>
+                      <FormGroup>
+                        <Label>L5 Approver</Label>
+                        <Input
+                          type="text"
+                          name="l5_approver"
+                          id="l5_approver"
+                          value={this.state.lmr_form.l5_approver}
                           onChange={this.handleChangeFormLMR}
                         />
                       </FormGroup>
@@ -862,9 +1037,9 @@ class MYASGCreation extends Component {
                           <Label>CD ID</Label>
                           <Input
                             type="select"
-                            name={i + " /// so_or_nw"}
-                            id={i + " /// so_or_nw"}
-                            value={lmr.so_or_nw}
+                            name={i + " /// cd_id"}
+                            id={i + " /// cd_id"}
+                            value={lmr.cd_id}
                             onChange={this.handleChangeFormLMRChild}
                           >
                             <option value="" disabled selected hidden>
@@ -881,18 +1056,39 @@ class MYASGCreation extends Component {
                           <Label>Per Site Material Type</Label>
                           <Input
                             type="select"
-                            name={i + " /// so_or_nw"}
-                            id={i + " /// so_or_nw"}
-                            value={lmr.so_or_nw}
+                            name={i + " /// Per_Site_Material_Type"}
+                            id={i + " /// Per_Site_Material_Type"}
+                            value={lmr.Per_Site_Material_Type}
                             onChange={this.handleChangeFormLMRChild}
                           >
                             <option value="" disabled selected hidden>
-                            Select Material Type
-                          </option>
+                              Select Material Type
+                            </option>
+                            <option value="NRO Service">
+                              NRO Service
+                            </option>
+                            <option value="NRO LM">
+                              NRO LM
+                            </option>
+                            <option value="NDO Service">
+                              NDO Service
+                            </option>
                           {/* {this.state.vendor_list.map((e) => (
                             <option value={e.Vendor_Code}>{e.Name}</option>
                           ))} */}
                         </Input>
+                        </FormGroup>
+                      </Col>
+                      <Col md={2}>
+                        <FormGroup>
+                          <Label>Site ID</Label>
+                          <Input
+                            type="text"
+                            name={i + " /// site_id"}
+                            id={i + " /// site_id"}
+                            value={lmr.site_id}
+                            onChange={this.handleChangeFormLMRChild}
+                          />
                         </FormGroup>
                       </Col>
                       <Col md={2}>
@@ -921,17 +1117,30 @@ class MYASGCreation extends Component {
                       </Col>
                       <Col md={2}>
                         <FormGroup>
+                          <Label>Tax Code</Label>
+                          <Input
+                            type="text"
+                            name={i + " /// tax_code"}
+                            id={i + " /// tax_code"}
+                            value={lmr.tax_code}
+                            onChange={this.handleChangeFormLMRChild}
+                          />
+                        </FormGroup>
+                      </Col>
+                      <Col md={2}>
+                        <FormGroup>
                           <Label>Material</Label>
                           <Input
                             type="text"
                             name={i + " /// material"}
                             id={i + " /// material"}
                             value={lmr.material}
+                            onClick={() => this.toggleMaterial(i)}
                             onChange={this.handleChangeFormLMRChild}
                           />
                         </FormGroup>
                       </Col>
-                      <Col md={2}>
+                      <Col md={3}>
                         <FormGroup>
                           <Label>Description</Label>
                           <Input
@@ -945,12 +1154,12 @@ class MYASGCreation extends Component {
                       </Col>
                       <Col md={2}>
                         <FormGroup>
-                          <Label>Site ID</Label>
+                          <Label>Price</Label>
                           <Input
-                            type="text"
-                            name={i + " /// site_id"}
-                            id={i + " /// site_id"}
-                            value={lmr.site_id}
+                            type="number"
+                            name={i + " /// price"}
+                            id={i + " /// price"}
+                            value={lmr.price}
                             onChange={this.handleChangeFormLMRChild}
                           />
                         </FormGroup>
@@ -969,60 +1178,12 @@ class MYASGCreation extends Component {
                       </Col>
                       <Col md={2}>
                         <FormGroup>
-                          <Label>Price</Label>
+                          <Label>Total Amount</Label>
                           <Input
                             type="number"
-                            name={i + " /// price"}
-                            id={i + " /// price"}
-                            value={lmr.price}
-                            onChange={this.handleChangeFormLMRChild}
-                          />
-                        </FormGroup>
-                      </Col>
-                      <Col md={1}>
-                        <FormGroup>
-                          <Label>Tax Code</Label>
-                          <Input
-                            type="text"
-                            name={i + " /// tax_code"}
-                            id={i + " /// tax_code"}
-                            value={lmr.tax_code}
-                            onChange={this.handleChangeFormLMRChild}
-                          />
-                        </FormGroup>
-                      </Col>
-                      <Col md={2}>
-                        <FormGroup>
-                          <Label>Delivery Date</Label>
-                          <Input
-                            type="date"
-                            name={i + " /// delivery_date"}
-                            id={i + " /// delivery_date"}
-                            value={lmr.delivery_date}
-                            onChange={this.handleChangeFormLMRChild}
-                          />
-                        </FormGroup>
-                      </Col>
-                      <Col md={2}>
-                        <FormGroup>
-                          <Label>Total Price</Label>
-                          <Input
-                            type="number"
-                            name={i + " /// total_price"}
-                            id={i + " /// total_price"}
-                            value={lmr.total_price}
-                            onChange={this.handleChangeFormLMRChild}
-                          />
-                        </FormGroup>
-                      </Col>
-                      <Col md={2}>
-                        <FormGroup>
-                          <Label>Total Value</Label>
-                          <Input
-                            type="number"
-                            name={i + " /// total_value"}
-                            id={i + " /// total_value"}
-                            value={lmr.total_value}
+                            name={i + " /// total_amount"}
+                            id={i + " /// total_amount"}
+                            value={lmr.total_amount}
                             onChange={this.handleChangeFormLMRChild}
                           />
                         </FormGroup>
@@ -1049,27 +1210,41 @@ class MYASGCreation extends Component {
                         </Input>
                         </FormGroup>
                       </Col>
-                      <Col md={1}>
+                      <Col md={3}>
                         <FormGroup>
-                          <Label>Item</Label>
+                          <Label>Delivery Date</Label>
                           <Input
-                            type="number"
-                            name={i + " /// item"}
-                            id={i + " /// item"}
-                            value={lmr.item}
+                            type="date"
+                            name={i + " /// delivery_date"}
+                            id={i + " /// delivery_date"}
+                            value={lmr.delivery_date}
                             onChange={this.handleChangeFormLMRChild}
                           />
                         </FormGroup>
                       </Col>
-                      <Col md={1}>
+                      <Col md={3}>
                         <FormGroup>
-                          <Label>PR</Label>
+                          <Label>Item Status</Label>
+                          <Input
+                            type="text"
+                            name={i + " /// item"}
+                            id={i + " /// item"}
+                            value={lmr.item}
+                            onChange={this.handleChangeFormLMRChild}
+                            disabled
+                          />
+                        </FormGroup>
+                      </Col>
+                      <Col md={3}>
+                        <FormGroup>
+                          <Label>Work Status</Label>
                           <Input
                             type="text"
                             name={i + " /// pr"}
                             id={i + " /// pr"}
                             value={lmr.pr}
                             onChange={this.handleChangeFormLMRChild}
+                            disabled
                           />
                         </FormGroup>
                       </Col>
@@ -1100,6 +1275,43 @@ class MYASGCreation extends Component {
             </Card>
           </Col>
         </Row>
+        {/* Modal Material Dasboard */}
+        <Modal
+          isOpen={this.state.modal_material}
+          toggle={this.toggleMaterial}
+          className={"modal-lg"}
+        >
+          <ModalBody>
+            <Table responsive striped bordered size="sm">
+              <thead>
+                <th></th><th>MM Code</th><th>BB Sub</th><th>SoW</th><th>UoM</th><th>Region</th><th>Unit Price</th><th>MM Description</th>
+              </thead>
+              <tbody>
+                {this.state.material_list.map(e => 
+                  <tr>
+                    <td>
+                      <Button color={"primary"} size="sm" value={e.MM_Code} onClick={this.handleChangeMaterial}>Select</Button>
+                    </td>
+                    <td>{e.MM_Code}</td>
+                    <td>{e.BB_Sub}</td>
+                    <td>{e.SoW}</td>
+                    <td>{e.UoM}</td>
+                    <td>{e.Region}</td>
+                    <td>{e.Unit_Price}</td>
+                    <td>{e.MM_Description}</td>
+                  </tr>
+                )}
+                
+              </tbody>
+            </Table>
+          </ModalBody>
+          <ModalFooter>
+            <Button color="secondary" onClick={this.toggleLoading}>
+              Close
+            </Button>
+          </ModalFooter>
+        </Modal>
+        {/* end Modal Loading */}
         {/* Modal Loading */}
         <Modal
           isOpen={this.state.modal_loading}
