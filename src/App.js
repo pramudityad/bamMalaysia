@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { HashRouter, Route, Switch } from 'react-router-dom';
+import { Route, Switch, BrowserRouter } from 'react-router-dom';
 // import { renderRoutes } from 'react-router-config';
 import './App.scss';
 
@@ -21,7 +21,7 @@ class App extends Component {
     localStorage.setItem('user_ID', '5d22f1193029609a8e3df3aa');
     localStorage.setItem('user_Email', 'pdbdash@projectdb.live');
     return (
-      <HashRouter>
+      <BrowserRouter>
           <React.Suspense fallback={loading()}>
             <Switch>
               <Route exact path="/login" name="Login Page" render={props => <Login {...props}/>} />
@@ -31,7 +31,7 @@ class App extends Component {
               <Route path="/" name="Home" render={props => <DefaultLayout {...props} />} />
             </Switch>
           </React.Suspense>
-      </HashRouter>
+      </BrowserRouter>
     );
   }
 }
