@@ -83,9 +83,8 @@ class MYASGDetail extends Component {
       },
     };
     this.toggleAddNew = this.toggleAddNew.bind(this);
-    this.handleChangeFormLMRChild = this.handleChangeFormLMRChild.bind(this);
     this.handleInput = this.handleInput.bind(this);
-    this.addLMRChildForm = this.addLMRChildForm.bind(this);
+    this.postGR = this.postGR.bind(this);
 
     this.toggleAddChild = this.toggleAddChild.bind(this);
     this.toggleCollapse = this.toggleCollapse.bind(this);
@@ -545,26 +544,25 @@ class MYASGDetail extends Component {
     saveAs(new Blob([PPFormat]), "CPO Level 2 Template.xlsx");
   };
 
-  async addLMRChildForm() {
-    const dataChildForm = this.state.lmr_child_form;
+  async postGR() {
+    const dataForm = this.state.Dataform;
     const dataChild = {
-      nw: dataChildForm.so_or_nw,
-      activity: dataChildForm.activity,
-      material: dataChildForm.material,
-      description: dataChildForm.description,
-      site_id: dataChildForm.site_id,
-      qty: dataChildForm.quantity,
-      unit_price: dataChildForm.price,
-      tax_code: dataChildForm.tax_code,
-      delivery_date: dataChildForm.delivery_date,
-      total_price: dataChildForm.total_price,
-      total_value: dataChildForm.total_value,
-      currency: dataChildForm.currency,
+      plant : dataForm.plant,
+      request_type : dataForm.request_type,
+      po_number : dataForm.po_number,
+      po_item : dataForm.po_item,
+      po_price : dataForm.po_price,
+      po_qty : dataForm.po_qty,
+      required_gr_qty : dataForm.required_gr_qty,
+      dn_no : dataForm.dn_no,
+      wcn_link : dataForm.wcn_link,
+      item_status : dataForm.item_status,
+      work_status : dataForm.work_status,
     };
     console.log("dataChild", dataChild);
     const respondSaveLMRChild = await this.postDatatoAPINODE(
-      "/aspassignment/createOneChild/" + this.props.match.params.id,
-      { asp_data: dataChild }
+      "/aspassignment/createGrForm/" + this.props.match.params.id,
+      { gr_data: dataChild }
     );
     if (
       respondSaveLMRChild.data !== undefined &&
@@ -635,17 +633,6 @@ class MYASGDetail extends Component {
     document.title = "LMR Detail | BAM";
   }
 
-  handleChangeFormLMRChild(e) {
-    const name = e.target.name;
-    let value = e.target.value;
-    let lmr_child_form = this.state.lmr_child_form;
-    if (value !== (null && undefined)) {
-      value = value.toString();
-    }
-    lmr_child_form[name.toString()] = value;
-    this.setState({ lmr_child_form: lmr_child_form });
-  }
-
   handleInput(e) {
     const value = e.target.value;
     const name = e.target.name;
@@ -665,6 +652,46 @@ class MYASGDetail extends Component {
     const value = e.currentTarget.value;
     const respondDelLMRChild = await this.deleteDatafromAPINODE(
       "/aspassignment/deleteChild/" + value
+    );
+    if (
+      respondDelLMRChild.data !== undefined &&
+      respondDelLMRChild.status >= 200 &&
+      respondDelLMRChild.status <= 300
+    ) {
+      this.setState({ action_status: "success" });
+    } else {
+      if (
+        respondDelLMRChild.response !== undefined &&
+        respondDelLMRChild.response.data !== undefined &&
+        respondDelLMRChild.response.data.error !== undefined
+      ) {
+        if (respondDelLMRChild.response.data.error.message !== undefined) {
+          this.setState({
+            action_status: "failed",
+            action_message: JSON.stringify(
+              respondDelLMRChild.response.data.error.message
+            ),
+          });
+        } else {
+          this.setState({
+            action_status: "failed",
+            action_message: JSON.stringify(
+              respondDelLMRChild.response.data.error
+            ),
+          });
+        }
+      } else {
+        this.setState({ action_status: "failed" });
+      }
+    }
+    this.toggleLoading();
+  }
+
+  async deleteGR(e) {
+    this.toggleLoading();
+    const value = e.currentTarget.value;
+    const respondDelLMRChild = await this.deleteDatafromAPINODE(
+      "/aspassignment/deleteGr/" + value
     );
     if (
       respondDelLMRChild.data !== undefined &&
@@ -1014,7 +1041,27 @@ class MYASGDetail extends Component {
                         <th>GR_Document_Qty</th>
                       </tr>
                     </thead>
-                    <tbody></tbody>
+                    <tbody>
+                    {this.state.lmr_detail.detail !== undefined ?
+                      this.state.lmr_detail.detail.map(e =>
+                        <tr>
+                          <td>{e.nw}</td>
+                          <td>{e.activity}</td>
+                          <td>{e.material}</td>
+                          <td>{e.description}</td>
+                          <td>{e.site_id}</td>
+                          <td>{e.qty}</td>
+                          <td>{e.unit_price}</td>
+                          <td>{e.tax_code}</td>
+                          <td>{convertDateFormat(e.delivery_date)}</td>
+                          <td>{e.total_price}</td>
+                          <td>{e.total_value}</td>
+                          <td>{e.currency}</td>
+                          <td>{e.item}</td>
+                          <td>{e.pr}</td>
+                        </tr>
+                      ) : (<Fragment></Fragment>)}
+                    </tbody>
                   </Table>
                 </div>
               </CardBody>
@@ -1251,10 +1298,10 @@ class MYASGDetail extends Component {
               className="btn-success"
               style={{ float: "right", margin: "8px" }}
               color="success"
-              onClick={this.addLMRChildForm}
+              onClick={this.postGR}
             >
               <i className="fa fa-save">&nbsp;&nbsp;</i>
-              Add
+              Create
             </Button>
           </ModalFooter>
         </Modal>
