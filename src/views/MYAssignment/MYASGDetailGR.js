@@ -55,7 +55,7 @@ class MYASGDetail extends Component {
       modal_loading: false,
       modalAddChild: false,
       lmr_detail: {},
-
+      data_prpo: [],
       data_cpo: null,
       data_cpo_db: [],
       rowsXLS: [],
@@ -81,10 +81,11 @@ class MYASGDetail extends Component {
         item_status: "",
         work_status: "",
       },
+      ChildForm: [],
     };
     this.toggleAddNew = this.toggleAddNew.bind(this);
     this.handleInput = this.handleInput.bind(this);
-    this.postGR = this.postGR.bind(this);
+    this.postGRChild = this.postGRChild.bind(this);
 
     this.toggleAddChild = this.toggleAddChild.bind(this);
     this.toggleCollapse = this.toggleCollapse.bind(this);
@@ -96,6 +97,7 @@ class MYASGDetail extends Component {
     this.handleChangeFormLMRChildMultiple = this.handleChangeFormLMRChildMultiple.bind(
       this
     );
+    this.addGR = this.addGR.bind(this);
   }
 
   toggle(i) {
@@ -104,6 +106,26 @@ class MYASGDetail extends Component {
     });
     this.setState({
       dropdownOpen: newArray,
+    });
+  }
+
+  addGR() {
+    this.setState({
+      ChildForm: this.state.ChildForm.concat([
+        {
+          plant: "",
+          request_type: "",
+          po_number: "",
+          po_item: "",
+          po_price: "",
+          po_qty: "",
+          required_gr_qty: "",
+          dn_no: "",
+          wcn_link: "",
+          item_status: "",
+          work_status: "",
+        },
+      ]),
     });
   }
 
@@ -275,90 +297,17 @@ class MYASGDetail extends Component {
     );
   }
 
-  getCPO2Format = async (dataImport) => {
-    const dataHeader = dataImport[0];
-    const onlyParent = dataImport
-      .map((e) => e)
-      .filter((e) =>
-        this.checkValuetoString(e[this.getIndex(dataHeader, "PO Number")])
-      );
-    let cpo_array = [];
-    if (onlyParent !== undefined && onlyParent.length !== 0) {
-      for (let i = 1; i < onlyParent.length; i++) {
-        const cpo = {
-          po_number: this.checkValue(
-            onlyParent[i][this.getIndex(dataHeader, "PO Number")]
-          ),
-          po_year: this.checkValue(
-            onlyParent[i][this.getIndex(dataHeader, "Year")]
-          ),
-          currency: this.checkValue(
-            onlyParent[i][this.getIndex(dataHeader, "Currency")]
-          ),
-          value: this.checkValue(
-            onlyParent[i][this.getIndex(dataHeader, "Price")]
-          ),
-          number_of_sites: this.checkValue(
-            onlyParent[i][this.getIndex(dataHeader, "Number of Sites")]
-          ),
-        };
-        if (cpo.po_number !== undefined && cpo.po_number !== null) {
-          cpo["po_number"] = cpo.po_number.toString();
+  getPRPO(_id ){
+    this.getDatafromAPINODE("/aspassignment/getAspAssignment/" + _id).then(
+      (res) => {
+        if (res.data !== undefined) {
+          const dataLMRDetail = res.data.data;
+          this.setState({ data_prpo: dataLMRDetail });
         }
-        if (cpo.year !== undefined && cpo.year !== null) {
-          cpo["po_year"] = cpo.year.toString();
-        }
-        if (cpo.currency !== undefined && cpo.currency !== null) {
-          cpo["currency"] = cpo.currency.toString();
-        }
-        cpo_array.push(cpo);
       }
-      // console.log(JSON.stringify(cpo_array));
-      return cpo_array;
-    } else {
-      this.setState(
-        { action_status: "failed", action_message: "Please check your format" },
-        () => {
-          this.toggleLoading();
-        }
-      );
-    }
-  };
-
-  saveCPO2Bulk = async () => {
-    this.toggleLoading();
-    const cpobulkXLS = this.state.rowsXLS;
-    const _id = this.props.match.params.id;
-    const res = await this.postDatatoAPINODE(
-      "/cpodb/createCpoDbDetail/" + _id,
-      { detailData: cpobulkXLS }
     );
-    if (res.data !== undefined) {
-      this.setState({ action_status: "success", action_message: null });
-      this.toggleLoading();
-    } else {
-      if (
-        res.response !== undefined &&
-        res.response.data !== undefined &&
-        res.response.data.error !== undefined
-      ) {
-        if (res.response.data.error.message !== undefined) {
-          this.setState({
-            action_status: "failed",
-            action_message: res.response.data.error.message,
-          });
-        } else {
-          this.setState({
-            action_status: "failed",
-            action_message: res.response.data.error,
-          });
-        }
-      } else {
-        this.setState({ action_status: "failed" });
-      }
-      this.toggleLoading();
-    }
-  };
+  }
+
 
   addLMRChildBulk = async () => {
     this.toggleLoading();
@@ -544,57 +493,57 @@ class MYASGDetail extends Component {
     saveAs(new Blob([PPFormat]), "CPO Level 2 Template.xlsx");
   };
 
-  async postGR() {
-    const dataForm = this.state.Dataform;
-    const dataChild = {
-      plant : dataForm.plant,
-      request_type : dataForm.request_type,
-      po_number : dataForm.po_number,
-      po_item : dataForm.po_item,
-      po_price : dataForm.po_price,
-      po_qty : dataForm.po_qty,
-      required_gr_qty : dataForm.required_gr_qty,
-      dn_no : dataForm.dn_no,
-      wcn_link : dataForm.wcn_link,
-      item_status : dataForm.item_status,
-      work_status : dataForm.work_status,
-    };
+  async postGRChild() {
+    const dataChild = this.state.ChildForm;
+    // const dataChild = {
+    //   plant: dataForm.plant,
+    //   request_type: dataForm.request_type,
+    //   po_number: dataForm.po_number,
+    //   po_item: dataForm.po_item,
+    //   po_price: dataForm.po_price,
+    //   po_qty: dataForm.po_qty,
+    //   required_gr_qty: dataForm.required_gr_qty,
+    //   dn_no: dataForm.dn_no,
+    //   wcn_link: dataForm.wcn_link,
+    //   item_status: dataForm.item_status,
+    //   work_status: dataForm.work_status,
+    // };
     console.log("dataChild", dataChild);
-    const respondSaveLMRChild = await this.postDatatoAPINODE(
-      "/aspassignment/createGrForm/" + this.props.match.params.id,
-      { gr_data: dataChild }
-    );
-    if (
-      respondSaveLMRChild.data !== undefined &&
-      respondSaveLMRChild.status >= 200 &&
-      respondSaveLMRChild.status <= 300
-    ) {
-      this.setState({ action_status: "success" });
-    } else {
-      if (
-        respondSaveLMRChild.response !== undefined &&
-        respondSaveLMRChild.response.data !== undefined &&
-        respondSaveLMRChild.response.data.error !== undefined
-      ) {
-        if (respondSaveLMRChild.response.data.error.message !== undefined) {
-          this.setState({
-            action_status: "failed",
-            action_message: JSON.stringify(
-              respondSaveLMRChild.response.data.error.message
-            ),
-          });
-        } else {
-          this.setState({
-            action_status: "failed",
-            action_message: JSON.stringify(
-              respondSaveLMRChild.response.data.error
-            ),
-          });
-        }
-      } else {
-        this.setState({ action_status: "failed" });
-      }
-    }
+    // const respondSaveLMRChild = await this.postDatatoAPINODE(
+    //   "/aspassignment/createGrForm/" + this.props.match.params.id,
+    //   { gr_data: dataChild }
+    // );
+    // if (
+    //   respondSaveLMRChild.data !== undefined &&
+    //   respondSaveLMRChild.status >= 200 &&
+    //   respondSaveLMRChild.status <= 300
+    // ) {
+    //   this.setState({ action_status: "success" });
+    // } else {
+    //   if (
+    //     respondSaveLMRChild.response !== undefined &&
+    //     respondSaveLMRChild.response.data !== undefined &&
+    //     respondSaveLMRChild.response.data.error !== undefined
+    //   ) {
+    //     if (respondSaveLMRChild.response.data.error.message !== undefined) {
+    //       this.setState({
+    //         action_status: "failed",
+    //         action_message: JSON.stringify(
+    //           respondSaveLMRChild.response.data.error.message
+    //         ),
+    //       });
+    //     } else {
+    //       this.setState({
+    //         action_status: "failed",
+    //         action_message: JSON.stringify(
+    //           respondSaveLMRChild.response.data.error
+    //         ),
+    //       });
+    //     }
+    //   } else {
+    //     this.setState({ action_status: "failed" });
+    //   }
+    // }
   }
 
   downloadFormatNewChild = async () => {
@@ -624,12 +573,12 @@ class MYASGDetail extends Component {
   };
 
   componentDidMount() {
-    console.log("getLMRDetailData ", this.props.match.params.id);
-    if (this.props.match.params.id === undefined) {
-      this.getLMRDetailData();
-    } else {
-      this.getLMRDetailData(this.props.match.params.id);
-    }
+    // console.log("getLMRDetailData ", this.props.match.params.id);
+    // if (this.props.match.params.id === undefined) {
+    //   this.getLMRDetailData();
+    // } else {
+    //   this.getLMRDetailData(this.props.match.params.id);
+    // }
     document.title = "LMR Detail | BAM";
   }
 
@@ -646,6 +595,22 @@ class MYASGDetail extends Component {
       () => console.log(this.state.Dataform)
     );
   }
+
+  handleInputchild = (idx) => (e) => {
+    const value = e.target.value;
+    const name = e.target.name;
+    const newChild = this.state.ChildForm.map((child_data, sidx) => {
+      if (idx !== sidx) return child_data;
+      return { ...child_data, [name]: value, [name]: value, [name]: value };
+    });
+
+    this.setState(
+      {
+        ChildForm: newChild,
+      },
+      () => console.log(this.state.ChildForm)
+    );
+  };
 
   async deleteChild(e) {
     this.toggleLoading();
@@ -869,12 +834,12 @@ class MYASGDetail extends Component {
                       </DropdownMenu>
                     </Dropdown>
                   </div>
-                  <Button color="success" size="sm" onClick={this.toggleaddGR}>
+                  {/* <Button color="success" size="sm" onClick={this.toggleaddGR}>
                     <i className="fa fa-wpforms" aria-hidden="true">
                       {" "}
                     </i>{" "}
                     &nbsp;Create GR
-                  </Button>
+                  </Button> */}
                 </div>
               </CardHeader>
               <Collapse isOpen={this.state.collapse_add_child}>
@@ -1020,8 +985,8 @@ class MYASGDetail extends Component {
                 </div>
 
                 <div class="divtable">
-                  <Table hover bordered responsive size="sm" width="100%">
-                    <thead class="table-commercial__header--fixed">
+                  <Table hover bordered size="sm" width="100%">
+                    <thead class="table-commercial__header">
                       <tr>
                         <th>Plant</th>
                         <th>Request Type</th>
@@ -1031,38 +996,177 @@ class MYASGDetail extends Component {
                         <th>PO Qty</th>
                         <th>Required GR Qty</th>
                         <th>DN No</th>
+                        <th>WCN_Link</th>
                         <th>Item_Status</th>
                         <th>Work_Status</th>
-                        <th>Error_Message</th>
+                        {/* <th>Error_Message</th>
                         <th>Error_Type</th>
                         <th>Total_GR_Qty</th>
                         <th>GR_Document_No</th>
                         <th>GR_Document_Date</th>
-                        <th>GR_Document_Qty</th>
+                        <th>GR_Document_Qty</th> */}
                       </tr>
                     </thead>
                     <tbody>
-                    {this.state.lmr_detail.detail !== undefined ?
-                      this.state.lmr_detail.detail.map(e =>
+                      {this.state.lmr_detail.detail !== undefined ? (
+                        this.state.lmr_detail.detail.map((e) => (
+                          <tr>
+                            <td>{e.plant}</td>
+                            <td>{e.request_type}</td>
+                            <td>{e.po_number}</td>
+                            <td>{e.po_item}</td>
+                            <td>{e.po_price}</td>
+                            <td>{e.po_qty}</td>
+                            <td>{e.required_gr_qty}</td>
+                            <td>{e.dn_no}</td>
+                            <td>{e.wcn_link}</td>
+                            <td>{e.item_status}</td>
+                            <td>{e.work_status}</td>
+                          </tr>
+                        ))
+                      ) : (
+                        <Fragment></Fragment>
+                      )}
+                      {this.state.ChildForm.map((child_data, idx) => (
                         <tr>
-                          <td>{e.nw}</td>
-                          <td>{e.activity}</td>
-                          <td>{e.material}</td>
-                          <td>{e.description}</td>
-                          <td>{e.site_id}</td>
-                          <td>{e.qty}</td>
-                          <td>{e.unit_price}</td>
-                          <td>{e.tax_code}</td>
-                          <td>{convertDateFormat(e.delivery_date)}</td>
-                          <td>{e.total_price}</td>
-                          <td>{e.total_value}</td>
-                          <td>{e.currency}</td>
-                          <td>{e.item}</td>
-                          <td>{e.pr}</td>
-                        </tr>
-                      ) : (<Fragment></Fragment>)}
+                          <td>
+                            <Input
+                              type="text"
+                              name="plant"
+                              id="plant"
+                              value={child_data.plant}
+                              onChange={this.handleInputchild(idx)}
+                              readOnly
+                            />
+                          </td>
+                          <td>
+                            <Input
+                              type="select"
+                              name="request_type"
+                              id="request_type"
+                              value={child_data.request_type}
+                              onChange={this.handleInputchild(idx)}
+                            >
+                              {/* <option value="" disabled selected hidden>
+                                Select Request Type
+                              </option> */}
+                              <option value="" >
+                                Add GR
+                              </option>
+                              <option value="" >
+                                Delete GR
+                              </option>
+                            </Input>
+                          </td>
+                          <td>
+                            <Input
+                              type="text"
+                              name="po_number"
+                              id="po_number"
+                              value={child_data.po_number}
+                              onChange={this.handleInputchild(idx)}
+                            />
+                          </td>
+                          <td>
+                            <Input
+                              type="text"
+                              name="po_item"
+                              id="po_item"
+                              value={child_data.po_item}
+                              onChange={this.handleInputchild(idx)}
+                            />
+                          </td>
+                          <td>
+                            <Input
+                              type="number"
+                              name="po_price"
+                              id="po_price"
+                              value={child_data.po_price}
+                              onChange={this.handleInputchild(idx)}
+                            />
+                          </td>
+                          <td>
+                            <Input
+                              type="number"
+                              name="po_qty"
+                              id="po_qty"
+                              value={child_data.po_qty}
+                              onChange={this.handleInputchild(idx)}
+                            />
+                          </td>
+                          <td>
+                            <Input
+                              type="number"
+                              name="required_gr_qty"
+                              id="required_gr_qty"
+                              value={child_data.required_gr_qty}
+                              onChange={this.handleInputchild(idx)}
+                            />
+                          </td>
+                          <td>
+                            <Input
+                              type="text"
+                              name="dn_no"
+                              id="dn_no"
+                              value={child_data.dn_no}
+                              onChange={this.handleInputchild(idx)}
+                            />
+                          </td>
+                          <td>
+                            <Input
+                              type="text"
+                              name="wcn_link"
+                              id="wcn_link"
+                              value={child_data.wcn_link}
+                              onChange={this.handleInputchild(idx)}
+                            />
+                          </td>
+                          <td>
+                            <Input
+                              type="text"
+                              name="item_status"
+                              id="item_status"
+                              value={child_data.item_status}
+                              onChange={this.handleInputchild(idx)}
+                              readOnly
+                            />
+                          </td>
+                          <td>
+                            <Input
+                              type="text"
+                              name="work_status"
+                              id="work_status"
+                              value={child_data.work_status}
+                              onChange={this.handleInputchild(idx)}
+                              readOnly
+                            />
+                          </td>
+                        </tr>                        
+                      ))}
+                      {this.state.ChildForm.length !== 0 && (
+                        <tr>
+                        <td colSpan="15" style={{ textAlign: "right" }}>
+                          <Button
+                            color="success"
+                            size="sm"
+                            onClick={this.postGRChild}
+                          >
+                            <i
+                              className="fa fa-plus-square"
+                              style={{ marginRight: "8px" }}
+                            ></i>
+                            Save GR Child
+                          </Button>
+                        </td>
+                      </tr>
+                      )}
                     </tbody>
                   </Table>
+                </div>
+                <div>
+                  <Button color="primary" size="sm" onClick={this.addGR}>
+                    <i className="fa fa-plus">&nbsp;</i> GR Child
+                  </Button>
                 </div>
               </CardBody>
               <CardFooter>
