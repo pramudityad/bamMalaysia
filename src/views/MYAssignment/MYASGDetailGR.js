@@ -54,12 +54,12 @@ class MYASGDetail extends Component {
       lmr_child_form: {},
       modal_loading: false,
       modalAddChild: false,
-      lmr_detail: {},
+      lmr_detail: [],
+      lmr_lvl2: {},
       data_prpo: [],
       data_cpo: null,
       data_cpo_db: [],
       rowsXLS: [],
-      modal_loading: false,
       dropdownOpen: new Array(6).fill(false),
       modalPOForm: false,
       POForm: new Array(5).fill(null),
@@ -69,17 +69,17 @@ class MYASGDetail extends Component {
       collapse_add_child: false,
       creation_lmr_child_form: [],
       Dataform: {
-        plant: "",
-        request_type: "",
-        po_number: "",
-        po_item: "",
-        po_price: "",
-        po_qty: "",
-        required_gr_qty: "",
-        dn_no: "",
-        wcn_link: "",
-        item_status: "",
-        work_status: "",
+        Plant: "",
+        Request_Type: "",
+        PO_Number: "",
+        PO_Item: "",
+        PO_Price: "",
+        PO_Qty: "",
+        Required_GR_Qty: "",
+        DN_No: "",
+        WCN_Link: "",
+        Item_Status: "",
+        Work_Status: "",
       },
       ChildForm: [],
     };
@@ -90,7 +90,7 @@ class MYASGDetail extends Component {
     this.toggleAddChild = this.toggleAddChild.bind(this);
     this.toggleCollapse = this.toggleCollapse.bind(this);
     this.toggleLoading = this.toggleLoading.bind(this);
-    this.deleteChild = this.deleteChild.bind(this);
+    this.deleteGR = this.deleteGR.bind(this);
     this.addLMR = this.addLMR.bind(this);
     this.toggleaddGR = this.toggleaddGR.bind(this);
     this.createLMRChild = this.createLMRChild.bind(this);
@@ -113,17 +113,17 @@ class MYASGDetail extends Component {
     this.setState({
       ChildForm: this.state.ChildForm.concat([
         {
-          plant: "",
-          request_type: "",
-          po_number: "",
-          po_item: "",
-          po_price: "",
-          po_qty: "",
-          required_gr_qty: "",
-          dn_no: "",
-          wcn_link: "",
-          item_status: "",
-          work_status: "",
+          Plant: "MY",
+          Request_Type: "",
+          PO_Number: "",
+          PO_Item: "",
+          PO_Price: "",
+          PO_Qty: "",
+          Required_GR_Qty: "",
+          DN_No: "",
+          WCN_Link: "",
+          Item_Status: "Waiting for GR",
+          Work_Status: "Submit",
         },
       ]),
     });
@@ -286,13 +286,27 @@ class MYASGDetail extends Component {
   }
 
   getLMRDetailData(_id) {
-    this.getDatafromAPINODE("/aspassignment/getAspAssignment/" + _id).then(
+    this.getDatafromAPINODE("/aspassignment/getGrByLmrChild/" + _id).then(
       (res) => {
         // console.log('cpo db id', res.data.data.cpoDetail)
         if (res.data !== undefined) {
           const dataLMRDetail = res.data.data;
-          this.setState({ lmr_detail: dataLMRDetail });
+          this.setState({ lmr_detail: dataLMRDetail});
         }
+        console.log('gr data', this.state.lmr_detail)
+      }
+    );
+  }
+
+  getLMRlvl2(_id) {
+    this.getDatafromAPINODE("/aspassignment/getAspAssignment/" + _id).then(
+      (res) => {
+        // console.log('cpo db id', res.data.data.cpoDetail)
+        if (res.data !== undefined) {
+          const datalvl2 = res.data.data;
+          this.setState({ lmr_lvl2: datalvl2});
+        }
+        // console.log('gr data', this.state.lmr_detail)
       }
     );
   }
@@ -357,7 +371,7 @@ class MYASGDetail extends Component {
 
     const dataCPO = this.state.data_cpo;
 
-    ws.addRow(["PO Number", dataCPO.po_number]);
+    ws.addRow(["PO Number", dataCPO.PO_Number]);
     ws.addRow(["Payment Terms", dataCPO.payment_terms]);
     ws.addRow(["Currency", dataCPO.currency]);
     ws.addRow(["Contract", dataCPO.contract]);
@@ -389,7 +403,7 @@ class MYASGDetail extends Component {
     );
 
     const PPFormat = await wb.xlsx.writeBuffer();
-    saveAs(new Blob([PPFormat]), "CPO " + dataCPO.po_number + " Detail.xlsx");
+    saveAs(new Blob([PPFormat]), "CPO " + dataCPO.PO_Number + " Detail.xlsx");
   };
 
   exportFormatCPO_level2 = async () => {
@@ -496,54 +510,54 @@ class MYASGDetail extends Component {
   async postGRChild() {
     const dataChild = this.state.ChildForm;
     // const dataChild = {
-    //   plant: dataForm.plant,
-    //   request_type: dataForm.request_type,
-    //   po_number: dataForm.po_number,
-    //   po_item: dataForm.po_item,
-    //   po_price: dataForm.po_price,
-    //   po_qty: dataForm.po_qty,
-    //   required_gr_qty: dataForm.required_gr_qty,
-    //   dn_no: dataForm.dn_no,
-    //   wcn_link: dataForm.wcn_link,
-    //   item_status: dataForm.item_status,
-    //   work_status: dataForm.work_status,
+    //   Plant: dataForm.Plant,
+    //   Request_Type: dataForm.Request_Type,
+    //   PO_Number: dataForm.PO_Number,
+    //   PO_Item: dataForm.PO_Item,
+    //   PO_Price: dataForm.PO_Price,
+    //   PO_Qty: dataForm.PO_Qty,
+    //   Required_GR_Qty: dataForm.Required_GR_Qty,
+    //   DN_No: dataForm.DN_No,
+    //   WCN_Link: dataForm.WCN_Link,
+    //   Item_Status: dataForm.Item_Status,
+    //   Work_Status: dataForm.Work_Status,
     // };
     console.log("dataChild", dataChild);
-    // const respondSaveLMRChild = await this.postDatatoAPINODE(
-    //   "/aspassignment/createGrForm/" + this.props.match.params.id,
-    //   { gr_data: dataChild }
-    // );
-    // if (
-    //   respondSaveLMRChild.data !== undefined &&
-    //   respondSaveLMRChild.status >= 200 &&
-    //   respondSaveLMRChild.status <= 300
-    // ) {
-    //   this.setState({ action_status: "success" });
-    // } else {
-    //   if (
-    //     respondSaveLMRChild.response !== undefined &&
-    //     respondSaveLMRChild.response.data !== undefined &&
-    //     respondSaveLMRChild.response.data.error !== undefined
-    //   ) {
-    //     if (respondSaveLMRChild.response.data.error.message !== undefined) {
-    //       this.setState({
-    //         action_status: "failed",
-    //         action_message: JSON.stringify(
-    //           respondSaveLMRChild.response.data.error.message
-    //         ),
-    //       });
-    //     } else {
-    //       this.setState({
-    //         action_status: "failed",
-    //         action_message: JSON.stringify(
-    //           respondSaveLMRChild.response.data.error
-    //         ),
-    //       });
-    //     }
-    //   } else {
-    //     this.setState({ action_status: "failed" });
-    //   }
-    // }
+    const respondSaveLMRChild = await this.postDatatoAPINODE(
+      "/aspassignment/createGrForm/" + this.props.match.params.lmr,
+      { gr_data: dataChild }
+    );
+    if (
+      respondSaveLMRChild.data !== undefined &&
+      respondSaveLMRChild.status >= 200 &&
+      respondSaveLMRChild.status <= 300
+    ) {
+      this.setState({ action_status: "success" });
+    } else {
+      if (
+        respondSaveLMRChild.response !== undefined &&
+        respondSaveLMRChild.response.data !== undefined &&
+        respondSaveLMRChild.response.data.error !== undefined
+      ) {
+        if (respondSaveLMRChild.response.data.error.message !== undefined) {
+          this.setState({
+            action_status: "failed",
+            action_message: JSON.stringify(
+              respondSaveLMRChild.response.data.error.message
+            ),
+          });
+        } else {
+          this.setState({
+            action_status: "failed",
+            action_message: JSON.stringify(
+              respondSaveLMRChild.response.data.error
+            ),
+          });
+        }
+      } else {
+        this.setState({ action_status: "failed" });
+      }
+    }
   }
 
   downloadFormatNewChild = async () => {
@@ -574,11 +588,13 @@ class MYASGDetail extends Component {
 
   componentDidMount() {
     // console.log("getLMRDetailData ", this.props.match.params.id);
-    // if (this.props.match.params.id === undefined) {
-    //   this.getLMRDetailData();
-    // } else {
-    //   this.getLMRDetailData(this.props.match.params.id);
-    // }
+    if (this.props.match.params.lmr === undefined) {
+      this.getLMRDetailData();
+    } else {
+      this.getLMRDetailData(this.props.match.params.lmr);
+      this.getLMRlvl2(this.props.match.params.id);
+
+    }
     document.title = "LMR Detail | BAM";
   }
 
@@ -612,45 +628,6 @@ class MYASGDetail extends Component {
     );
   };
 
-  async deleteChild(e) {
-    this.toggleLoading();
-    const value = e.currentTarget.value;
-    const respondDelLMRChild = await this.deleteDatafromAPINODE(
-      "/aspassignment/deleteChild/" + value
-    );
-    if (
-      respondDelLMRChild.data !== undefined &&
-      respondDelLMRChild.status >= 200 &&
-      respondDelLMRChild.status <= 300
-    ) {
-      this.setState({ action_status: "success" });
-    } else {
-      if (
-        respondDelLMRChild.response !== undefined &&
-        respondDelLMRChild.response.data !== undefined &&
-        respondDelLMRChild.response.data.error !== undefined
-      ) {
-        if (respondDelLMRChild.response.data.error.message !== undefined) {
-          this.setState({
-            action_status: "failed",
-            action_message: JSON.stringify(
-              respondDelLMRChild.response.data.error.message
-            ),
-          });
-        } else {
-          this.setState({
-            action_status: "failed",
-            action_message: JSON.stringify(
-              respondDelLMRChild.response.data.error
-            ),
-          });
-        }
-      } else {
-        this.setState({ action_status: "failed" });
-      }
-    }
-    this.toggleLoading();
-  }
 
   async deleteGR(e) {
     this.toggleLoading();
@@ -908,7 +885,7 @@ class MYASGDetail extends Component {
                             GR Detail
                           </td>
                         </tr>
-                        <tr style={{ fontWeight: "425", fontSize: "15px" }}>
+                        {/* <tr style={{ fontWeight: "425", fontSize: "15px" }}>
                           <td
                             colSpan="2"
                             style={{
@@ -917,9 +894,9 @@ class MYASGDetail extends Component {
                               fontWeight: "500",
                             }}
                           >
-                            LMR ID : {this.state.lmr_detail.lmr_id}
+                            LMR ID : {this.state.lmr_detail.LMR_Number}
                           </td>
-                        </tr>
+                        </tr> */}
                         {this.state.data_cpo !== null && (
                           <tr style={{ fontWeight: "425", fontSize: "15px" }}>
                             <td
@@ -930,7 +907,7 @@ class MYASGDetail extends Component {
                                 fontWeight: "500",
                               }}
                             >
-                              PO Number : {this.state.data_cpo.po_number}
+                              PO Number : {this.state.data_cpo.PO_Number}
                             </td>
                           </tr>
                         )}
@@ -966,17 +943,17 @@ class MYASGDetail extends Component {
                           <tr style={{ fontWeight: "425", fontSize: "15px" }}>
                             <td>LMR ID</td>
                             <td>:</td>
-                            <td>{this.state.lmr_detail.lmr_id}</td>
+                            <td>{this.state.lmr_lvl2.lmr_id}</td>
                           </tr>
                           <tr style={{ fontWeight: "425", fontSize: "15px" }}>
                             <td>Project</td>
                             <td>:</td>
-                            <td>{this.state.lmr_detail.project_name}</td>
+                            <td>{this.state.lmr_lvl2.project_name}</td>
                           </tr>
                           <tr style={{ fontWeight: "425", fontSize: "15px" }}>
                             <td>Vendor</td>
                             <td>:</td>
-                            <td>{this.state.lmr_detail.vendor_name}</td>
+                            <td>{this.state.lmr_lvl2.vendor_name}</td>
                           </tr>
                         </tbody>
                       </table>
@@ -985,11 +962,12 @@ class MYASGDetail extends Component {
                 </div>
 
                 <div class="divtable">
-                  <Table hover bordered size="sm" width="100%">
+                  <Table hover bordered responsive size="sm" >
                     <thead class="table-commercial__header">
                       <tr>
+                        <th></th>
                         <th>Plant</th>
-                        <th>Request Type</th>
+                        <th style={{width: '12%'}}>Request Type</th>
                         <th>PO Number</th>
                         <th>PO Item</th>
                         <th>PO Price</th>
@@ -997,7 +975,7 @@ class MYASGDetail extends Component {
                         <th>Required GR Qty</th>
                         <th>DN No</th>
                         <th>WCN_Link</th>
-                        <th>Item_Status</th>
+                        <th style={{width: '12%'}}>Item_Status</th>
                         <th>Work_Status</th>
                         {/* <th>Error_Message</th>
                         <th>Error_Type</th>
@@ -1008,20 +986,30 @@ class MYASGDetail extends Component {
                       </tr>
                     </thead>
                     <tbody>
-                      {this.state.lmr_detail.detail !== undefined ? (
-                        this.state.lmr_detail.detail.map((e) => (
+                      {this.state.lmr_detail !== undefined ? (
+                        this.state.lmr_detail.map((e) => (
                           <tr>
-                            <td>{e.plant}</td>
-                            <td>{e.request_type}</td>
-                            <td>{e.po_number}</td>
-                            <td>{e.po_item}</td>
-                            <td>{e.po_price}</td>
-                            <td>{e.po_qty}</td>
-                            <td>{e.required_gr_qty}</td>
-                            <td>{e.dn_no}</td>
-                            <td>{e.wcn_link}</td>
-                            <td>{e.item_status}</td>
-                            <td>{e.work_status}</td>
+                            <td>
+                              <Button
+                                color="danger"
+                                size="sm"
+                                value={e._id}
+                                onClick={this.deleteGR}
+                              >
+                                <i className="fa fa-eraser"></i>
+                              </Button>
+                            </td>
+                            <td>{e.Plant}</td>
+                            <td>{e.Request_Type}</td>
+                            <td>{e.PO_Number}</td>
+                            <td>{e.PO_Item}</td>
+                            <td>{e.PO_Price}</td>
+                            <td>{e.PO_Qty}</td>
+                            <td>{e.Required_GR_Qty}</td>
+                            <td>{e.DN_No}</td>
+                            <td>{e.WCN_Link}</td>
+                            <td>{e.Item_Status}</td>
+                            <td>{e.Work_Status}</td>
                           </tr>
                         ))
                       ) : (
@@ -1029,12 +1017,13 @@ class MYASGDetail extends Component {
                       )}
                       {this.state.ChildForm.map((child_data, idx) => (
                         <tr>
+                          <td></td>
                           <td>
                             <Input
                               type="text"
-                              name="plant"
-                              id="plant"
-                              value={child_data.plant}
+                              name="Plant"
+                              id="Plant"
+                              value={child_data.Plant}
                               onChange={this.handleInputchild(idx)}
                               readOnly
                             />
@@ -1042,18 +1031,19 @@ class MYASGDetail extends Component {
                           <td>
                             <Input
                               type="select"
-                              name="request_type"
-                              id="request_type"
-                              value={child_data.request_type}
+                              name="Request_Type"
+                              id="Request_Type"
+                              value={child_data.Request_Type}
                               onChange={this.handleInputchild(idx)}
+                              // style={{ width: "200" }}
                             >
                               {/* <option value="" disabled selected hidden>
                                 Select Request Type
                               </option> */}
-                              <option value="" >
+                              <option value="Type 1" >
                                 Add GR
                               </option>
-                              <option value="" >
+                              <option value="Type 2" >
                                 Delete GR
                               </option>
                             </Input>
@@ -1061,72 +1051,76 @@ class MYASGDetail extends Component {
                           <td>
                             <Input
                               type="text"
-                              name="po_number"
-                              id="po_number"
-                              value={child_data.po_number}
+                              name="PO_Number"
+                              id="PO_Number"
+                              value={child_data.PO_Number}
                               onChange={this.handleInputchild(idx)}
+                              
                             />
                           </td>
                           <td>
                             <Input
                               type="text"
-                              name="po_item"
-                              id="po_item"
-                              value={child_data.po_item}
+                              name="PO_Item"
+                              id="PO_Item"
+                              value={child_data.PO_Item}
                               onChange={this.handleInputchild(idx)}
+                              
+                            />
+                          </td>
+                          <td>
+                            <Input
+                              type="text"
+                              name="PO_Price"
+                              id="PO_Price"
+                              value={child_data.PO_Price}
+                              onChange={this.handleInputchild(idx)}
+                              
+                            />
+                          </td>
+                          <td>
+                            <Input
+                              type="text"
+                              name="PO_Qty"
+                              id="PO_Qty"
+                              value={child_data.PO_Qty}
+                              onChange={this.handleInputchild(idx)}
+                              
                             />
                           </td>
                           <td>
                             <Input
                               type="number"
-                              name="po_price"
-                              id="po_price"
-                              value={child_data.po_price}
-                              onChange={this.handleInputchild(idx)}
-                            />
-                          </td>
-                          <td>
-                            <Input
-                              type="number"
-                              name="po_qty"
-                              id="po_qty"
-                              value={child_data.po_qty}
-                              onChange={this.handleInputchild(idx)}
-                            />
-                          </td>
-                          <td>
-                            <Input
-                              type="number"
-                              name="required_gr_qty"
-                              id="required_gr_qty"
-                              value={child_data.required_gr_qty}
+                              name="Required_GR_Qty"
+                              id="Required_GR_Qty"
+                              value={child_data.Required_GR_Qty}
                               onChange={this.handleInputchild(idx)}
                             />
                           </td>
                           <td>
                             <Input
                               type="text"
-                              name="dn_no"
-                              id="dn_no"
-                              value={child_data.dn_no}
+                              name="DN_No"
+                              id="DN_No"
+                              value={child_data.DN_No}
                               onChange={this.handleInputchild(idx)}
                             />
                           </td>
                           <td>
                             <Input
                               type="text"
-                              name="wcn_link"
-                              id="wcn_link"
-                              value={child_data.wcn_link}
+                              name="WCN_Link"
+                              id="WCN_Link"
+                              value={child_data.WCN_Link}
                               onChange={this.handleInputchild(idx)}
                             />
                           </td>
                           <td>
                             <Input
                               type="text"
-                              name="item_status"
-                              id="item_status"
-                              value={child_data.item_status}
+                              name="Item_Status"
+                              id="Item_Status"
+                              value={child_data.Item_Status}
                               onChange={this.handleInputchild(idx)}
                               readOnly
                             />
@@ -1134,9 +1128,9 @@ class MYASGDetail extends Component {
                           <td>
                             <Input
                               type="text"
-                              name="work_status"
-                              id="work_status"
-                              value={child_data.work_status}
+                              name="Work_Status"
+                              id="Work_Status"
+                              value={child_data.Work_Status}
                               onChange={this.handleInputchild(idx)}
                               readOnly
                             />
@@ -1245,9 +1239,9 @@ class MYASGDetail extends Component {
                       <Label>Plant</Label>
                       <Input
                         type="text"
-                        name="plant"
-                        id="plant"
-                        value={Dataform.plant}
+                        name="Plant"
+                        id="Plant"
+                        value={Dataform.Plant}
                         onChange={this.handleInput}
                         readOnly
                       />
@@ -1258,9 +1252,9 @@ class MYASGDetail extends Component {
                       <Label>Request Type</Label>
                       <Input
                         type="select"
-                        name="request_type"
-                        id="request_type"
-                        value={Dataform.request_type}
+                        name="Request_Type"
+                        id="Request_Type"
+                        value={Dataform.Request_Type}
                         onChange={this.handleInput}
                       >
                         <option value="" disabled selected hidden>
@@ -1276,9 +1270,9 @@ class MYASGDetail extends Component {
                       <Label>PO Number</Label>
                       <Input
                         type="text"
-                        name="po_number"
-                        id="po_number"
-                        value={Dataform.po_number}
+                        name="PO_Number"
+                        id="PO_Number"
+                        value={Dataform.PO_Number}
                         onChange={this.handleInput}
                       />
                     </FormGroup>
@@ -1290,9 +1284,9 @@ class MYASGDetail extends Component {
                       <Label>PO Item</Label>
                       <Input
                         type="text"
-                        name="po_item"
-                        id="po_item"
-                        value={Dataform.po_item}
+                        name="PO_Item"
+                        id="PO_Item"
+                        value={Dataform.PO_Item}
                         onChange={this.handleInput}
                       />
                     </FormGroup>
@@ -1304,9 +1298,9 @@ class MYASGDetail extends Component {
                       <Label>PO Price</Label>
                       <Input
                         type="number"
-                        name="po_price"
-                        id="po_price"
-                        value={Dataform.po_price}
+                        name="PO_Price"
+                        id="PO_Price"
+                        value={Dataform.PO_Price}
                         onChange={this.handleInput}
                       />
                     </FormGroup>
@@ -1318,9 +1312,9 @@ class MYASGDetail extends Component {
                       <Label>PO Qty</Label>
                       <Input
                         type="number"
-                        name="po_qty"
-                        id="po_qty"
-                        value={Dataform.po_qty}
+                        name="PO_Qty"
+                        id="PO_Qty"
+                        value={Dataform.PO_Qty}
                         onChange={this.handleInput}
                       />
                     </FormGroup>
@@ -1332,9 +1326,9 @@ class MYASGDetail extends Component {
                       <Label>Requited GR Qty</Label>
                       <Input
                         type="number"
-                        name="required_gr_qty"
-                        id="required_gr_qty"
-                        value={Dataform.required_gr_qty}
+                        name="Required_GR_Qty"
+                        id="Required_GR_Qty"
+                        value={Dataform.Required_GR_Qty}
                         onChange={this.handleInput}
                       />
                     </FormGroup>
@@ -1346,9 +1340,9 @@ class MYASGDetail extends Component {
                       <Label>DN No</Label>
                       <Input
                         type="text"
-                        name="dn_no"
-                        id="dn_no"
-                        value={Dataform.dn_no}
+                        name="DN_No"
+                        id="DN_No"
+                        value={Dataform.DN_No}
                         onChange={this.handleInput}
                       />
                     </FormGroup>
@@ -1360,9 +1354,9 @@ class MYASGDetail extends Component {
                       <Label>WCN Link</Label>
                       <Input
                         type="file"
-                        name="wcn_link"
-                        id="wcn_link"
-                        value={Dataform.wcn_link}
+                        name="WCN_Link"
+                        id="WCN_Link"
+                        value={Dataform.WCN_Link}
                         onChange={this.handleInput}
                       />
                     </FormGroup>
@@ -1374,9 +1368,9 @@ class MYASGDetail extends Component {
                       <Label>Item Status</Label>
                       <Input
                         type="text"
-                        name="item_status"
-                        id="item_status"
-                        value={Dataform.item_status}
+                        name="Item_Status"
+                        id="Item_Status"
+                        value={Dataform.Item_Status}
                         onChange={this.handleInput}
                       />
                     </FormGroup>
@@ -1386,9 +1380,9 @@ class MYASGDetail extends Component {
                       <Label>Work Status</Label>
                       <Input
                         type="text"
-                        name="work_status"
-                        id="work_status"
-                        value={Dataform.work_status}
+                        name="Work_Status"
+                        id="Work_Status"
+                        value={Dataform.Work_Status}
                         onChange={this.handleInput}
                       />
                     </FormGroup>

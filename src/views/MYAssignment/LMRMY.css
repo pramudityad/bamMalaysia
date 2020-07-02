@@ -1,6 +1,11 @@
 .upload-line--lmr{
   border-top: 2px solid rgba(63,81,181 ,0.5);
 }
+
+.absorbing-column {
+  width: 100%;
+}
+
 .form-lmr-child td > input {
   width: 100px;
 }
