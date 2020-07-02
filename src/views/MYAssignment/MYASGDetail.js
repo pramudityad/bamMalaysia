@@ -857,41 +857,41 @@ class MYASGDetail extends Component {
       dummryRow.push(rowChild);
     }
     console.log("childNew", dummryRow);
-    // const respondSaveLMRChild = await this.postDatatoAPINODE(
-    //   "/aspassignment/createChild",
-    //   { asp_data: dummryRow }
-    // );
-    // if (
-    //   respondSaveLMRChild.data !== undefined &&
-    //   respondSaveLMRChild.status >= 200 &&
-    //   respondSaveLMRChild.status <= 300
-    // ) {
-    //   this.setState({ action_status: "success" });
-    // } else {
-    //   if (
-    //     respondSaveLMRChild.response !== undefined &&
-    //     respondSaveLMRChild.response.data !== undefined &&
-    //     respondSaveLMRChild.response.data.error !== undefined
-    //   ) {
-    //     if (respondSaveLMRChild.response.data.error.message !== undefined) {
-    //       this.setState({
-    //         action_status: "failed",
-    //         action_message: JSON.stringify(
-    //           respondSaveLMRChild.response.data.error.message
-    //         ),
-    //       });
-    //     } else {
-    //       this.setState({
-    //         action_status: "failed",
-    //         action_message: JSON.stringify(
-    //           respondSaveLMRChild.response.data.error
-    //         ),
-    //       });
-    //     }
-    //   } else {
-    //     this.setState({ action_status: "failed" });
-    //   }
-    // }
+    const respondSaveLMRChild = await this.postDatatoAPINODE(
+      "/aspassignment/createChild",
+      { asp_data: dummryRow }
+    );
+    if (
+      respondSaveLMRChild.data !== undefined &&
+      respondSaveLMRChild.status >= 200 &&
+      respondSaveLMRChild.status <= 300
+    ) {
+      this.setState({ action_status: "success" });
+    } else {
+      if (
+        respondSaveLMRChild.response !== undefined &&
+        respondSaveLMRChild.response.data !== undefined &&
+        respondSaveLMRChild.response.data.error !== undefined
+      ) {
+        if (respondSaveLMRChild.response.data.error.message !== undefined) {
+          this.setState({
+            action_status: "failed",
+            action_message: JSON.stringify(
+              respondSaveLMRChild.response.data.error.message
+            ),
+          });
+        } else {
+          this.setState({
+            action_status: "failed",
+            action_message: JSON.stringify(
+              respondSaveLMRChild.response.data.error
+            ),
+          });
+        }
+      } else {
+        this.setState({ action_status: "failed" });
+      }
+    }
     this.toggleLoading();
     console.log("dummryRow", JSON.stringify(dummryRow));
   }

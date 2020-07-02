@@ -520,14 +520,14 @@ class MYASGCreation extends Component {
                           >
                           <option value={null} selected>
                           </option>
-                          <option value="Add" >
-                            Add
+                          <option value="Add LMR" >
+                            Add LMR
                           </option>
-                          <option value="Change" >
-                            Change
+                          <option value="Change LMR" >
+                            Change LMR
                           </option>
-                          <option value="Delete" >
-                            Delete
+                          <option value="Delete LMR" >
+                            Delete LMR
                           </option>
                         </Input>
                       </FormGroup>
