@@ -1113,8 +1113,8 @@ class MYASGDetail extends Component {
                       </tr>
                       {this.state.creation_lmr_child_form.map((lmr, i) => (
                         <tr>
-                          <td></td>
-                          <td></td>
+                          <td colspan="2"></td>
+                          {/* <td></td> */}
                           <td>
                             <Input
                               type="select"
@@ -1302,17 +1302,16 @@ class MYASGDetail extends Component {
                               readOnly
                             />
                           </td>
-
                           {/*  */}                          
                         </tr>
                       ))}
                       {this.state.creation_lmr_child_form.length !== 0 && (
                         <Fragment>
-                          <tr>
+                          {/* <tr>
                             <td colSpan="15" style={{ textAlign: "right" }}>
                               &nbsp;
                             </td>
-                          </tr>
+                          </tr> */}
                           <tr>
                             <td colSpan="15" style={{ textAlign: "right" }}>
                               <Button
