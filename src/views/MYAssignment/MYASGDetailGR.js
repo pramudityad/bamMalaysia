@@ -1079,13 +1079,13 @@ class MYASGDetail extends Component {
                               onChange={this.handleInputchild(idx)}
                               // style={{ width: "200" }}
                             >
-                              {/* <option value="" disabled selected hidden>
+                              <option value="" disabled selected hidden>
                                 Select Request Type
-                              </option> */}
-                              <option value="Type 1" >
+                              </option>
+                              <option value="Add GR" >
                                 Add GR
                               </option>
-                              <option value="Type 2" >
+                              <option value="Delete GR" >
                                 Delete GR
                               </option>
                             </Input>
