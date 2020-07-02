@@ -1213,6 +1213,7 @@ class MYASGDetail extends Component {
                       {this.state.creation_lmr_child_form.map((lmr, i) => (
                         <tr className="form-lmr-child">
                           <td></td>
+                          {/* <td></td> */}
                           <td>
                             <Input
                               type="select"
@@ -1385,7 +1386,7 @@ class MYASGDetail extends Component {
                               name={i + " /// item_status"}
                               id={i + " /// item_status"}
                               placeholder="Item Status"
-                              value={lmr.item}
+                              value={lmr.item_status}
                               onChange={this.handleChangeFormLMRChildMultiple}
                               // style={{ width: "100%" }}
                               readOnly
@@ -1397,7 +1398,7 @@ class MYASGDetail extends Component {
                               name={i + " /// work_status"}
                               id={i + " /// work_status"}
                               placeholder="Work Status"
-                              value={lmr.pr}
+                              value={lmr.work_status}
                               onChange={this.handleChangeFormLMRChildMultiple}
                               // style={{ width: "100%" }}
                               readOnly
@@ -1409,11 +1410,11 @@ class MYASGDetail extends Component {
                       ))}
                       {this.state.creation_lmr_child_form.length !== 0 && (
                         <Fragment>
-                          <tr>
-                            <td colSpan="17" style={{ textAlign: "right" }}>
+                          {/* <tr>
+                            <td colSpan="15" style={{ textAlign: "right" }}>
                               &nbsp;
                             </td>
-                          </tr>
+                          </tr> */}
                           <tr>
                             <td colSpan="17" style={{ textAlign: "right" }}>
                               <Button
