@@ -25,6 +25,7 @@ import Excel from "exceljs";
 import { Modal, ModalBody, ModalHeader, ModalFooter } from "reactstrap";
 import * as XLSX from "xlsx";
 import { Link } from "react-router-dom";
+import "./LMRMY.css";
 
 import {
   convertDateFormatfull,
@@ -34,6 +35,10 @@ import {
 const DefaultNotif = React.lazy(() =>
   import("../../views/DefaultView/DefaultNotif")
 );
+
+const API_URL_MAS = "https://api-dev.mas.pdb.e-dpm.com/masapi";
+const usernameMAS = "mybotprpo";
+const passwordMAS = "mybotprpo2020";
 
 const API_URL_XL = "https://api-dev.xl.pdb.e-dpm.com/xlpdbapi";
 const usernameBAM = "adminbamidsuper";
@@ -98,6 +103,7 @@ class MYASGDetail extends Component {
       creation_lmr_child_form: [],
       current_material_select : null,
       material_list: [],
+      list_cd_id : [],
 
     };
     this.toggleAddNew = this.toggleAddNew.bind(this);
@@ -162,6 +168,26 @@ class MYASGDetail extends Component {
       return null;
     } else {
       return props;
+    }
+  }
+
+  async getDatafromAPIMY(url) {
+    try {
+      let respond = await axios.get(API_URL_MAS + url, {
+        headers: { "Content-Type": "application/json" },
+        auth: {
+          username: usernameMAS,
+          password: passwordMAS,
+        },
+      });
+      if (respond.status >= 200 && respond.status < 300) {
+        console.log("respond Get Data", respond);
+      }
+      return respond;
+    } catch (err) {
+      let respond = err;
+      console.log("respond Get Data", err);
+      return respond;
     }
   }
 
@@ -739,8 +765,31 @@ class MYASGDetail extends Component {
 
   addLMR() {
     let dataLMR = this.state.creation_lmr_child_form;
-    dataLMR.push({"tax_code" : "I0", "currency" : "MYR"});
+    dataLMR.push({"tax_code" : "I0", "currency" : "MYR", "item_status" : "Submit", "work_status" : "Waiting for PR-PO creation"});
     this.setState({ creation_lmr_child_form: dataLMR });
+    if(this.state.material_list.length === 0){
+      this.getMaterialList();
+    }
+    if(this.state.list_cd_id.length === 0){
+      this.getDataCD();
+    }
+  }
+
+  getMaterialList() {
+    this.getDatafromAPIMY("/mm_code_data").then((res) => {
+      if (res.data !== undefined) {
+        const items = res.data._items;
+        this.setState({ material_list: items });
+      }
+    });
+  }
+
+  getDataCD() {
+    this.getDatafromAPIMY("/cdid_data").then((resCD) => {
+      if (resCD.data !== undefined) {
+        this.setState({ list_cd_id: resCD.data._items });
+      }
+    });
   }
 
   handleChangeFormLMRChildMultiple(e) {
@@ -755,6 +804,7 @@ class MYASGDetail extends Component {
 
   async createLMRChild() {
     this.toggleLoading();
+    const dataChild = this.state.lmr_detail.detail;
     const dataChildForm = this.state.creation_lmr_child_form;
     let dummryRow = [];
     let headerRow = [
@@ -772,6 +822,7 @@ class MYASGDetail extends Component {
       "currency",
       "pr",
       "item",
+      "plant","customer","request_type","item_category","lmr_type","plan_cost_reduction","cdid","per_site_material_type","item_status","work_status",
       "id_lmr_doc",
     ];
     dummryRow.push(headerRow);
@@ -786,15 +837,26 @@ class MYASGDetail extends Component {
         parseFloat(dataChildForm[i].price),
         dataChildForm[i].tax_code,
         dataChildForm[i].delivery_date,
-        parseFloat(dataChildForm[i].total_price),
-        parseFloat(dataChildForm[i].total_value),
+        parseFloat(dataChildForm[i].total_amount),
+        parseFloat(dataChildForm[i].total_amount),
         dataChildForm[i].currency,
-        dataChildForm[i].pr,
-        parseFloat(dataChildForm[i].item),
+        "",
+        0,
+        "MY",
+        "CELCOM",
+        dataChild[0].request_type,
+        dataChild[0].item_category,
+        dataChild[0].lmr_type,
+        dataChild[0].plan_cost_reduction,
+        dataChildForm[i].cd_id,
+        dataChildForm[i].Per_Site_Material_Type,
+        "Submit",
+        "Waiting for PR-PO creation",
         this.props.match.params.id,
       ];
       dummryRow.push(rowChild);
     }
+    console.log("childNew", dummryRow);
     const respondSaveLMRChild = await this.postDatatoAPINODE(
       "/aspassignment/createChild",
       { asp_data: dummryRow }
@@ -938,7 +1000,7 @@ class MYASGDetail extends Component {
                             LMR Detail
                           </td>
                         </tr>
-                        <tr style={{ fontWeight: "425", fontSize: "15px" }}>
+                        <tr style={{ fontWeight: "425", fontSize: "17px" }}>
                           <td
                             colSpan="2"
                             style={{
@@ -950,20 +1012,30 @@ class MYASGDetail extends Component {
                             LMR ID : {this.state.lmr_detail.lmr_id}
                           </td>
                         </tr>
-                        {this.state.data_cpo !== null && (
-                          <tr style={{ fontWeight: "425", fontSize: "15px" }}>
-                            <td
-                              colSpan="2"
-                              style={{
-                                textAlign: "center",
-                                marginBottom: "10px",
-                                fontWeight: "500",
-                              }}
-                            >
-                              PO Number : {this.state.data_cpo.po_number}
-                            </td>
-                          </tr>
-                        )}
+                        <tr style={{ fontWeight: "425", fontSize: "12px" }}>
+                          <td
+                            colSpan="2"
+                            style={{
+                              textAlign: "center",
+                              marginBottom: "10px",
+                              fontWeight: "500",
+                            }}
+                          >
+                            CU : MY
+                          </td>
+                        </tr>
+                        <tr style={{ fontWeight: "425", fontSize: "12px" }}>
+                          <td
+                            colSpan="2"
+                            style={{
+                              textAlign: "center",
+                              marginBottom: "10px",
+                              fontWeight: "500",
+                            }}
+                          >
+                            Customer : CELCOM
+                          </td>
+                        </tr>
                       </tbody>
                     </table>
                     <hr
@@ -976,12 +1048,12 @@ class MYASGDetail extends Component {
                     ></hr>
                   </Col>
                 </Row>
-                <div style={{ padding: "10px", fontSize: "15px" }}>
+                <div style={{ padding: "10px", fontSize: "15px", marginBottom : '10px' }}>
                   <Row>
-                    <Col sm="6" md="6">
+                    <Col sm="7" md="7">
                       <table className="table-header">
                         <tbody>
-                          <tr style={{ fontWeight: "425", fontSize: "15px" }}>
+                          {/* <tr style={{ fontWeight: "425", fontSize: "15px" }}>
                             <td
                               colSpan="4"
                               style={{
@@ -992,7 +1064,7 @@ class MYASGDetail extends Component {
                             >
                               LMR INFORMATION
                             </td>
-                          </tr>
+                          </tr> */}
                           <tr style={{ fontWeight: "425", fontSize: "15px" }}>
                             <td style={{ width: "150px" }}>Payment Terms </td>
                             <td>:</td>
@@ -1014,9 +1086,35 @@ class MYASGDetail extends Component {
                             <td>{this.state.lmr_detail.project_name}</td>
                           </tr>
                           <tr style={{ fontWeight: "425", fontSize: "15px" }}>
-                            <td>L1 Approval</td>
+                            <td>Header Text</td>
+                            <td>:</td>
+                            <td>{this.state.lmr_detail.header_text}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </Col>
+                    <Col sm="5" md="5">
+                      <table className="table-header">
+                        <tbody>
+                          <tr style={{ fontWeight: "425", fontSize: "15px" }}>
+                            <td>Requisitioner</td>
+                            <td>:</td>
+                            <td>{this.state.lmr_detail.lmr_issued_by}</td>
+                          </tr>
+                          <tr style={{ fontWeight: "425", fontSize: "15px" }}>
+                            <td style={{ width: "150px" }}>L1 Approver </td>
                             <td>:</td>
                             <td>{this.state.lmr_detail.l1_approver}</td>
+                          </tr>
+                          <tr style={{ fontWeight: "425", fontSize: "15px" }}>
+                            <td>L2 Approver</td>
+                            <td>:</td>
+                            <td>{this.state.lmr_detail.l2_approver}</td>
+                          </tr>
+                          <tr style={{ fontWeight: "425", fontSize: "15px" }}>
+                            <td>L3 Approver</td>
+                            <td>:</td>
+                            <td>{this.state.lmr_detail.l3_approver}</td>
                           </tr>
                         </tbody>
                       </table>
@@ -1028,7 +1126,7 @@ class MYASGDetail extends Component {
                   <Table hover bordered responsive size="sm" width="100%">
                     <thead class="table-commercial__header">
                       <tr>
-                        <th colspan="2"></th>
+                        <th></th>
                         <th>CD_ID</th>
                         <th>Per Site Material Type</th>
                         <th>Site ID</th>
@@ -1039,11 +1137,12 @@ class MYASGDetail extends Component {
                         <th>Description</th>
                         <th>Price</th>
                         <th>Quantity</th>
-                        <th>Total price</th>
+                        <th>Total Price</th>
                         <th>Currency</th>
                         <th>Delivery Date</th>
                         <th>Item_Status</th>
-                        <th>Work_Status</th>                        
+                        <th>Work_Status</th>
+                        <th></th>                      
                         {/* }<th>PR</th>
                         <th>PO</th>
                         <th>PO Item</th> */}
@@ -1067,6 +1166,21 @@ class MYASGDetail extends Component {
                                 </Button>
                               </Link>
                             </td>
+                            <td>{e.cdid}</td>
+                            <td>{e.per_site_material_type }</td>
+                            <td>{e.site_id}</td>
+                            <td>{e.nw}</td>
+                            <td>{e.activity}</td>
+                            <td>{e.tax_code}</td>
+                            <td>{e.material}</td>
+                            <td>{e.description}</td>
+                            <td>{e.unit_price}</td>
+                            <td>{e.qty}</td>
+                            <td>{e.total_value}</td>
+                            <td>{e.currency}</td>
+                            <td>{convertDateFormat(e.delivery_date)}</td>
+                            <td>{e.pr}</td>
+                            <td></td>
                             <td>
                               <Button
                                 color="danger"
@@ -1076,22 +1190,7 @@ class MYASGDetail extends Component {
                               >
                                 <i className="fa fa-eraser"></i>
                               </Button>
-                            </td>
-                            <td>{e.nw}</td>
-                            <td>{e.activity}</td>
-                            <td>{e.material}</td>
-                            <td>{e.description}</td>
-                            <td>{e.site_id}</td>
-                            <td>{e.qty}</td>
-                            <td>{e.unit_price}</td>
-                            <td>{e.tax_code}</td>
-                            <td>{convertDateFormat(e.delivery_date)}</td>
-                            <td>{e.total_price}</td>
-                            <td>{e.total_value}</td>
-                            <td>{e.currency}</td>
-                            <td>{e.item}</td>
-                            <td>{e.pr}</td>
-                            <td></td>                            
+                            </td>                       
                             {/*}<td>{e.pr}</td>
                           <td>{e.po}</td>
                           <td>{e.item}</td>*/}
@@ -1101,7 +1200,7 @@ class MYASGDetail extends Component {
                         <Fragment></Fragment>
                       )}
                       <tr>
-                        <td colSpan="15" style={{ textAlign: "left" }}>
+                        <td colSpan="17" style={{ textAlign: "left" }}>
                           <Button
                             color="primary"
                             size="sm"
@@ -1112,8 +1211,8 @@ class MYASGDetail extends Component {
                         </td>
                       </tr>
                       {this.state.creation_lmr_child_form.map((lmr, i) => (
-                        <tr>
-                          <td colspan="2"></td>
+                        <tr className="form-lmr-child">
+                          <td></td>
                           {/* <td></td> */}
                           <td>
                             <Input
@@ -1127,6 +1226,9 @@ class MYASGDetail extends Component {
                               <option value="" disabled selected hidden>
                                 Select CD ID
                               </option>
+                              {this.state.list_cd_id.map(e => 
+                                <option value={e.CD_ID}>{e.CD_ID}</option>
+                              )}
                             </Input>
                           </td>
                           <td>
@@ -1210,7 +1312,7 @@ class MYASGDetail extends Component {
                             value={lmr.description}
                               placeholder="Description"
                               onChange={this.handleChangeFormLMRChildMultiple}
-                              // style={{ width: "100%" }}
+                              style={{ width: "200px" }}
                             />
                           </td>
                           <td>
@@ -1232,7 +1334,7 @@ class MYASGDetail extends Component {
                               placeholder="QTY"
                               value={lmr.quantity}
                               onChange={this.handleChangeFormLMRChildMultiple}
-                              // style={{ width: "100%" }}
+                              style={{ width: "75px" }}
                             />
                           </td>
                           <td>
@@ -1271,20 +1373,20 @@ class MYASGDetail extends Component {
                             <Input
                               type="date"
                               name={i + " /// delivery_date"}
-                            id={i + " /// delivery_date"}
+                              id={i + " /// delivery_date"}
                               placeholder="Delivery Date"
                               value={lmr.delivery_date}
                               onChange={this.handleChangeFormLMRChildMultiple}
-                              // style={{ width: "100%" }}
+                              style={{ width: "100%" }}
                             />
                           </td>
                           <td>
                             <Input
                               type="text"
-                              name={i + " /// item"}
-                            id={i + " /// item"}
+                              name={i + " /// item_status"}
+                              id={i + " /// item_status"}
                               placeholder="Item Status"
-                              value={lmr.item}
+                              value={lmr.item_status}
                               onChange={this.handleChangeFormLMRChildMultiple}
                               // style={{ width: "100%" }}
                               readOnly
@@ -1293,15 +1395,16 @@ class MYASGDetail extends Component {
                           <td>
                             <Input
                               type="text"
-                              name={i + " /// pr"}
-                            id={i + " /// pr"}
+                              name={i + " /// work_status"}
+                              id={i + " /// work_status"}
                               placeholder="Work Status"
-                              value={lmr.pr}
+                              value={lmr.work_status}
                               onChange={this.handleChangeFormLMRChildMultiple}
                               // style={{ width: "100%" }}
                               readOnly
                             />
                           </td>
+                          <td></td>
                           {/*  */}                          
                         </tr>
                       ))}
@@ -1313,7 +1416,7 @@ class MYASGDetail extends Component {
                             </td>
                           </tr> */}
                           <tr>
-                            <td colSpan="15" style={{ textAlign: "right" }}>
+                            <td colSpan="17" style={{ textAlign: "right" }}>
                               <Button
                                 color="success"
                                 size="sm"
@@ -1344,32 +1447,6 @@ class MYASGDetail extends Component {
         <Modal
           isOpen={this.state.modal_loading}
           toggle={this.toggleLoading}
-          className={"modal-sm " + this.props.className + " loading-modal"}
-        >
-          <ModalBody>
-            <div style={{ textAlign: "center" }}>
-              <div class="lds-ring">
-                <div></div>
-                <div></div>
-                <div></div>
-                <div></div>
-              </div>
-            </div>
-            <div style={{ textAlign: "center" }}>Loading ...</div>
-            <div style={{ textAlign: "center" }}>System is processing ...</div>
-          </ModalBody>
-          <ModalFooter>
-            <Button color="secondary" onClick={this.toggleLoading}>
-              Close
-            </Button>
-          </ModalFooter>
-        </Modal>
-        {/* end Modal Loading */}
-
-        {/* Modal Loading */}
-        <Modal
-          isOpen={this.state.toggleShowGroup}
-          toggle={this.showGroupToggle}
           className={"modal-sm " + this.props.className + " loading-modal"}
         >
           <ModalBody>
@@ -1607,7 +1684,7 @@ class MYASGDetail extends Component {
                     </td>
                     <td>{e.MM_Code}</td>
                     <td>{e.BB_Sub}</td>
-                    <td>{e.SoW}</td>
+                    <td>{e.SoW_Description}</td>
                     <td>{e.UoM}</td>
                     <td>{e.Region}</td>
                     <td>{e.Unit_Price}</td>
@@ -1619,7 +1696,7 @@ class MYASGDetail extends Component {
             </Table>
           </ModalBody>
           <ModalFooter>
-            <Button color="secondary" onClick={this.toggleLoading}>
+            <Button color="secondary" onClick={this.modalAddChild}>
               Close
             </Button>
           </ModalFooter>
