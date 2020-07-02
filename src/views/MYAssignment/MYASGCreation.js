@@ -116,7 +116,7 @@ class MYASGCreation extends Component {
     this.state = {
       // tokenUser: this.props.dataLogin.token,
       tokenUser: BearerToken,
-      lmr_form: {"pgr" : "MP2", "gl_account" : "402102"},
+      lmr_form: {"pgr" : "MP2", "gl_account" : "402102", "lmr_issued_by" : this.props.dataUser.preferred_username, "plant" : "MY" , "customer" : "CELCOM"},
       modal_loading: false,
       modal_material: false,
       list_project: [],
@@ -133,6 +133,7 @@ class MYASGCreation extends Component {
       material_list: [],
       validation_form: {},
       current_material_select : null,
+      data_user : this.props.dataUser,
     };
     this.handleChangeCD = this.handleChangeCD.bind(this);
     this.loadOptionsCDID = this.loadOptionsCDID.bind(this);
@@ -441,6 +442,7 @@ class MYASGCreation extends Component {
   }
 
   render() {
+    console.log("this.props.dataUser", this.props.dataUser)
     if (this.state.redirectSign !== false) {
       return <Redirect to={"/mr-detail/" + this.state.redirectSign} />;
     }
@@ -462,7 +464,33 @@ class MYASGCreation extends Component {
               <CardBody>
                 <Form>
                 <Row form>
-                    <Col md={3}>
+                <Col md={1}>
+                      <FormGroup>
+                        <Label>PLANT</Label>
+                        <Input
+                            type="text"
+                            name="plant"
+                            id="plant"
+                            value={this.state.lmr_form.plant}
+                            onChange={this.handleChangeFormLMR}
+                            readOnly
+                          />
+                      </FormGroup>
+                    </Col>
+                    <Col md={2}>
+                      <FormGroup>
+                        <Label>Customer</Label>
+                        <Input
+                            type="text"
+                            name="customer"
+                            id="customer"
+                            value={this.state.lmr_form.customer}
+                            onChange={this.handleChangeFormLMR}
+                            readOnly
+                          />
+                      </FormGroup>
+                    </Col>
+                    <Col md={2}>
                       <FormGroup>
                         <Label>Request Type</Label>
                         <Input
@@ -486,7 +514,7 @@ class MYASGCreation extends Component {
                         </Input>
                       </FormGroup>
                     </Col>
-                    <Col md={3}>
+                    <Col md={2}>
                       <FormGroup>
                         <Label>Item Category</Label>
                         <Input
@@ -530,7 +558,7 @@ class MYASGCreation extends Component {
                         </Input>
                       </FormGroup>
                     </Col>
-                    <Col md={3}>
+                    <Col md={2}>
                       <FormGroup>
                         <Label>Plan Cost Reduction</Label>
                         <Input
