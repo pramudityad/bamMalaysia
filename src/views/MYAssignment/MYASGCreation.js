@@ -337,6 +337,12 @@ class MYASGCreation extends Component {
     if (value !== (null && undefined)) {
       value = value.toString();
     }
+    if(name === "project_name"){
+      let dataProject = this.state.list_project.find(e => e.Project === value);
+      if(dataProject !== undefined){
+        lmr_form["id_project_doc"] = dataProject._id;
+      }
+    }
     lmr_form[name.toString()] = value;
     this.setState({ lmr_form: lmr_form });
   }
@@ -350,8 +356,8 @@ class MYASGCreation extends Component {
         "lmr_issued_by": this.state.lmr_form.lmr_issued_by,
         "pgr": this.state.lmr_form.pgr,
         "gl_account": this.state.lmr_form.gl_account,
+        "id_project_doc": this.state.lmr_form.id_project_doc,
         "project_name": this.state.lmr_form.project_name,
-        "id_project_doc": null,
         "header_text": this.state.lmr_form.header_text,
         "payment_term": this.state.lmr_form.payment_term,
         "vendor_name": this.state.lmr_form.vendor_name,
@@ -367,6 +373,7 @@ class MYASGCreation extends Component {
       const dataChild = {
           "nw": dataChildForm[i].so_or_nw,
           "activity": dataChildForm[i].activity,
+          "material_code_doc": dataChildForm[i].material_code_doc,
           "material": dataChildForm[i].material,
           "description": dataChildForm[i].description,
           "site_id": dataChildForm[i].site_id,
@@ -451,6 +458,7 @@ class MYASGCreation extends Component {
     const value = e.target.value;
     const data_material = this.state.material_list.find(e => e.MM_Code === value);
     let dataLMR = this.state.creation_lmr_child_form;
+    dataLMR[parseInt(this.state.current_material_select)]["material_code_doc"] = data_material._id;
     dataLMR[parseInt(this.state.current_material_select)]["material"] = data_material.MM_Code;
     dataLMR[parseInt(this.state.current_material_select)]["description"] = data_material.MM_Description;
     dataLMR[parseInt(this.state.current_material_select)]["price"] = data_material.Unit_Price;

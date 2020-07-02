@@ -104,7 +104,7 @@ class MYASGDetail extends Component {
       current_material_select : null,
       material_list: [],
       list_cd_id : [],
-
+      list_pr_po : [],
     };
     this.toggleAddNew = this.toggleAddNew.bind(this);
     this.handleChangeFormLMRChild = this.handleChangeFormLMRChild.bind(this);
@@ -344,10 +344,23 @@ class MYASGDetail extends Component {
   getLMRDetailData(_id) {
     this.getDatafromAPINODE("/aspassignment/getAspAssignment/" + _id).then(
       (res) => {
-        // console.log('cpo db id', res.data.data.cpoDetail)
         if (res.data !== undefined) {
           const dataLMRDetail = res.data.data;
-          this.setState({ lmr_detail: dataLMRDetail });
+          this.setState({ lmr_detail: dataLMRDetail }, () => {
+            this.getDataPRPO(dataLMRDetail.lmr_id)
+          });
+        }
+      }
+    );
+  }
+
+  getDataPRPO(LMR_ID){
+    this.getDatafromAPIMY('/prpo_data?where={"LMR_No" : "'+LMR_ID+'"}').then(
+      (res) => {
+        if (res.data !== undefined) {
+          const dataLMRDetailPRPO = res.data._items;
+          this.setState({ list_pr_po: dataLMRDetailPRPO });
+          console.log("dataLMRDetailPRPO", dataLMRDetailPRPO);
         }
       }
     );
@@ -1179,8 +1192,17 @@ class MYASGDetail extends Component {
                             <td>{e.total_value}</td>
                             <td>{e.currency}</td>
                             <td>{convertDateFormat(e.delivery_date)}</td>
-                            <td>{e.pr}</td>
-                            <td></td>
+                            {this.state.list_pr_po.find(f=> f.id_child_doc === e._id) !== undefined ? (
+                              <React.Fragment>
+                              <td>{this.state.list_pr_po.find(f=> f.id_child_doc === e._id).Item_Status }</td>
+                              <td>{this.state.list_pr_po.find(f=> f.id_child_doc === e._id).Work_Status }</td>
+                              </React.Fragment>
+                            ) : (
+                              <React.Fragment>
+                              <td></td>
+                              <td></td>
+                              </React.Fragment>
+                            )}
                             <td>
                               <Button
                                 color="danger"

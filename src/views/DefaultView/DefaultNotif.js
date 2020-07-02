@@ -33,21 +33,21 @@ class DefaultNotif extends Component {
             if(this.props.actionStatus === 'failed'){
                 return (
                     <Alert color="danger" isOpen={this.state.visible} toggle={this.onDismiss}>
-                      {this.props.actionMessage !== null ? this.props.actionMessage : "There is something error, please refresh your page" }
+                      {this.props.actionMessage !== null ? JSON.stringify(this.props.actionMessage) : "There is something error, please refresh your page" }
                     </Alert>
                 )
             }else{
                 if(this.props.actionStatus === 'success'){
                     return (
                         <Alert color="success" isOpen={this.state.visible} toggle={this.onDismiss}>
-                            {this.props.actionMessage !== null ? this.props.actionMessage : "Your action has been successful" }
+                            {this.props.actionMessage !== null ? JSON.stringify(this.props.actionMessage) : "Your action has been successful" }
                         </Alert>
                     )
                 }else{
                     if(this.props.actionStatus === 'warning'){
                         return (
                             <Alert color="warning" isOpen={this.state.visible} toggle={this.onDismiss}>
-                                {this.props.actionMessage !== null ? this.props.actionMessage : "There is some warning" }
+                                {this.props.actionMessage !== null ? JSON.stringify(this.props.actionMessage) : "There is some warning" }
                             </Alert>
                         )
                     }else{
