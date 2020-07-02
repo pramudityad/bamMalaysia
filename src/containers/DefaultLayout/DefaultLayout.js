@@ -40,6 +40,7 @@ class DefaultLayout extends Component {
   signOut(e) {
     e.preventDefault();
     localStorage.clear();
+    this.props.keycloak.logout();
     this.props.history.push('/');
   }
   render() {
@@ -75,11 +76,11 @@ class DefaultLayout extends Component {
                         exact={route.exact}
                         name={route.name}
                         render={props => (
-                          <route.component {...props} />
+                          <route.component {...props} dataUser = {this.props.dataUser}/>
                         )} />
                     ) : (null);
                   })}
-                  <Redirect from="/" to="/CDAnza" />
+                  <Redirect from="/" to="/lmr-list" />
                 </Switch>
               </Suspense>
             </Container>

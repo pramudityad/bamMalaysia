@@ -1,0 +1,14 @@
+{
+  "realm": "EDPM-SSO",
+  "auth-server-url": "https://cas.e-dpm.com/auth",
+  "ssl-required": "external",
+  "resource": "account",
+  "verify-token-audience": true,
+  "redirect_uri": "http://localhost:3005/",
+  "credentials": {
+    "secret": "11b54fca-a2dd-4cd1-add8-802190bc9c59"
+  },
+  "use-resource-role-mappings": true,
+  "confidential-port": 0,
+  "policy-enforcer": {}
+}

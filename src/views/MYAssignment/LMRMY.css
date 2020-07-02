@@ -5,3 +5,11 @@
 .absorbing-column {
   width: 100%;
 }
+
+.form-lmr-child td > input {
+  width: 100px;
+}
+
+.form-lmr-child td > select {
+  width: 100px;
+}
