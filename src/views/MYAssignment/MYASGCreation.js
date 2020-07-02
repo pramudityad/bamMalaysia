@@ -56,12 +56,12 @@ const Checkbox = ({
 
 const projectList = [
   {
-    project_name: "Project DEMO 1",
-    _id: "5dedc5c1280eb4f3d96e0713",
+    Project	: "Project DEMO 1",
+    Project_Year :	"2020"
   },
   {
-    project_name: "Project DEMO 2",
-    _id: "5dedc5c1280eb4f3d96e0714",
+    Project	: "Project DEMO 3",
+    Project_Year :	"2020"
   },
 ];
 
@@ -107,7 +107,16 @@ const MaterialDB = [
     "MM_Description" : "MM Description1",
     "Acceptance" : "Acceptance1"
   }
-]
+];
+
+const CDIDDB = [
+  {
+    "CD_ID" : "MM Code",
+  },
+  {
+    "CD_ID" : "MM Code1",
+  }
+];
 
 class MYASGCreation extends Component {
   constructor(props) {
@@ -131,6 +140,7 @@ class MYASGCreation extends Component {
       action_message: null,
       vendor_list: [],
       material_list: [],
+      project_list : [],
       validation_form: {},
       current_material_select : null,
       data_user : this.props.dataUser,
@@ -229,7 +239,7 @@ class MYASGCreation extends Component {
   }
 
   getDataCD() {
-    this.getDatafromAPIMY("/custdel_op").then((resCD) => {
+    this.getDatafromAPIMY("/cdid_data").then((resCD) => {
       if (resCD.data !== undefined) {
         this.setState({ list_cd_id: resCD.data._items });
       }
@@ -238,9 +248,19 @@ class MYASGCreation extends Component {
 
   componentDidMount() {
     this.getVendorList();
-    this.getDataProject();
+    this.getProjectList();
     this.getMaterialList();
+    this.getDataCD();
     document.title = "LMR Creation | BAM";
+  }
+
+  getProjectList(){
+    this.getDatafromAPIMY("/project_data").then((res) => {
+      if (res.data !== undefined) {
+        const items = res.data._items;
+        this.setState({ list_project: items });
+      }
+    });
   }
 
   getVendorList() {
@@ -254,24 +274,12 @@ class MYASGCreation extends Component {
   }
 
   getMaterialList() {
-    // this.getDatafromAPIMY("/vendor_data").then((res) => {
-    //   if (res.data !== undefined) {
-    //     const items = res.data._items;
-    //     this.setState({ vendor_list: items });
-    //   }
-    // });
-    this.setState({material_list : MaterialDB});
-  }
-
-  getDataProject() {
-    // this.getDatafromAPIMY('/project_sorted_non_page').then( resProject => {
-    //   if(resProject.data !== undefined){
-    //     this.setState({ list_project : resProject.data._items }, () => {
-    //       this.filterDataProject("");
-    //     })
-    //   }
-    // })
-    this.setState({ list_project: projectList });
+    this.getDatafromAPIMY("/mm_code_data").then((res) => {
+      if (res.data !== undefined) {
+        const items = res.data._items;
+        this.setState({ material_list: items });
+      }
+    });
   }
 
   handleChangeVendor(e) {
@@ -337,41 +345,51 @@ class MYASGCreation extends Component {
     const dataForm = this.state.lmr_form;
     const dataChildForm = this.state.creation_lmr_child_form;
     const dataLMR = {
-      lmr_issued_by: this.state.lmr_form.lmr_issued_by,
-      pgr: this.state.lmr_form.pgr,
-      gl_account: this.state.lmr_form.gl_account,
-      project_name: this.state.lmr_form.project_name,
-      id_project_doc:
-        this.state.lmr_form.id_project_doc === undefined
-          ? null
-          : this.state.lmr_form.id_project_doc,
-      header_text: this.state.lmr_form.header_text,
-      payment_term: this.state.lmr_form.payment_term,
-      vendor_code: this.state.lmr_form.vendor_code,
-      vendor_name: this.state.lmr_form.vendor_name,
-      vendor_email: this.state.lmr_form.vendor_email,
-      l1_approver: this.state.lmr_form.l1_approver,
-      l2_approver: this.state.lmr_form.l2_approver,
-      l3_approver: this.state.lmr_form.l3_approver,
-    };
+        "plant": this.state.lmr_form.plant,
+        "customer": this.state.lmr_form.customer,
+        "lmr_issued_by": this.state.lmr_form.lmr_issued_by,
+        "pgr": this.state.lmr_form.pgr,
+        "gl_account": this.state.lmr_form.gl_account,
+        "project_name": this.state.lmr_form.project_name,
+        "id_project_doc": null,
+        "header_text": this.state.lmr_form.header_text,
+        "payment_term": this.state.lmr_form.payment_term,
+        "vendor_name": this.state.lmr_form.vendor_name,
+        "vendor_address": this.state.lmr_form.vendor_email,
+        "l1_approver": this.state.lmr_form.l1_approver,
+        "l2_approver": this.state.lmr_form.l2_approver,
+        "l3_approver": this.state.lmr_form.l3_approver,
+        "l4_approver": this.state.lmr_form.l4_approver,
+        "l5_approver": this.state.lmr_form.l5_approver,
+    }
     let dataLMRCHild = [];
     for (let i = 0; i < dataChildForm.length; i++) {
       const dataChild = {
-        nw: dataChildForm[i].so_or_nw,
-        activity: dataChildForm[i].activity,
-        material: dataChildForm[i].material,
-        description: dataChildForm[i].description,
-        site_id: dataChildForm[i].site_id,
-        qty: parseFloat(dataChildForm[i].quantity),
-        unit_price: parseFloat(dataChildForm[i].price),
-        tax_code: dataChildForm[i].tax_code,
-        delivery_date: dataChildForm[i].delivery_date,
-        total_price: parseFloat(dataChildForm[i].total_price),
-        total_value: parseFloat(dataChildForm[i].total_value),
-        currency: dataChildForm[i].currency,
-        pr: dataChildForm[i].pr,
-        item: parseFloat(dataChildForm[i].item),
-      };
+          "nw": dataChildForm[i].so_or_nw,
+          "activity": dataChildForm[i].activity,
+          "material": dataChildForm[i].material,
+          "description": dataChildForm[i].description,
+          "site_id": dataChildForm[i].site_id,
+          "qty": dataChildForm[i].quantity,
+          "unit_price": dataChildForm[i].price,
+          "tax_code": dataChildForm[i].tax_code,
+          "delivery_date": dataChildForm[i].delivery_date,
+          "total_price": dataChildForm[i].total_amount,
+          "total_value": dataChildForm[i].total_amount,
+          "currency": dataChildForm[i].currency,
+          "pr": "",
+          "item": 0,
+          "request_type": this.state.lmr_form.Request_Type,
+          "item_category": this.state.lmr_form.Item_Category,
+          "lmr_type": this.state.lmr_form.LMR_Type,      
+          "plan_cost_reduction": this.state.lmr_form.Plan_Cost_Reduction,         
+          "cdid": dataChildForm[i].cd_id,
+          "per_site_material_type": dataChildForm[i].Per_Site_Material_Type,  
+          "item_status": "Submit",      
+          "work_status": "Waiting for PR-PO creation",
+          "plant": this.state.lmr_form.plant,
+          "customer": this.state.lmr_form.customer             
+      }
       dataLMRCHild.push(dataChild);
     }
     console.log("dataLMR", dataLMR);
@@ -411,7 +429,7 @@ class MYASGCreation extends Component {
 
   addLMR() {
     let dataLMR = this.state.creation_lmr_child_form;
-    dataLMR.push({"tax_code" : "I0", "currency" : "MYR"});
+    dataLMR.push({"tax_code" : "I0", "currency" : "MYR", "item_status" : "Submit", "work_status" : "Waiting for PR-PO creation"});
     this.setState({ creation_lmr_child_form: dataLMR });
   }
 
@@ -635,6 +653,9 @@ class MYASGCreation extends Component {
                           <option value="" disabled selected hidden>
                             Select Project Name
                           </option>
+                          {this.state.list_project.map(e =>
+                            <option value={e.Project}>{e.Project}</option>
+                          )}
                           {/* {this.state.vendor_list.map((e) => (
                             <option value={e.Vendor_Code}>{e.Name}</option>
                           ))} */}
@@ -791,12 +812,12 @@ class MYASGCreation extends Component {
                             value={lmr.cd_id}
                             onChange={this.handleChangeFormLMRChild}
                           >
-                            <option value="" disabled selected hidden>
+                          <option value="" disabled selected hidden>
                             Select CD ID
                           </option>
-                          {/* {this.state.vendor_list.map((e) => (
-                            <option value={e.Vendor_Code}>{e.Name}</option>
-                          ))} */}
+                          {this.state.list_cd_id.map(e => 
+                            <option value={e.CD_ID}>{e.CD_ID}</option>
+                          )}
                         </Input>
                         </FormGroup>
                       </Col>
@@ -976,9 +997,9 @@ class MYASGCreation extends Component {
                           <Label>Item Status</Label>
                           <Input
                             type="text"
-                            name={i + " /// item"}
-                            id={i + " /// item"}
-                            value={lmr.item}
+                            name={i + " /// item_status"}
+                            id={i + " /// item_status"}
+                            value={lmr.item_status}
                             onChange={this.handleChangeFormLMRChild}
                             disabled
                           />
@@ -989,9 +1010,9 @@ class MYASGCreation extends Component {
                           <Label>Work Status</Label>
                           <Input
                             type="text"
-                            name={i + " /// pr"}
-                            id={i + " /// pr"}
-                            value={lmr.pr}
+                            name={i + " /// work_status"}
+                            id={i + " /// work_status"}
+                            value={lmr.work_status}
                             onChange={this.handleChangeFormLMRChild}
                             disabled
                           />
@@ -1043,7 +1064,7 @@ class MYASGCreation extends Component {
                     </td>
                     <td>{e.MM_Code}</td>
                     <td>{e.BB_Sub}</td>
-                    <td>{e.SoW}</td>
+                    <td>{e.SoW_Description}</td>
                     <td>{e.UoM}</td>
                     <td>{e.Region}</td>
                     <td>{e.Unit_Price}</td>
