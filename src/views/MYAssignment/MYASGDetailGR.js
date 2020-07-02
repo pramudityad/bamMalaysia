@@ -113,7 +113,7 @@ class MYASGDetail extends Component {
     this.setState({
       ChildForm: this.state.ChildForm.concat([
         {
-          Plant: "",
+          Plant: "MY",
           Request_Type: "",
           PO_Number: "",
           PO_Item: "",
@@ -885,7 +885,7 @@ class MYASGDetail extends Component {
                             GR Detail
                           </td>
                         </tr>
-                        <tr style={{ fontWeight: "425", fontSize: "15px" }}>
+                        {/* <tr style={{ fontWeight: "425", fontSize: "15px" }}>
                           <td
                             colSpan="2"
                             style={{
@@ -896,7 +896,7 @@ class MYASGDetail extends Component {
                           >
                             LMR ID : {this.state.lmr_detail.LMR_Number}
                           </td>
-                        </tr>
+                        </tr> */}
                         {this.state.data_cpo !== null && (
                           <tr style={{ fontWeight: "425", fontSize: "15px" }}>
                             <td
@@ -967,7 +967,7 @@ class MYASGDetail extends Component {
                       <tr>
                         <th></th>
                         <th>Plant</th>
-                        <th>Request Type</th>
+                        <th style={{width: '12%'}}>Request Type</th>
                         <th>PO Number</th>
                         <th>PO Item</th>
                         <th>PO Price</th>
@@ -975,7 +975,7 @@ class MYASGDetail extends Component {
                         <th>Required GR Qty</th>
                         <th>DN No</th>
                         <th>WCN_Link</th>
-                        <th>Item_Status</th>
+                        <th style={{width: '12%'}}>Item_Status</th>
                         <th>Work_Status</th>
                         {/* <th>Error_Message</th>
                         <th>Error_Type</th>
