@@ -1040,10 +1040,10 @@ class MYASGDetail extends Component {
                               {/* <option value="" disabled selected hidden>
                                 Select Request Type
                               </option> */}
-                              <option value="Type 1" >
+                              <option value="Add GR">
                                 Add GR
                               </option>
-                              <option value="Type 2" >
+                              <option value="Delete GR">
                                 Delete GR
                               </option>
                             </Input>
