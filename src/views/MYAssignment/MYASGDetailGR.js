@@ -924,34 +924,22 @@ class MYASGDetail extends Component {
                   </Col>
                 </Row>
                 <div style={{ padding: "10px", fontSize: "15px" }}>
-                  <Row>
+                  <Row >
                     <Col sm="6" md="6">
                       <table className="table-header">
                         <tbody>
                           <tr style={{ fontWeight: "425", fontSize: "15px" }}>
-                            <td
-                              colSpan="4"
-                              style={{
-                                textAlign: "center",
-                                marginBottom: "10px",
-                                fontWeight: "500",
-                              }}
-                            >
-                              <b>GR INFORMATION</b>
-                            </td>
-                          </tr>
-                          <tr style={{ fontWeight: "425", fontSize: "15px" }}>
-                            <td>LMR ID</td>
+                            <td>CD_ID</td>
                             <td>:</td>
                             <td>{this.state.lmr_lvl2.lmr_id}</td>
                           </tr>
                           <tr style={{ fontWeight: "425", fontSize: "15px" }}>
-                            <td>Project</td>
+                            <td>Per Site Material Type</td>
                             <td>:</td>
                             <td>{this.state.lmr_lvl2.project_name}</td>
                           </tr>
                           <tr style={{ fontWeight: "425", fontSize: "15px" }}>
-                            <td>Vendor</td>
+                            <td>Site ID</td>
                             <td>:</td>
                             <td>{this.state.lmr_lvl2.vendor_name}</td>
                           </tr>
@@ -1037,13 +1025,13 @@ class MYASGDetail extends Component {
                               onChange={this.handleInputchild(idx)}
                               // style={{ width: "200" }}
                             >
-                              <option value="" disabled selected hidden>
+                              {/* <option value="" disabled selected hidden>
                                 Select Request Type
-                              </option>
-                              <option value="Add GR">
+                              </option> */}
+                              <option value="Type 1" >
                                 Add GR
                               </option>
-                              <option value="Delete GR">
+                              <option value="Type 2" >
                                 Delete GR
                               </option>
                             </Input>
