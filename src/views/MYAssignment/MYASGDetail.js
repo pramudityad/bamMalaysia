@@ -360,7 +360,6 @@ class MYASGDetail extends Component {
         if (res.data !== undefined) {
           const dataLMRDetailPRPO = res.data._items;
           this.setState({ list_pr_po: dataLMRDetailPRPO });
-          console.log("dataLMRDetailPRPO", dataLMRDetailPRPO);
         }
       }
     );
@@ -1153,8 +1152,13 @@ class MYASGDetail extends Component {
                         <th>Total Price</th>
                         <th>Currency</th>
                         <th>Delivery Date</th>
-                        <th>Item_Status</th>
-                        <th>Work_Status</th>
+                        <th>Item Status</th>
+                        <th>Work Status</th>
+                        <th>PO Number</th>
+                        <th>PO Item</th>
+                        <th>PO Qty</th>
+                        <th>Error Message</th>
+                        <th>Error Type</th>
                         <th></th>                      
                         {/* }<th>PR</th>
                         <th>PO</th>
@@ -1196,9 +1200,19 @@ class MYASGDetail extends Component {
                               <React.Fragment>
                               <td>{this.state.list_pr_po.find(f=> f.id_child_doc === e._id).Item_Status }</td>
                               <td>{this.state.list_pr_po.find(f=> f.id_child_doc === e._id).Work_Status }</td>
+                              <td>{this.state.list_pr_po.find(f=> f.id_child_doc === e._id).PO_Number }</td>
+                              <td>{this.state.list_pr_po.find(f=> f.id_child_doc === e._id).PO_Item }</td>
+                              <td>{this.state.list_pr_po.find(f=> f.id_child_doc === e._id).PO_Qty }</td>
+                              <td>{this.state.list_pr_po.find(f=> f.id_child_doc === e._id).Error_Message }</td>
+                              <td>{this.state.list_pr_po.find(f=> f.id_child_doc === e._id).Error_Type }</td>
                               </React.Fragment>
                             ) : (
                               <React.Fragment>
+                              <td></td>
+                              <td></td>
+                              <td></td>
+                              <td></td>
+                              <td></td>
                               <td></td>
                               <td></td>
                               </React.Fragment>
@@ -1222,7 +1236,7 @@ class MYASGDetail extends Component {
                         <Fragment></Fragment>
                       )}
                       <tr>
-                        <td colSpan="17" style={{ textAlign: "left" }}>
+                        <td colSpan="22" style={{ textAlign: "left" }}>
                           <Button
                             color="primary"
                             size="sm"
@@ -1427,6 +1441,11 @@ class MYASGDetail extends Component {
                             />
                           </td>
                           <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
                           {/*  */}                          
                         </tr>
                       ))}
@@ -1438,7 +1457,7 @@ class MYASGDetail extends Component {
                             </td>
                           </tr> */}
                           <tr>
-                            <td colSpan="17" style={{ textAlign: "right" }}>
+                            <td colSpan="22" style={{ textAlign: "right" }}>
                               <Button
                                 color="success"
                                 size="sm"

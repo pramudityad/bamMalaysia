@@ -373,6 +373,7 @@ class MYASGCreation extends Component {
       const dataChild = {
           "nw": dataChildForm[i].so_or_nw,
           "activity": dataChildForm[i].activity,
+          "id_project_doc": this.state.lmr_form.id_project_doc,
           "material_code_doc": dataChildForm[i].material_code_doc,
           "material": dataChildForm[i].material,
           "description": dataChildForm[i].description,
