@@ -299,14 +299,17 @@ class MYASGDetail extends Component {
   }
 
   getLMRlvl2(_id) {
+    const id_lmr = this.props.match.params.lmr;
     this.getDatafromAPINODE("/aspassignment/getAspAssignment/" + _id).then(
       (res) => {
-        // console.log('cpo db id', res.data.data.cpoDetail)
+        
         if (res.data !== undefined) {
-          const datalvl2 = res.data.data;
+          // const datalvl2 = res.data.data.detail;
+          const datalvl2 = res.data.data.detail.find(e => e._id === id_lmr);
+          // console.log('datalvl2 ', datalvl2);
           this.setState({ lmr_lvl2: datalvl2});
         }
-        // console.log('gr data', this.state.lmr_detail)
+        // console.log('lmr_lvl2', this.state.lmr_lvl2)
       }
     );
   }
@@ -931,17 +934,68 @@ class MYASGDetail extends Component {
                           <tr style={{ fontWeight: "425", fontSize: "15px" }}>
                             <td>CD_ID</td>
                             <td>:</td>
-                            <td>{this.state.lmr_lvl2.lmr_id}</td>
+                            <td>{this.state.lmr_lvl2.cdid}</td>
                           </tr>
                           <tr style={{ fontWeight: "425", fontSize: "15px" }}>
                             <td>Per Site Material Type</td>
                             <td>:</td>
-                            <td>{this.state.lmr_lvl2.project_name}</td>
+                            <td>{this.state.lmr_lvl2.per_site_material_type}</td>
                           </tr>
                           <tr style={{ fontWeight: "425", fontSize: "15px" }}>
                             <td>Site ID</td>
                             <td>:</td>
-                            <td>{this.state.lmr_lvl2.vendor_name}</td>
+                            <td>{this.state.lmr_lvl2.site_id}</td>
+                          </tr>
+                          <tr style={{ fontWeight: "425", fontSize: "15px" }}>
+                            <td>SO # /NW #</td>
+                            <td>:</td>
+                            <td>{this.state.lmr_lvl2.nw}</td>
+                          </tr>
+                          <tr style={{ fontWeight: "425", fontSize: "15px" }}>
+                            <td>Activity</td>
+                            <td>:</td>
+                            <td>{this.state.lmr_lvl2.activity}</td>
+                          </tr>
+                          <tr style={{ fontWeight: "425", fontSize: "15px" }}>
+                            <td>Tax Code</td>
+                            <td>:</td>
+                            <td>{this.state.lmr_lvl2.tax_code}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </Col>
+                    <Col sm="6" md="6">
+                      <table className="table-header">
+                        <tbody>
+                          <tr style={{ fontWeight: "425", fontSize: "15px" }}>
+                            <td>Material</td>
+                            <td>:</td>
+                            <td>{this.state.lmr_lvl2.material}</td>
+                          </tr>
+                          <tr style={{ fontWeight: "425", fontSize: "15px" }}>
+                            <td>Description</td>
+                            <td>:</td>
+                            <td>{this.state.lmr_lvl2.description}</td>
+                          </tr>
+                          <tr style={{ fontWeight: "425", fontSize: "15px" }}>
+                            <td>Price</td>
+                            <td>:</td>
+                            <td>{this.state.lmr_lvl2.unit_price}</td>
+                          </tr>
+                          <tr style={{ fontWeight: "425", fontSize: "15px" }}>
+                            <td>Quantity</td>
+                            <td>:</td>
+                            <td>{this.state.lmr_lvl2.qty}</td>
+                          </tr>
+                          <tr style={{ fontWeight: "425", fontSize: "15px" }}>
+                            <td>Total Price</td>
+                            <td>:</td>
+                            <td>{this.state.lmr_lvl2.total_value}</td>
+                          </tr>
+                          <tr style={{ fontWeight: "425", fontSize: "15px" }}>
+                            <td>Currency</td>
+                            <td>:</td>
+                            <td>{this.state.lmr_lvl2.currency}</td>
                           </tr>
                         </tbody>
                       </table>
