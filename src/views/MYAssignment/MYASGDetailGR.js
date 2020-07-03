@@ -24,16 +24,12 @@ import { saveAs } from "file-saver";
 import Excel from "exceljs";
 import { Modal, ModalBody, ModalHeader, ModalFooter } from "reactstrap";
 import * as XLSX from "xlsx";
-import { Link } from "react-router-dom";
 import { getDatafromAPIMY } from "../../helper/asyncFunction";
 
 const DefaultNotif = React.lazy(() =>
   import("../../views/DefaultView/DefaultNotif")
 );
 
-const API_URL_XL = "https://api-dev.xl.pdb.e-dpm.com/xlpdbapi";
-const usernameBAM = "adminbamidsuper";
-const passwordBAM = "F760qbAg2sml";
 
 // const API_URL_NODE = 'https://api2-dev.bam-id.e-dpm.com/bamidapi';
 
