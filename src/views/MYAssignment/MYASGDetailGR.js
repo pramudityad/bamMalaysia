@@ -112,10 +112,10 @@ class MYASGDetail extends Component {
         {
           Plant: "MY",
           Request_Type: "",
-          PO_Number: "",
-          PO_Item: "",
+          PO_Number: this.state.list_pr_po[0].PO_Number,
+          PO_Item: this.state.list_pr_po[0].PO_Item,
           PO_Price: "",
-          PO_Qty: "",
+          PO_Qty: this.state.list_pr_po[0].PO_Qty,
           Required_GR_Qty: "",
           DN_No: "",
           WCN_Link: "",
@@ -1094,7 +1094,6 @@ class MYASGDetail extends Component {
                               type="text"
                               name="PO_Number"
                               id="PO_Number"
-                              defaultValue={prpo.PO_Number}
                               onChange={this.handleInputchild(idx)}
                               
                             />
@@ -1104,7 +1103,6 @@ class MYASGDetail extends Component {
                               type="text"
                               name="PO_Item"
                               id="PO_Item"
-                              defaultValue={prpo.PO_Item}
                               onChange={this.handleInputchild(idx)}
                               
                             />
@@ -1114,7 +1112,6 @@ class MYASGDetail extends Component {
                               type="text"
                               name="PO_Price"
                               id="PO_Price"
-                              value={child_data.PO_Price}
                               onChange={this.handleInputchild(idx)}
                               
                             />
@@ -1124,7 +1121,6 @@ class MYASGDetail extends Component {
                               type="text"
                               name="PO_Qty"
                               id="PO_Qty"
-                              defaultValue={prpo.PO_Qty}
                               onChange={this.handleInputchild(idx)}
                               
                             />

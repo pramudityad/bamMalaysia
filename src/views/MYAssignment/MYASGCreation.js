@@ -398,7 +398,9 @@ class MYASGCreation extends Component {
           "plant": this.state.lmr_form.plant,
           "customer": this.state.lmr_form.customer             
       }
-      dataLMRCHild.push(dataChild);
+      if(dataChildForm[i].site_id === undefined || dataChildForm[i].site_id === null){
+        dataLMRCHild.push(dataChild);
+      }
     }
     console.log("dataLMR", dataLMR);
     console.log("dataLMRChild", dataLMRCHild);
