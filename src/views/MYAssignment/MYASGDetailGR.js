@@ -25,7 +25,7 @@ import Excel from "exceljs";
 import { Modal, ModalBody, ModalHeader, ModalFooter } from "reactstrap";
 import * as XLSX from "xlsx";
 import { Link } from "react-router-dom";
-import { convertDateFormat } from "../../helper/basicFunction";
+import { getDatafromAPIMY } from "../../helper/asyncFunction";
 
 const DefaultNotif = React.lazy(() =>
   import("../../views/DefaultView/DefaultNotif")
@@ -56,6 +56,7 @@ class MYASGDetail extends Component {
       modalAddChild: false,
       lmr_detail: [],
       lmr_lvl2: {},
+      list_pr_po : [],
       data_prpo: [],
       data_cpo: null,
       data_cpo_db: [],
@@ -310,16 +311,17 @@ class MYASGDetail extends Component {
           this.setState({ lmr_lvl2: datalvl2});
         }
         // console.log('lmr_lvl2', this.state.lmr_lvl2)
+        this.getDataPRPO(this.state.lmr_lvl2.lmr_id)
       }
     );
   }
 
-  getPRPO(_id ){
-    this.getDatafromAPINODE("/aspassignment/getAspAssignment/" + _id).then(
+  getDataPRPO(LMR_ID){
+    getDatafromAPIMY('/prpo_data?where={"LMR_No" : "'+LMR_ID+'"}').then(
       (res) => {
         if (res.data !== undefined) {
-          const dataLMRDetail = res.data.data;
-          this.setState({ data_prpo: dataLMRDetail });
+          const dataLMRDetailPRPO = res.data._items;
+          this.setState({ list_pr_po: dataLMRDetailPRPO });
         }
       }
     );
@@ -777,6 +779,7 @@ class MYASGDetail extends Component {
 
   render() {
     const Dataform = this.state.Dataform;
+    const prpo = this.state.list_pr_po[0];
     return (
       <div>
         <DefaultNotif
@@ -1095,7 +1098,7 @@ class MYASGDetail extends Component {
                               type="text"
                               name="PO_Number"
                               id="PO_Number"
-                              value={child_data.PO_Number}
+                              defaultValue={prpo.PO_Number}
                               onChange={this.handleInputchild(idx)}
                               
                             />
@@ -1105,7 +1108,7 @@ class MYASGDetail extends Component {
                               type="text"
                               name="PO_Item"
                               id="PO_Item"
-                              value={child_data.PO_Item}
+                              defaultValue={prpo.PO_Item}
                               onChange={this.handleInputchild(idx)}
                               
                             />
@@ -1125,7 +1128,7 @@ class MYASGDetail extends Component {
                               type="text"
                               name="PO_Qty"
                               id="PO_Qty"
-                              value={child_data.PO_Qty}
+                              defaultValue={prpo.PO_Qty}
                               onChange={this.handleInputchild(idx)}
                               
                             />

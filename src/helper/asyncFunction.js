@@ -1,18 +1,23 @@
 import axios from "axios";
 
 const API_URL_NODE = "https://api2-dev.bam-id.e-dpm.com/bamidapi";
+
 const API_URL_XL = "https://api-dev.xl.pdb.e-dpm.com/xlpdbapi";
 const usernameXL = "adminbamidsuper";
 const passwordXL = "F760qbAg2sml";
 
+const API_URL_MAS = "https://api-dev.mas.pdb.e-dpm.com/masapi";
+const usernameMAS = "mybotprpo";
+const passwordMAS = "mybotprpo2020";
+
 // EXCEL
-export const getDatafromAPIEXEL = async (url) => {
+export const getDatafromAPIMY = async (url) => {
     try {
-      let respond = await axios.get(API_URL_XL + url, {
+      let respond = await axios.get(API_URL_MAS + url, {
         headers: { "Content-Type": "application/json" },
         auth: {
-          username: usernameXL,
-          password: passwordXL,
+          username: usernameMAS,
+          password: passwordMAS,
         },
       });
       if (respond.status >= 200 && respond.status < 300) {
