@@ -295,6 +295,7 @@ class MYASGDetail extends Component {
     const value = e.target.value;
     const data_material = this.state.material_list.find(e => e.MM_Code === value);
     let dataLMR = this.state.creation_lmr_child_form;
+    dataLMR[parseInt(this.state.current_material_select)]["material_code_doc"] = data_material._id;
     dataLMR[parseInt(this.state.current_material_select)]["material"] = data_material.MM_Code;
     dataLMR[parseInt(this.state.current_material_select)]["description"] = data_material.MM_Description;
     dataLMR[parseInt(this.state.current_material_select)]["price"] = data_material.Unit_Price;
@@ -822,6 +823,7 @@ class MYASGDetail extends Component {
     let headerRow = [
       "nw",
       "activity",
+      "material_code_doc",
       "material",
       "description",
       "site_id",
@@ -835,6 +837,7 @@ class MYASGDetail extends Component {
       "pr",
       "item",
       "plant","customer","request_type","item_category","lmr_type","plan_cost_reduction","cdid","per_site_material_type","item_status","work_status",
+      "id_project_doc",
       "id_lmr_doc",
     ];
     dummryRow.push(headerRow);
@@ -842,6 +845,7 @@ class MYASGDetail extends Component {
       let rowChild = [
         dataChildForm[i].so_or_nw,
         dataChildForm[i].activity,
+        dataChildForm[i].material_code_doc,
         dataChildForm[i].material,
         dataChildForm[i].description,
         dataChildForm[i].site_id,
@@ -864,6 +868,7 @@ class MYASGDetail extends Component {
         dataChildForm[i].Per_Site_Material_Type,
         "Submit",
         "Waiting for PR-PO creation",
+        dataChild[0].id_project_doc,
         this.props.match.params.id,
       ];
       dummryRow.push(rowChild);

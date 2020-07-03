@@ -820,6 +820,7 @@ class MYASGCreation extends Component {
                             id={i + " /// cd_id"}
                             value={lmr.cd_id}
                             onChange={this.handleChangeFormLMRChild}
+                            disabled={this.state.lmr_form.LMR_Type === "Cost Collector"}
                           >
                           <option value="" disabled selected hidden>
                             Select CD ID
@@ -839,6 +840,7 @@ class MYASGCreation extends Component {
                             id={i + " /// Per_Site_Material_Type"}
                             value={lmr.Per_Site_Material_Type}
                             onChange={this.handleChangeFormLMRChild}
+                            disabled={this.state.lmr_form.LMR_Type === "Cost Collector"}
                           >
                             <option value="" disabled selected hidden>
                               Select Material Type
@@ -884,7 +886,7 @@ class MYASGCreation extends Component {
                       </Col>
                       <Col md={2}>
                         <FormGroup>
-                          <Label>Activity</Label>
+                          <Label>NW Activity</Label>
                           <Input
                             type="text"
                             name={i + " /// activity"}
