@@ -112,10 +112,10 @@ class MYASGDetail extends Component {
         {
           Plant: "MY",
           Request_Type: "",
-          PO_Number: this.state.list_pr_po[0].PO_Number,
-          PO_Item: this.state.list_pr_po[0].PO_Item,
+          PO_Number: this.state.list_pr_po.PO_Number,
+          PO_Item: this.state.list_pr_po.PO_Item,
           PO_Price: "",
-          PO_Qty: this.state.list_pr_po[0].PO_Qty,
+          PO_Qty: this.state.list_pr_po.PO_Qty,
           Required_GR_Qty: "",
           DN_No: "",
           WCN_Link: "",
@@ -306,18 +306,18 @@ class MYASGDetail extends Component {
           // console.log('datalvl2 ', datalvl2);
           this.setState({ lmr_lvl2: datalvl2});
         }
-        // console.log('lmr_lvl2', this.state.lmr_lvl2)
-        this.getDataPRPO(this.state.lmr_lvl2.lmr_id)
+        console.log('lmr_lvl2', this.state.lmr_lvl2)
+        this.getDataPRPO(this.props.match.params.lmr)
       }
     );
   }
 
-  getDataPRPO(LMR_ID){
-    getDatafromAPIMY('/prpo_data?where={"LMR_No" : "'+LMR_ID+'"}').then(
+  getDataPRPO(child_id){
+    getDatafromAPIMY('/prpo_data?where={"id_child_doc" : "'+child_id+'"}').then(
       (res) => {
         if (res.data !== undefined) {
-          const dataLMRDetailPRPO = res.data._items;
-          this.setState({ list_pr_po: dataLMRDetailPRPO });
+          const dataLMRDetailPRPO = res.data._items[0];
+          this.setState({ list_pr_po: dataLMRDetailPRPO});
         }
       }
     );
@@ -1091,18 +1091,22 @@ class MYASGDetail extends Component {
                           </td>
                           <td>
                             <Input
+                            // key={prpo._id}
                               type="text"
                               name="PO_Number"
-                              id="PO_Number"
+                              id={"PO_Number"}
+                              value={child_data.PO_Number}
                               onChange={this.handleInputchild(idx)}
                               
                             />
                           </td>
                           <td>
                             <Input
+                            // key={prpo._id}
                               type="text"
                               name="PO_Item"
-                              id="PO_Item"
+                              id={"PO_Item"}
+                              value={child_data.PO_Item}
                               onChange={this.handleInputchild(idx)}
                               
                             />
@@ -1118,9 +1122,11 @@ class MYASGDetail extends Component {
                           </td>
                           <td>
                             <Input
+                            // key={prpo._id}
                               type="text"
                               name="PO_Qty"
-                              id="PO_Qty"
+                              id={"PO_Qty"}                              
+                              value={child_data.PO_Qty}
                               onChange={this.handleInputchild(idx)}
                               
                             />
