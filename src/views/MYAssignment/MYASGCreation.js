@@ -157,11 +157,12 @@ class MYASGCreation extends Component {
       validation_form: {},
       current_material_select: null,
       data_user: this.props.dataUser,
+      filter_list: "",
     };
     this.handleChangeCD = this.handleChangeCD.bind(this);
     this.loadOptionsCDID = this.loadOptionsCDID.bind(this);
     this.handlePageChange = this.handlePageChange.bind(this);
-    // this.handleFilterList = this.handleFilterList.bind(this);
+    this.handleFilterList = this.handleFilterList.bind(this);
     this.handleChangeFormLMR = this.handleChangeFormLMR.bind(this);
     this.toggleLoading = this.toggleLoading.bind(this);
     this.createLMR = this.createLMR.bind(this);
@@ -274,6 +275,23 @@ class MYASGCreation extends Component {
     });
   }
 
+  handleFilterList(e) {
+    const index = e.target.name;
+    let value = e.target.value;
+    if (value !== "" && value.length === 0) {
+      value = "";
+    }
+    let dataFilter = this.state.filter_list;
+    dataFilter[parseInt(index)] = value;
+    this.setState({ filter_list: dataFilter, activePage: 1 }, () => {
+      this.onChangeDebounced(e);
+    })
+  }
+
+  onChangeDebounced(e) {
+    this.getMaterialList();
+  }
+
   getProjectList() {
     this.getDatafromAPIMY("/project_data").then((res) => {
       if (res.data !== undefined) {
@@ -294,8 +312,10 @@ class MYASGCreation extends Component {
   }
 
   getMaterialList() {
+    let filter = '"mm_code":{"$regex" : "' + this.state.filter_list + '", "$options" : "i"}';
+    let whereAnd = '{'+filter+'}';
     this.getDatafromAPIMY(
-      "/mm_code_data?&lmt=" +
+      "/mm_code_data?q="+whereAnd+"&lmt=" +
         this.state.perPage +
         "&pg=" +
         this.state.activePage

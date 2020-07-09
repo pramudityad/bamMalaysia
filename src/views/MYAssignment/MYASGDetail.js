@@ -18,7 +18,11 @@ import {
   DropdownToggle,
   Collapse,
   Input,
+  InputGroup,
+  InputGroupAddon,
+  InputGroupText,
 } from "reactstrap";
+import Pagination from "react-js-pagination";
 import axios from "axios";
 import { saveAs } from "file-saver";
 import Excel from "exceljs";
@@ -91,6 +95,10 @@ class MYASGDetail extends Component {
       modal_material: false,
       data_cpo: null,
       data_cpo_db: [],
+      prevPage: 0,
+      activePage: 1,
+      totalData: 0,
+      perPage: 10,
       rowsXLS: [],
       modal_loading: false,
       dropdownOpen: new Array(6).fill(false),
@@ -105,8 +113,11 @@ class MYASGDetail extends Component {
       material_list: [],
       list_cd_id : [],
       list_pr_po : [],
+      filter_list: "",
     };
     this.toggleAddNew = this.toggleAddNew.bind(this);
+    this.handleFilterList = this.handleFilterList.bind(this);
+
     this.handleChangeFormLMRChild = this.handleChangeFormLMRChild.bind(this);
     this.addLMRChildForm = this.addLMRChildForm.bind(this);
     this.toggleMaterial = this.toggleMaterial.bind(this);
@@ -333,13 +344,37 @@ class MYASGDetail extends Component {
 
   
   getMaterialList() {
-    // this.getDatafromAPIMY("/vendor_data").then((res) => {
-    //   if (res.data !== undefined) {
-    //     const items = res.data._items;
-    //     this.setState({ vendor_list: items });
-    //   }
-    // });
-    this.setState({material_list : MaterialDB});
+    let filter = '"mm_code":{"$regex" : "' + this.state.filter_list + '", "$options" : "i"}';
+    let whereAnd = '{'+filter+'}';
+    this.getDatafromAPIMY(
+      "/mm_code_data?q="+whereAnd+"&lmt=" +
+        this.state.perPage +
+        "&pg=" +
+        this.state.activePage
+    ).then((res) => {
+      if (res.data !== undefined) {
+        const items = res.data._items;
+        const totalData = res.data.totalResults;
+        this.setState({ material_list: items, totalData: totalData });
+      }
+    });
+  }
+
+  handleFilterList(e) {
+    const index = e.target.name;
+    let value = e.target.value;
+    if (value !== "" && value.length === 0) {
+      value = "";
+    }
+    let dataFilter = this.state.filter_list;
+    dataFilter[parseInt(index)] = value;
+    this.setState({ filter_list: dataFilter, activePage: 1 }, () => {
+      this.onChangeDebounced(e);
+    })
+  }
+
+  onChangeDebounced(e) {
+    this.getMaterialList();
   }
 
   getLMRDetailData(_id) {
@@ -788,14 +823,14 @@ class MYASGDetail extends Component {
     }
   }
 
-  getMaterialList() {
-    this.getDatafromAPIMY("/mm_code_data").then((res) => {
-      if (res.data !== undefined) {
-        const items = res.data._items;
-        this.setState({ material_list: items });
-      }
-    });
-  }
+  // getMaterialList() {
+  //   this.getDatafromAPIMY("/mm_code_data").then((res) => {
+  //     if (res.data !== undefined) {
+  //       const items = res.data._items;
+  //       this.setState({ material_list: items });
+  //     }
+  //   });
+  // }
 
   getDataCD() {
     this.getDatafromAPIMY("/cdid_data").then((resCD) => {
@@ -1723,6 +1758,33 @@ class MYASGDetail extends Component {
                 <th></th><th>MM Code</th><th>BB Sub</th><th>SoW</th><th>UoM</th><th>Region</th><th>Unit Price</th><th>MM Description</th>
               </thead>
               <tbody>
+              <tr>
+                  <td></td>
+                  <td>
+                    <div className="controls" style={{ width: "150px" }}>
+                      <InputGroup className="input-prepend">
+                        <InputGroupAddon addonType="prepend">
+                          <InputGroupText>
+                            <i className="fa fa-search"></i>
+                          </InputGroupText>
+                        </InputGroupAddon>
+                        <Input
+                          type="text"
+                          placeholder="Search"
+                          onChange={this.handleFilterList}
+                          value={this.state.filter_list}
+                          size="sm"
+                        />
+                      </InputGroup>
+                    </div>
+                  </td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                </tr>
                 {this.state.material_list.map(e => 
                   <tr>
                     <td>
@@ -1739,6 +1801,15 @@ class MYASGDetail extends Component {
                 )}
                 
               </tbody>
+              <Pagination
+              activePage={this.state.activePage}
+              itemsCountPerPage={this.state.perPage}
+              totalItemsCount={this.state.totalData}
+              pageRangeDisplayed={5}
+              onChange={this.handlePageChange}
+              itemClass="page-item"
+              linkClass="page-link"
+            />
             </Table>
           </ModalBody>
           <ModalFooter>

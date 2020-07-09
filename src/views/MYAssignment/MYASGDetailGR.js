@@ -79,6 +79,8 @@ class MYASGDetail extends Component {
         Work_Status: "",
       },
       ChildForm: [],
+      filter_list: "",
+
     };
     this.toggleAddNew = this.toggleAddNew.bind(this);
     this.handleInput = this.handleInput.bind(this);
