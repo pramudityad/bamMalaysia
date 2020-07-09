@@ -9,8 +9,12 @@ import {
   Button,
   Input,
   CardFooter,
+  InputGroup,
+  InputGroupAddon,
+  InputGroupText,
 } from "reactstrap";
 import { Form, FormGroup, Label, FormText } from "reactstrap";
+import Pagination from "react-js-pagination";
 import { Modal, ModalBody, ModalHeader, ModalFooter } from "reactstrap";
 import axios from "axios";
 import { Link, Redirect } from "react-router-dom";
@@ -56,12 +60,12 @@ const Checkbox = ({
 
 const projectList = [
   {
-    Project	: "Project DEMO 1",
-    Project_Year :	"2020"
+    Project: "Project DEMO 1",
+    Project_Year: "2020",
   },
   {
-    Project	: "Project DEMO 3",
-    Project_Year :	"2020"
+    Project: "Project DEMO 3",
+    Project_Year: "2020",
   },
 ];
 
@@ -88,34 +92,34 @@ const vendorList = [
 
 const MaterialDB = [
   {
-    "MM_Code" : "MM Code",
-    "BB_Sub" : "BB_sub",
-    "SoW_Description" : "SoW Description",
-    "UoM" : "UoM",
-    "Region" : "Region",
-    "Unit_Price" : 100,
-    "MM_Description" : "MM Description",
-    "Acceptance" : "Acceptance"
+    MM_Code: "MM Code",
+    BB_Sub: "BB_sub",
+    SoW_Description: "SoW Description",
+    UoM: "UoM",
+    Region: "Region",
+    Unit_Price: 100,
+    MM_Description: "MM Description",
+    Acceptance: "Acceptance",
   },
   {
-    "MM_Code" : "MM Code1",
-    "BB_Sub" : "BB_sub1",
-    "SoW_Description" : "SoW Description1",
-    "UoM" : "UoM1",
-    "Region" : "Region1",
-    "Unit_Price" : 200,
-    "MM_Description" : "MM Description1",
-    "Acceptance" : "Acceptance1"
-  }
+    MM_Code: "MM Code1",
+    BB_Sub: "BB_sub1",
+    SoW_Description: "SoW Description1",
+    UoM: "UoM1",
+    Region: "Region1",
+    Unit_Price: 200,
+    MM_Description: "MM Description1",
+    Acceptance: "Acceptance1",
+  },
 ];
 
 const CDIDDB = [
   {
-    "CD_ID" : "MM Code",
+    CD_ID: "MM Code",
   },
   {
-    "CD_ID" : "MM Code1",
-  }
+    CD_ID: "MM Code1",
+  },
 ];
 
 class MYASGCreation extends Component {
@@ -125,12 +129,21 @@ class MYASGCreation extends Component {
     this.state = {
       // tokenUser: this.props.dataLogin.token,
       tokenUser: BearerToken,
-      lmr_form: {"pgr" : "MP2", "gl_account" : "402102", "lmr_issued_by" : this.props.dataUser.preferred_username, "plant" : "MY" , "customer" : "CELCOM"},
+      lmr_form: {
+        pgr: "MP2",
+        gl_account: "402102",
+        lmr_issued_by: this.props.dataUser.preferred_username,
+        plant: "MY",
+        customer: "CELCOM",
+      },
       modal_loading: false,
       modal_material: false,
       list_project: [],
       creation_lmr_child_form: [],
-
+      prevPage: 0,
+      activePage: 1,
+      totalData: 0,
+      perPage: 10,
       form_checking: {},
       list_cd_id: [],
       cd_id_selected: null,
@@ -140,14 +153,15 @@ class MYASGCreation extends Component {
       action_message: null,
       vendor_list: [],
       material_list: [],
-      project_list : [],
+      project_list: [],
       validation_form: {},
-      current_material_select : null,
-      data_user : this.props.dataUser,
+      current_material_select: null,
+      data_user: this.props.dataUser,
     };
     this.handleChangeCD = this.handleChangeCD.bind(this);
     this.loadOptionsCDID = this.loadOptionsCDID.bind(this);
-
+    this.handlePageChange = this.handlePageChange.bind(this);
+    // this.handleFilterList = this.handleFilterList.bind(this);
     this.handleChangeFormLMR = this.handleChangeFormLMR.bind(this);
     this.toggleLoading = this.toggleLoading.bind(this);
     this.createLMR = this.createLMR.bind(this);
@@ -165,10 +179,10 @@ class MYASGCreation extends Component {
   }
 
   toggleMaterial(number_child_form) {
-    if(number_child_form !== undefined && isNaN(number_child_form) === false){
-      this.setState({current_material_select : number_child_form});
-    }else{
-      this.setState({current_material_select : null});
+    if (number_child_form !== undefined && isNaN(number_child_form) === false) {
+      this.setState({ current_material_select: number_child_form });
+    } else {
+      this.setState({ current_material_select: null });
     }
     this.setState((prevState) => ({
       modal_material: !prevState.modal_material,
@@ -254,7 +268,13 @@ class MYASGCreation extends Component {
     document.title = "LMR Creation | BAM";
   }
 
-  getProjectList(){
+  handlePageChange(pageNumber) {
+    this.setState({ activePage: pageNumber }, () => {
+      this.getMaterialList();
+    });
+  }
+
+  getProjectList() {
     this.getDatafromAPIMY("/project_data").then((res) => {
       if (res.data !== undefined) {
         const items = res.data._items;
@@ -274,10 +294,16 @@ class MYASGCreation extends Component {
   }
 
   getMaterialList() {
-    this.getDatafromAPIMY("/mm_code_data").then((res) => {
+    this.getDatafromAPIMY(
+      "/mm_code_data?&lmt=" +
+        this.state.perPage +
+        "&pg=" +
+        this.state.activePage
+    ).then((res) => {
       if (res.data !== undefined) {
         const items = res.data._items;
-        this.setState({ material_list: items });
+        const totalData = res.data.totalResults;
+        this.setState({ material_list: items, totalData: totalData });
       }
     });
   }
@@ -337,9 +363,11 @@ class MYASGCreation extends Component {
     if (value !== (null && undefined)) {
       value = value.toString();
     }
-    if(name === "project_name"){
-      let dataProject = this.state.list_project.find(e => e.Project === value);
-      if(dataProject !== undefined){
+    if (name === "project_name") {
+      let dataProject = this.state.list_project.find(
+        (e) => e.Project === value
+      );
+      if (dataProject !== undefined) {
         lmr_form["id_project_doc"] = dataProject._id;
       }
     }
@@ -351,54 +379,57 @@ class MYASGCreation extends Component {
     const dataForm = this.state.lmr_form;
     const dataChildForm = this.state.creation_lmr_child_form;
     const dataLMR = {
-        "plant": this.state.lmr_form.plant,
-        "customer": this.state.lmr_form.customer,
-        "lmr_issued_by": this.state.lmr_form.lmr_issued_by,
-        "pgr": this.state.lmr_form.pgr,
-        "gl_account": this.state.lmr_form.gl_account,
-        "id_project_doc": this.state.lmr_form.id_project_doc,
-        "project_name": this.state.lmr_form.project_name,
-        "header_text": this.state.lmr_form.header_text,
-        "payment_term": this.state.lmr_form.payment_term,
-        "vendor_name": this.state.lmr_form.vendor_name,
-        "vendor_address": this.state.lmr_form.vendor_email,
-        "l1_approver": this.state.lmr_form.l1_approver,
-        "l2_approver": this.state.lmr_form.l2_approver,
-        "l3_approver": this.state.lmr_form.l3_approver,
-        "l4_approver": this.state.lmr_form.l4_approver,
-        "l5_approver": this.state.lmr_form.l5_approver,
-    }
+      plant: this.state.lmr_form.plant,
+      customer: this.state.lmr_form.customer,
+      lmr_issued_by: this.state.lmr_form.lmr_issued_by,
+      pgr: this.state.lmr_form.pgr,
+      gl_account: this.state.lmr_form.gl_account,
+      id_project_doc: this.state.lmr_form.id_project_doc,
+      project_name: this.state.lmr_form.project_name,
+      header_text: this.state.lmr_form.header_text,
+      payment_term: this.state.lmr_form.payment_term,
+      vendor_name: this.state.lmr_form.vendor_name,
+      vendor_address: this.state.lmr_form.vendor_email,
+      l1_approver: this.state.lmr_form.l1_approver,
+      l2_approver: this.state.lmr_form.l2_approver,
+      l3_approver: this.state.lmr_form.l3_approver,
+      l4_approver: this.state.lmr_form.l4_approver,
+      l5_approver: this.state.lmr_form.l5_approver,
+    };
     let dataLMRCHild = [];
     for (let i = 0; i < dataChildForm.length; i++) {
       const dataChild = {
-          "nw": dataChildForm[i].so_or_nw,
-          "activity": dataChildForm[i].activity,
-          "id_project_doc": this.state.lmr_form.id_project_doc,
-          "material_code_doc": dataChildForm[i].material_code_doc,
-          "material": dataChildForm[i].material,
-          "description": dataChildForm[i].description,
-          "site_id": dataChildForm[i].site_id,
-          "qty": dataChildForm[i].quantity,
-          "unit_price": dataChildForm[i].price,
-          "tax_code": dataChildForm[i].tax_code,
-          "delivery_date": dataChildForm[i].delivery_date,
-          "total_price": dataChildForm[i].total_amount,
-          "total_value": dataChildForm[i].total_amount,
-          "currency": dataChildForm[i].currency,
-          "pr": "",
-          "item": 0,
-          "request_type": this.state.lmr_form.Request_Type,
-          "item_category": this.state.lmr_form.Item_Category,
-          "lmr_type": this.state.lmr_form.LMR_Type,      
-          "plan_cost_reduction": this.state.lmr_form.Plan_Cost_Reduction,         
-          "cdid": dataChildForm[i].cd_id,
-          "per_site_material_type": dataChildForm[i].Per_Site_Material_Type,  
-          "item_status": "Submit",      
-          "work_status": "Waiting for PR-PO creation",
-          "plant": this.state.lmr_form.plant,
-          "customer": this.state.lmr_form.customer             
-      }
-      if(dataChildForm[i].site_id === undefined || dataChildForm[i].site_id === null){
+        nw: dataChildForm[i].so_or_nw,
+        activity: dataChildForm[i].activity,
+        id_project_doc: this.state.lmr_form.id_project_doc,
+        material_code_doc: dataChildForm[i].material_code_doc,
+        material: dataChildForm[i].material,
+        description: dataChildForm[i].description,
+        site_id: dataChildForm[i].site_id,
+        qty: dataChildForm[i].quantity,
+        unit_price: dataChildForm[i].price,
+        tax_code: dataChildForm[i].tax_code,
+        delivery_date: dataChildForm[i].delivery_date,
+        total_price: dataChildForm[i].total_amount,
+        total_value: dataChildForm[i].total_amount,
+        currency: dataChildForm[i].currency,
+        pr: "",
+        item: 0,
+        request_type: this.state.lmr_form.Request_Type,
+        item_category: this.state.lmr_form.Item_Category,
+        lmr_type: this.state.lmr_form.LMR_Type,
+        plan_cost_reduction: this.state.lmr_form.Plan_Cost_Reduction,
+        cdid: dataChildForm[i].cd_id,
+        per_site_material_type: dataChildForm[i].Per_Site_Material_Type,
+        item_status: "Submit",
+        work_status: "Waiting for PR-PO creation",
+        plant: this.state.lmr_form.plant,
+        customer: this.state.lmr_form.customer,
+      };
+      if (
+        dataChildForm[i].site_id === undefined ||
+        dataChildForm[i].site_id === null
+      ) {
         dataLMRCHild.push(dataChild);
       }
     }
@@ -439,7 +470,12 @@ class MYASGCreation extends Component {
 
   addLMR() {
     let dataLMR = this.state.creation_lmr_child_form;
-    dataLMR.push({"tax_code" : "I0", "currency" : "MYR", "item_status" : "Submit", "work_status" : "Waiting for PR-PO creation"});
+    dataLMR.push({
+      tax_code: "I0",
+      currency: "MYR",
+      item_status: "Submit",
+      work_status: "Waiting for PR-PO creation",
+    });
     this.setState({ creation_lmr_child_form: dataLMR });
   }
 
@@ -450,28 +486,34 @@ class MYASGCreation extends Component {
     let idx = idxField[0];
     let field = idxField[1];
     dataLMR[parseInt(idx)][field] = value;
-    if(field === "quantity" && isNaN(dataLMR[parseInt(idx)].price) === false){
-      dataLMR[parseInt(idx)]["total_amount"] = value*dataLMR[parseInt(idx)].price;
+    if (field === "quantity" && isNaN(dataLMR[parseInt(idx)].price) === false) {
+      dataLMR[parseInt(idx)]["total_amount"] =
+        value * dataLMR[parseInt(idx)].price;
     }
     this.setState({ creation_lmr_child_form: dataLMR });
   }
 
-  
-  handleChangeMaterial(e){
+  handleChangeMaterial(e) {
     const value = e.target.value;
-    const data_material = this.state.material_list.find(e => e.MM_Code === value);
+    const data_material = this.state.material_list.find(
+      (e) => e.MM_Code === value
+    );
     let dataLMR = this.state.creation_lmr_child_form;
-    dataLMR[parseInt(this.state.current_material_select)]["material_code_doc"] = data_material._id;
-    dataLMR[parseInt(this.state.current_material_select)]["material"] = data_material.MM_Code;
-    dataLMR[parseInt(this.state.current_material_select)]["description"] = data_material.MM_Description;
-    dataLMR[parseInt(this.state.current_material_select)]["price"] = data_material.Unit_Price;
+    dataLMR[parseInt(this.state.current_material_select)]["material_code_doc"] =
+      data_material._id;
+    dataLMR[parseInt(this.state.current_material_select)]["material"] =
+      data_material.MM_Code;
+    dataLMR[parseInt(this.state.current_material_select)]["description"] =
+      data_material.MM_Description;
+    dataLMR[parseInt(this.state.current_material_select)]["price"] =
+      data_material.Unit_Price;
     dataLMR[parseInt(this.state.current_material_select)]["quantity"] = 0;
-    this.setState({creation_lmr_child_form : dataLMR});
+    this.setState({ creation_lmr_child_form: dataLMR });
     this.toggleMaterial();
   }
 
   render() {
-    console.log("this.props.dataUser", this.props.dataUser)
+    console.log("this.props.dataUser", this.props.dataUser);
     if (this.state.redirectSign !== false) {
       return <Redirect to={"/mr-detail/" + this.state.redirectSign} />;
     }
@@ -492,54 +534,47 @@ class MYASGCreation extends Component {
               </CardHeader>
               <CardBody>
                 <Form>
-                <Row form>
-                <Col md={1}>
+                  <Row form>
+                    <Col md={1}>
                       <FormGroup>
                         <Label>PLANT</Label>
                         <Input
-                            type="text"
-                            name="plant"
-                            id="plant"
-                            value={this.state.lmr_form.plant}
-                            onChange={this.handleChangeFormLMR}
-                            readOnly
-                          />
+                          type="text"
+                          name="plant"
+                          id="plant"
+                          value={this.state.lmr_form.plant}
+                          onChange={this.handleChangeFormLMR}
+                          readOnly
+                        />
                       </FormGroup>
                     </Col>
                     <Col md={2}>
                       <FormGroup>
                         <Label>Customer</Label>
                         <Input
-                            type="text"
-                            name="customer"
-                            id="customer"
-                            value={this.state.lmr_form.customer}
-                            onChange={this.handleChangeFormLMR}
-                            readOnly
-                          />
+                          type="text"
+                          name="customer"
+                          id="customer"
+                          value={this.state.lmr_form.customer}
+                          onChange={this.handleChangeFormLMR}
+                          readOnly
+                        />
                       </FormGroup>
                     </Col>
                     <Col md={2}>
                       <FormGroup>
                         <Label>Request Type</Label>
                         <Input
-                            type="select"
-                            name="Request_Type"
-                            id="Request_Type"
-                            value={this.state.lmr_form.Request_Type}
-                            onChange={this.handleChangeFormLMR}
-                          >
-                          <option value={null} selected>
-                          </option>
-                          <option value="Add LMR" >
-                            Add LMR
-                          </option>
-                          <option value="Change LMR" >
-                            Change LMR
-                          </option>
-                          <option value="Delete LMR" >
-                            Delete LMR
-                          </option>
+                          type="select"
+                          name="Request_Type"
+                          id="Request_Type"
+                          value={this.state.lmr_form.Request_Type}
+                          onChange={this.handleChangeFormLMR}
+                        >
+                          <option value={null} selected></option>
+                          <option value="Add LMR">Add LMR</option>
+                          <option value="Change LMR">Change LMR</option>
+                          <option value="Delete LMR">Delete LMR</option>
                         </Input>
                       </FormGroup>
                     </Col>
@@ -547,21 +582,15 @@ class MYASGCreation extends Component {
                       <FormGroup>
                         <Label>Item Category</Label>
                         <Input
-                            type="select"
-                            name="Item_Category"
-                            id="Item_Category"
-                            value={this.state.lmr_form.Item_Category}
-                            onChange={this.handleChangeFormLMR}
-                          >
-                          <option value={null} selected >
-                            
-                          </option>
-                          <option value="Service" >
-                            Service
-                          </option>
-                          <option value="3PP HW" >
-                            3PP HW
-                          </option>
+                          type="select"
+                          name="Item_Category"
+                          id="Item_Category"
+                          value={this.state.lmr_form.Item_Category}
+                          onChange={this.handleChangeFormLMR}
+                        >
+                          <option value={null} selected></option>
+                          <option value="Service">Service</option>
+                          <option value="3PP HW">3PP HW</option>
                         </Input>
                       </FormGroup>
                     </Col>
@@ -569,21 +598,15 @@ class MYASGCreation extends Component {
                       <FormGroup>
                         <Label>LMR Type</Label>
                         <Input
-                            type="select"
-                            name="LMR_Type"
-                            id="LMR_Type"
-                            value={this.state.lmr_form.LMR_Type}
-                            onChange={this.handleChangeFormLMR}
-                          >
-                          <option value={null} selected >
-                            
-                          </option>
-                          <option value="Cost Collector" >
-                            Cost Collector
-                          </option>
-                          <option value="Per Site" >
-                            Per Site
-                          </option>
+                          type="select"
+                          name="LMR_Type"
+                          id="LMR_Type"
+                          value={this.state.lmr_form.LMR_Type}
+                          onChange={this.handleChangeFormLMR}
+                        >
+                          <option value={null} selected></option>
+                          <option value="Cost Collector">Cost Collector</option>
+                          <option value="Per Site">Per Site</option>
                         </Input>
                       </FormGroup>
                     </Col>
@@ -591,21 +614,15 @@ class MYASGCreation extends Component {
                       <FormGroup>
                         <Label>Plan Cost Reduction</Label>
                         <Input
-                            type="select"
-                            name="Plan_Cost_Reduction"
-                            id="Plan_Cost_Reduction"
-                            value={this.state.lmr_form.Plan_Cost_Reduction}
-                            onChange={this.handleChangeFormLMR}
-                          >
-                          <option value={null} selected >
-                            
-                          </option>
-                          <option value="Yes" >
-                            Yes
-                          </option>
-                          <option value="No" >
-                            No
-                          </option>
+                          type="select"
+                          name="Plan_Cost_Reduction"
+                          id="Plan_Cost_Reduction"
+                          value={this.state.lmr_form.Plan_Cost_Reduction}
+                          onChange={this.handleChangeFormLMR}
+                        >
+                          <option value={null} selected></option>
+                          <option value="Yes">Yes</option>
+                          <option value="No">No</option>
                         </Input>
                       </FormGroup>
                     </Col>
@@ -645,8 +662,7 @@ class MYASGCreation extends Component {
                           id="gl_account"
                           value={this.state.lmr_form.gl_account}
                           onChange={this.handleChangeFormLMR}
-                        >
-                        </Input>
+                        ></Input>
                       </FormGroup>
                     </Col>
                   </Row>
@@ -664,9 +680,9 @@ class MYASGCreation extends Component {
                           <option value="" disabled selected hidden>
                             Select Project Name
                           </option>
-                          {this.state.list_project.map(e =>
+                          {this.state.list_project.map((e) => (
                             <option value={e.Project}>{e.Project}</option>
-                          )}
+                          ))}
                           {/* {this.state.vendor_list.map((e) => (
                             <option value={e.Vendor_Code}>{e.Name}</option>
                           ))} */}
@@ -813,7 +829,7 @@ class MYASGCreation extends Component {
                 {this.state.creation_lmr_child_form.map((lmr, i) => (
                   <Form>
                     <Row form>
-                    <Col md={2}>
+                      <Col md={2}>
                         <FormGroup>
                           <Label>CD ID</Label>
                           <Input
@@ -822,15 +838,17 @@ class MYASGCreation extends Component {
                             id={i + " /// cd_id"}
                             value={lmr.cd_id}
                             onChange={this.handleChangeFormLMRChild}
-                            disabled={this.state.lmr_form.LMR_Type === "Cost Collector"}
+                            disabled={
+                              this.state.lmr_form.LMR_Type === "Cost Collector"
+                            }
                           >
-                          <option value="" disabled selected hidden>
-                            Select CD ID
-                          </option>
-                          {this.state.list_cd_id.map(e => 
-                            <option value={e.CD_ID}>{e.CD_ID}</option>
-                          )}
-                        </Input>
+                            <option value="" disabled selected hidden>
+                              Select CD ID
+                            </option>
+                            {this.state.list_cd_id.map((e) => (
+                              <option value={e.CD_ID}>{e.CD_ID}</option>
+                            ))}
+                          </Input>
                         </FormGroup>
                       </Col>
                       <Col md={2}>
@@ -842,24 +860,20 @@ class MYASGCreation extends Component {
                             id={i + " /// Per_Site_Material_Type"}
                             value={lmr.Per_Site_Material_Type}
                             onChange={this.handleChangeFormLMRChild}
-                            disabled={this.state.lmr_form.LMR_Type === "Cost Collector"}
+                            disabled={
+                              this.state.lmr_form.LMR_Type === "Cost Collector"
+                            }
                           >
                             <option value="" disabled selected hidden>
                               Select Material Type
                             </option>
-                            <option value="NRO Service">
-                              NRO Service
-                            </option>
-                            <option value="NRO LM">
-                              NRO LM
-                            </option>
-                            <option value="NDO Service">
-                              NDO Service
-                            </option>
-                          {/* {this.state.vendor_list.map((e) => (
+                            <option value="NRO Service">NRO Service</option>
+                            <option value="NRO LM">NRO LM</option>
+                            <option value="NDO Service">NDO Service</option>
+                            {/* {this.state.vendor_list.map((e) => (
                             <option value={e.Vendor_Code}>{e.Name}</option>
                           ))} */}
-                        </Input>
+                          </Input>
                         </FormGroup>
                       </Col>
                       <Col md={2}>
@@ -981,16 +995,12 @@ class MYASGCreation extends Component {
                             value={lmr.currency}
                             onChange={this.handleChangeFormLMRChild}
                           >
-                            <option value="MYR" selected >
-                            MYR
-                          </option>
-                          <option value="USD" >
-                            USD
-                          </option>
-                          <option value="EUR" >
-                            EUR
-                          </option>
-                        </Input>
+                            <option value="MYR" selected>
+                              MYR
+                            </option>
+                            <option value="USD">USD</option>
+                            <option value="EUR">EUR</option>
+                          </Input>
                         </FormGroup>
                       </Col>
                       <Col md={3}>
@@ -1067,13 +1077,54 @@ class MYASGCreation extends Component {
           <ModalBody>
             <Table responsive striped bordered size="sm">
               <thead>
-                <th></th><th>MM Code</th><th>BB Sub</th><th>SoW</th><th>UoM</th><th>Region</th><th>Unit Price</th><th>MM Description</th>
+                <th></th>
+                <th>MM Code</th>
+                <th>BB Sub</th>
+                <th>SoW</th>
+                <th>UoM</th>
+                <th>Region</th>
+                <th>Unit Price</th>
+                <th>MM Description</th>
               </thead>
               <tbody>
-                {this.state.material_list.map(e => 
+                <tr>
+                  <td></td>
+                  <td>
+                    <div className="controls" style={{ width: "150px" }}>
+                      <InputGroup className="input-prepend">
+                        <InputGroupAddon addonType="prepend">
+                          <InputGroupText>
+                            <i className="fa fa-search"></i>
+                          </InputGroupText>
+                        </InputGroupAddon>
+                        <Input
+                          type="text"
+                          placeholder="Search"
+                          onChange={this.handleFilterList}
+                          value={this.state.filter_list}
+                          size="sm"
+                        />
+                      </InputGroup>
+                    </div>
+                  </td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                </tr>
+                {this.state.material_list.map((e) => (
                   <tr>
                     <td>
-                      <Button color={"primary"} size="sm" value={e.MM_Code} onClick={this.handleChangeMaterial}>Select</Button>
+                      <Button
+                        color={"primary"}
+                        size="sm"
+                        value={e.MM_Code}
+                        onClick={this.handleChangeMaterial}
+                      >
+                        Select
+                      </Button>
                     </td>
                     <td>{e.MM_Code}</td>
                     <td>{e.BB_Sub}</td>
@@ -1083,10 +1134,18 @@ class MYASGCreation extends Component {
                     <td>{e.Unit_Price}</td>
                     <td>{e.MM_Description}</td>
                   </tr>
-                )}
-                
+                ))}
               </tbody>
             </Table>
+            <Pagination
+              activePage={this.state.activePage}
+              itemsCountPerPage={this.state.perPage}
+              totalItemsCount={this.state.totalData}
+              pageRangeDisplayed={5}
+              onChange={this.handlePageChange}
+              itemClass="page-item"
+              linkClass="page-link"
+            />
           </ModalBody>
           <ModalFooter>
             <Button color="secondary" onClick={this.toggleLoading}>
