@@ -135,7 +135,9 @@ class MYASGCreation extends Component {
         lmr_issued_by: this.props.dataUser.preferred_username,
         plant: "MY",
         customer: "CELCOM",
+        req_type: "Add LMR",
       },
+      lmr_edit: true,
       modal_loading: false,
       modal_material: false,
       list_project: [],
@@ -338,6 +340,7 @@ class MYASGCreation extends Component {
     lmr_form["vendor_name"] = dataVendor.Name;
     lmr_form["vendor_email"] = dataVendor.Email;
     this.setState({ lmr_form: lmr_form });
+    // console.log(this.state.lmr_form)
   }
 
   handleChangeCD(e) {
@@ -383,16 +386,21 @@ class MYASGCreation extends Component {
     if (value !== (null && undefined)) {
       value = value.toString();
     }
-    if (name === "project_name") {
-      let dataProject = this.state.list_project.find(
-        (e) => e.Project === value
-      );
-      if (dataProject !== undefined) {
-        lmr_form["id_project_doc"] = dataProject._id;
+    if (value === "Per Site"){
+      this.setState({ lmr_edit: !this.state.lmr_edit });
+    } else {
+      if (name === "project_name") {
+        let dataProject = this.state.list_project.find(
+          (e) => e.Project === value
+        );
+        if (dataProject !== undefined) {
+          lmr_form["id_project_doc"] = dataProject._id;
+        }
       }
+      lmr_form[name.toString()] = value;
+      this.setState({ lmr_form: lmr_form });
     }
-    lmr_form[name.toString()] = value;
-    this.setState({ lmr_form: lmr_form });
+    
   }
 
   async createLMR() {
@@ -495,6 +503,9 @@ class MYASGCreation extends Component {
       currency: "MYR",
       item_status: "Submit",
       work_status: "Waiting for PR-PO creation",
+      site_id: "",
+      so_or_nw: "",
+      activity: "",
     });
     this.setState({ creation_lmr_child_form: dataLMR });
   }
@@ -511,6 +522,7 @@ class MYASGCreation extends Component {
         value * dataLMR[parseInt(idx)].price;
     }
     this.setState({ creation_lmr_child_form: dataLMR });
+    console.log('creation_lmr_child_form ', this.state.creation_lmr_child_form)
   }
 
   handleChangeMaterial(e) {
@@ -585,17 +597,18 @@ class MYASGCreation extends Component {
                       <FormGroup>
                         <Label>Request Type</Label>
                         <Input
-                          type="select"
+                          type="text"
                           name="Request_Type"
                           id="Request_Type"
-                          value={this.state.lmr_form.Request_Type}
+                          value={this.state.lmr_form.req_type}
                           onChange={this.handleChangeFormLMR}
-                        >
-                          <option value={null} selected></option>
+                          readOnly
+                        />
+                          {/* <option value={null} selected></option>
                           <option value="Add LMR">Add LMR</option>
                           <option value="Change LMR">Change LMR</option>
-                          <option value="Delete LMR">Delete LMR</option>
-                        </Input>
+                          <option value="Delete LMR">Delete LMR</option>                           */}
+                        {/* </Input> */}
                       </FormGroup>
                     </Col>
                     <Col md={2}>
@@ -687,10 +700,11 @@ class MYASGCreation extends Component {
                     </Col>
                   </Row>
                   <Row form>
-                    <Col md={4}>
+                    {/* <Col md={4}>
                       <FormGroup>
                         <Label>Project Name</Label>
-                        <Input
+                        {this.state.lmr_edit === true ? 
+                        (<Input
                           type="select"
                           name="project_name"
                           id="project_name"
@@ -702,13 +716,17 @@ class MYASGCreation extends Component {
                           </option>
                           {this.state.list_project.map((e) => (
                             <option value={e.Project}>{e.Project}</option>
-                          ))}
-                          {/* {this.state.vendor_list.map((e) => (
-                            <option value={e.Vendor_Code}>{e.Name}</option>
-                          ))} */}
-                        </Input>
+                          ))}  
+                        </Input>) : (<Input
+                          type="text"
+                          name="project_name"
+                          id="project_name"
+                          value={this.state.lmr_form.project_name}
+                          onChange={this.handleChangeFormLMR}
+                          readOnly
+                        />)}
                       </FormGroup>
-                    </Col>
+                    </Col> */}
                     <Col md={4}>
                       <FormGroup>
                         <Label>Header Text</Label>
@@ -776,6 +794,7 @@ class MYASGCreation extends Component {
                           id="vendor_email"
                           value={this.state.lmr_form.vendor_email}
                           onChange={this.handleChangeFormLMR}
+                          readOnly
                         />
                       </FormGroup>
                     </Col>
@@ -872,6 +891,33 @@ class MYASGCreation extends Component {
                         </FormGroup>
                       </Col>
                       <Col md={2}>
+                      <FormGroup>
+                        <Label>Project Name</Label>
+                        {this.state.lmr_edit === true ? 
+                        (<Input
+                          type="select"
+                          name="project_name"
+                          id="project_name"
+                          value={this.state.lmr_form.project_name}
+                          onChange={this.handleChangeFormLMR}
+                        >
+                          <option value="" disabled selected hidden>
+                            Select Project Name
+                          </option>
+                          {this.state.list_project.map((e) => (
+                            <option value={e.Project}>{e.Project}</option>
+                          ))}  
+                        </Input>) : (<Input
+                          type="text"
+                          name="project_name"
+                          id="project_name"
+                          value={this.state.lmr_form.project_name}
+                          onChange={this.handleChangeFormLMR}
+                          readOnly
+                        />)}
+                      </FormGroup>
+                    </Col>
+                      <Col md={2}>
                         <FormGroup>
                           <Label>Per Site Material Type</Label>
                           <Input
@@ -905,6 +951,7 @@ class MYASGCreation extends Component {
                             id={i + " /// site_id"}
                             value={lmr.site_id}
                             onChange={this.handleChangeFormLMRChild}
+                            // readOnly
                           />
                         </FormGroup>
                       </Col>
@@ -917,6 +964,7 @@ class MYASGCreation extends Component {
                             id={i + " /// so_or_nw"}
                             value={lmr.so_or_nw}
                             onChange={this.handleChangeFormLMRChild}
+                            // readOnly
                           />
                         </FormGroup>
                       </Col>
@@ -929,6 +977,7 @@ class MYASGCreation extends Component {
                             id={i + " /// activity"}
                             value={lmr.activity}
                             onChange={this.handleChangeFormLMRChild}
+                            // readOnly
                           />
                         </FormGroup>
                       </Col>
@@ -966,6 +1015,7 @@ class MYASGCreation extends Component {
                             id={i + " /// description"}
                             value={lmr.description}
                             onChange={this.handleChangeFormLMRChild}
+                            readOnly
                           />
                         </FormGroup>
                       </Col>
@@ -978,6 +1028,7 @@ class MYASGCreation extends Component {
                             id={i + " /// price"}
                             value={lmr.price}
                             onChange={this.handleChangeFormLMRChild}
+                            readOnly
                           />
                         </FormGroup>
                       </Col>
@@ -1035,7 +1086,7 @@ class MYASGCreation extends Component {
                           />
                         </FormGroup>
                       </Col>
-                      <Col md={3}>
+                      {/* <Col md={3}>
                         <FormGroup>
                           <Label>Item Status</Label>
                           <Input
@@ -1060,7 +1111,7 @@ class MYASGCreation extends Component {
                             disabled
                           />
                         </FormGroup>
-                      </Col>
+                      </Col> */}
                     </Row>
                     <hr className="upload-line--lmr"></hr>
                   </Form>

@@ -114,6 +114,7 @@ class MYASGDetail extends Component {
       list_cd_id : [],
       list_pr_po : [],
       filter_list: "",
+      change_lmr : false,
     };
     this.toggleAddNew = this.toggleAddNew.bind(this);
     this.handleFilterList = this.handleFilterList.bind(this);
@@ -123,6 +124,7 @@ class MYASGDetail extends Component {
     this.toggleMaterial = this.toggleMaterial.bind(this);
     this.toggleAddChild = this.toggleAddChild.bind(this);
     this.toggleCollapse = this.toggleCollapse.bind(this);
+    this.togglechangeLMR = this.togglechangeLMR.bind(this);
     this.toggleLoading = this.toggleLoading.bind(this);
     this.deleteChild = this.deleteChild.bind(this);
     this.addLMR = this.addLMR.bind(this);
@@ -159,6 +161,10 @@ class MYASGDetail extends Component {
 
   toggleCollapse() {
     this.setState({ collapse_add_child: !this.state.collapse_add_child });
+  }
+
+  togglechangeLMR(){
+    this.setState({ change_lmr: !this.state.change_lmr });
   }
 
   toggleLoading() {
@@ -995,6 +1001,13 @@ class MYASGDetail extends Component {
                   >
                     Add Child
                   </Button>
+                  &nbsp;&nbsp;&nbsp;
+                  <Button color="warning" size="sm" onClick={this.togglechangeLMR}>
+                    <i className="fa fa-wpforms" aria-hidden="true">
+                      {" "}
+                    </i>{" "}
+                    &nbsp;Change LMR
+                  </Button>
                 </div>
               </CardHeader>
               <Collapse isOpen={this.state.collapse_add_child}>
@@ -1178,7 +1191,7 @@ class MYASGDetail extends Component {
                   <Table hover bordered responsive size="sm" width="100%">
                     <thead class="table-commercial__header">
                       <tr>
-                        <th></th>
+                        <th style={{width: '70%'}}></th>
                         <th>CD_ID</th>
                         <th>Per Site Material Type</th>
                         <th>Site ID</th>
@@ -1219,7 +1232,7 @@ class MYASGDetail extends Component {
                                 }
                               >
                                 <Button color="info" size="sm">
-                                  <i className="fa fa-info-circle"></i>
+                                <i className="fa fa-info-circle" aria-hidden="true">&nbsp;</i>&nbsp;GR
                                 </Button>
                               </Link>
                             </td>
@@ -1257,16 +1270,19 @@ class MYASGDetail extends Component {
                               <td></td>
                               </React.Fragment>
                             )}
-                            <td>
-                              <Button
+                            {this.state.change_lmr !== true ? (
+                              <td></td>
+                            ): (<td>
+                              {/* <Button
                                 color="danger"
                                 size="sm"
                                 value={e._id}
                                 onClick={this.deleteChild}
                               >
                                 <i className="fa fa-eraser"></i>
-                              </Button>
-                            </td>                       
+                              </Button> */}
+                            </td> )}
+                                                  
                             {/*}<td>{e.pr}</td>
                           <td>{e.po}</td>
                           <td>{e.item}</td>*/}
@@ -1277,13 +1293,14 @@ class MYASGDetail extends Component {
                       )}
                       <tr>
                         <td colSpan="22" style={{ textAlign: "left" }}>
-                          <Button
+                          {this.state.change_lmr !== false ? (<Button
                             color="primary"
                             size="sm"
                             onClick={this.addLMR}
                           >
                             <i className="fa fa-plus">&nbsp;</i> LMR CHild
-                          </Button>
+                          </Button>):("")}
+                          
                         </td>
                       </tr>
                       {this.state.creation_lmr_child_form.map((lmr, i) => (
@@ -1456,7 +1473,7 @@ class MYASGDetail extends Component {
                               style={{ width: "100%" }}
                             />
                           </td>
-                          <td>
+                          {/* <td>
                             <Input
                               type="text"
                               name={i + " /// item_status"}
@@ -1479,7 +1496,7 @@ class MYASGDetail extends Component {
                               // style={{ width: "100%" }}
                               readOnly
                             />
-                          </td>
+                          </td> */}
                           <td></td>
                           <td></td>
                           <td></td>
