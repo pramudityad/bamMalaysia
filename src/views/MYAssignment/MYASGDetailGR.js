@@ -1012,7 +1012,7 @@ class MYASGDetail extends Component {
                   <Table hover bordered responsive size="sm" >
                     <thead class="table-commercial__header">
                       <tr>
-                        <th></th>
+                        {/* <th></th> */}
                         <th>Plant</th>
                         <th style={{width: '12%'}}>Request Type</th>
                         <th>PO Number</th>
@@ -1036,7 +1036,7 @@ class MYASGDetail extends Component {
                       {this.state.lmr_detail !== undefined ? (
                         this.state.lmr_detail.map((e) => (
                           <tr>
-                            <td>
+                            {/* <td>
                               <Button
                                 color="danger"
                                 size="sm"
@@ -1045,9 +1045,9 @@ class MYASGDetail extends Component {
                               >
                                 <i className="fa fa-eraser"></i>
                               </Button>
-                            </td>
+                            </td> */}
                             <td>{e.Plant}</td>
-                            <td>{e.Request_Type}</td>
+                            {this.state.change_gr !== false ? <td>Edit GR</td>: <td>{e.Request_Type}</td>}
                             <td>{e.PO_Number}</td>
                             <td>{e.PO_Item}</td>
                             <td>{e.PO_Price}</td>
