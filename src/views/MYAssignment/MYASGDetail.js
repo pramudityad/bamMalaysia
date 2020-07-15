@@ -1008,6 +1008,18 @@ class MYASGDetail extends Component {
                     </i>{" "}
                     &nbsp;Change LMR
                   </Button>
+                  &nbsp;&nbsp;&nbsp;
+                  <Link to={
+                                  "/lmr-detail/edit/" +
+                                  this.props.match.params.id
+                                }>
+                  <Button color="danger" size="sm">
+                    <i className="fa fa-wpforms" aria-hidden="true">
+                      {" "}
+                    </i>{" "}
+                    &nbsp;Edit LMR
+                  </Button>
+                  </Link>                  
                 </div>
               </CardHeader>
               <Collapse isOpen={this.state.collapse_add_child}>
