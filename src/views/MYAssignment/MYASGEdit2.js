@@ -141,7 +141,9 @@ class MYASGEdit extends Component {
       modal_loading: false,
       modal_material: false,
       list_project: [],
-      creation_lmr_child_form: [],
+      creation_lmr_child_form: [
+
+      ],
       prevPage: 0,
       activePage: 1,
       totalData: 0,
@@ -161,7 +163,6 @@ class MYASGEdit extends Component {
       data_user: this.props.dataUser,
       filter_list: "",
       lmr_detail: {},
-      list_pr_po: [],
     };
     this.handleChangeCD = this.handleChangeCD.bind(this);
     this.loadOptionsCDID = this.loadOptionsCDID.bind(this);
@@ -285,7 +286,7 @@ class MYASGEdit extends Component {
       (res) => {
         if (res.data !== undefined) {
           const dataLMRDetail = res.data.data;
-          this.setState({ lmr_detail: dataLMRDetail}, () => {
+          this.setState({ lmr_detail: dataLMRDetail }, () => {
             console.log('lmr_detail detail ', this.state.lmr_detail.detail)
             this.getDataPRPO(dataLMRDetail.lmr_id)
           });
@@ -299,7 +300,9 @@ class MYASGEdit extends Component {
       (res) => {
         if (res.data !== undefined) {
           const dataLMRDetailPRPO = res.data._items;
-          this.setState({ list_pr_po: dataLMRDetailPRPO});
+          this.setState({ creation_lmr_child_form: dataLMRDetailPRPO});
+          // console.log('creation_lmr_child_form ', this.state.creation_lmr_child_form)
+          // console.log('Item_Category ',this.state.creation_lmr_child_form.map(e => e.Item_Category))
         }
       }
     );
@@ -545,7 +548,7 @@ class MYASGEdit extends Component {
   }
 
   handleChangeFormLMRChild(e) {
-    let dataLMR = this.state.lmr_detail.detail;
+    let dataLMR = this.state.creation_lmr_child_form;
     // console.log('dataLMR ', dataLMR)
     let idxField = e.target.name.split(" /// ");
     // console.log('idxField ',idxField)
@@ -672,7 +675,7 @@ class MYASGEdit extends Component {
                           type="select"
                           name="Item_Category"
                           id="Item_Category"
-                          defaultValue={this.state.list_pr_po.map(e => e.Item_Category)}
+                          defaultValue={this.state.creation_lmr_child_form.map(e => e.Item_Category)}
                           onChange={this.handleChangeFormLMR}
                         >
                           <option value={null} selected></option>
@@ -688,7 +691,7 @@ class MYASGEdit extends Component {
                           type="select"
                           name="LMR_Type"
                           id="LMR_Type"
-                          defaultValue={this.state.list_pr_po.map(e => e.LMR_Type)}
+                          defaultValue={this.state.creation_lmr_child_form.map(e => e.LMR_Type)}
                           onChange={this.handleChangeFormLMR}
                         >
                           <option value={null} selected></option>
@@ -704,7 +707,7 @@ class MYASGEdit extends Component {
                           type="select"
                           name="plan_cost_reduction"
                           id="Plan_Cost_Reduction"
-                          defaultValue={this.state.list_pr_po.map(e => e.Plan_Cost_Reduction)}
+                          defaultValue={this.state.creation_lmr_child_form.map(e => e.Plan_Cost_Reduction)}
                           onChange={this.handleChangeFormLMR}
                         >
                           <option value={null} selected></option>
@@ -722,7 +725,7 @@ class MYASGEdit extends Component {
                           type="text"
                           name="lmr_issued_by"
                           id="lmr_issued_by"
-                          value={this.state.list_pr_po.map(e => e.Requisitioner)}
+                          value={this.state.creation_lmr_child_form.map(e => e.Requisitioner)}
                           onChange={this.handleChangeFormLMR}
                           disabled
                         />
@@ -919,7 +922,7 @@ class MYASGEdit extends Component {
                 <hr className="upload-line--lmr"></hr>
                 <h5 style={{ marginTop: "16px" }}>LMR Child</h5>
                 <hr className="upload-line--lmr"></hr>
-                {this.state.lmr_detail.detail!== undefined && this.state.lmr_detail.detail.map((lmr, i) => (
+                {this.state.creation_lmr_child_form.map((lmr, i) => (
                   <Form>
                     <Row form>
                       <Col md={2}>
@@ -928,8 +931,8 @@ class MYASGEdit extends Component {
                           <Input
                           //key={lmr._id}
                             type="select"
-                            name={i + " /// cd_id"}
-                            // id={i + " /// cd_id"}
+                            name={"cd_id"}
+                            id={i + " /// cd_id"}
                             defaultValue={lmr.cd_id}
                             // onChange={this.handleChangeFormLMRChild}
                             onChange={this.handleChangeFormLMRChild}
@@ -953,8 +956,8 @@ class MYASGEdit extends Component {
                         (<Input
                           //key={lmr._id}
                           type="select"
-                          name={i + " /// project_name"}
-                          // id="project_name"
+                          name={"project_name"}
+                          id="project_name"
                           defaultValue={lmr.Project}
                           onChange={this.handleChangeFormLMR}
                         >
@@ -968,7 +971,7 @@ class MYASGEdit extends Component {
                         //key={lmr._id}
                           type="text"
                           name={i + " /// project_name"}
-                          // id={i + " /// project_name"}
+                          id={i + " /// project_name"}
                           defaultValue={lmr.Project}
                           // onChange={this.handleChangeFormLMR}
                           onChange={this.handleChangeFormLMRChild}
@@ -985,7 +988,7 @@ class MYASGEdit extends Component {
                             type="select"
                             // name={"Per_Site_Material_Type"}
                             name={i + " /// Per_Site_Material_Type"}
-                            // id={i + " /// Per_Site_Material_Type"}
+                            id={i + " /// Per_Site_Material_Type"}
                             defaultValue={lmr.Per_Site_Material_Type}
                             // onChange={this.handleChangeFormLMRChild}
                             onChange={this.handleChangeFormLMRChild}
@@ -1012,8 +1015,8 @@ class MYASGEdit extends Component {
                           // key={lmr._id}
                             type="text"
                             name={i + " /// site_id"}
-                            // id={i + " /// site_id"}
-                            value={lmr.site_id}
+                            id={i + " /// site_id"}
+                            value={lmr.Item_Text_Site_Id}
                             onChange={this.handleChangeFormLMRChild}
                             // readOnly
                           />
@@ -1026,8 +1029,8 @@ class MYASGEdit extends Component {
                           key={lmr._id}
                             type="text"
                             name={i + " /// so_or_nw"}
-                            // id={i + " /// so_or_nw"}
-                            value={lmr.nw}
+                            id={i + " /// so_or_nw"}
+                            value={lmr.NW}
                             onChange={this.handleChangeFormLMRChild}
                             // readOnly
                           />
@@ -1040,8 +1043,8 @@ class MYASGEdit extends Component {
                           //key={lmr._id}
                             type="text"
                             name={i + " /// activity"}
-                            // id={i + " /// activity"}
-                            value={lmr.activity}
+                            id={i + " /// activity"}
+                            value={lmr.NW_Activity}
                             onChange={this.handleChangeFormLMRChild}
                             // readOnly
                           />
@@ -1054,8 +1057,8 @@ class MYASGEdit extends Component {
                           //key={lmr._id}
                             type="text"
                             name={i + " /// tax_code"}
-                            // id={i + " /// tax_code"}
-                            value={lmr.tax_code}
+                            id={i + " /// tax_code"}
+                            value={lmr.Tax_Code}
                             onChange={this.handleChangeFormLMRChild}
                           />
                         </FormGroup>
@@ -1067,8 +1070,8 @@ class MYASGEdit extends Component {
                           //key={lmr._id}
                             type="text"
                             name={i + " /// material"}
-                            // id={i + " /// material"}
-                            value={lmr.material}
+                            id={i + " /// material"}
+                            value={lmr.Material_Code}
                             onClick={() => this.toggleMaterial(i)}
                             onChange={this.handleChangeFormLMRChild}
                           />
@@ -1081,8 +1084,8 @@ class MYASGEdit extends Component {
                           //key={lmr._id}
                             type="textarea"
                             name={i + " /// description"}
-                            // id={i + " /// description"}
-                            value={lmr.description}
+                            id={i + " /// description"}
+                            value={lmr.Description}
                             onChange={this.handleChangeFormLMRChild}
                             readOnly
                           />
@@ -1094,9 +1097,9 @@ class MYASGEdit extends Component {
                           <Input
                           //key={lmr._id}
                             type="number"
-                            name={i + " /// unit_price"}
-                            // id={i + " /// price"}
-                            value={lmr.unit_price}
+                            name={i + " /// price"}
+                            id={i + " /// price"}
+                            value={lmr.Price}
                             onChange={this.handleChangeFormLMRChild}
                             readOnly
                           />
@@ -1108,9 +1111,9 @@ class MYASGEdit extends Component {
                           <Input
                           //key={lmr._id}
                             type="number"
-                            name={i + " /// qty"}
-                            // id={i + " /// qty"}
-                            value={lmr.qty}
+                            name={i + " /// quantity"}
+                            id={i + " /// quantity"}
+                            value={lmr.Qty}
                             onChange={this.handleChangeFormLMRChild}
                           />
                         </FormGroup>
@@ -1121,9 +1124,9 @@ class MYASGEdit extends Component {
                           <Input
                           //key={lmr._id}
                             type="number"
-                            name={i+" /// total_price"}
-                            // id={i+" /// total_price"}
-                            value={lmr.total_price}
+                            name={i+" /// total_amount"}
+                            id={i+" /// total_amount"}
+                            value={lmr.Total_Amount}
                             onChange={this.handleChangeFormLMRChild}
                           />
                         </FormGroup>
@@ -1135,8 +1138,8 @@ class MYASGEdit extends Component {
                           //key={lmr._id}
                             type="select"
                             name={i+" /// currency"}
-                            // id={i+" /// currency"}
-                            value={lmr.currency}
+                            id={i+" /// currency"}
+                            value={lmr.Currency}
                             onChange={this.handleChangeFormLMRChild}
                           >
                             <option value="MYR" selected>
@@ -1154,8 +1157,8 @@ class MYASGEdit extends Component {
                           //key={lmr._id}
                             type="date"
                             name={i+" /// delivery_date"}
-                            // id={i+" /// delivery_date"}
-                            value={lmr.delivery_date}
+                            id={i+" /// delivery_date"}
+                            value={lmr.Request_Delivery_Date}
                             onChange={this.handleChangeFormLMRChild}
                           />
                         </FormGroup>
