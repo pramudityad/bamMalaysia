@@ -135,7 +135,7 @@ class MYASGEdit extends Component {
         lmr_issued_by: this.props.dataUser.preferred_username,
         plant: "MY",
         customer: "CELCOM",
-        req_type: "Add LMR",
+        request_type: "Change LMR",
       },
       lmr_edit: true,
       modal_loading: false,
@@ -159,9 +159,10 @@ class MYASGEdit extends Component {
       validation_form: {},
       current_material_select: null,
       data_user: this.props.dataUser,
-      filter_list: "",
       lmr_detail: {},
       list_pr_po: [],
+      filter_list: new Array(7).fill(""),
+
     };
     this.handleChangeCD = this.handleChangeCD.bind(this);
     this.loadOptionsCDID = this.loadOptionsCDID.bind(this);
@@ -349,12 +350,20 @@ class MYASGEdit extends Component {
   }
 
   getMaterialList() {
-    let filter = '"mm_code":{"$regex" : "' + this.state.filter_list + '", "$options" : "i"}';
-    let whereAnd = '{'+filter+'}';
+    let filter_array = [];
+    this.state.filter_list[0] !== "" && (filter_array.push('"MM_Code":{"$regex" : "' + this.state.filter_list[0] + '", "$options" : "i"}'));
+    this.state.filter_list[1] !== "" && (filter_array.push('"Material_type":{"$regex" : "' + this.state.filter_list[1] + '", "$options" : "i"}'));
+    this.state.filter_list[2] !== "" && (filter_array.push('"SoW_Description":{"$regex" : "' + this.state.filter_list[2] + '", "$options" : "i"}'));
+    this.state.filter_list[3] !== "" && (filter_array.push('"UoM":{"$regex" : "' + this.state.filter_list[3] + '", "$options" : "i"}'));
+    this.state.filter_list[4] !== "" && (filter_array.push('"Region":{"$regex" : "' + this.state.filter_list[4] + '", "$options" : "i"}'));
+    this.state.filter_list[5] !== "" && (filter_array.push('"Unit_Price":{"$regex" : "' + this.state.filter_list[5] + '", "$options" : "i"}'));
+    this.state.filter_list[6] !== "" && (filter_array.push('"MM_Description":{"$regex" : "' + this.state.filter_list[6] + '", "$options" : "i"}'));
+    let whereAnd = '{' + filter_array.join(',') + '}';
+    // let filter = '"mm_code":{"$regex" : "' + this.state.filter_list + '", "$options" : "i"}';
     this.getDatafromAPIMY(
-      "/mm_code_data?q="+whereAnd+"&lmt=" +
+      "/mm_code_data?where="+whereAnd+"&max_results=" +
         this.state.perPage +
-        "&pg=" +
+        "&page=" +
         this.state.activePage
     ).then((res) => {
       if (res.data !== undefined) {
@@ -440,15 +449,20 @@ class MYASGEdit extends Component {
 
   async createLMR() {
     const dataForm = this.state.lmr_form;
-    const dataChildForm = this.state.creation_lmr_child_form;
+    const dataChildForm = this.state.lmr_detail.detail;
+    // console.log(this.state.creation_lmr_child_form);
     const dataLMR = {
       plant: this.state.lmr_form.plant,
       customer: this.state.lmr_form.customer,
+      request_type: this.state.lmr_form.request_type,
+      item_category: this.state.lmr_form.Item_Category,
+      lmr_type: this.state.lmr_form.LMR_Type,
+      plan_cost_reduction: this.state.lmr_form.Plan_Cost_Reduction,
       lmr_issued_by: this.state.lmr_form.lmr_issued_by,
       pgr: this.state.lmr_form.pgr,
       gl_account: this.state.lmr_form.gl_account,
       id_project_doc: this.state.lmr_form.id_project_doc,
-      project_name: this.state.lmr_form.project_name,
+      project_name: this.state.lmr_detail.project_name,
       header_text: this.state.lmr_form.header_text,
       payment_term: this.state.lmr_form.payment_term,
       vendor_name: this.state.lmr_form.vendor_name,
@@ -460,8 +474,10 @@ class MYASGEdit extends Component {
       l5_approver: this.state.lmr_form.l5_approver,
     };
     let dataLMRCHild = [];
-    for (let i = 0; i < dataChildForm.length; i++) {
+    for (let i = 0; i < this.state.lmr_detail.detail.length; i++) {
+      // const dataChild = this.state.lmr_detail.detail.map((e, i) => detail){      
       const dataChild = {
+        project_name: this.state.lmr_detail.project_name,
         nw: dataChildForm[i].so_or_nw,
         activity: dataChildForm[i].activity,
         id_project_doc: this.state.lmr_form.id_project_doc,
@@ -478,7 +494,7 @@ class MYASGEdit extends Component {
         currency: dataChildForm[i].currency,
         pr: "",
         item: 0,
-        request_type: this.state.lmr_form.Request_Type,
+        request_type: this.state.lmr_form.request_type,
         item_category: this.state.lmr_form.Item_Category,
         lmr_type: this.state.lmr_form.LMR_Type,
         plan_cost_reduction: this.state.lmr_form.Plan_Cost_Reduction,
@@ -489,18 +505,18 @@ class MYASGEdit extends Component {
         plant: this.state.lmr_form.plant,
         customer: this.state.lmr_form.customer,
       };
-      if (
-        dataChildForm[i].site_id === undefined ||
-        dataChildForm[i].site_id === null
-      ) {
+      // if (
+      //   dataChildForm[i].site_id === undefined ||
+      //   dataChildForm[i].site_id === null
+      // ) {
         dataLMRCHild.push(dataChild);
-      }
+      // }
     }
     console.log("dataLMR", dataLMR);
     console.log("dataLMRChild", dataLMRCHild);
     const respondSaveLMR = await this.postDatatoAPINODE(
-      "/aspassignment/createOneAspAssignment",
-      { asp_data: dataLMR, asp_data_child: dataLMRCHild }
+      "/aspassignment/UpdateAll", {data: [{ header: dataLMR, child: dataLMRCHild }]}
+      
     );
     if (
       respondSaveLMR.data !== undefined &&
@@ -532,7 +548,7 @@ class MYASGEdit extends Component {
   }
 
   addLMR() {
-    let dataLMR = this.state.creation_lmr_child_form;
+    let dataLMR = this.state.lmr_detail.detail;
     dataLMR.push({
       tax_code: "I0",
       currency: "MYR",
@@ -599,6 +615,25 @@ class MYASGEdit extends Component {
     this.toggleMaterial();
   }
 
+  loopSearchBar = () => {
+    let searchBar = [];
+    for (let i = 0; i < 7; i++) {
+      searchBar.push(
+        <td>
+          <div className="controls" style={{ width: '150px' }}>
+            <InputGroup className="input-prepend">
+              <InputGroupAddon addonType="prepend">
+                <InputGroupText><i className="fa fa-search"></i></InputGroupText>
+              </InputGroupAddon>
+              <Input type="text" placeholder="Search" onChange={this.handleFilterList} value={this.state.filter_list[i]} name={i} size="sm" />
+            </InputGroup>
+          </div>
+        </td>
+      )
+    }
+    return searchBar;
+  }
+
   render() {
     // console.log("this.props.dataUser", this.props.dataUser);
     if (this.state.redirectSign !== false) {
@@ -653,9 +688,9 @@ class MYASGEdit extends Component {
                         <Label>Request Type</Label>
                         <Input
                           type="text"
-                          name="Request_Type"
-                          id="Request_Type"
-                          value={this.state.lmr_form.req_type}
+                          name="request_type"
+                          id="request_type"
+                          value={this.state.lmr_form.request_type}
                           onChange={this.handleChangeFormLMR}
                           readOnly
                         />
@@ -1235,8 +1270,8 @@ class MYASGEdit extends Component {
               <tbody>
                 <tr>
                   <td></td>
-                  <td>
-                    <div className="controls" style={{ width: "150px" }}>
+                  {/* <td> */}
+                    {/* <div className="controls" style={{ width: "150px" }}>
                       <InputGroup className="input-prepend">
                         <InputGroupAddon addonType="prepend">
                           <InputGroupText>
@@ -1251,14 +1286,15 @@ class MYASGEdit extends Component {
                           size="sm"
                         />
                       </InputGroup>
-                    </div>
-                  </td>
+                    </div> */}
+                    {this.loopSearchBar()}
+                  {/* </td>
                   <td></td>
                   <td></td>
                   <td></td>
                   <td></td>
                   <td></td>
-                  <td></td>
+                  <td></td> */}
                 </tr>
                 {this.state.material_list.map((e) => (
                   <tr>
