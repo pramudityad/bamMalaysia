@@ -190,6 +190,7 @@ class MYASGList extends Component {
                       <th>Action</th>
                       <th>LMR ID</th>
                       <th>GL Account</th>
+                      <th>PO Number</th>
                       <th>Project Name</th>
                       <th>Vendor Name</th>
                     </tr>
@@ -202,6 +203,7 @@ class MYASGList extends Component {
                         </td>
                         <td>{e.lmr_id}</td>
                         <td>{e.gl_account}</td>
+                        <td>{e.po}</td>
                         <td>{e.project_name}</td>
                         <td>{e.vendor_name}</td>
                       </tr>

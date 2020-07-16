@@ -80,12 +80,12 @@ class MYASGDetail extends Component {
       },
       ChildForm: [],
       filter_list: "",
-
+      change_gr : false,
     };
     this.toggleAddNew = this.toggleAddNew.bind(this);
     this.handleInput = this.handleInput.bind(this);
     this.postGRChild = this.postGRChild.bind(this);
-
+    this.togglechangeGR = this.togglechangeGR.bind(this);
     this.toggleAddChild = this.toggleAddChild.bind(this);
     this.toggleCollapse = this.toggleCollapse.bind(this);
     this.toggleLoading = this.toggleLoading.bind(this);
@@ -113,16 +113,16 @@ class MYASGDetail extends Component {
       ChildForm: this.state.ChildForm.concat([
         {
           Plant: "MY",
-          Request_Type: "",
+          Request_Type: "Add GR",
           PO_Number: this.state.list_pr_po.PO_Number,
           PO_Item: this.state.list_pr_po.PO_Item,
-          PO_Price: "",
+          PO_Price: this.state.list_pr_po.PO_Price,
           PO_Qty: this.state.list_pr_po.PO_Qty,
           Required_GR_Qty: "",
           DN_No: "",
           WCN_Link: "",
-          Item_Status: "Waiting for GR",
-          Work_Status: "Submit",
+          // Item_Status: "Waiting for GR",
+          // Work_Status: "Submit",
         },
       ]),
     });
@@ -134,6 +134,10 @@ class MYASGDetail extends Component {
 
   toggleCollapse() {
     this.setState({ collapse_add_child: !this.state.collapse_add_child });
+  }
+
+  togglechangeGR() {
+    this.setState({ change_gr: !this.state.change_gr });
   }
 
   toggleLoading() {
@@ -815,12 +819,12 @@ class MYASGDetail extends Component {
                       </DropdownMenu>
                     </Dropdown>
                   </div>
-                  {/* <Button color="success" size="sm" onClick={this.toggleaddGR}>
+                  <Button color="warning" size="sm" onClick={this.togglechangeGR}>
                     <i className="fa fa-wpforms" aria-hidden="true">
                       {" "}
                     </i>{" "}
-                    &nbsp;Create GR
-                  </Button> */}
+                    &nbsp;Edit GR
+                  </Button>
                 </div>
               </CardHeader>
               <Collapse isOpen={this.state.collapse_add_child}>
@@ -1008,7 +1012,7 @@ class MYASGDetail extends Component {
                   <Table hover bordered responsive size="sm" >
                     <thead class="table-commercial__header">
                       <tr>
-                        <th></th>
+                        {/* <th></th> */}
                         <th>Plant</th>
                         <th style={{width: '12%'}}>Request Type</th>
                         <th>PO Number</th>
@@ -1032,7 +1036,7 @@ class MYASGDetail extends Component {
                       {this.state.lmr_detail !== undefined ? (
                         this.state.lmr_detail.map((e) => (
                           <tr>
-                            <td>
+                            {/* <td>
                               <Button
                                 color="danger"
                                 size="sm"
@@ -1041,9 +1045,9 @@ class MYASGDetail extends Component {
                               >
                                 <i className="fa fa-eraser"></i>
                               </Button>
-                            </td>
+                            </td> */}
                             <td>{e.Plant}</td>
-                            <td>{e.Request_Type}</td>
+                            {this.state.change_gr !== false ? <td>Edit GR</td>: <td>{e.Request_Type}</td>}
                             <td>{e.PO_Number}</td>
                             <td>{e.PO_Item}</td>
                             <td>{e.PO_Price}</td>
@@ -1073,14 +1077,15 @@ class MYASGDetail extends Component {
                           </td>
                           <td>
                             <Input
-                              type="select"
+                              type="text"
                               name="Request_Type"
                               id="Request_Type"
                               value={child_data.Request_Type}
                               onChange={this.handleInputchild(idx)}
                               // style={{ width: "200" }}
-                            >
-                              <option value="" disabled selected hidden>
+                              readOnly
+                            />
+                              {/* <option value="" disabled selected hidden>
                                 Select Request Type
                               </option>
                               <option value="Add GR" >
@@ -1089,7 +1094,7 @@ class MYASGDetail extends Component {
                               <option value="Delete GR" >
                                 Delete GR
                               </option>
-                            </Input>
+                            </Input> */}
                           </td>
                           <td>
                             <Input
@@ -1097,9 +1102,9 @@ class MYASGDetail extends Component {
                               type="text"
                               name="PO_Number"
                               id={"PO_Number"}
-                              value={child_data.PO_Number}
+                              defaultValue={child_data.PO_Number}
                               onChange={this.handleInputchild(idx)}
-                              
+                              readOnly
                             />
                           </td>
                           <td>
@@ -1108,9 +1113,9 @@ class MYASGDetail extends Component {
                               type="text"
                               name="PO_Item"
                               id={"PO_Item"}
-                              value={child_data.PO_Item}
+                              defaultValue={child_data.PO_Item}
                               onChange={this.handleInputchild(idx)}
-                              
+                              readOnly
                             />
                           </td>
                           <td>
@@ -1119,7 +1124,8 @@ class MYASGDetail extends Component {
                               name="PO_Price"
                               id="PO_Price"
                               onChange={this.handleInputchild(idx)}
-                              
+                              defaultValue={child_data.PO_Price}
+                              readOnly
                             />
                           </td>
                           <td>
@@ -1129,8 +1135,9 @@ class MYASGDetail extends Component {
                               name="PO_Qty"
                               id={"PO_Qty"}                              
                               value={child_data.PO_Qty}
+                              defaultValue={child_data.PO_Qty}
                               onChange={this.handleInputchild(idx)}
-                              
+                              readOnly
                             />
                           </td>
                           <td>
@@ -1160,7 +1167,7 @@ class MYASGDetail extends Component {
                               onChange={this.handleInputchild(idx)}
                             />
                           </td>
-                          <td>
+                          {/* <td>
                             <Input
                               type="text"
                               name="Item_Status"
@@ -1179,7 +1186,7 @@ class MYASGDetail extends Component {
                               onChange={this.handleInputchild(idx)}
                               readOnly
                             />
-                          </td>
+                          </td> */}
                         </tr>                        
                       ))}
                       {this.state.ChildForm.length !== 0 && (
@@ -1203,9 +1210,11 @@ class MYASGDetail extends Component {
                   </Table>
                 </div>
                 <div>
-                  <Button color="primary" size="sm" onClick={this.addGR}>
-                    <i className="fa fa-plus">&nbsp;</i> GR Child
-                  </Button>
+                  {this.state.change_gr !== false ? 
+                  (<Button color="primary" size="sm" onClick={this.addGR}>
+                  <i className="fa fa-plus">&nbsp;</i> GR Child
+                </Button>) : ("")}
+                  
                 </div>
               </CardBody>
               <CardFooter>
@@ -1319,6 +1328,7 @@ class MYASGDetail extends Component {
                         id="PO_Number"
                         value={Dataform.PO_Number}
                         onChange={this.handleInput}
+                        readOnly
                       />
                     </FormGroup>
                   </Col>
@@ -1333,6 +1343,7 @@ class MYASGDetail extends Component {
                         id="PO_Item"
                         value={Dataform.PO_Item}
                         onChange={this.handleInput}
+                        readOnly
                       />
                     </FormGroup>
                   </Col>
@@ -1347,6 +1358,7 @@ class MYASGDetail extends Component {
                         id="PO_Price"
                         value={Dataform.PO_Price}
                         onChange={this.handleInput}
+                        readOnly
                       />
                     </FormGroup>
                   </Col>
@@ -1361,6 +1373,7 @@ class MYASGDetail extends Component {
                         id="PO_Qty"
                         value={Dataform.PO_Qty}
                         onChange={this.handleInput}
+                        readOnly
                       />
                     </FormGroup>
                   </Col>

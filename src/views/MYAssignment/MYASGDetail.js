@@ -113,7 +113,16 @@ class MYASGDetail extends Component {
       material_list: [],
       list_cd_id : [],
       list_pr_po : [],
-      filter_list: "",
+      filter_list: new Array(7).fill(""),
+      change_lmr : false,
+      lmr_form: {
+        pgr: "MP2",
+        gl_account: "402102",
+        lmr_issued_by: this.props.dataUser.preferred_username,
+        plant: "MY",
+        customer: "CELCOM",
+        request_type: "Delete LMR",
+      },
     };
     this.toggleAddNew = this.toggleAddNew.bind(this);
     this.handleFilterList = this.handleFilterList.bind(this);
@@ -123,6 +132,7 @@ class MYASGDetail extends Component {
     this.toggleMaterial = this.toggleMaterial.bind(this);
     this.toggleAddChild = this.toggleAddChild.bind(this);
     this.toggleCollapse = this.toggleCollapse.bind(this);
+    this.togglechangeLMR = this.togglechangeLMR.bind(this);
     this.toggleLoading = this.toggleLoading.bind(this);
     this.deleteChild = this.deleteChild.bind(this);
     this.addLMR = this.addLMR.bind(this);
@@ -159,6 +169,113 @@ class MYASGDetail extends Component {
 
   toggleCollapse() {
     this.setState({ collapse_add_child: !this.state.collapse_add_child });
+  }
+
+  // togglechangeLMR(){
+  //   this.setState({ change_lmr: !this.state.change_lmr });
+  // }
+
+  async togglechangeLMR() {
+    const dataForm = this.state.lmr_form;
+    const dataChildForm = this.state.lmr_detail.detail;
+    // console.log(this.state.creation_lmr_child_form);
+    const dataLMR = {
+      _id: this.props.match.params.id,
+      lmr_id: this.state.lmr_detail.lmr_id,
+      plant: this.state.lmr_form.plant,
+      customer: this.state.lmr_form.customer,
+      request_type: this.state.lmr_form.request_type,
+      item_category: this.state.lmr_form.Item_Category,
+      lmr_type: this.state.lmr_form.LMR_Type,
+      plan_cost_reduction: this.state.lmr_form.Plan_Cost_Reduction,
+      lmr_issued_by: this.state.lmr_form.lmr_issued_by,
+      pgr: this.state.lmr_form.pgr,
+      gl_account: this.state.lmr_form.gl_account,
+      id_project_doc: this.state.lmr_form.id_project_doc,
+      project_name: this.state.lmr_detail.project_name,
+      header_text: this.state.lmr_form.header_text,
+      payment_term: this.state.lmr_form.payment_term,
+      vendor_name: this.state.lmr_form.vendor_name,
+      vendor_address: this.state.lmr_form.vendor_email,
+      l1_approver: this.state.lmr_form.l1_approver,
+      l2_approver: this.state.lmr_form.l2_approver,
+      l3_approver: this.state.lmr_form.l3_approver,
+      l4_approver: this.state.lmr_form.l4_approver,
+      l5_approver: this.state.lmr_form.l5_approver,
+    };
+    let dataLMRCHild = [];
+    for (let i = 0; i < this.state.lmr_detail.detail.length; i++) {
+      // const dataChild = this.state.lmr_detail.detail.map((e, i) => detail){      
+      const dataChild = {
+        _id: dataChildForm[i]._id,
+        project_name: this.state.lmr_detail.project_name,
+        nw: dataChildForm[i].so_or_nw,
+        activity: dataChildForm[i].activity,
+        id_project_doc: this.state.lmr_form.id_project_doc,
+        material_code_doc: dataChildForm[i].material_code_doc,
+        material: dataChildForm[i].material,
+        description: dataChildForm[i].description,
+        site_id: dataChildForm[i].site_id,
+        qty: dataChildForm[i].quantity,
+        unit_price: dataChildForm[i].price,
+        tax_code: dataChildForm[i].tax_code,
+        delivery_date: dataChildForm[i].delivery_date,
+        total_price: dataChildForm[i].total_amount,
+        total_value: dataChildForm[i].total_amount,
+        currency: dataChildForm[i].currency,
+        pr: "",
+        item: 0,
+        request_type: this.state.lmr_form.request_type,
+        item_category: this.state.lmr_form.Item_Category,
+        lmr_type: this.state.lmr_form.LMR_Type,
+        plan_cost_reduction: this.state.lmr_form.Plan_Cost_Reduction,
+        cdid: dataChildForm[i].cd_id,
+        per_site_material_type: dataChildForm[i].Per_Site_Material_Type,
+        item_status: "Submit",
+        work_status: "Waiting for PR-PO creation",
+        plant: this.state.lmr_form.plant,
+        customer: this.state.lmr_form.customer,
+      };
+      // if (
+      //   dataChildForm[i].site_id === undefined ||
+      //   dataChildForm[i].site_id === null
+      // ) {
+        dataLMRCHild.push(dataChild);
+      // }
+    }
+    console.log("dataLMR", dataLMR);
+    console.log("dataLMRChild", dataLMRCHild);
+    const respondSaveLMR = await this.patchDatatoAPINODE(
+      "/aspassignment/UpdateAll", {data: [{ header: dataLMR, child: dataLMRCHild }]}
+      
+    );
+    if (
+      respondSaveLMR.data !== undefined &&
+      respondSaveLMR.status >= 200 &&
+      respondSaveLMR.status <= 300
+    ) {
+      this.setState({ action_status: "success" });
+    } else {
+      if (
+        respondSaveLMR.response !== undefined &&
+        respondSaveLMR.response.data !== undefined &&
+        respondSaveLMR.response.data.error !== undefined
+      ) {
+        if (respondSaveLMR.response.data.error.message !== undefined) {
+          this.setState({
+            action_status: "failed",
+            action_message: respondSaveLMR.response.data.error.message,
+          });
+        } else {
+          this.setState({
+            action_status: "failed",
+            action_message: respondSaveLMR.response.data.error,
+          });
+        }
+      } else {
+        this.setState({ action_status: "failed" });
+      }
+    }
   }
 
   toggleLoading() {
@@ -344,12 +461,20 @@ class MYASGDetail extends Component {
 
   
   getMaterialList() {
-    let filter = '"mm_code":{"$regex" : "' + this.state.filter_list + '", "$options" : "i"}';
-    let whereAnd = '{'+filter+'}';
+    let filter_array = [];
+    this.state.filter_list[0] !== "" && (filter_array.push('"MM_Code":{"$regex" : "' + this.state.filter_list[0] + '", "$options" : "i"}'));
+    this.state.filter_list[1] !== "" && (filter_array.push('"Material_type":{"$regex" : "' + this.state.filter_list[1] + '", "$options" : "i"}'));
+    this.state.filter_list[2] !== "" && (filter_array.push('"SoW_Description":{"$regex" : "' + this.state.filter_list[2] + '", "$options" : "i"}'));
+    this.state.filter_list[3] !== "" && (filter_array.push('"UoM":{"$regex" : "' + this.state.filter_list[3] + '", "$options" : "i"}'));
+    this.state.filter_list[4] !== "" && (filter_array.push('"Region":{"$regex" : "' + this.state.filter_list[4] + '", "$options" : "i"}'));
+    this.state.filter_list[5] !== "" && (filter_array.push('"Unit_Price":{"$regex" : "' + this.state.filter_list[5] + '", "$options" : "i"}'));
+    this.state.filter_list[6] !== "" && (filter_array.push('"MM_Description":{"$regex" : "' + this.state.filter_list[6] + '", "$options" : "i"}'));
+    let whereAnd = '{' + filter_array.join(',') + '}';
+    // let filter = '"mm_code":{"$regex" : "' + this.state.filter_list + '", "$options" : "i"}';
     this.getDatafromAPIMY(
-      "/mm_code_data?q="+whereAnd+"&lmt=" +
+      "/mm_code_data?where="+whereAnd+"&max_results=" +
         this.state.perPage +
-        "&pg=" +
+        "&page=" +
         this.state.activePage
     ).then((res) => {
       if (res.data !== undefined) {
@@ -948,6 +1073,25 @@ class MYASGDetail extends Component {
     console.log("dummryRow", JSON.stringify(dummryRow));
   }
 
+  loopSearchBar = () => {
+    let searchBar = [];
+    for (let i = 0; i < 7; i++) {
+      searchBar.push(
+        <td>
+          <div className="controls" style={{ width: '150px' }}>
+            <InputGroup className="input-prepend">
+              <InputGroupAddon addonType="prepend">
+                <InputGroupText><i className="fa fa-search"></i></InputGroupText>
+              </InputGroupAddon>
+              <Input type="text" placeholder="Search" onChange={this.handleFilterList} value={this.state.filter_list[i]} name={i} size="sm" />
+            </InputGroup>
+          </div>
+        </td>
+      )
+    }
+    return searchBar;
+  }
+
   render() {
     return (
       <div>
@@ -995,6 +1139,25 @@ class MYASGDetail extends Component {
                   >
                     Add Child
                   </Button>
+                  &nbsp;&nbsp;&nbsp;
+                  <Button color="danger" size="sm" onClick={this.togglechangeLMR}>
+                  <i className="fa fa-eraser">
+                      {" "}
+                    </i>{" "}
+                    &nbsp;Delete LMR
+                  </Button>
+                  &nbsp;&nbsp;&nbsp;
+                  <Link to={
+                                  "/lmr-edit/" +
+                                  this.props.match.params.id
+                                }>
+                  <Button color="warning" size="sm">
+                    <i className="fa fa-wpforms" aria-hidden="true">
+                      {" "}
+                    </i>{" "}
+                    &nbsp;Change LMR
+                  </Button>
+                  </Link>                  
                 </div>
               </CardHeader>
               <Collapse isOpen={this.state.collapse_add_child}>
@@ -1167,6 +1330,10 @@ class MYASGDetail extends Component {
                             <td>L3 Approver</td>
                             <td>:</td>
                             <td>{this.state.lmr_detail.l3_approver}</td>
+                          </tr><tr style={{ fontWeight: "425", fontSize: "15px" }}>
+                            <td>Request Type</td>
+                            <td>:</td>
+                            <td>{this.state.lmr_detail.request_type}</td>
                           </tr>
                         </tbody>
                       </table>
@@ -1178,7 +1345,7 @@ class MYASGDetail extends Component {
                   <Table hover bordered responsive size="sm" width="100%">
                     <thead class="table-commercial__header">
                       <tr>
-                        <th></th>
+                        <th style={{width: '70%'}}></th>
                         <th>CD_ID</th>
                         <th>Per Site Material Type</th>
                         <th>Site ID</th>
@@ -1219,7 +1386,7 @@ class MYASGDetail extends Component {
                                 }
                               >
                                 <Button color="info" size="sm">
-                                  <i className="fa fa-info-circle"></i>
+                                <i className="fa fa-info-circle" aria-hidden="true">&nbsp;</i>&nbsp;GR
                                 </Button>
                               </Link>
                             </td>
@@ -1257,16 +1424,19 @@ class MYASGDetail extends Component {
                               <td></td>
                               </React.Fragment>
                             )}
-                            <td>
-                              <Button
+                            {this.state.change_lmr !== true ? (
+                              <td></td>
+                            ): (<td>
+                              {/* <Button
                                 color="danger"
                                 size="sm"
                                 value={e._id}
                                 onClick={this.deleteChild}
                               >
                                 <i className="fa fa-eraser"></i>
-                              </Button>
-                            </td>                       
+                              </Button> */}
+                            </td> )}
+                                                  
                             {/*}<td>{e.pr}</td>
                           <td>{e.po}</td>
                           <td>{e.item}</td>*/}
@@ -1277,13 +1447,14 @@ class MYASGDetail extends Component {
                       )}
                       <tr>
                         <td colSpan="22" style={{ textAlign: "left" }}>
-                          <Button
+                          {this.state.change_lmr !== false ? (<Button
                             color="primary"
                             size="sm"
                             onClick={this.addLMR}
                           >
                             <i className="fa fa-plus">&nbsp;</i> LMR CHild
-                          </Button>
+                          </Button>):("")}
+                          
                         </td>
                       </tr>
                       {this.state.creation_lmr_child_form.map((lmr, i) => (
@@ -1456,7 +1627,7 @@ class MYASGDetail extends Component {
                               style={{ width: "100%" }}
                             />
                           </td>
-                          <td>
+                          {/* <td>
                             <Input
                               type="text"
                               name={i + " /// item_status"}
@@ -1479,7 +1650,7 @@ class MYASGDetail extends Component {
                               // style={{ width: "100%" }}
                               readOnly
                             />
-                          </td>
+                          </td> */}
                           <td></td>
                           <td></td>
                           <td></td>
@@ -1759,9 +1930,9 @@ class MYASGDetail extends Component {
               </thead>
               <tbody>
               <tr>
-                  <td></td>
-                  <td>
-                    <div className="controls" style={{ width: "150px" }}>
+              <td></td>
+                  {/* <td> */}
+                    {/* <div className="controls" style={{ width: "150px" }}>
                       <InputGroup className="input-prepend">
                         <InputGroupAddon addonType="prepend">
                           <InputGroupText>
@@ -1776,14 +1947,15 @@ class MYASGDetail extends Component {
                           size="sm"
                         />
                       </InputGroup>
-                    </div>
-                  </td>
+                    </div> */}
+                    {this.loopSearchBar()}
+                  {/* </td>
                   <td></td>
                   <td></td>
                   <td></td>
                   <td></td>
                   <td></td>
-                  <td></td>
+                  <td></td> */}
                 </tr>
                 {this.state.material_list.map(e => 
                   <tr>
