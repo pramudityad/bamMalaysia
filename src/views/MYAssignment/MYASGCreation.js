@@ -174,6 +174,7 @@ class MYASGCreation extends Component {
     this.handleChangeFormLMRChild = this.handleChangeFormLMRChild.bind(this);
     this.toggleMaterial = this.toggleMaterial.bind(this);
     this.handleChangeMaterial = this.handleChangeMaterial.bind(this);
+    this.deleteLMR = this.deleteLMR.bind(this);
   }
 
   toggleLoading() {
@@ -500,6 +501,17 @@ class MYASGCreation extends Component {
       activity: "",
     });
     this.setState({ creation_lmr_child_form: dataLMR });
+  }
+
+  deleteLMR(e){
+    let index = e.currentTarget.value;
+    let dataChild = this.state.creation_lmr_child_form;
+    if(index !== undefined){
+      dataChild.splice(parseInt(index), 1);
+      this.setState({creation_lmr_child_form : []}, () => {
+        this.setState({creation_lmr_child_form : dataChild});
+      });
+    }
   }
 
   handleChangeFormLMR(e) {
@@ -1155,6 +1167,9 @@ class MYASGCreation extends Component {
                           />
                         </FormGroup>
                       </Col> */}
+                      <Button value={i} onClick={this.deleteLMR} color="danger" size="sm" style={{marginLeft: "5px"}}>
+                              <i className="fa fa-trash"></i>
+                            </Button>
                     </Row>
                     <hr className="upload-line--lmr"></hr>
                   </Form>

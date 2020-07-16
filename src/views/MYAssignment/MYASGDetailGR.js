@@ -128,6 +128,12 @@ class MYASGDetail extends Component {
     });
   }
 
+  deleteSSOW = (idx) => () => {
+    this.setState({
+      ChildForm: this.state.ChildForm.filter((s, sidx) => idx !== sidx),
+    });
+  };
+
   toggleAddNew() {
     this.setState({ collapse: !this.state.collapse });
   }
@@ -637,10 +643,26 @@ class MYASGDetail extends Component {
 
 
   async deleteGR(e) {
-    this.toggleLoading();
-    const value = e.currentTarget.value;
-    const respondDelLMRChild = await this.deleteDatafromAPINODE(
-      "/aspassignment/deleteGr/" + value
+    // this.toggleLoading();
+    const _id = e.currentTarget.value;
+    const Data = this.state.lmr_detail.find((e) => e._id === _id);
+    console.log('Data ',Data)
+    const grdata = {
+      _id: Data._id,
+      Plant: Data.Plant,
+      Request_Type: "Delete GR",
+      PO_Number: Data.PO_Number,
+            PO_Item: Data.PO_Item,
+            PO_Price: Data.PO_Price,
+            PO_Qty: Data.PO_Qty,
+            Required_GR_Qty: Data.Required_GR_Qty,
+            DN_No: Data.DN_No,
+            WCN_Link: Data.WCN_Link,
+            Item_Status: "Stand By",
+            Work_Status: "Stand By",
+    }
+    const respondDelLMRChild = await this.patchDatatoAPINODE(
+      "/aspassignment/UpdateGr", {data: [grdata]}
     );
     if (
       respondDelLMRChild.data !== undefined &&
@@ -673,7 +695,7 @@ class MYASGDetail extends Component {
         this.setState({ action_status: "failed" });
       }
     }
-    this.toggleLoading();
+    // this.toggleLoading();
   }
 
   addLMR() {
@@ -823,7 +845,7 @@ class MYASGDetail extends Component {
                     <i className="fa fa-wpforms" aria-hidden="true">
                       {" "}
                     </i>{" "}
-                    &nbsp;Edit GR
+                    &nbsp;Change GR
                   </Button>
                 </div>
               </CardHeader>
@@ -1012,7 +1034,7 @@ class MYASGDetail extends Component {
                   <Table hover bordered responsive size="sm" >
                     <thead class="table-commercial__header">
                       <tr>
-                        {/* <th></th> */}
+                        <th></th>
                         <th>Plant</th>
                         <th style={{width: '12%'}}>Request Type</th>
                         <th>PO Number</th>
@@ -1036,18 +1058,22 @@ class MYASGDetail extends Component {
                       {this.state.lmr_detail !== undefined ? (
                         this.state.lmr_detail.map((e) => (
                           <tr>
-                            {/* <td>
-                              <Button
-                                color="danger"
-                                size="sm"
-                                value={e._id}
-                                onClick={this.deleteGR}
-                              >
-                                <i className="fa fa-eraser"></i>
-                              </Button>
-                            </td> */}
+                            <td>
+                               {this.state.change_gr !== false ? 
+                  ( <Button
+                    color="danger"
+                    size="sm"
+                    value={e._id}
+                    onClick={this.deleteGR}
+                  >
+                    <i className="fa fa-eraser"></i>
+                  </Button>) : ("")}
+                             
+                            </td>
+                            {/* <td></td> */}
                             <td>{e.Plant}</td>
-                            {this.state.change_gr !== false ? <td>Edit GR</td>: <td>{e.Request_Type}</td>}
+                            {/* {this.state.change_gr !== false ? <td>Edit GR</td>: <td>{e.Request_Type}</td>} */}
+                            <td>{e.Request_Type}</td>
                             <td>{e.PO_Number}</td>
                             <td>{e.PO_Item}</td>
                             <td>{e.PO_Price}</td>
@@ -1064,7 +1090,7 @@ class MYASGDetail extends Component {
                       )}
                       {this.state.ChildForm.map((child_data, idx) => (
                         <tr>
-                          <td></td>
+                          {/* <td></td> */}
                           <td>
                             <Input
                               type="text"
@@ -1167,6 +1193,22 @@ class MYASGDetail extends Component {
                               onChange={this.handleInputchild(idx)}
                             />
                           </td>
+                          <td></td>
+                          <td></td>
+                          <div>
+                        <Button
+                          onClick={this.deleteSSOW(idx)}
+                          color="danger"
+                          size="sm"
+                          style={{
+                            marginLeft: "5px",
+                            marginTop: "5px",
+                            display: "inline-block",
+                          }}
+                        >
+                          <i className="fa fa-trash"></i>
+                        </Button>
+                      </div>
                           {/* <td>
                             <Input
                               type="text"
@@ -1210,11 +1252,13 @@ class MYASGDetail extends Component {
                   </Table>
                 </div>
                 <div>
-                  {this.state.change_gr !== false ? 
+                  {/* {this.state.change_gr !== false ? 
                   (<Button color="primary" size="sm" onClick={this.addGR}>
                   <i className="fa fa-plus">&nbsp;</i> GR Child
-                </Button>) : ("")}
-                  
+                </Button>) : ("")} */}
+                  <Button color="primary" size="sm" onClick={this.addGR}>
+                  <i className="fa fa-plus">&nbsp;</i> GR Child
+                </Button>
                 </div>
               </CardBody>
               <CardFooter>

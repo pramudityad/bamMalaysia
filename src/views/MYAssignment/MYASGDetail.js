@@ -1101,7 +1101,7 @@ class MYASGDetail extends Component {
         />
         <Row>
           <Col xl="12">
-            <Card>
+            <Card>   
               <CardHeader>
                 <span style={{ lineHeight: "2", fontSize: "17px" }}>
                   {" "}
