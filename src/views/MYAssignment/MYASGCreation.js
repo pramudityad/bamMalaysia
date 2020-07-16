@@ -1168,7 +1168,7 @@ class MYASGCreation extends Component {
             />
           </ModalBody>
           <ModalFooter>
-            <Button color="secondary" onClick={this.toggleLoading}>
+            <Button color="secondary" onClick={this.toggleMaterial}>
               Close
             </Button>
           </ModalFooter>

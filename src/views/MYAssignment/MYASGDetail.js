@@ -1813,7 +1813,7 @@ class MYASGDetail extends Component {
             </Table>
           </ModalBody>
           <ModalFooter>
-            <Button color="secondary" onClick={this.modalAddChild}>
+            <Button color="secondary" onClick={this.toggleMaterial}>
               Close
             </Button>
           </ModalFooter>
