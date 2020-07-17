@@ -59,26 +59,26 @@ const BearerToken =
 
 const MaterialDB = [
   {
-    "MM_Code" : "MM Code",
-    "BB_Sub" : "BB_sub",
-    "SoW_Description" : "SoW Description",
-    "UoM" : "UoM",
-    "Region" : "Region",
-    "Unit_Price" : 100,
-    "MM_Description" : "MM Description",
-    "Acceptance" : "Acceptance"
+    MM_Code: "MM Code",
+    BB_Sub: "BB_sub",
+    SoW_Description: "SoW Description",
+    UoM: "UoM",
+    Region: "Region",
+    Unit_Price: 100,
+    MM_Description: "MM Description",
+    Acceptance: "Acceptance",
   },
   {
-    "MM_Code" : "MM Code1",
-    "BB_Sub" : "BB_sub1",
-    "SoW_Description" : "SoW Description1",
-    "UoM" : "UoM1",
-    "Region" : "Region1",
-    "Unit_Price" : 200,
-    "MM_Description" : "MM Description1",
-    "Acceptance" : "Acceptance1"
-  }
-]
+    MM_Code: "MM Code1",
+    BB_Sub: "BB_sub1",
+    SoW_Description: "SoW Description1",
+    UoM: "UoM1",
+    Region: "Region1",
+    Unit_Price: 200,
+    MM_Description: "MM Description1",
+    Acceptance: "Acceptance1",
+  },
+];
 
 class MYASGDetail extends Component {
   constructor(props) {
@@ -109,12 +109,12 @@ class MYASGDetail extends Component {
       action_status: null,
       collapse_add_child: false,
       creation_lmr_child_form: [],
-      current_material_select : null,
+      current_material_select: null,
       material_list: [],
-      list_cd_id : [],
-      list_pr_po : [],
+      list_cd_id: [],
+      list_pr_po: [],
       filter_list: new Array(7).fill(""),
-      change_lmr : false,
+      change_lmr: false,
       lmr_form: {
         pgr: "MP2",
         gl_account: "402102",
@@ -123,7 +123,7 @@ class MYASGDetail extends Component {
         customer: "CELCOM",
         request_type: "Delete LMR",
       },
-      check_prpo : {},
+      check_prpo: {},
     };
     this.toggleAddNew = this.toggleAddNew.bind(this);
     this.handleFilterList = this.handleFilterList.bind(this);
@@ -143,7 +143,6 @@ class MYASGDetail extends Component {
       this
     );
     this.deleteLMR = this.deleteLMR.bind(this);
-
   }
 
   toggle(i) {
@@ -156,10 +155,10 @@ class MYASGDetail extends Component {
   }
 
   toggleMaterial(number_child_form) {
-    if(number_child_form !== undefined && isNaN(number_child_form) === false){
-      this.setState({current_material_select : number_child_form});
-    }else{
-      this.setState({current_material_select : null});
+    if (number_child_form !== undefined && isNaN(number_child_form) === false) {
+      this.setState({ current_material_select: number_child_form });
+    } else {
+      this.setState({ current_material_select: null });
     }
     this.setState((prevState) => ({
       modal_material: !prevState.modal_material,
@@ -208,7 +207,7 @@ class MYASGDetail extends Component {
     };
     let dataLMRCHild = [];
     for (let i = 0; i < this.state.lmr_detail.detail.length; i++) {
-      // const dataChild = this.state.lmr_detail.detail.map((e, i) => detail){      
+      // const dataChild = this.state.lmr_detail.detail.map((e, i) => detail){
       const dataChild = {
         _id: dataChildForm[i]._id,
         project_name: this.state.lmr_detail.project_name,
@@ -243,14 +242,14 @@ class MYASGDetail extends Component {
       //   dataChildForm[i].site_id === undefined ||
       //   dataChildForm[i].site_id === null
       // ) {
-        dataLMRCHild.push(dataChild);
+      dataLMRCHild.push(dataChild);
       // }
     }
     console.log("dataLMR", dataLMR);
     console.log("dataLMRChild", dataLMRCHild);
     const respondSaveLMR = await this.patchDatatoAPINODE(
-      "/aspassignment/UpdateAll", {data: [{ header: dataLMR, child: dataLMRCHild }]}
-      
+      "/aspassignment/UpdateAll",
+      { data: [{ header: dataLMR, child: dataLMRCHild }] }
     );
     if (
       respondSaveLMR.data !== undefined &&
@@ -422,16 +421,22 @@ class MYASGDetail extends Component {
     else reader.readAsArrayBuffer(file);
   };
 
-  handleChangeMaterial(e){
+  handleChangeMaterial(e) {
     const value = e.target.value;
-    const data_material = this.state.material_list.find(e => e.MM_Code === value);
+    const data_material = this.state.material_list.find(
+      (e) => e.MM_Code === value
+    );
     let dataLMR = this.state.creation_lmr_child_form;
-    dataLMR[parseInt(this.state.current_material_select)]["material_code_doc"] = data_material._id;
-    dataLMR[parseInt(this.state.current_material_select)]["material"] = data_material.MM_Code;
-    dataLMR[parseInt(this.state.current_material_select)]["description"] = data_material.MM_Description;
-    dataLMR[parseInt(this.state.current_material_select)]["price"] = data_material.Unit_Price;
+    dataLMR[parseInt(this.state.current_material_select)]["material_code_doc"] =
+      data_material._id;
+    dataLMR[parseInt(this.state.current_material_select)]["material"] =
+      data_material.MM_Code;
+    dataLMR[parseInt(this.state.current_material_select)]["description"] =
+      data_material.MM_Description;
+    dataLMR[parseInt(this.state.current_material_select)]["price"] =
+      data_material.Unit_Price;
     dataLMR[parseInt(this.state.current_material_select)]["quantity"] = 0;
-    this.setState({creation_lmr_child_form : dataLMR});
+    this.setState({ creation_lmr_child_form: dataLMR });
     this.toggleMaterial();
   }
 
@@ -462,20 +467,56 @@ class MYASGDetail extends Component {
     });
   }
 
-  
   getMaterialList() {
     let filter_array = [];
-    this.state.filter_list[0] !== "" && (filter_array.push('"MM_Code":{"$regex" : "' + this.state.filter_list[0] + '", "$options" : "i"}'));
-    this.state.filter_list[1] !== "" && (filter_array.push('"Material_type":{"$regex" : "' + this.state.filter_list[1] + '", "$options" : "i"}'));
-    this.state.filter_list[2] !== "" && (filter_array.push('"SoW_Description":{"$regex" : "' + this.state.filter_list[2] + '", "$options" : "i"}'));
-    this.state.filter_list[3] !== "" && (filter_array.push('"UoM":{"$regex" : "' + this.state.filter_list[3] + '", "$options" : "i"}'));
-    this.state.filter_list[4] !== "" && (filter_array.push('"Region":{"$regex" : "' + this.state.filter_list[4] + '", "$options" : "i"}'));
-    this.state.filter_list[5] !== "" && (filter_array.push('"Unit_Price":{"$regex" : "' + this.state.filter_list[5] + '", "$options" : "i"}'));
-    this.state.filter_list[6] !== "" && (filter_array.push('"MM_Description":{"$regex" : "' + this.state.filter_list[6] + '", "$options" : "i"}'));
-    let whereAnd = '{' + filter_array.join(',') + '}';
+    this.state.filter_list[0] !== "" &&
+      filter_array.push(
+        '"MM_Code":{"$regex" : "' +
+          this.state.filter_list[0] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list[1] !== "" &&
+      filter_array.push(
+        '"Material_type":{"$regex" : "' +
+          this.state.filter_list[1] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list[2] !== "" &&
+      filter_array.push(
+        '"SoW_Description":{"$regex" : "' +
+          this.state.filter_list[2] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list[3] !== "" &&
+      filter_array.push(
+        '"UoM":{"$regex" : "' +
+          this.state.filter_list[3] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list[4] !== "" &&
+      filter_array.push(
+        '"Region":{"$regex" : "' +
+          this.state.filter_list[4] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list[5] !== "" &&
+      filter_array.push(
+        '"Unit_Price":{"$regex" : "' +
+          this.state.filter_list[5] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list[6] !== "" &&
+      filter_array.push(
+        '"MM_Description":{"$regex" : "' +
+          this.state.filter_list[6] +
+          '", "$options" : "i"}'
+      );
+    let whereAnd = "{" + filter_array.join(",") + "}";
     // let filter = '"mm_code":{"$regex" : "' + this.state.filter_list + '", "$options" : "i"}';
     this.getDatafromAPIMY(
-      "/mm_code_data?where="+whereAnd+"&max_results=" +
+      "/mm_code_data?where=" +
+        whereAnd +
+        "&max_results=" +
         this.state.perPage +
         "&page=" +
         this.state.activePage
@@ -498,7 +539,7 @@ class MYASGDetail extends Component {
     dataFilter[parseInt(index)] = value;
     this.setState({ filter_list: dataFilter, activePage: 1 }, () => {
       this.onChangeDebounced(e);
-    })
+    });
   }
 
   onChangeDebounced(e) {
@@ -512,7 +553,7 @@ class MYASGDetail extends Component {
           const dataLMRDetail = res.data.data;
           this.setState({ lmr_detail: dataLMRDetail }, () => {
             // this.toggleLoading();
-            this.getDataPRPO(dataLMRDetail.lmr_id)
+            this.getDataPRPO(dataLMRDetail.lmr_id);
             // this.toggleLoading();
           });
         }
@@ -520,16 +561,19 @@ class MYASGDetail extends Component {
     );
   }
 
-  getDataPRPO(LMR_ID){
-    this.getDatafromAPIMY('/prpo_data?where={"LMR_No" : "'+LMR_ID+'"}').then(
-      (res) => {
-        if (res.data !== undefined) {
-          const dataLMRDetailPRPO = res.data._items;
-          this.setState({ list_pr_po: dataLMRDetailPRPO, check_prpo: dataLMRDetailPRPO[0] });
-          // console.log('0 ', this.state.list_pr_po[0])
-        }
+  getDataPRPO(LMR_ID) {
+    this.getDatafromAPIMY(
+      '/prpo_data?where={"LMR_No" : "' + LMR_ID + '"}'
+    ).then((res) => {
+      if (res.data !== undefined) {
+        const dataLMRDetailPRPO = res.data._items;
+        this.setState({
+          list_pr_po: dataLMRDetailPRPO,
+          check_prpo: dataLMRDetailPRPO[0],
+        });
+        // console.log('0 ', this.state.list_pr_po[0])
       }
-    );
+    });
   }
 
   getCPO2Format = async (dataImport) => {
@@ -944,23 +988,28 @@ class MYASGDetail extends Component {
 
   addLMR() {
     let dataLMR = this.state.creation_lmr_child_form;
-    dataLMR.push({"tax_code" : "I0", "currency" : "MYR", "item_status" : "Submit", "work_status" : "Waiting for PR-PO creation"});
+    dataLMR.push({
+      tax_code: "I0",
+      currency: "MYR",
+      item_status: "Submit",
+      work_status: "Waiting for PR-PO creation",
+    });
     this.setState({ creation_lmr_child_form: dataLMR });
-    if(this.state.material_list.length === 0){
+    if (this.state.material_list.length === 0) {
       this.getMaterialList();
     }
-    if(this.state.list_cd_id.length === 0){
+    if (this.state.list_cd_id.length === 0) {
       this.getDataCD();
     }
   }
 
-  deleteLMR(e){
+  deleteLMR(e) {
     let index = e.currentTarget.value;
     let dataChild = this.state.creation_lmr_child_form;
-    if(index !== undefined){
+    if (index !== undefined) {
       dataChild.splice(parseInt(index), 1);
-      this.setState({creation_lmr_child_form : []}, () => {
-        this.setState({creation_lmr_child_form : dataChild});
+      this.setState({ creation_lmr_child_form: [] }, () => {
+        this.setState({ creation_lmr_child_form: dataChild });
       });
     }
   }
@@ -1013,7 +1062,16 @@ class MYASGDetail extends Component {
       "currency",
       "pr",
       "item",
-      "plant","customer","request_type","item_category","lmr_type","plan_cost_reduction","cdid","per_site_material_type","item_status","work_status",
+      "plant",
+      "customer",
+      "request_type",
+      "item_category",
+      "lmr_type",
+      "plan_cost_reduction",
+      "cdid",
+      "per_site_material_type",
+      "item_status",
+      "work_status",
       "id_project_doc",
       "id_lmr_doc",
     ];
@@ -1095,19 +1153,28 @@ class MYASGDetail extends Component {
     for (let i = 0; i < 7; i++) {
       searchBar.push(
         <td>
-          <div className="controls" style={{ width: '150px' }}>
+          <div className="controls" style={{ width: "150px" }}>
             <InputGroup className="input-prepend">
               <InputGroupAddon addonType="prepend">
-                <InputGroupText><i className="fa fa-search"></i></InputGroupText>
+                <InputGroupText>
+                  <i className="fa fa-search"></i>
+                </InputGroupText>
               </InputGroupAddon>
-              <Input type="text" placeholder="Search" onChange={this.handleFilterList} value={this.state.filter_list[i]} name={i} size="sm" />
+              <Input
+                type="text"
+                placeholder="Search"
+                onChange={this.handleFilterList}
+                value={this.state.filter_list[i]}
+                name={i}
+                size="sm"
+              />
             </InputGroup>
           </div>
         </td>
-      )
+      );
     }
     return searchBar;
-  }
+  };
 
   render() {
     const prpo = this.state.list_pr_po;
@@ -1119,7 +1186,7 @@ class MYASGDetail extends Component {
         />
         <Row>
           <Col xl="12">
-            <Card>   
+            <Card>
               <CardHeader>
                 <span style={{ lineHeight: "2", fontSize: "17px" }}>
                   {" "}
@@ -1158,24 +1225,21 @@ class MYASGDetail extends Component {
                     Add Child
                   </Button>
                   &nbsp;&nbsp;&nbsp;
-                  <Button color="danger" size="sm" onClick={this.togglechangeLMR}>
-                  <i className="fa fa-eraser">
-                      {" "}
-                    </i>{" "}
-                    &nbsp;Delete LMR
+                  <Button
+                    color="danger"
+                    size="sm"
+                    onClick={this.togglechangeLMR}
+                  >
+                    <i className="fa fa-eraser">&nbsp; Delete</i>
                   </Button>
                   &nbsp;&nbsp;&nbsp;
-                  <Link to={
-                                  "/lmr-edit/" +
-                                  this.props.match.params.id
-                                }>
-                  <Button color="warning" size="sm">
-                    <i className="fa fa-wpforms" aria-hidden="true">
-                      {" "}
-                    </i>{" "}
-                    &nbsp;Change LMR
-                  </Button>
-                  </Link>                  
+                  <Link to={"/lmr-edit/" + this.props.match.params.id}>
+                    <Button color="warning" size="sm">
+                      <i className="fa fa-wpforms" aria-hidden="true">
+                        &nbsp; Change
+                      </i>
+                    </Button>
+                  </Link>
                 </div>
               </CardHeader>
               <Collapse isOpen={this.state.collapse_add_child}>
@@ -1281,7 +1345,13 @@ class MYASGDetail extends Component {
                     ></hr>
                   </Col>
                 </Row>
-                <div style={{ padding: "10px", fontSize: "15px", marginBottom : '10px' }}>
+                <div
+                  style={{
+                    padding: "10px",
+                    fontSize: "15px",
+                    marginBottom: "10px",
+                  }}
+                >
                   <Row>
                     <Col sm="7" md="7">
                       <table className="table-header">
@@ -1348,7 +1418,8 @@ class MYASGDetail extends Component {
                             <td>L3 Approver</td>
                             <td>:</td>
                             <td>{this.state.lmr_detail.l3_approver}</td>
-                          </tr><tr style={{ fontWeight: "425", fontSize: "15px" }}>
+                          </tr>
+                          <tr style={{ fontWeight: "425", fontSize: "15px" }}>
                             <td>Request Type</td>
                             <td>:</td>
                             <td>{this.state.lmr_detail.request_type}</td>
@@ -1363,7 +1434,7 @@ class MYASGDetail extends Component {
                   <Table hover bordered responsive size="sm" width="100%">
                     <thead class="table-commercial__header">
                       <tr>
-                        <th style={{width: '70%'}}></th>
+                        <th style={{ width: "70%" }}></th>
                         <th>Request Type</th>
                         <th>CD_ID</th>
                         <th>Per Site Material Type</th>
@@ -1385,7 +1456,7 @@ class MYASGDetail extends Component {
                         <th>PO Qty</th>
                         <th>Error Message</th>
                         <th>Error Type</th>
-                        <th></th>                      
+                        <th></th>
                         {/* }<th>PR</th>
                         <th>PO</th>
                         <th>PO Item</th> */}
@@ -1405,13 +1476,19 @@ class MYASGDetail extends Component {
                                 }
                               >
                                 <Button color="info" size="sm">
-                                <i className="fa fa-info-circle" aria-hidden="true">&nbsp;</i>&nbsp;GR
+                                  <i
+                                    className="fa fa-info-circle"
+                                    aria-hidden="true"
+                                  >
+                                    &nbsp;
+                                  </i>
+                                  &nbsp;GR
                                 </Button>
                               </Link>
                             </td>
                             <td>{e.request_type}</td>
                             <td>{e.cdid}</td>
-                            <td>{e.per_site_material_type }</td>
+                            <td>{e.per_site_material_type}</td>
                             <td>{e.site_id}</td>
                             <td>{e.nw}</td>
                             <td>{e.activity}</td>
@@ -1423,31 +1500,76 @@ class MYASGDetail extends Component {
                             <td>{e.total_value}</td>
                             <td>{e.currency}</td>
                             <td>{convertDateFormat(e.delivery_date)}</td>
-                            {this.state.list_pr_po.find(f=> f.id_child_doc === e._id) !== undefined ? (
+                            {this.state.list_pr_po.find(
+                              (f) => f.id_child_doc === e._id
+                            ) !== undefined ? (
                               <React.Fragment>
-                              <td>{this.state.list_pr_po.find(f=> f.id_child_doc === e._id).Item_Status }</td>
-                              <td>{this.state.list_pr_po.find(f=> f.id_child_doc === e._id).Work_Status }</td>
-                              <td>{this.state.list_pr_po.find(f=> f.id_child_doc === e._id).PO_Number }</td>
-                              <td>{this.state.list_pr_po.find(f=> f.id_child_doc === e._id).PO_Item }</td>
-                              <td>{this.state.list_pr_po.find(f=> f.id_child_doc === e._id).PO_Qty }</td>
-                              <td>{this.state.list_pr_po.find(f=> f.id_child_doc === e._id).Error_Message }</td>
-                              <td>{this.state.list_pr_po.find(f=> f.id_child_doc === e._id).Error_Type }</td>
+                                <td>
+                                  {
+                                    this.state.list_pr_po.find(
+                                      (f) => f.id_child_doc === e._id
+                                    ).Item_Status
+                                  }
+                                </td>
+                                <td>
+                                  {
+                                    this.state.list_pr_po.find(
+                                      (f) => f.id_child_doc === e._id
+                                    ).Work_Status
+                                  }
+                                </td>
+                                <td>
+                                  {
+                                    this.state.list_pr_po.find(
+                                      (f) => f.id_child_doc === e._id
+                                    ).PO_Number
+                                  }
+                                </td>
+                                <td>
+                                  {
+                                    this.state.list_pr_po.find(
+                                      (f) => f.id_child_doc === e._id
+                                    ).PO_Item
+                                  }
+                                </td>
+                                <td>
+                                  {
+                                    this.state.list_pr_po.find(
+                                      (f) => f.id_child_doc === e._id
+                                    ).PO_Qty
+                                  }
+                                </td>
+                                <td>
+                                  {
+                                    this.state.list_pr_po.find(
+                                      (f) => f.id_child_doc === e._id
+                                    ).Error_Message
+                                  }
+                                </td>
+                                <td>
+                                  {
+                                    this.state.list_pr_po.find(
+                                      (f) => f.id_child_doc === e._id
+                                    ).Error_Type
+                                  }
+                                </td>
                               </React.Fragment>
                             ) : (
                               <React.Fragment>
-                              <td></td>
-                              <td></td>
-                              <td></td>
-                              <td></td>
-                              <td></td>
-                              <td></td>
-                              <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
                               </React.Fragment>
                             )}
                             {this.state.change_lmr !== true ? (
                               <td></td>
-                            ): (<td>
-                              {/* <Button
+                            ) : (
+                              <td>
+                                {/* <Button
                                 color="danger"
                                 size="sm"
                                 value={e._id}
@@ -1455,8 +1577,9 @@ class MYASGDetail extends Component {
                               >
                                 <i className="fa fa-eraser"></i>
                               </Button> */}
-                            </td> )}
-                                                  
+                              </td>
+                            )}
+
                             {/*}<td>{e.pr}</td>
                           <td>{e.po}</td>
                           <td>{e.item}</td>*/}
@@ -1467,21 +1590,32 @@ class MYASGDetail extends Component {
                       )}
                       <tr>
                         <td colSpan="22" style={{ textAlign: "left" }}>
-                          { this.state.check_prpo.PO_Number === null? (<Button
-                            color="primary"
-                            size="sm"
-                            onClick={this.addLMR}
-                          >
-                            <i className="fa fa-plus">&nbsp;</i> LMR CHild
-                          </Button>):("")}
-                          
+                          {this.state.check_prpo.PO_Number === null ? (
+                            <Button
+                              color="primary"
+                              size="sm"
+                              onClick={this.addLMR}
+                            >
+                              <i className="fa fa-plus">&nbsp;</i> LMR CHild
+                            </Button>
+                          ) : (
+                            ""
+                          )}
                         </td>
                       </tr>
                       {this.state.creation_lmr_child_form.map((lmr, i) => (
                         <tr className="form-lmr-child">
-                          <td><Button value={i} onClick={this.deleteLMR} color="danger" size="sm" style={{marginLeft: "5px"}}>
+                          <td>
+                            <Button
+                              value={i}
+                              onClick={this.deleteLMR}
+                              color="danger"
+                              size="sm"
+                              style={{ marginLeft: "5px" }}
+                            >
                               <i className="fa fa-trash"></i>
-                            </Button></td>
+                            </Button>
+                          </td>
                           {/* <td></td> */}
                           <td>
                             <Input
@@ -1495,9 +1629,9 @@ class MYASGDetail extends Component {
                               <option value="" disabled selected hidden>
                                 Select CD ID
                               </option>
-                              {this.state.list_cd_id.map(e => 
+                              {this.state.list_cd_id.map((e) => (
                                 <option value={e.CD_ID}>{e.CD_ID}</option>
-                              )}
+                              ))}
                             </Input>
                           </td>
                           <td>
@@ -1521,8 +1655,8 @@ class MYASGDetail extends Component {
                             <Input
                               type="text"
                               name={i + " /// site_id"}
-                            id={i + " /// site_id"}
-                            value={lmr.site_id}
+                              id={i + " /// site_id"}
+                              value={lmr.site_id}
                               placeholder="Site ID"
                               onChange={this.handleChangeFormLMRChildMultiple}
                               // style={{ width: "100%" }}
@@ -1532,8 +1666,8 @@ class MYASGDetail extends Component {
                             <Input
                               type="text"
                               name={i + " /// so_or_nw"}
-                            id={i + " /// so_or_nw"}
-                            value={lmr.so_or_nw}
+                              id={i + " /// so_or_nw"}
+                              value={lmr.so_or_nw}
                               placeholder="SO # /NW #"
                               onChange={this.handleChangeFormLMRChildMultiple}
                               // style={{ width: "100%" }}
@@ -1543,8 +1677,8 @@ class MYASGDetail extends Component {
                             <Input
                               type="text"
                               name={i + " /// activity"}
-                            id={i + " /// activity"}
-                            value={lmr.activity}
+                              id={i + " /// activity"}
+                              value={lmr.activity}
                               placeholder="Activity"
                               onChange={this.handleChangeFormLMRChildMultiple}
                               // style={{ width: "100%" }}
@@ -1554,8 +1688,8 @@ class MYASGDetail extends Component {
                             <Input
                               type="text"
                               name={i + " /// tax_code"}
-                            id={i + " /// tax_code"}
-                            value={lmr.tax_code}
+                              id={i + " /// tax_code"}
+                              value={lmr.tax_code}
                               placeholder="Tax Code"
                               onChange={this.handleChangeFormLMRChildMultiple}
                               // style={{ width: "100%" }}
@@ -1565,8 +1699,8 @@ class MYASGDetail extends Component {
                             <Input
                               type="text"
                               name={i + " /// material"}
-                            id={i + " /// material"}
-                            value={lmr.material}
+                              id={i + " /// material"}
+                              value={lmr.material}
                               placeholder="Material"
                               onClick={() => this.toggleMaterial(i)}
                               onChange={this.handleChangeFormLMRChildMultiple}
@@ -1577,8 +1711,8 @@ class MYASGDetail extends Component {
                             <Input
                               type="textarea"
                               name={i + " /// description"}
-                            id={i + " /// description"}
-                            value={lmr.description}
+                              id={i + " /// description"}
+                              value={lmr.description}
                               placeholder="Description"
                               onChange={this.handleChangeFormLMRChildMultiple}
                               style={{ width: "200px" }}
@@ -1588,8 +1722,8 @@ class MYASGDetail extends Component {
                             <Input
                               type="number"
                               name={i + " /// price"}
-                            id={i + " /// price"}
-                            value={lmr.price}
+                              id={i + " /// price"}
+                              value={lmr.price}
                               placeholder="Price"
                               onChange={this.handleChangeFormLMRChildMultiple}
                               // style={{ width: "100%" }}
@@ -1610,7 +1744,7 @@ class MYASGDetail extends Component {
                             <Input
                               type="number"
                               name={i + " /// total_amount"}
-                            id={i + " /// total_amount"}
+                              id={i + " /// total_amount"}
                               placeholder="Total Price"
                               value={lmr.total_amount}
                               onChange={this.handleChangeFormLMRChildMultiple}
@@ -1621,22 +1755,18 @@ class MYASGDetail extends Component {
                             <Input
                               type="select"
                               name={i + " /// currency"}
-                            id={i + " /// currency"}
+                              id={i + " /// currency"}
                               placeholder="Currency"
                               value={lmr.currency}
                               onChange={this.handleChangeFormLMRChildMultiple}
                               // style={{ width: "100%" }}
                             >
-                              <option value="MYR" selected >
-                            MYR
-                          </option>
-                          <option value="USD" >
-                            USD
-                          </option>
-                          <option value="EUR" >
-                            EUR
-                          </option>
-                        </Input>
+                              <option value="MYR" selected>
+                                MYR
+                              </option>
+                              <option value="USD">USD</option>
+                              <option value="EUR">EUR</option>
+                            </Input>
                           </td>
                           <td>
                             <Input
@@ -1679,7 +1809,7 @@ class MYASGDetail extends Component {
                           <td></td>
                           <td></td>
                           <td></td>
-                          {/*  */}                          
+                          {/*  */}
                         </tr>
                       ))}
                       {this.state.creation_lmr_child_form.length !== 0 && (
@@ -1948,13 +2078,20 @@ class MYASGDetail extends Component {
           <ModalBody>
             <Table responsive striped bordered size="sm">
               <thead>
-                <th></th><th>MM Code</th><th>Material Type</th><th>SoW</th><th>UoM</th><th>Region</th><th>Unit Price</th><th>MM Description</th>
+                <th></th>
+                <th>MM Code</th>
+                <th>Material Type</th>
+                <th>SoW</th>
+                <th>UoM</th>
+                <th>Region</th>
+                <th>Unit Price</th>
+                <th>MM Description</th>
               </thead>
               <tbody>
-              <tr>
-              <td></td>
+                <tr>
+                  <td></td>
                   {/* <td> */}
-                    {/* <div className="controls" style={{ width: "150px" }}>
+                  {/* <div className="controls" style={{ width: "150px" }}>
                       <InputGroup className="input-prepend">
                         <InputGroupAddon addonType="prepend">
                           <InputGroupText>
@@ -1970,7 +2107,7 @@ class MYASGDetail extends Component {
                         />
                       </InputGroup>
                     </div> */}
-                    {this.loopSearchBar()}
+                  {this.loopSearchBar()}
                   {/* </td>
                   <td></td>
                   <td></td>
@@ -1979,10 +2116,17 @@ class MYASGDetail extends Component {
                   <td></td>
                   <td></td> */}
                 </tr>
-                {this.state.material_list.map(e => 
+                {this.state.material_list.map((e) => (
                   <tr>
                     <td>
-                      <Button color={"primary"} size="sm" value={e.MM_Code} onClick={this.handleChangeMaterial}>Select</Button>
+                      <Button
+                        color={"primary"}
+                        size="sm"
+                        value={e.MM_Code}
+                        onClick={this.handleChangeMaterial}
+                      >
+                        Select
+                      </Button>
                     </td>
                     <td>{e.MM_Code}</td>
                     <td>{e.Material_Type}</td>
@@ -1992,18 +2136,17 @@ class MYASGDetail extends Component {
                     <td>{e.Unit_Price}</td>
                     <td>{e.MM_Description}</td>
                   </tr>
-                )}
-                
+                ))}
               </tbody>
               <Pagination
-              activePage={this.state.activePage}
-              itemsCountPerPage={this.state.perPage}
-              totalItemsCount={this.state.totalData}
-              pageRangeDisplayed={5}
-              onChange={this.handlePageChange}
-              itemClass="page-item"
-              linkClass="page-link"
-            />
+                activePage={this.state.activePage}
+                itemsCountPerPage={this.state.perPage}
+                totalItemsCount={this.state.totalData}
+                pageRangeDisplayed={5}
+                onChange={this.handlePageChange}
+                itemClass="page-item"
+                linkClass="page-link"
+              />
             </Table>
           </ModalBody>
           <ModalFooter>
