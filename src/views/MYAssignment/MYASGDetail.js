@@ -124,6 +124,8 @@ class MYASGDetail extends Component {
         request_type: "Delete LMR",
       },
       check_prpo: {},
+      list_project: [],
+      cd_id_project: ""
     };
     this.toggleAddNew = this.toggleAddNew.bind(this);
     this.handleFilterList = this.handleFilterList.bind(this);
@@ -466,6 +468,16 @@ class MYASGDetail extends Component {
       rowsXLS: newDataXLS,
     });
   }
+
+  getProjectList() {
+    this.getDatafromAPIMY("/project_data").then((res) => {
+      if (res.data !== undefined) {
+        const items = res.data._items;
+        this.setState({ list_project: items });
+      }
+    });
+  }
+
 
   getMaterialList() {
     let filter_array = [];
@@ -932,6 +944,7 @@ class MYASGDetail extends Component {
       this.getLMRDetailData(this.props.match.params.id);
     }
     this.getMaterialList();
+    this.getProjectList();
     document.title = "LMR Detail | BAM";
   }
 
@@ -1038,7 +1051,15 @@ class MYASGDetail extends Component {
     let idx = idxField[0];
     let field = idxField[1];
     dataLMR[parseInt(idx)][field] = value;
-    this.setState({ creation_lmr_child_form: dataLMR });
+    if (field === "cd_id"){
+      let cdData = this.state.list_cd_id.find((e) => e.CD_ID === value)
+      dataLMR[parseInt(idx)]["site_id"] = cdData.Site_Name;
+      dataLMR[parseInt(idx)]["so_or_nw"] = cdData.Network_Element_Name;
+      dataLMR[parseInt(idx)]["activity"] = cdData.Network_Element_Name;
+      dataLMR[parseInt(idx)]["project_name"] = cdData.Project;
+      this.setState({ cd_id_project: dataLMR[parseInt(idx)]["project_name"] });
+    }
+    this.setState({ creation_lmr_child_form: dataLMR },() => console.log(this.state.creation_lmr_child_form));
   }
 
   async createLMRChild() {
@@ -1437,6 +1458,7 @@ class MYASGDetail extends Component {
                         <th style={{ width: "70%" }}></th>
                         <th>Request Type</th>
                         <th>CD_ID</th>
+                        <th>Project Name</th>
                         <th>Per Site Material Type</th>
                         <th>Site ID</th>
                         <th>SO # /NW #</th>
@@ -1488,6 +1510,7 @@ class MYASGDetail extends Component {
                             </td>
                             <td>{e.request_type}</td>
                             <td>{e.cdid}</td>
+                            <td>{e.project_name}</td>
                             <td>{e.per_site_material_type}</td>
                             <td>{e.site_id}</td>
                             <td>{e.nw}</td>
@@ -1631,6 +1654,23 @@ class MYASGDetail extends Component {
                               </option>
                               {this.state.list_cd_id.map((e) => (
                                 <option value={e.CD_ID}>{e.CD_ID}</option>
+                              ))}
+                            </Input>
+                          </td>
+                          <td>
+                            <Input
+                              type="select"
+                              name={i + " /// project_name"}
+                              id={i + " /// project_name"}
+                              value={lmr.project_name}
+                              onChange={this.handleChangeFormLMRChildMultiple}
+                              // style={{ width: "100%" }}
+                            >
+                              <option value="" disabled selected hidden>
+                                Select Project
+                              </option>
+                              {this.state.list_project.map((e) => (
+                                <option value={e.Project}>{e.Project}</option>
                               ))}
                             </Input>
                           </td>
