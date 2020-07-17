@@ -1006,6 +1006,7 @@ class MYASGDetail extends Component {
       currency: "MYR",
       item_status: "Submit",
       work_status: "Waiting for PR-PO creation",
+      request_type: "Add LMR"
     });
     this.setState({ creation_lmr_child_form: dataLMR });
     if (this.state.material_list.length === 0) {
@@ -1640,6 +1641,24 @@ class MYASGDetail extends Component {
                             </Button>
                           </td>
                           {/* <td></td> */}
+                          <td>
+                            <Input
+                              type="text"
+                              name={i + " /// request_type"}
+                              id={i + " /// request_type"}
+                              value={lmr.request_type}
+                              onChange={this.handleChangeFormLMRChildMultiple}
+                              readOnly
+                              // style={{ width: "100%" }}
+                            />
+                              {/* <option value="" disabled selected hidden>
+                                Select CD ID
+                              </option>
+                              {this.state.list_cd_id.map((e) => (
+                                <option value={e.CD_ID}>{e.CD_ID}</option>
+                              ))}
+                            </Input> */}
+                          </td>
                           <td>
                             <Input
                               type="select"
