@@ -318,7 +318,7 @@ class MYASGCreation extends Component {
   getMaterialList() {
     let filter_array = [];
     this.state.filter_list[0] !== "" && (filter_array.push('"MM_Code":{"$regex" : "' + this.state.filter_list[0] + '", "$options" : "i"}'));
-    this.state.filter_list[1] !== "" && (filter_array.push('"Material_type":{"$regex" : "' + this.state.filter_list[1] + '", "$options" : "i"}'));
+    this.state.filter_list[1] !== "" && (filter_array.push('"Material_Type":{"$regex" : "' + this.state.filter_list[1] + '", "$options" : "i"}'));
     this.state.filter_list[2] !== "" && (filter_array.push('"SoW_Description":{"$regex" : "' + this.state.filter_list[2] + '", "$options" : "i"}'));
     this.state.filter_list[3] !== "" && (filter_array.push('"UoM":{"$regex" : "' + this.state.filter_list[3] + '", "$options" : "i"}'));
     this.state.filter_list[4] !== "" && (filter_array.push('"Region":{"$regex" : "' + this.state.filter_list[4] + '", "$options" : "i"}'));
@@ -553,9 +553,12 @@ class MYASGCreation extends Component {
       dataLMR[parseInt(idx)][field] = e.target.options[e.target.selectedIndex].text;
     }
     if (field === "cd_id" && this.state.lmr_edit === false){
-      // dataLMR[parseInt(idx)][field] = e.target.options[e.target.selectedIndex].text;
-      dataLMR[parseInt(idx)]["project_name"] = e.target.value;
-      this.setState({ cd_id_project: e.target.value });
+      let cdData = this.state.list_cd_id.find((e) => e.CD_ID === value)
+      dataLMR[parseInt(idx)]["site_id"] = cdData.Site_Name;
+      dataLMR[parseInt(idx)]["so_or_nw"] = cdData.Network_Element_Name;
+      dataLMR[parseInt(idx)]["activity"] = cdData.Network_Element_Name;
+      dataLMR[parseInt(idx)]["project_name"] = cdData.Project;
+      this.setState({ cd_id_project: dataLMR[parseInt(idx)]["project_name"] });
     }
     // console.log(dataLMR)
     this.setState({ creation_lmr_child_form: dataLMR }, () => console.log(this.state.creation_lmr_child_form));
@@ -940,7 +943,7 @@ class MYASGCreation extends Component {
                               Select CD ID
                             </option>
                             {this.state.list_cd_id.map((e) => (
-                              <option value={e.Project}>{e.CD_ID}</option>
+                              <option value={e.CD_ID}>{e.CD_ID}</option>
                             ))}
                           </Input>
                         </FormGroup>
@@ -1208,7 +1211,7 @@ class MYASGCreation extends Component {
               <thead>
                 <th></th>
                 <th>MM Code</th>
-                <th>BB Sub</th>
+                <th>Material Type</th>
                 <th>SoW</th>
                 <th>UoM</th>
                 <th>Region</th>
@@ -1257,7 +1260,7 @@ class MYASGCreation extends Component {
                       </Button>
                     </td>
                     <td>{e.MM_Code}</td>
-                    <td>{e.BB_Sub}</td>
+                    <td>{e.Material_Type}</td>
                     <td>{e.SoW_Description}</td>
                     <td>{e.UoM}</td>
                     <td>{e.Region}</td>

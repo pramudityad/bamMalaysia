@@ -1248,9 +1248,9 @@ class MYASGEdit extends Component {
                   </Form>
                 ))}
                 <div>
-                  <Button color="primary" size="sm" onClick={this.addLMR}>
+                  {/* <Button color="primary" size="sm" onClick={this.addLMR}>
                     <i className="fa fa-plus">&nbsp;</i> LMR
-                  </Button>
+                  </Button> */}
                 </div>
               </CardBody>
               <CardFooter>
@@ -1281,7 +1281,7 @@ class MYASGEdit extends Component {
               <thead>
                 <th></th>
                 <th>MM Code</th>
-                <th>BB Sub</th>
+                <th>Material Type</th>
                 <th>SoW</th>
                 <th>UoM</th>
                 <th>Region</th>

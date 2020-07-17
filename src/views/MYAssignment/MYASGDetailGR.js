@@ -30,7 +30,6 @@ const DefaultNotif = React.lazy(() =>
   import("../../views/DefaultView/DefaultNotif")
 );
 
-
 // const API_URL_NODE = 'https://api2-dev.bam-id.e-dpm.com/bamidapi';
 
 // const API_URL_NODE = 'http://localhost:5012/bammyapi';
@@ -52,7 +51,7 @@ class MYASGDetail extends Component {
       modalAddChild: false,
       lmr_detail: [],
       lmr_lvl2: {},
-      list_pr_po : [],
+      list_pr_po: [],
       data_prpo: [],
       data_cpo: null,
       data_cpo_db: [],
@@ -80,7 +79,7 @@ class MYASGDetail extends Component {
       },
       ChildForm: [],
       filter_list: "",
-      change_gr : false,
+      change_gr: false,
     };
     this.toggleAddNew = this.toggleAddNew.bind(this);
     this.handleInput = this.handleInput.bind(this);
@@ -300,9 +299,9 @@ class MYASGDetail extends Component {
         // console.log('cpo db id', res.data.data.cpoDetail)
         if (res.data !== undefined) {
           const dataLMRDetail = res.data.data;
-          this.setState({ lmr_detail: dataLMRDetail});
+          this.setState({ lmr_detail: dataLMRDetail });
         }
-        console.log('gr data', this.state.lmr_detail)
+        console.log("gr data", this.state.lmr_detail);
       }
     );
   }
@@ -311,30 +310,28 @@ class MYASGDetail extends Component {
     const id_lmr = this.props.match.params.lmr;
     this.getDatafromAPINODE("/aspassignment/getAspAssignment/" + _id).then(
       (res) => {
-        
         if (res.data !== undefined) {
           // const datalvl2 = res.data.data.detail;
-          const datalvl2 = res.data.data.detail.find(e => e._id === id_lmr);
+          const datalvl2 = res.data.data.detail.find((e) => e._id === id_lmr);
           // console.log('datalvl2 ', datalvl2);
-          this.setState({ lmr_lvl2: datalvl2});
+          this.setState({ lmr_lvl2: datalvl2 });
         }
-        console.log('lmr_lvl2', this.state.lmr_lvl2)
-        this.getDataPRPO(this.props.match.params.lmr)
+        console.log("lmr_lvl2", this.state.lmr_lvl2);
+        this.getDataPRPO(this.props.match.params.lmr);
       }
     );
   }
 
-  getDataPRPO(child_id){
-    getDatafromAPIMY('/prpo_data?where={"id_child_doc" : "'+child_id+'"}').then(
-      (res) => {
-        if (res.data !== undefined) {
-          const dataLMRDetailPRPO = res.data._items[0];
-          this.setState({ list_pr_po: dataLMRDetailPRPO});
-        }
+  getDataPRPO(child_id) {
+    getDatafromAPIMY(
+      '/prpo_data?where={"id_child_doc" : "' + child_id + '"}'
+    ).then((res) => {
+      if (res.data !== undefined) {
+        const dataLMRDetailPRPO = res.data._items[0];
+        this.setState({ list_pr_po: dataLMRDetailPRPO });
       }
-    );
+    });
   }
-
 
   addLMRChildBulk = async () => {
     this.toggleLoading();
@@ -606,7 +603,6 @@ class MYASGDetail extends Component {
     } else {
       this.getLMRDetailData(this.props.match.params.lmr);
       this.getLMRlvl2(this.props.match.params.id);
-
     }
     document.title = "LMR Detail | BAM";
   }
@@ -641,28 +637,29 @@ class MYASGDetail extends Component {
     );
   };
 
-
   async deleteGR(e) {
     // this.toggleLoading();
     const _id = e.currentTarget.value;
     const Data = this.state.lmr_detail.find((e) => e._id === _id);
-    console.log('Data ',Data)
+    console.log("Data ", Data);
     const grdata = {
       _id: Data._id,
+      ID_LMR_Doc: Data.ID_LMR_Doc,
       Plant: Data.Plant,
       Request_Type: "Delete GR",
       PO_Number: Data.PO_Number,
-            PO_Item: Data.PO_Item,
-            PO_Price: Data.PO_Price,
-            PO_Qty: Data.PO_Qty,
-            Required_GR_Qty: Data.Required_GR_Qty,
-            DN_No: Data.DN_No,
-            WCN_Link: Data.WCN_Link,
-            Item_Status: "Stand By",
-            Work_Status: "Stand By",
-    }
+      PO_Item: Data.PO_Item,
+      PO_Price: Data.PO_Price,
+      PO_Qty: Data.PO_Qty,
+      Required_GR_Qty: Data.Required_GR_Qty,
+      DN_No: Data.DN_No,
+      WCN_Link: Data.WCN_Link,
+      Item_Status: "Stand By",
+      Work_Status: "Stand By",      
+    };
     const respondDelLMRChild = await this.patchDatatoAPINODE(
-      "/aspassignment/UpdateGr", {data: [grdata]}
+      "/aspassignment/UpdateGr",
+      { data: [grdata] }
     );
     if (
       respondDelLMRChild.data !== undefined &&
@@ -841,7 +838,11 @@ class MYASGDetail extends Component {
                       </DropdownMenu>
                     </Dropdown>
                   </div>
-                  <Button color="warning" size="sm" onClick={this.togglechangeGR}>
+                  <Button
+                    color="warning"
+                    size="sm"
+                    onClick={this.togglechangeGR}
+                  >
                     <i className="fa fa-wpforms" aria-hidden="true">
                       {" "}
                     </i>{" "}
@@ -954,7 +955,7 @@ class MYASGDetail extends Component {
                   </Col>
                 </Row>
                 <div style={{ padding: "10px", fontSize: "15px" }}>
-                  <Row >
+                  <Row>
                     <Col sm="6" md="6">
                       <table className="table-header">
                         <tbody>
@@ -966,7 +967,9 @@ class MYASGDetail extends Component {
                           <tr style={{ fontWeight: "425", fontSize: "15px" }}>
                             <td>Per Site Material Type</td>
                             <td>:</td>
-                            <td>{this.state.lmr_lvl2.per_site_material_type}</td>
+                            <td>
+                              {this.state.lmr_lvl2.per_site_material_type}
+                            </td>
                           </tr>
                           <tr style={{ fontWeight: "425", fontSize: "15px" }}>
                             <td>Site ID</td>
@@ -1031,12 +1034,12 @@ class MYASGDetail extends Component {
                 </div>
 
                 <div class="divtable">
-                  <Table hover bordered responsive size="sm" >
+                  <Table hover bordered responsive size="sm">
                     <thead class="table-commercial__header">
                       <tr>
                         <th></th>
                         <th>Plant</th>
-                        <th style={{width: '12%'}}>Request Type</th>
+                        <th style={{ width: "12%" }}>Request Type</th>
                         <th>PO Number</th>
                         <th>PO Item</th>
                         <th>PO Price</th>
@@ -1044,7 +1047,7 @@ class MYASGDetail extends Component {
                         <th>Required GR Qty</th>
                         <th>DN No</th>
                         <th>WCN_Link</th>
-                        <th style={{width: '12%'}}>Item_Status</th>
+                        <th style={{ width: "12%" }}>Item_Status</th>
                         <th>Work_Status</th>
                         {/* <th>Error_Message</th>
                         <th>Error_Type</th>
@@ -1059,16 +1062,18 @@ class MYASGDetail extends Component {
                         this.state.lmr_detail.map((e) => (
                           <tr>
                             <td>
-                               {this.state.change_gr !== false ? 
-                  ( <Button
-                    color="danger"
-                    size="sm"
-                    value={e._id}
-                    onClick={this.deleteGR}
-                  >
-                    <i className="fa fa-eraser"></i>
-                  </Button>) : ("")}
-                             
+                              {this.state.change_gr !== false ? (
+                                <Button
+                                  color="danger"
+                                  size="sm"
+                                  value={e._id}
+                                  onClick={this.deleteGR}
+                                >
+                                  <i className="fa fa-eraser"></i>
+                                </Button>
+                              ) : (
+                                ""
+                              )}
                             </td>
                             {/* <td></td> */}
                             <td>{e.Plant}</td>
@@ -1111,7 +1116,7 @@ class MYASGDetail extends Component {
                               // style={{ width: "200" }}
                               readOnly
                             />
-                              {/* <option value="" disabled selected hidden>
+                            {/* <option value="" disabled selected hidden>
                                 Select Request Type
                               </option>
                               <option value="Add GR" >
@@ -1124,7 +1129,7 @@ class MYASGDetail extends Component {
                           </td>
                           <td>
                             <Input
-                            // key={prpo._id}
+                              // key={prpo._id}
                               type="text"
                               name="PO_Number"
                               id={"PO_Number"}
@@ -1135,7 +1140,7 @@ class MYASGDetail extends Component {
                           </td>
                           <td>
                             <Input
-                            // key={prpo._id}
+                              // key={prpo._id}
                               type="text"
                               name="PO_Item"
                               id={"PO_Item"}
@@ -1156,10 +1161,10 @@ class MYASGDetail extends Component {
                           </td>
                           <td>
                             <Input
-                            // key={prpo._id}
+                              // key={prpo._id}
                               type="text"
                               name="PO_Qty"
-                              id={"PO_Qty"}                              
+                              id={"PO_Qty"}
                               value={child_data.PO_Qty}
                               defaultValue={child_data.PO_Qty}
                               onChange={this.handleInputchild(idx)}
@@ -1196,19 +1201,19 @@ class MYASGDetail extends Component {
                           <td></td>
                           <td></td>
                           <div>
-                        <Button
-                          onClick={this.deleteSSOW(idx)}
-                          color="danger"
-                          size="sm"
-                          style={{
-                            marginLeft: "5px",
-                            marginTop: "5px",
-                            display: "inline-block",
-                          }}
-                        >
-                          <i className="fa fa-trash"></i>
-                        </Button>
-                      </div>
+                            <Button
+                              onClick={this.deleteSSOW(idx)}
+                              color="danger"
+                              size="sm"
+                              style={{
+                                marginLeft: "5px",
+                                marginTop: "5px",
+                                display: "inline-block",
+                              }}
+                            >
+                              <i className="fa fa-trash"></i>
+                            </Button>
+                          </div>
                           {/* <td>
                             <Input
                               type="text"
@@ -1229,24 +1234,24 @@ class MYASGDetail extends Component {
                               readOnly
                             />
                           </td> */}
-                        </tr>                        
+                        </tr>
                       ))}
                       {this.state.ChildForm.length !== 0 && (
                         <tr>
-                        <td colSpan="15" style={{ textAlign: "right" }}>
-                          <Button
-                            color="success"
-                            size="sm"
-                            onClick={this.postGRChild}
-                          >
-                            <i
-                              className="fa fa-plus-square"
-                              style={{ marginRight: "8px" }}
-                            ></i>
-                            Save GR Child
-                          </Button>
-                        </td>
-                      </tr>
+                          <td colSpan="15" style={{ textAlign: "right" }}>
+                            <Button
+                              color="success"
+                              size="sm"
+                              onClick={this.postGRChild}
+                            >
+                              <i
+                                className="fa fa-plus-square"
+                                style={{ marginRight: "8px" }}
+                              ></i>
+                              Save GR Child
+                            </Button>
+                          </td>
+                        </tr>
                       )}
                     </tbody>
                   </Table>
@@ -1257,8 +1262,8 @@ class MYASGDetail extends Component {
                   <i className="fa fa-plus">&nbsp;</i> GR Child
                 </Button>) : ("")} */}
                   <Button color="primary" size="sm" onClick={this.addGR}>
-                  <i className="fa fa-plus">&nbsp;</i> GR Child
-                </Button>
+                    <i className="fa fa-plus">&nbsp;</i> GR Child
+                  </Button>
                 </div>
               </CardBody>
               <CardFooter>

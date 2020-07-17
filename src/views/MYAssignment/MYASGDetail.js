@@ -123,6 +123,7 @@ class MYASGDetail extends Component {
         customer: "CELCOM",
         request_type: "Delete LMR",
       },
+      check_prpo : {},
     };
     this.toggleAddNew = this.toggleAddNew.bind(this);
     this.handleFilterList = this.handleFilterList.bind(this);
@@ -141,6 +142,8 @@ class MYASGDetail extends Component {
     this.handleChangeFormLMRChildMultiple = this.handleChangeFormLMRChildMultiple.bind(
       this
     );
+    this.deleteLMR = this.deleteLMR.bind(this);
+
   }
 
   toggle(i) {
@@ -508,7 +511,9 @@ class MYASGDetail extends Component {
         if (res.data !== undefined) {
           const dataLMRDetail = res.data.data;
           this.setState({ lmr_detail: dataLMRDetail }, () => {
+            // this.toggleLoading();
             this.getDataPRPO(dataLMRDetail.lmr_id)
+            // this.toggleLoading();
           });
         }
       }
@@ -520,7 +525,8 @@ class MYASGDetail extends Component {
       (res) => {
         if (res.data !== undefined) {
           const dataLMRDetailPRPO = res.data._items;
-          this.setState({ list_pr_po: dataLMRDetailPRPO });
+          this.setState({ list_pr_po: dataLMRDetailPRPO, check_prpo: dataLMRDetailPRPO[0] });
+          // console.log('0 ', this.state.list_pr_po[0])
         }
       }
     );
@@ -948,6 +954,17 @@ class MYASGDetail extends Component {
     }
   }
 
+  deleteLMR(e){
+    let index = e.currentTarget.value;
+    let dataChild = this.state.creation_lmr_child_form;
+    if(index !== undefined){
+      dataChild.splice(parseInt(index), 1);
+      this.setState({creation_lmr_child_form : []}, () => {
+        this.setState({creation_lmr_child_form : dataChild});
+      });
+    }
+  }
+
   // getMaterialList() {
   //   this.getDatafromAPIMY("/mm_code_data").then((res) => {
   //     if (res.data !== undefined) {
@@ -1093,6 +1110,7 @@ class MYASGDetail extends Component {
   }
 
   render() {
+    const prpo = this.state.list_pr_po;
     return (
       <div>
         <DefaultNotif
@@ -1346,6 +1364,7 @@ class MYASGDetail extends Component {
                     <thead class="table-commercial__header">
                       <tr>
                         <th style={{width: '70%'}}></th>
+                        <th>Request Type</th>
                         <th>CD_ID</th>
                         <th>Per Site Material Type</th>
                         <th>Site ID</th>
@@ -1390,6 +1409,7 @@ class MYASGDetail extends Component {
                                 </Button>
                               </Link>
                             </td>
+                            <td>{e.request_type}</td>
                             <td>{e.cdid}</td>
                             <td>{e.per_site_material_type }</td>
                             <td>{e.site_id}</td>
@@ -1447,7 +1467,7 @@ class MYASGDetail extends Component {
                       )}
                       <tr>
                         <td colSpan="22" style={{ textAlign: "left" }}>
-                          {this.state.change_lmr !== false ? (<Button
+                          { this.state.check_prpo.PO_Number === null? (<Button
                             color="primary"
                             size="sm"
                             onClick={this.addLMR}
@@ -1459,7 +1479,9 @@ class MYASGDetail extends Component {
                       </tr>
                       {this.state.creation_lmr_child_form.map((lmr, i) => (
                         <tr className="form-lmr-child">
-                          <td></td>
+                          <td><Button value={i} onClick={this.deleteLMR} color="danger" size="sm" style={{marginLeft: "5px"}}>
+                              <i className="fa fa-trash"></i>
+                            </Button></td>
                           {/* <td></td> */}
                           <td>
                             <Input
@@ -1926,7 +1948,7 @@ class MYASGDetail extends Component {
           <ModalBody>
             <Table responsive striped bordered size="sm">
               <thead>
-                <th></th><th>MM Code</th><th>BB Sub</th><th>SoW</th><th>UoM</th><th>Region</th><th>Unit Price</th><th>MM Description</th>
+                <th></th><th>MM Code</th><th>Material Type</th><th>SoW</th><th>UoM</th><th>Region</th><th>Unit Price</th><th>MM Description</th>
               </thead>
               <tbody>
               <tr>
@@ -1963,7 +1985,7 @@ class MYASGDetail extends Component {
                       <Button color={"primary"} size="sm" value={e.MM_Code} onClick={this.handleChangeMaterial}>Select</Button>
                     </td>
                     <td>{e.MM_Code}</td>
-                    <td>{e.BB_Sub}</td>
+                    <td>{e.Material_Type}</td>
                     <td>{e.SoW_Description}</td>
                     <td>{e.UoM}</td>
                     <td>{e.Region}</td>
