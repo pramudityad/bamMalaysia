@@ -174,6 +174,7 @@ class MYASGCreation extends Component {
     this.handleChangeFormLMRChild = this.handleChangeFormLMRChild.bind(this);
     this.toggleMaterial = this.toggleMaterial.bind(this);
     this.handleChangeMaterial = this.handleChangeMaterial.bind(this);
+    this.handleDeleteLMRChild = this.handleDeleteLMRChild.bind(this); 
   }
 
   toggleLoading() {
@@ -587,6 +588,12 @@ class MYASGCreation extends Component {
     return searchBar;
   }
 
+  handleDeleteLMRChild(index){
+    let LMRChild = this.state.creation_lmr_child_form;
+    LMRChild.splice(index,1);
+    this.setState({creation_lmr_child_form : LMRChild });
+  }
+
   render() {
     // console.log("this.props.dataUser", this.props.dataUser);
     if (this.state.redirectSign !== false) {
@@ -928,7 +935,7 @@ class MYASGCreation extends Component {
                               Select CD ID
                             </option>
                             {this.state.list_cd_id.map((e) => (
-                              <option value={e.Project}>{e.CD_ID}</option>
+                              <option value={e.CD_ID}>{e.CD_ID}</option>
                             ))}
                           </Input>
                         </FormGroup>
@@ -1128,6 +1135,9 @@ class MYASGCreation extends Component {
                             onChange={this.handleChangeFormLMRChild}
                           />
                         </FormGroup>
+                      </Col>
+                      <Col md={1}>
+                        <Button color="danger" size="sm" onClick={e => this.handleDeleteLMRChild(i)} style={{float : 'right', marginTop : '30px'}}><span className="fa fa-times"></span></Button>
                       </Col>
                       {/* <Col md={3}>
                         <FormGroup>
