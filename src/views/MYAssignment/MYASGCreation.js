@@ -174,7 +174,8 @@ class MYASGCreation extends Component {
     this.handleChangeFormLMRChild = this.handleChangeFormLMRChild.bind(this);
     this.toggleMaterial = this.toggleMaterial.bind(this);
     this.handleChangeMaterial = this.handleChangeMaterial.bind(this);
-    this.handleDeleteLMRChild = this.handleDeleteLMRChild.bind(this); 
+    this.handleDeleteLMRChild = this.handleDeleteLMRChild.bind(this);
+    this.deleteLMR = this.deleteLMR.bind(this);
   }
 
   toggleLoading() {
@@ -318,7 +319,7 @@ class MYASGCreation extends Component {
   getMaterialList() {
     let filter_array = [];
     this.state.filter_list[0] !== "" && (filter_array.push('"MM_Code":{"$regex" : "' + this.state.filter_list[0] + '", "$options" : "i"}'));
-    this.state.filter_list[1] !== "" && (filter_array.push('"Material_type":{"$regex" : "' + this.state.filter_list[1] + '", "$options" : "i"}'));
+    this.state.filter_list[1] !== "" && (filter_array.push('"Material_Type":{"$regex" : "' + this.state.filter_list[1] + '", "$options" : "i"}'));
     this.state.filter_list[2] !== "" && (filter_array.push('"SoW_Description":{"$regex" : "' + this.state.filter_list[2] + '", "$options" : "i"}'));
     this.state.filter_list[3] !== "" && (filter_array.push('"UoM":{"$regex" : "' + this.state.filter_list[3] + '", "$options" : "i"}'));
     this.state.filter_list[4] !== "" && (filter_array.push('"Region":{"$regex" : "' + this.state.filter_list[4] + '", "$options" : "i"}'));
@@ -503,6 +504,17 @@ class MYASGCreation extends Component {
     this.setState({ creation_lmr_child_form: dataLMR });
   }
 
+  deleteLMR(e){
+    let index = e.currentTarget.value;
+    let dataChild = this.state.creation_lmr_child_form;
+    if(index !== undefined){
+      dataChild.splice(parseInt(index), 1);
+      this.setState({creation_lmr_child_form : []}, () => {
+        this.setState({creation_lmr_child_form : dataChild});
+      });
+    }
+  }
+
   handleChangeFormLMR(e) {
     const name = e.target.name;
     let value = e.target.value;
@@ -542,9 +554,12 @@ class MYASGCreation extends Component {
       dataLMR[parseInt(idx)][field] = e.target.options[e.target.selectedIndex].text;
     }
     if (field === "cd_id" && this.state.lmr_edit === false){
-      // dataLMR[parseInt(idx)][field] = e.target.options[e.target.selectedIndex].text;
-      dataLMR[parseInt(idx)]["project_name"] = e.target.value;
-      this.setState({ cd_id_project: e.target.value });
+      let cdData = this.state.list_cd_id.find((e) => e.CD_ID === value)
+      dataLMR[parseInt(idx)]["site_id"] = cdData.Site_Name;
+      dataLMR[parseInt(idx)]["so_or_nw"] = cdData.Network_Element_Name;
+      dataLMR[parseInt(idx)]["activity"] = cdData.Network_Element_Name;
+      dataLMR[parseInt(idx)]["project_name"] = cdData.Project;
+      this.setState({ cd_id_project: dataLMR[parseInt(idx)]["project_name"] });
     }
     // console.log(dataLMR)
     this.setState({ creation_lmr_child_form: dataLMR }, () => console.log(this.state.creation_lmr_child_form));
@@ -1165,6 +1180,9 @@ class MYASGCreation extends Component {
                           />
                         </FormGroup>
                       </Col> */}
+                      <Button value={i} onClick={this.deleteLMR} color="danger" size="sm" style={{marginLeft: "5px"}}>
+                              <i className="fa fa-trash"></i>
+                            </Button>
                     </Row>
                     <hr className="upload-line--lmr"></hr>
                   </Form>
@@ -1203,7 +1221,7 @@ class MYASGCreation extends Component {
               <thead>
                 <th></th>
                 <th>MM Code</th>
-                <th>BB Sub</th>
+                <th>Material Type</th>
                 <th>SoW</th>
                 <th>UoM</th>
                 <th>Region</th>
@@ -1252,7 +1270,7 @@ class MYASGCreation extends Component {
                       </Button>
                     </td>
                     <td>{e.MM_Code}</td>
-                    <td>{e.BB_Sub}</td>
+                    <td>{e.Material_Type}</td>
                     <td>{e.SoW_Description}</td>
                     <td>{e.UoM}</td>
                     <td>{e.Region}</td>

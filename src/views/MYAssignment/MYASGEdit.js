@@ -162,6 +162,7 @@ class MYASGEdit extends Component {
       lmr_detail: {},
       list_pr_po: [],
       filter_list: new Array(7).fill(""),
+      new_child: false,
 
     };
     this.handleChangeCD = this.handleChangeCD.bind(this);
@@ -176,6 +177,8 @@ class MYASGEdit extends Component {
     this.handleChangeFormLMRChild = this.handleChangeFormLMRChild.bind(this);
     this.toggleMaterial = this.toggleMaterial.bind(this);
     this.handleChangeMaterial = this.handleChangeMaterial.bind(this);
+    this.deleteLMR = this.deleteLMR.bind(this);
+
   }
 
   toggleLoading() {
@@ -452,6 +455,8 @@ class MYASGEdit extends Component {
     const dataChildForm = this.state.lmr_detail.detail;
     // console.log(this.state.creation_lmr_child_form);
     const dataLMR = {
+      _id: this.props.match.params.id,
+      lmr_id: this.state.lmr_detail.lmr_id,
       plant: this.state.lmr_form.plant,
       customer: this.state.lmr_form.customer,
       request_type: this.state.lmr_form.request_type,
@@ -477,6 +482,7 @@ class MYASGEdit extends Component {
     for (let i = 0; i < this.state.lmr_detail.detail.length; i++) {
       // const dataChild = this.state.lmr_detail.detail.map((e, i) => detail){      
       const dataChild = {
+        _id: dataChildForm[i]._id,
         project_name: this.state.lmr_detail.project_name,
         nw: dataChildForm[i].so_or_nw,
         activity: dataChildForm[i].activity,
@@ -558,7 +564,18 @@ class MYASGEdit extends Component {
       so_or_nw: "",
       activity: "",
     });
-    this.setState({ creation_lmr_child_form: dataLMR });
+    this.setState({ creation_lmr_child_form: dataLMR, new_child: !this.state.new_child });
+  }
+
+  deleteLMR(e){
+    let index = e.currentTarget.value;
+    let dataChild = this.state.creation_lmr_child_form;
+    if(index !== undefined){
+      dataChild.splice(parseInt(index), 1);
+      this.setState({creation_lmr_child_form : []}, () => {
+        this.setState({creation_lmr_child_form : dataChild});
+      });
+    }
   }
 
   handleChangeFormLMRChild(e) {
@@ -957,7 +974,7 @@ class MYASGEdit extends Component {
                 <hr className="upload-line--lmr"></hr>
                 {this.state.lmr_detail.detail!== undefined && this.state.lmr_detail.detail.map((lmr, i) => (
                   <Form>
-                    <Row form>
+                    <Row form key={lmr._id}>
                       <Col md={2}>
                         <FormGroup>
                           <Label>CD ID</Label>
@@ -1222,14 +1239,18 @@ class MYASGEdit extends Component {
                           />
                         </FormGroup>
                       </Col> */}
+                      {lmr._id === null ? (<Button value={i} onClick={this.deleteLMR} color="danger" size="sm" style={{marginLeft: "5px"}}>
+                              <i className="fa fa-trash"></i>
+                            </Button>) : ("") }                      
+                            
                     </Row>
                     <hr className="upload-line--lmr"></hr>
                   </Form>
                 ))}
                 <div>
-                  <Button color="primary" size="sm" onClick={this.addLMR}>
+                  {/* <Button color="primary" size="sm" onClick={this.addLMR}>
                     <i className="fa fa-plus">&nbsp;</i> LMR
-                  </Button>
+                  </Button> */}
                 </div>
               </CardBody>
               <CardFooter>
@@ -1260,7 +1281,7 @@ class MYASGEdit extends Component {
               <thead>
                 <th></th>
                 <th>MM Code</th>
-                <th>BB Sub</th>
+                <th>Material Type</th>
                 <th>SoW</th>
                 <th>UoM</th>
                 <th>Region</th>
