@@ -551,7 +551,12 @@ class MYASGCreation extends Component {
         value * dataLMR[parseInt(idx)].price;
     } 
     if (field === "cd_id"){
-      dataLMR[parseInt(idx)][field] = e.target.options[e.target.selectedIndex].text;
+      let cdData = this.state.list_cd_id.find((e) => e.CD_ID === value)
+      dataLMR[parseInt(idx)]["site_id"] = cdData.Site_Name;
+      dataLMR[parseInt(idx)]["so_or_nw"] = cdData.Network_Element_Name;
+      dataLMR[parseInt(idx)]["activity"] = cdData.Network_Element_Name;
+      dataLMR[parseInt(idx)]["project_name"] = cdData.Project;
+      this.setState({ cd_id_project: dataLMR[parseInt(idx)]["project_name"] });
     }
     if (field === "cd_id" && this.state.lmr_edit === false){
       let cdData = this.state.list_cd_id.find((e) => e.CD_ID === value)
@@ -561,7 +566,7 @@ class MYASGCreation extends Component {
       dataLMR[parseInt(idx)]["project_name"] = cdData.Project;
       this.setState({ cd_id_project: dataLMR[parseInt(idx)]["project_name"] });
     }
-    // console.log(dataLMR)
+    console.log(dataLMR)
     this.setState({ creation_lmr_child_form: dataLMR }, () => console.log(this.state.creation_lmr_child_form));
   }
   
@@ -1180,9 +1185,9 @@ class MYASGCreation extends Component {
                           />
                         </FormGroup>
                       </Col> */}
-                      <Button value={i} onClick={this.deleteLMR} color="danger" size="sm" style={{marginLeft: "5px"}}>
+                      {/* <Button value={i} onClick={this.deleteLMR} color="danger" size="sm" style={{marginLeft: "5px"}}>
                               <i className="fa fa-trash"></i>
-                            </Button>
+                            </Button> */}
                     </Row>
                     <hr className="upload-line--lmr"></hr>
                   </Form>
