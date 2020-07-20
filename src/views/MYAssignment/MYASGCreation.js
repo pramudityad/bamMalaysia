@@ -26,14 +26,7 @@ const DefaultNotif = React.lazy(() =>
   import("../../views/DefaultView/DefaultNotif")
 );
 
-const API_URL_MAS = "https://api-dev.mas.pdb.e-dpm.com/masapi";
-const usernameMAS = "mybotprpo";
-const passwordMAS = "mybotprpo2020";
 
-// const API_URL_NODE = 'https://api2-dev.bam-id.e-dpm.com/bamidapi';
-
-// const API_URL_NODE = 'http://localhost:5012/bammyapi';
-const API_URL_NODE = "https://api-dev.bam-my.e-dpm.com/bammyapi";
 
 // const BearerToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjYXNfaWQiOiI1MmVhNTZhMS0zNDMxLTRlMmQtYWExZS1hNTc3ODQzMTMxYzEiLCJyb2xlcyI6WyJCQU0tU3VwZXJBZG1pbiJdLCJhY2NvdW50IjoiMSIsImlhdCI6MTU5MTY5MTE4MH0.FpbzlssSQyaAbJOzNf3KLqHPnYo_ccBtBWu6n87h1RQ';
 const BearerToken =
@@ -196,7 +189,7 @@ class MYASGCreation extends Component {
 
   async postDatatoAPINODE(url, data) {
     try {
-      let respond = await axios.post(API_URL_NODE + url, data, {
+      let respond = await axios.post(process.env.REACT_APP_API_URL_NODE + url, data, {
         headers: {
           "Content-Type": "application/json",
           Authorization: "Bearer " + this.state.tokenUser,
@@ -220,11 +213,11 @@ class MYASGCreation extends Component {
 
   async getDatafromAPIMY(url) {
     try {
-      let respond = await axios.get(API_URL_MAS + url, {
+      let respond = await axios.get(process.env.REACT_APP_API_URL_MAS + url, {
         headers: { "Content-Type": "application/json" },
         auth: {
-          username: usernameMAS,
-          password: passwordMAS,
+          username: process.env.REACT_APP_usernameMAS,
+          password: process.env.REACT_APP_passwordMAS,
         },
       });
       if (respond.status >= 200 && respond.status < 300) {
@@ -240,7 +233,7 @@ class MYASGCreation extends Component {
 
   async getDataFromAPINODE(url) {
     try {
-      let respond = await axios.get(API_URL_NODE + url, {
+      let respond = await axios.get(process.env.REACT_APP_API_URL_NODE + url, {
         headers: {
           "Content-Type": "application/json",
           Authorization: "Bearer " + this.state.tokenUser,
