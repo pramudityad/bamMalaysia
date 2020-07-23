@@ -2122,6 +2122,47 @@ class MYASGDetail extends Component {
           className={"modal-lg"}
         >
           <ModalBody>
+          <div>
+            <Row md={1}>
+              <FormGroup>
+                <Label>Material Type</Label>
+                <Input
+                  type="select"
+                  // name={i + " /// currency"}
+                  // id={i + " /// currency"}
+                  // value={lmr.currency}
+                  // onChange={this.handleChangeFormLMRChild}
+                >
+                  <option value="" disabled selected hidden>
+                    Select Material Type
+                  </option>
+                  <option value="MYR">MYR</option>
+                  <option value="USD">USD</option>
+                  <option value="EUR">EUR</option>
+                </Input>
+              </FormGroup>
+            {/* </Row>
+            <Row md={1}> */}
+            &nbsp;&nbsp;&nbsp;
+              <FormGroup>
+                <Label>Region</Label>
+                <Input
+                  type="select"
+                  // name={i + " /// currency"}
+                  // id={i + " /// currency"}
+                  // value={lmr.currency}
+                  // onChange={this.handleChangeFormLMRChild}
+                >
+                  <option value="" disabled selected hidden>
+                    Select Region
+                  </option>
+                  <option value="KV">KV</option>
+                  <option value="KV">KV</option>
+                  <option value="KV">KV</option>
+                </Input>
+              </FormGroup>
+            </Row>
+            </div>
             <Table responsive striped bordered size="sm">
               <thead>
                 <th></th>

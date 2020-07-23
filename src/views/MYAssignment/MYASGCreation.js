@@ -26,8 +26,6 @@ const DefaultNotif = React.lazy(() =>
   import("../../views/DefaultView/DefaultNotif")
 );
 
-
-
 // const BearerToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjYXNfaWQiOiI1MmVhNTZhMS0zNDMxLTRlMmQtYWExZS1hNTc3ODQzMTMxYzEiLCJyb2xlcyI6WyJCQU0tU3VwZXJBZG1pbiJdLCJhY2NvdW50IjoiMSIsImlhdCI6MTU5MTY5MTE4MH0.FpbzlssSQyaAbJOzNf3KLqHPnYo_ccBtBWu6n87h1RQ';
 const BearerToken =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjYXNfaWQiOiIxOTM2YmE0Yy0wMjlkLTQ1MzktYWRkOC1mZjc2OTNiMDlmZmUiLCJyb2xlcyI6WyJCQU0tU3VwZXJBZG1pbiJdLCJhY2NvdW50IjoiMSIsImlhdCI6MTU5MjQ3MDI4Mn0.tIJSzHa-ewhqz0Ail7J0maIZx4R9P1aXE2E_49pe4KY";
@@ -189,12 +187,16 @@ class MYASGCreation extends Component {
 
   async postDatatoAPINODE(url, data) {
     try {
-      let respond = await axios.post(process.env.REACT_APP_API_URL_NODE + url, data, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + this.state.tokenUser,
-        },
-      });
+      let respond = await axios.post(
+        process.env.REACT_APP_API_URL_NODE + url,
+        data,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + this.state.tokenUser,
+          },
+        }
+      );
       if (respond.status >= 200 && respond.status < 300) {
         console.log("respond Post Data", respond);
       }
@@ -282,7 +284,7 @@ class MYASGCreation extends Component {
     dataFilter[parseInt(index)] = value;
     this.setState({ filter_list: dataFilter, activePage: 1 }, () => {
       this.onChangeDebounced(e);
-    })
+    });
   }
 
   onChangeDebounced(e) {
@@ -310,17 +312,54 @@ class MYASGCreation extends Component {
 
   getMaterialList() {
     let filter_array = [];
-    this.state.filter_list[0] !== "" && (filter_array.push('"MM_Code":{"$regex" : "' + this.state.filter_list[0] + '", "$options" : "i"}'));
-    this.state.filter_list[1] !== "" && (filter_array.push('"Material_Type":{"$regex" : "' + this.state.filter_list[1] + '", "$options" : "i"}'));
-    this.state.filter_list[2] !== "" && (filter_array.push('"SoW_Description":{"$regex" : "' + this.state.filter_list[2] + '", "$options" : "i"}'));
-    this.state.filter_list[3] !== "" && (filter_array.push('"UoM":{"$regex" : "' + this.state.filter_list[3] + '", "$options" : "i"}'));
-    this.state.filter_list[4] !== "" && (filter_array.push('"Region":{"$regex" : "' + this.state.filter_list[4] + '", "$options" : "i"}'));
-    this.state.filter_list[5] !== "" && (filter_array.push('"Unit_Price":{"$regex" : "' + this.state.filter_list[5] + '", "$options" : "i"}'));
-    this.state.filter_list[6] !== "" && (filter_array.push('"MM_Description":{"$regex" : "' + this.state.filter_list[6] + '", "$options" : "i"}'));
-    let whereAnd = '{' + filter_array.join(',') + '}';
+    this.state.filter_list[0] !== "" &&
+      filter_array.push(
+        '"MM_Code":{"$regex" : "' +
+          this.state.filter_list[0] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list[1] !== "" &&
+      filter_array.push(
+        '"Material_Type":{"$regex" : "' +
+          this.state.filter_list[1] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list[2] !== "" &&
+      filter_array.push(
+        '"SoW_Description":{"$regex" : "' +
+          this.state.filter_list[2] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list[3] !== "" &&
+      filter_array.push(
+        '"UoM":{"$regex" : "' +
+          this.state.filter_list[3] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list[4] !== "" &&
+      filter_array.push(
+        '"Region":{"$regex" : "' +
+          this.state.filter_list[4] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list[5] !== "" &&
+      filter_array.push(
+        '"Unit_Price":{"$regex" : "' +
+          this.state.filter_list[5] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list[6] !== "" &&
+      filter_array.push(
+        '"MM_Description":{"$regex" : "' +
+          this.state.filter_list[6] +
+          '", "$options" : "i"}'
+      );
+    let whereAnd = "{" + filter_array.join(",") + "}";
     // let filter = '"mm_code":{"$regex" : "' + this.state.filter_list + '", "$options" : "i"}';
     this.getDatafromAPIMY(
-      "/mm_code_data?where="+whereAnd+"&max_results=" +
+      "/mm_code_data?where=" +
+        whereAnd +
+        "&max_results=" +
         this.state.perPage +
         "&page=" +
         this.state.activePage
@@ -381,7 +420,6 @@ class MYASGCreation extends Component {
       return wp_id_list;
     }
   }
-
 
   async createLMR() {
     const dataForm = this.state.lmr_form;
@@ -444,7 +482,7 @@ class MYASGCreation extends Component {
       //   dataChildForm[i].site_id === undefined ||
       //   dataChildForm[i].site_id === null
       // ) {
-        dataLMRCHild.push(dataChild);
+      dataLMRCHild.push(dataChild);
       // }
     }
     console.log("dataLMR", dataLMR);
@@ -496,13 +534,13 @@ class MYASGCreation extends Component {
     this.setState({ creation_lmr_child_form: dataLMR });
   }
 
-  deleteLMR(e){
+  deleteLMR(e) {
     let index = e.currentTarget.value;
     let dataChild = this.state.creation_lmr_child_form;
-    if(index !== undefined){
+    if (index !== undefined) {
       dataChild.splice(parseInt(index), 1);
-      this.setState({creation_lmr_child_form : []}, () => {
-        this.setState({creation_lmr_child_form : dataChild});
+      this.setState({ creation_lmr_child_form: [] }, () => {
+        this.setState({ creation_lmr_child_form: dataChild });
       });
     }
   }
@@ -514,7 +552,7 @@ class MYASGCreation extends Component {
     if (value !== (null && undefined)) {
       value = value.toString();
     }
-    if (value === "Per Site"){
+    if (value === "Per Site") {
       this.setState({ lmr_edit: !this.state.lmr_edit });
     } else {
       if (name === "project_name") {
@@ -526,8 +564,10 @@ class MYASGCreation extends Component {
         }
       }
       lmr_form[name.toString()] = value;
-      this.setState({ lmr_form: lmr_form }, ()=> console.log(this.state.lmr_form));
-    }    
+      this.setState({ lmr_form: lmr_form }, () =>
+        console.log(this.state.lmr_form)
+      );
+    }
   }
 
   handleChangeFormLMRChild(e) {
@@ -536,27 +576,38 @@ class MYASGCreation extends Component {
     let value = e.target.value;
     let idx = idxField[0];
     let field = idxField[1];
-    console.log('field ', field);
+    console.log("field ", field);
     dataLMR[parseInt(idx)][field] = value;
     if (field === "quantity" && isNaN(dataLMR[parseInt(idx)].price) === false) {
       dataLMR[parseInt(idx)]["total_amount"] =
         value * dataLMR[parseInt(idx)].price;
-    } 
-    if (field === "cd_id"){
-      dataLMR[parseInt(idx)][field] = e.target.options[e.target.selectedIndex].text;
     }
-    if (field === "cd_id" && this.state.lmr_edit === false){
-      let cdData = this.state.list_cd_id.find((e) => e.CD_ID === value)
+    if (field === "cd_id") {
+      dataLMR[parseInt(idx)][field] =
+        e.target.options[e.target.selectedIndex].text;
+    }
+    if (field === "cd_id" && this.state.lmr_edit === false) {
+      let cdData = this.state.list_cd_id.find((e) => e.CD_ID === value);
       dataLMR[parseInt(idx)]["site_id"] = cdData.Site_Name;
-      dataLMR[parseInt(idx)]["so_or_nw"] = cdData.Network_Element_Name;
-      dataLMR[parseInt(idx)]["activity"] = cdData.Network_Element_Name;
       dataLMR[parseInt(idx)]["project_name"] = cdData.Project;
-      this.setState({ cd_id_project: dataLMR[parseInt(idx)]["project_name"] });
+      if (field === "Per_Site_Material_Type") {
+        let cdData = this.state.list_cd_id.find((e) => e.CD_ID === value);
+        dataLMR[parseInt(idx)]["so_or_nw"] = cdData.Network_Element_Name;
+        dataLMR[parseInt(idx)]["activity"] = cdData.Network_Element_Name;
+      }
+      this.setState({ cd_id_project: cdData.Project });
     }
+    // if (field === "cd_id" && field === "Per_Site_Material_Type" && this.state.lmr_edit === false) {
+    //   let cdData = this.state.list_cd_id.find((e) => e.CD_ID === value);
+    //   dataLMR[parseInt(idx)]["so_or_nw"] = cdData.Network_Element_Name;
+    //   dataLMR[parseInt(idx)]["activity"] = cdData.Network_Element_Name;
+    // }
     // console.log(dataLMR)
-    this.setState({ creation_lmr_child_form: dataLMR }, () => console.log(this.state.creation_lmr_child_form));
+    this.setState({ creation_lmr_child_form: dataLMR }, () =>
+      console.log(this.state.creation_lmr_child_form)
+    );
   }
-  
+
   handleChangeMaterial(e) {
     const value = e.target.value;
     const data_material = this.state.material_list.find(
@@ -581,19 +632,28 @@ class MYASGCreation extends Component {
     for (let i = 0; i < 7; i++) {
       searchBar.push(
         <td>
-          <div className="controls" style={{ width: '150px' }}>
+          <div className="controls" style={{ width: "150px" }}>
             <InputGroup className="input-prepend">
               <InputGroupAddon addonType="prepend">
-                <InputGroupText><i className="fa fa-search"></i></InputGroupText>
+                <InputGroupText>
+                  <i className="fa fa-search"></i>
+                </InputGroupText>
               </InputGroupAddon>
-              <Input type="text" placeholder="Search" onChange={this.handleFilterList} value={this.state.filter_list[i]} name={i} size="sm" />
+              <Input
+                type="text"
+                placeholder="Search"
+                onChange={this.handleFilterList}
+                value={this.state.filter_list[i]}
+                name={i}
+                size="sm"
+              />
             </InputGroup>
           </div>
         </td>
-      )
+      );
     }
     return searchBar;
-  }
+  };
 
   render() {
     // console.log("this.props.dataUser", this.props.dataUser);
@@ -655,7 +715,7 @@ class MYASGCreation extends Component {
                           onChange={this.handleChangeFormLMR}
                           readOnly
                         />
-                          {/* <option value={null} selected></option>
+                        {/* <option value={null} selected></option>
                           <option value="Add LMR">Add LMR</option>
                           <option value="Change LMR">Change LMR</option>
                           <option value="Delete LMR">Delete LMR</option>                           */}
@@ -921,6 +981,32 @@ class MYASGCreation extends Component {
                     <Row form>
                       <Col md={2}>
                         <FormGroup>
+                          <Label>Per Site Material Type</Label>
+                          <Input
+                            type="select"
+                            name={i + " /// Per_Site_Material_Type"}
+                            id={i + " /// Per_Site_Material_Type"}
+                            value={lmr.Per_Site_Material_Type}
+                            onChange={this.handleChangeFormLMRChild}
+                            disabled={
+                              this.state.lmr_form.LMR_Type === "Cost Collector"
+                            }
+                          >
+                            <option value="" disabled selected hidden>
+                              Select Material Type
+                            </option>
+                            <option value="NRO Service">NRO Service</option>
+                            <option value="NRO LM">NRO LM</option>
+                            <option value="NDO Service">NDO Service</option>
+                            <option value="NDO Service">NDO HW</option>
+                            {/* {this.state.vendor_list.map((e) => (
+                            <option value={e.Vendor_Code}>{e.Name}</option>
+                          ))} */}
+                          </Input>
+                        </FormGroup>
+                      </Col>
+                      <Col md={2}>
+                        <FormGroup>
                           <Label>CD ID</Label>
                           <Input
                             type="select"
@@ -942,57 +1028,36 @@ class MYASGCreation extends Component {
                         </FormGroup>
                       </Col>
                       <Col md={2}>
-                      <FormGroup>
-                        <Label>Project Name</Label>
-                        {this.state.lmr_edit === true ? 
-                        (<Input
-                          type="select"
-                          name={i + " /// project_name"}
-                          id={i + " /// project_name"}
-                          value={lmr.project_name}
-                          onChange={this.handleChangeFormLMRChild}
-                        >
-                          <option value="" disabled selected hidden>
-                            Select Project Name
-                          </option>
-                          {this.state.list_project.map((e) => (
-                            <option value={e.Project}>{e.Project}</option>
-                          ))}  
-                        </Input>) : (<Input
-                          type="text"
-                          name={i + " /// project_name"}
-                          id={i + " /// project_name"}
-                          value={this.state.cd_id_project}
-                          // onChange={this.handleChangeFormLMRChild}
-                          readOnly
-                        />)}
-                      </FormGroup>
-                    </Col>
-                      <Col md={2}>
                         <FormGroup>
-                          <Label>Per Site Material Type</Label>
-                          <Input
-                            type="select"
-                            name={i + " /// Per_Site_Material_Type"}
-                            id={i + " /// Per_Site_Material_Type"}
-                            value={lmr.Per_Site_Material_Type}
-                            onChange={this.handleChangeFormLMRChild}
-                            disabled={
-                              this.state.lmr_form.LMR_Type === "Cost Collector"
-                            }
-                          >
-                            <option value="" disabled selected hidden>
-                              Select Material Type
-                            </option>
-                            <option value="NRO Service">NRO Service</option>
-                            <option value="NRO LM">NRO LM</option>
-                            <option value="NDO Service">NDO Service</option>
-                            {/* {this.state.vendor_list.map((e) => (
-                            <option value={e.Vendor_Code}>{e.Name}</option>
-                          ))} */}
-                          </Input>
+                          <Label>Project Name</Label>
+                          {this.state.lmr_edit === true ? (
+                            <Input
+                              type="select"
+                              name={i + " /// project_name"}
+                              id={i + " /// project_name"}
+                              value={lmr.project_name}
+                              onChange={this.handleChangeFormLMRChild}
+                            >
+                              <option value="" disabled selected hidden>
+                                Select Project Name
+                              </option>
+                              {this.state.list_project.map((e) => (
+                                <option value={e.Project}>{e.Project}</option>
+                              ))}
+                            </Input>
+                          ) : (
+                            <Input
+                              type="text"
+                              name={i + " /// project_name"}
+                              id={i + " /// project_name"}
+                              value={this.state.cd_id_project}
+                              // onChange={this.handleChangeFormLMRChild}
+                              readOnly
+                            />
+                          )}
                         </FormGroup>
                       </Col>
+
                       <Col md={2}>
                         <FormGroup>
                           <Label>Site ID</Label>
@@ -1163,9 +1228,15 @@ class MYASGCreation extends Component {
                           />
                         </FormGroup>
                       </Col> */}
-                      <Button value={i} onClick={this.deleteLMR} color="danger" size="sm" style={{marginLeft: "5px"}}>
-                              <i className="fa fa-trash"></i>
-                            </Button>
+                      <Button
+                        value={i}
+                        onClick={this.deleteLMR}
+                        color="danger"
+                        size="sm"
+                        style={{ marginLeft: "5px" }}
+                      >
+                        <i className="fa fa-trash"></i>
+                      </Button>
                     </Row>
                     <hr className="upload-line--lmr"></hr>
                   </Form>
@@ -1200,6 +1271,48 @@ class MYASGCreation extends Component {
           className={"modal-lg"}
         >
           <ModalBody>
+            <div>
+            <Row md={1}>
+              <FormGroup>
+                <Label>Material Type</Label>
+                <Input
+                  type="select"
+                  // name={i + " /// currency"}
+                  // id={i + " /// currency"}
+                  // value={lmr.currency}
+                  // onChange={this.handleChangeFormLMRChild}
+                >
+                  <option value="" disabled selected hidden>
+                    Select Material Type
+                  </option>
+                  <option value="MYR">MYR</option>
+                  <option value="USD">USD</option>
+                  <option value="EUR">EUR</option>
+                </Input>
+              </FormGroup>
+            {/* </Row>
+            <Row md={1}> */}
+            &nbsp;&nbsp;&nbsp;
+              <FormGroup>
+                <Label>Region</Label>
+                <Input
+                  type="select"
+                  // name={i + " /// currency"}
+                  // id={i + " /// currency"}
+                  // value={lmr.currency}
+                  // onChange={this.handleChangeFormLMRChild}
+                >
+                  <option value="" disabled selected hidden>
+                    Select Region
+                  </option>
+                  <option value="KV">KV</option>
+                  <option value="KV">KV</option>
+                  <option value="KV">KV</option>
+                </Input>
+              </FormGroup>
+            </Row>
+            </div>
+            
             <Table responsive striped bordered size="sm">
               <thead>
                 <th></th>
@@ -1215,7 +1328,7 @@ class MYASGCreation extends Component {
                 <tr>
                   <td></td>
                   {/* <td> */}
-                    {/* <div className="controls" style={{ width: "150px" }}>
+                  {/* <div className="controls" style={{ width: "150px" }}>
                       <InputGroup className="input-prepend">
                         <InputGroupAddon addonType="prepend">
                           <InputGroupText>
@@ -1231,7 +1344,7 @@ class MYASGCreation extends Component {
                         />
                       </InputGroup>
                     </div> */}
-                    {this.loopSearchBar()}
+                  {this.loopSearchBar()}
                   {/* </td>
                   <td></td>
                   <td></td>
