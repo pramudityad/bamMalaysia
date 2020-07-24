@@ -581,7 +581,7 @@ class MYASGDetail extends Component {
         const dataLMRDetailPRPO = res.data._items;
         this.setState({
           list_pr_po: dataLMRDetailPRPO,
-          check_prpo: dataLMRDetailPRPO[0],
+          check_prpo: dataLMRDetailPRPO[0] !== undefined ? dataLMRDetailPRPO[0] : {},
         });
         // console.log('0 ', this.state.list_pr_po[0])
       }
@@ -1117,7 +1117,7 @@ class MYASGDetail extends Component {
         0,
         "MY",
         "CELCOM",
-        dataChild[0].request_type,
+        "Add LMR",
         dataChild[0].item_category,
         dataChild[0].lmr_type,
         dataChild[0].plan_cost_reduction,
@@ -1614,7 +1614,7 @@ class MYASGDetail extends Component {
                       )}
                       <tr>
                         <td colSpan="22" style={{ textAlign: "left" }}>
-                          {this.state.check_prpo.PO_Number === null ? (
+                          {this.state.check_prpo.PO_Number === null || this.state.check_prpo.PO_Number === undefined ? (
                             <Button
                               color="primary"
                               size="sm"

@@ -522,8 +522,8 @@ class MYASGCreation extends Component {
     if (value !== (null && undefined)) {
       value = value.toString();
     }
-    if (value === "Per Site"){
-      this.setState({ lmr_edit: !this.state.lmr_edit });
+    if (name === "LMR_Type" && value !== "Per Site"){
+      this.setState({ lmr_edit: false });
     } else {
       if (name === "project_name") {
         let dataProject = this.state.list_project.find(
@@ -533,9 +533,9 @@ class MYASGCreation extends Component {
           lmr_form["id_project_doc"] = dataProject._id;
         }
       }
-      lmr_form[name.toString()] = value;
-      this.setState({ lmr_form: lmr_form }, ()=> console.log(this.state.lmr_form));
-    }    
+    } 
+    lmr_form[name.toString()] = value;
+    this.setState({ lmr_form: lmr_form }, ()=> console.log(this.state.lmr_form));   
   }
 
   handleChangeFormLMRChild(e) {
@@ -963,8 +963,7 @@ class MYASGCreation extends Component {
                       <Col md={2}>
                       <FormGroup>
                         <Label>Project Name</Label>
-                        {this.state.lmr_edit === true ? 
-                        (<Input
+                        <Input
                           type="select"
                           name={i + " /// project_name"}
                           id={i + " /// project_name"}
@@ -977,14 +976,7 @@ class MYASGCreation extends Component {
                           {this.state.list_project.map((e) => (
                             <option value={e.Project}>{e.Project}</option>
                           ))}  
-                        </Input>) : (<Input
-                          type="text"
-                          name={i + " /// project_name"}
-                          id={i + " /// project_name"}
-                          value={this.state.cd_id_project}
-                          // onChange={this.handleChangeFormLMRChild}
-                          readOnly
-                        />)}
+                        </Input>
                       </FormGroup>
                     </Col>
                       <Col md={2}>
