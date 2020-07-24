@@ -1249,16 +1249,7 @@ class MYASGCreation extends Component {
                             disabled
                           />
                         </FormGroup>
-                      </Col> */}
-                      <Button
-                        value={i}
-                        onClick={this.deleteLMR}
-                        color="danger"
-                        size="sm"
-                        style={{ marginLeft: "5px" }}
-                      >
-                        <i className="fa fa-trash"></i>
-                      </Button>
+                      </Col> */}                      
                     </Row>
                     <hr className="upload-line--lmr"></hr>
                   </Form>
