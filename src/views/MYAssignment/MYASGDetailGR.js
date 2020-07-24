@@ -1092,6 +1092,20 @@ class MYASGDetail extends Component {
                       {this.state.ChildForm.map((child_data, idx) => (
                         <tr>
                           {/* <td></td> */}
+                          <div>
+                            <Button
+                              onClick={this.deleteSSOW(idx)}
+                              color="danger"
+                              size="sm"
+                              style={{
+                                marginLeft: "5px",
+                                marginTop: "5px",
+                                display: "inline-block",
+                              }}
+                            >
+                              <i className="fa fa-trash"></i>
+                            </Button>
+                          </div>
                           <td>
                             <Input
                               type="text"
@@ -1196,20 +1210,7 @@ class MYASGDetail extends Component {
                           </td>
                           <td></td>
                           <td></td>
-                          <div>
-                            <Button
-                              onClick={this.deleteSSOW(idx)}
-                              color="danger"
-                              size="sm"
-                              style={{
-                                marginLeft: "5px",
-                                marginTop: "5px",
-                                display: "inline-block",
-                              }}
-                            >
-                              <i className="fa fa-trash"></i>
-                            </Button>
-                          </div>
+                          
                           {/* <td>
                             <Input
                               type="text"
