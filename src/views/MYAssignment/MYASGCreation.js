@@ -585,21 +585,35 @@ class MYASGCreation extends Component {
     if (field === "cd_id") {
       dataLMR[parseInt(idx)][field] =
         e.target.options[e.target.selectedIndex].text;
-    }
+    }    
     if (field === "cd_id" && this.state.lmr_edit === false) {
       let cdData = this.state.list_cd_id.find((e) => e.CD_ID === value);
       dataLMR[parseInt(idx)]["site_id"] = cdData.Site_Name;
       dataLMR[parseInt(idx)]["project_name"] = cdData.Project;
-      if (field === "Per_Site_Material_Type") {
-        let cdData = this.state.list_cd_id.find((e) => e.CD_ID === value);
-        dataLMR[parseInt(idx)]["so_or_nw"] = cdData.Network_Element_Name;
-        dataLMR[parseInt(idx)]["activity"] = cdData.Network_Element_Name;
-      }
+      dataLMR[parseInt(idx)]["so_or_nw"] = cdData.Network_Element_Name;
+      dataLMR[parseInt(idx)]["activity"] = cdData.Network_Element_Name;
       this.setState({ cd_id_project: cdData.Project });
     }
-    // if (field === "cd_id" && field === "Per_Site_Material_Type" && this.state.lmr_edit === false) {
+    
+    // if (field === "cd_id" && this.state.lmr_edit === false) {
     //   let cdData = this.state.list_cd_id.find((e) => e.CD_ID === value);
+    //   dataLMR[parseInt(idx)]["site_id"] = cdData.Site_Name;
+    //   dataLMR[parseInt(idx)]["project_name"] = cdData.Project;
+    //   console.log(cdData)
+    //   if (field === "Per_Site_Material_Type") {
+    //     // let cdData = this.state.list_cd_id.find((e) => e.CD_ID === value);
+        
+    //     dataLMR[parseInt(idx)]["so_or_nw"] = cdData.Network_Element_Name;
+    //     console.log('so_or_nw ',cdData.Network_Element_Name)
+    //     dataLMR[parseInt(idx)]["activity"] = cdData.Network_Element_Name;
+    //   }
+    //   this.setState({ cd_id_project: cdData.Project });
+    // }
+    // if (field === "Per_Site_Material_Type" && field === "cd_id" &&  this.state.lmr_edit === false) {
+    //   let cdData = this.state.list_cd_id.find((e) => e.CD_ID === value);
+    //   console.log(cdData)
     //   dataLMR[parseInt(idx)]["so_or_nw"] = cdData.Network_Element_Name;
+    //   console.log('so_or_nw ',cdData.Network_Element_Name)
     //   dataLMR[parseInt(idx)]["activity"] = cdData.Network_Element_Name;
     // }
     // console.log(dataLMR)
@@ -1271,10 +1285,10 @@ class MYASGCreation extends Component {
           className={"modal-lg"}
         >
           <ModalBody>
-            <div>
-            <Row md={1}>
+          <div style={{marginLeft:'10px'}}>
+          <Row md={1}>
               <FormGroup>
-                <Label>Material Type</Label>
+                <Label><b>Material Type</b></Label>
                 <Input
                   type="select"
                   // name={i + " /// currency"}
@@ -1294,7 +1308,7 @@ class MYASGCreation extends Component {
             <Row md={1}> */}
             &nbsp;&nbsp;&nbsp;
               <FormGroup>
-                <Label>Region</Label>
+                <Label><b>Region</b></Label>
                 <Input
                   type="select"
                   // name={i + " /// currency"}
@@ -1311,8 +1325,8 @@ class MYASGCreation extends Component {
                 </Input>
               </FormGroup>
             </Row>
-            </div>
-            
+          </div>
+                                  
             <Table responsive striped bordered size="sm">
               <thead>
                 <th></th>

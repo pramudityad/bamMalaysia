@@ -1445,9 +1445,10 @@ class MYASGDetail extends Component {
                       <tr>
                         <th style={{ width: "70%" }}></th>
                         <th>Request Type</th>
-                        <th>CD_ID</th>
-                        <th>Project Name</th>
                         <th>Per Site Material Type</th>
+                       
+                        <th>Project Name</th>
+                        <th>CD_ID</th>
                         <th>Site ID</th>
                         <th>SO # /NW #</th>
                         <th>Activity</th>
@@ -1497,9 +1498,10 @@ class MYASGDetail extends Component {
                               </Link>
                             </td>
                             <td>{e.request_type}</td>
-                            <td>{e.cdid}</td>
-                            <td>{e.project_name}</td>
                             <td>{e.per_site_material_type}</td>
+                            
+                            <td>{e.project_name}</td>
+                            <td>{e.cdid}</td>
                             <td>{e.site_id}</td>
                             <td>{e.nw}</td>
                             <td>{e.activity}</td>
@@ -1649,20 +1651,21 @@ class MYASGDetail extends Component {
                           <td>
                             <Input
                               type="select"
-                              name={i + " /// cd_id"}
-                              id={i + " /// cd_id"}
-                              value={lmr.cd_id}
+                              name={i + " /// Per_Site_Material_Type"}
+                              id={i + " /// Per_Site_Material_Type"}
+                              value={lmr.Per_Site_Material_Type}
                               onChange={this.handleChangeFormLMRChildMultiple}
                               // style={{ width: "100%" }}
                             >
                               <option value="" disabled selected hidden>
-                                Select CD ID
+                                Select Material Type
                               </option>
-                              {this.state.list_cd_id.map((e) => (
-                                <option value={e.CD_ID}>{e.CD_ID}</option>
-                              ))}
+                              <option value="NRO Service">NRO Service</option>
+                              <option value="NRO LM">NRO LM</option>
+                              <option value="NDO Service">NDO Service</option>
                             </Input>
                           </td>
+                          
                           <td>
                             <Input
                               type="select"
@@ -1683,18 +1686,18 @@ class MYASGDetail extends Component {
                           <td>
                             <Input
                               type="select"
-                              name={i + " /// Per_Site_Material_Type"}
-                              id={i + " /// Per_Site_Material_Type"}
-                              value={lmr.Per_Site_Material_Type}
+                              name={i + " /// cd_id"}
+                              id={i + " /// cd_id"}
+                              value={lmr.cd_id}
                               onChange={this.handleChangeFormLMRChildMultiple}
                               // style={{ width: "100%" }}
                             >
                               <option value="" disabled selected hidden>
-                                Select Material Type
+                                Select CD ID
                               </option>
-                              <option value="NRO Service">NRO Service</option>
-                              <option value="NRO LM">NRO LM</option>
-                              <option value="NDO Service">NDO Service</option>
+                              {this.state.list_cd_id.map((e) => (
+                                <option value={e.CD_ID}>{e.CD_ID}</option>
+                              ))}
                             </Input>
                           </td>
                           <td>
@@ -2122,10 +2125,10 @@ class MYASGDetail extends Component {
           className={"modal-lg"}
         >
           <ModalBody>
-          <div>
+          <div style={{marginLeft:'10px'}}>
             <Row md={1}>
               <FormGroup>
-                <Label>Material Type</Label>
+              <Label><b>Material Type</b></Label>
                 <Input
                   type="select"
                   // name={i + " /// currency"}
@@ -2145,7 +2148,7 @@ class MYASGDetail extends Component {
             <Row md={1}> */}
             &nbsp;&nbsp;&nbsp;
               <FormGroup>
-                <Label>Region</Label>
+              <Label><b>Region</b></Label>
                 <Input
                   type="select"
                   // name={i + " /// currency"}
