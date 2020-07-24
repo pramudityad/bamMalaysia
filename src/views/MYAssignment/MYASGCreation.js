@@ -165,6 +165,7 @@ class MYASGCreation extends Component {
     this.handleChangeFormLMRChild = this.handleChangeFormLMRChild.bind(this);
     this.toggleMaterial = this.toggleMaterial.bind(this);
     this.handleChangeMaterial = this.handleChangeMaterial.bind(this);
+    this.handleDeleteLMRChild = this.handleDeleteLMRChild.bind(this);
     this.deleteLMR = this.deleteLMR.bind(this);
   }
 
@@ -552,8 +553,8 @@ class MYASGCreation extends Component {
     if (value !== (null && undefined)) {
       value = value.toString();
     }
-    if (value === "Per Site") {
-      this.setState({ lmr_edit: !this.state.lmr_edit });
+    if (name === "LMR_Type" && value !== "Per Site"){
+      this.setState({ lmr_edit: false });
     } else {
       if (name === "project_name") {
         let dataProject = this.state.list_project.find(
@@ -563,11 +564,9 @@ class MYASGCreation extends Component {
           lmr_form["id_project_doc"] = dataProject._id;
         }
       }
-      lmr_form[name.toString()] = value;
-      this.setState({ lmr_form: lmr_form }, () =>
-        console.log(this.state.lmr_form)
-      );
-    }
+    } 
+    lmr_form[name.toString()] = value;
+    this.setState({ lmr_form: lmr_form }, ()=> console.log(this.state.lmr_form));   
   }
 
   handleChangeFormLMRChild(e) {
@@ -668,6 +667,12 @@ class MYASGCreation extends Component {
     }
     return searchBar;
   };
+
+  handleDeleteLMRChild(index){
+    let LMRChild = this.state.creation_lmr_child_form;
+    LMRChild.splice(index,1);
+    this.setState({creation_lmr_child_form : LMRChild });
+  }
 
   render() {
     // console.log("this.props.dataUser", this.props.dataUser);
@@ -1215,6 +1220,9 @@ class MYASGCreation extends Component {
                             onChange={this.handleChangeFormLMRChild}
                           />
                         </FormGroup>
+                      </Col>
+                      <Col md={1}>
+                        <Button color="danger" size="sm" onClick={e => this.handleDeleteLMRChild(i)} style={{float : 'right', marginTop : '30px'}}><span className="fa fa-times"></span></Button>
                       </Col>
                       {/* <Col md={3}>
                         <FormGroup>
