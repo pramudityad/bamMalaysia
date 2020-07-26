@@ -152,6 +152,11 @@ class MYASGCreation extends Component {
       data_user: this.props.dataUser,
       filter_list: new Array(7).fill(""),
       cd_id_project: "",
+      matfilter:{
+        mat_type: "",
+        region: "",
+      },
+      hide_region: false,
     };
     this.handleChangeCD = this.handleChangeCD.bind(this);
     this.loadOptionsCDID = this.loadOptionsCDID.bind(this);
@@ -167,6 +172,7 @@ class MYASGCreation extends Component {
     this.handleChangeMaterial = this.handleChangeMaterial.bind(this);
     this.handleDeleteLMRChild = this.handleDeleteLMRChild.bind(this);
     this.deleteLMR = this.deleteLMR.bind(this);
+    this.handleMaterialFilter = this.handleMaterialFilter.bind(this);
   }
 
   toggleLoading() {
@@ -674,7 +680,30 @@ class MYASGCreation extends Component {
     this.setState({creation_lmr_child_form : LMRChild });
   }
 
+  handleMaterialFilter(e){
+    let value = e.target.value;
+    let name = e.target.name;
+    this.setState(
+      (prevState) => ({
+        matfilter: {
+          ...prevState.matfilter,
+          [name]: value,
+        },
+      }),
+      () => this.hideRegion()
+    );
+  }
+
+  hideRegion(){
+    if(this.state.matfilter.mat_type === "Hardware" || this.state.matfilter.mat_type === "ARP"){
+      this.setState({hide_region: true})
+    }else{
+      this.setState({hide_region: false})
+    } 
+  }
+
   render() {
+    const matfilter = this.state.matfilter;
     // console.log("this.props.dataUser", this.props.dataUser);
     if (this.state.redirectSign !== false) {
       return <Redirect to={"/mr-detail/" + this.state.redirectSign} />;
@@ -1290,39 +1319,40 @@ class MYASGCreation extends Component {
                 <Label><b>Material Type</b></Label>
                 <Input
                   type="select"
-                  // name={i + " /// currency"}
-                  // id={i + " /// currency"}
-                  // value={lmr.currency}
-                  // onChange={this.handleChangeFormLMRChild}
+                  name={"mat_type"}
+                  value={matfilter.mat_type}
+                  onChange={this.handleMaterialFilter}
                 >
                   <option value="" disabled selected hidden>
-                    Select Material Type
+                    
                   </option>
-                  <option value="MYR">MYR</option>
-                  <option value="USD">USD</option>
-                  <option value="EUR">EUR</option>
+                  <option value="NDO">NDO</option>
+                  <option value="NRO & LM">NRO & LM</option>
+                  <option value="Hardware">Hardware</option>
+                  <option value="ARP">ARP</option>
                 </Input>
               </FormGroup>
             {/* </Row>
             <Row md={1}> */}
             &nbsp;&nbsp;&nbsp;
+            {this.state.hide_region !== true ? (
               <FormGroup>
                 <Label><b>Region</b></Label>
                 <Input
                   type="select"
-                  // name={i + " /// currency"}
-                  // id={i + " /// currency"}
-                  // value={lmr.currency}
-                  // onChange={this.handleChangeFormLMRChild}
+                  name={"region"}
+                  value={matfilter.region}
+                  onChange={this.handleMaterialFilter}
                 >
                   <option value="" disabled selected hidden>
-                    Select Region
+                    
                   </option>
                   <option value="KV">KV</option>
-                  <option value="KV">KV</option>
-                  <option value="KV">KV</option>
+                  <option value="ER">ER</option>
+                  <option value="EM">EM</option>
                 </Input>
               </FormGroup>
+            ): ""}              
             </Row>
           </div>
                                   

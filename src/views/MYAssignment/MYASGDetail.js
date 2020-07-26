@@ -40,7 +40,6 @@ const DefaultNotif = React.lazy(() =>
   import("../../views/DefaultView/DefaultNotif")
 );
 
-
 // const BearerToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjYXNfaWQiOiI1MmVhNTZhMS0zNDMxLTRlMmQtYWExZS1hNTc3ODQzMTMxYzEiLCJyb2xlcyI6WyJCQU0tU3VwZXJBZG1pbiJdLCJhY2NvdW50IjoiMSIsImlhdCI6MTU5MTY5MTE4MH0.FpbzlssSQyaAbJOzNf3KLqHPnYo_ccBtBWu6n87h1RQ';
 const BearerToken =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjYXNfaWQiOiIxOTM2YmE0Yy0wMjlkLTQ1MzktYWRkOC1mZjc2OTNiMDlmZmUiLCJyb2xlcyI6WyJCQU0tU3VwZXJBZG1pbiJdLCJhY2NvdW50IjoiMSIsImlhdCI6MTU5MjQ3MDI4Mn0.tIJSzHa-ewhqz0Ail7J0maIZx4R9P1aXE2E_49pe4KY";
@@ -112,7 +111,12 @@ class MYASGDetail extends Component {
       },
       check_prpo: {},
       list_project: [],
-      cd_id_project: ""
+      cd_id_project: "",
+      matfilter: {
+        mat_type: "",
+        region: "",
+      },
+      hide_region: false,
     };
     this.toggleAddNew = this.toggleAddNew.bind(this);
     this.handleFilterList = this.handleFilterList.bind(this);
@@ -132,6 +136,7 @@ class MYASGDetail extends Component {
       this
     );
     this.deleteLMR = this.deleteLMR.bind(this);
+    this.handleMaterialFilter = this.handleMaterialFilter.bind(this);
   }
 
   toggle(i) {
@@ -331,12 +336,16 @@ class MYASGDetail extends Component {
 
   async postDatatoAPINODE(url, data) {
     try {
-      let respond = await axios.post(process.env.REACT_APP_API_URL_NODE + url, data, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + this.state.tokenUser,
-        },
-      });
+      let respond = await axios.post(
+        process.env.REACT_APP_API_URL_NODE + url,
+        data,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + this.state.tokenUser,
+          },
+        }
+      );
       if (respond.status >= 200 && respond.status < 300) {
         // console.log("respond Post Data", respond);
       }
@@ -350,12 +359,16 @@ class MYASGDetail extends Component {
 
   async patchDatatoAPINODE(url, data) {
     try {
-      let respond = await axios.patch(process.env.REACT_APP_API_URL_NODE + url, data, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + this.state.tokenUser,
-        },
-      });
+      let respond = await axios.patch(
+        process.env.REACT_APP_API_URL_NODE + url,
+        data,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + this.state.tokenUser,
+          },
+        }
+      );
       if (respond.status >= 200 && respond.status < 300) {
         console.log("respond Post Data", respond);
       }
@@ -369,12 +382,15 @@ class MYASGDetail extends Component {
 
   async deleteDatafromAPINODE(url) {
     try {
-      let respond = await axios.delete(process.env.REACT_APP_API_URL_NODE + url, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + this.state.tokenUser,
-        },
-      });
+      let respond = await axios.delete(
+        process.env.REACT_APP_API_URL_NODE + url,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + this.state.tokenUser,
+          },
+        }
+      );
       if (respond.status >= 200 && respond.status < 300) {
         console.log("respond Post Data", respond);
       }
@@ -464,7 +480,6 @@ class MYASGDetail extends Component {
       }
     });
   }
-
 
   getMaterialList() {
     let filter_array = [];
@@ -568,7 +583,8 @@ class MYASGDetail extends Component {
         const dataLMRDetailPRPO = res.data._items;
         this.setState({
           list_pr_po: dataLMRDetailPRPO,
-          check_prpo: dataLMRDetailPRPO[0] !== undefined ? dataLMRDetailPRPO[0] : {},
+          check_prpo:
+            dataLMRDetailPRPO[0] !== undefined ? dataLMRDetailPRPO[0] : {},
         });
         // console.log('0 ', this.state.list_pr_po[0])
       }
@@ -993,7 +1009,7 @@ class MYASGDetail extends Component {
       currency: "MYR",
       item_status: "Submit",
       work_status: "Waiting for PR-PO creation",
-      request_type: "Add LMR"
+      request_type: "Add LMR",
     });
     this.setState({ creation_lmr_child_form: dataLMR });
     if (this.state.material_list.length === 0) {
@@ -1039,15 +1055,17 @@ class MYASGDetail extends Component {
     let idx = idxField[0];
     let field = idxField[1];
     dataLMR[parseInt(idx)][field] = value;
-    if (field === "cd_id"){
-      let cdData = this.state.list_cd_id.find((e) => e.CD_ID === value)
+    if (field === "cd_id") {
+      let cdData = this.state.list_cd_id.find((e) => e.CD_ID === value);
       dataLMR[parseInt(idx)]["site_id"] = cdData.Site_Name;
       dataLMR[parseInt(idx)]["so_or_nw"] = cdData.Network_Element_Name;
       dataLMR[parseInt(idx)]["activity"] = cdData.Network_Element_Name;
       dataLMR[parseInt(idx)]["project_name"] = cdData.Project;
       this.setState({ cd_id_project: dataLMR[parseInt(idx)]["project_name"] });
     }
-    this.setState({ creation_lmr_child_form: dataLMR },() => console.log(this.state.creation_lmr_child_form));
+    this.setState({ creation_lmr_child_form: dataLMR }, () =>
+      console.log(this.state.creation_lmr_child_form)
+    );
   }
 
   async createLMRChild() {
@@ -1185,8 +1203,34 @@ class MYASGDetail extends Component {
     return searchBar;
   };
 
+  handleMaterialFilter(e) {
+    let value = e.target.value;
+    let name = e.target.name;
+    this.setState(
+      (prevState) => ({
+        matfilter: {
+          ...prevState.matfilter,
+          [name]: value,
+        },
+      }),
+      () => this.hideRegion()
+    );
+  }
+
+  hideRegion() {
+    if (
+      this.state.matfilter.mat_type === "Hardware" ||
+      this.state.matfilter.mat_type === "ARP"
+    ) {
+      this.setState({ hide_region: true });
+    } else {
+      this.setState({ hide_region: false });
+    }
+  }
+
   render() {
     const prpo = this.state.list_pr_po;
+    const matfilter = this.state.matfilter;
     return (
       <div>
         <DefaultNotif
@@ -1446,7 +1490,7 @@ class MYASGDetail extends Component {
                         <th style={{ width: "70%" }}></th>
                         <th>Request Type</th>
                         <th>Per Site Material Type</th>
-                       
+
                         <th>Project Name</th>
                         <th>CD_ID</th>
                         <th>Site ID</th>
@@ -1499,7 +1543,7 @@ class MYASGDetail extends Component {
                             </td>
                             <td>{e.request_type}</td>
                             <td>{e.per_site_material_type}</td>
-                            
+
                             <td>{e.project_name}</td>
                             <td>{e.cdid}</td>
                             <td>{e.site_id}</td>
@@ -1603,14 +1647,19 @@ class MYASGDetail extends Component {
                       )}
                       <tr>
                         <td colSpan="22" style={{ textAlign: "left" }}>
-                          {this.state.check_prpo.PO_Number === null || this.state.check_prpo.PO_Number === undefined ? (
-                            <Button
-                              color="primary"
-                              size="sm"
-                              onClick={this.addLMR}
-                            >
-                              <i className="fa fa-plus">&nbsp;</i> LMR CHild
-                            </Button>
+                          {this.state.check_prpo.PO_Number === null ||
+                          this.state.check_prpo.PO_Number === undefined ? (
+                            this.state.lmr_detail.request_type === "Add LMR" ? (
+                              <Button
+                                color="primary"
+                                size="sm"
+                                onClick={this.addLMR}
+                              >
+                                <i className="fa fa-plus">&nbsp;</i> LMR CHild
+                              </Button>
+                            ) : (
+                              ""
+                            )
                           ) : (
                             ""
                           )}
@@ -1640,7 +1689,7 @@ class MYASGDetail extends Component {
                               readOnly
                               // style={{ width: "100%" }}
                             />
-                              {/* <option value="" disabled selected hidden>
+                            {/* <option value="" disabled selected hidden>
                                 Select CD ID
                               </option>
                               {this.state.list_cd_id.map((e) => (
@@ -1665,7 +1714,7 @@ class MYASGDetail extends Component {
                               <option value="NDO Service">NDO Service</option>
                             </Input>
                           </td>
-                          
+
                           <td>
                             <Input
                               type="select"
@@ -2125,47 +2174,51 @@ class MYASGDetail extends Component {
           className={"modal-lg"}
         >
           <ModalBody>
-          <div style={{marginLeft:'10px'}}>
-            <Row md={1}>
-              <FormGroup>
-              <Label><b>Material Type</b></Label>
-                <Input
-                  type="select"
-                  // name={i + " /// currency"}
-                  // id={i + " /// currency"}
-                  // value={lmr.currency}
-                  // onChange={this.handleChangeFormLMRChild}
-                >
-                  <option value="" disabled selected hidden>
-                    Select Material Type
-                  </option>
-                  <option value="MYR">MYR</option>
-                  <option value="USD">USD</option>
-                  <option value="EUR">EUR</option>
-                </Input>
-              </FormGroup>
-            {/* </Row>
+            <div style={{ marginLeft: "10px" }}>
+              <Row md={1}>
+                <FormGroup>
+                  <Label>
+                    <b>Material Type</b>
+                  </Label>
+                  <Input
+                    type="select"
+                    name={"mat_type"}
+                    value={matfilter.mat_type}
+                    onChange={this.handleMaterialFilter}
+                  >
+                    <option value="" disabled selected hidden></option>
+                    <option value="NDO">NDO</option>
+                    <option value="NRO & LM">NRO & LM</option>
+                    <option value="Hardware">Hardware</option>
+                    <option value="ARP">ARP</option>
+                  </Input>
+                </FormGroup>
+                {/* </Row>
             <Row md={1}> */}
-            &nbsp;&nbsp;&nbsp;
-              <FormGroup>
-              <Label><b>Region</b></Label>
-                <Input
-                  type="select"
-                  // name={i + " /// currency"}
-                  // id={i + " /// currency"}
-                  // value={lmr.currency}
-                  // onChange={this.handleChangeFormLMRChild}
-                >
-                  <option value="" disabled selected hidden>
-                    Select Region
-                  </option>
-                  <option value="KV">KV</option>
-                  <option value="KV">KV</option>
-                  <option value="KV">KV</option>
-                </Input>
-              </FormGroup>
-            </Row>
+                &nbsp;&nbsp;&nbsp;
+                {this.state.hide_region !== true ? (
+                  <FormGroup>
+                    <Label>
+                      <b>Region</b>
+                    </Label>
+                    <Input
+                      type="select"
+                      name={"region"}
+                      value={matfilter.region}
+                      onChange={this.handleMaterialFilter}
+                    >
+                      <option value="" disabled selected hidden></option>
+                      <option value="KV">KV</option>
+                      <option value="ER">ER</option>
+                      <option value="EM">EM</option>
+                    </Input>
+                  </FormGroup>
+                ) : (
+                  ""
+                )}
+              </Row>
             </div>
+
             <Table responsive striped bordered size="sm">
               <thead>
                 <th></th>
@@ -2228,16 +2281,16 @@ class MYASGDetail extends Component {
                   </tr>
                 ))}
               </tbody>
-              <Pagination
-                activePage={this.state.activePage}
-                itemsCountPerPage={this.state.perPage}
-                totalItemsCount={this.state.totalData}
-                pageRangeDisplayed={5}
-                onChange={this.handlePageChange}
-                itemClass="page-item"
-                linkClass="page-link"
-              />
             </Table>
+            <Pagination
+              activePage={this.state.activePage}
+              itemsCountPerPage={this.state.perPage}
+              totalItemsCount={this.state.totalData}
+              pageRangeDisplayed={5}
+              onChange={this.handlePageChange}
+              itemClass="page-item"
+              linkClass="page-link"
+            />
           </ModalBody>
           <ModalFooter>
             <Button color="secondary" onClick={this.toggleMaterial}>
