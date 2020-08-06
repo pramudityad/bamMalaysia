@@ -101,10 +101,7 @@ class MatNDONRO extends React.Component {
       "SoW_Description",
       "UoM",
       "Region",
-      100,
-      "v",
-      "",
-      "v",
+      100
     ]);
 
     const PPFormat = await wb.xlsx.writeBuffer();
