@@ -84,24 +84,25 @@ class MatNDONRO extends React.Component {
     const ws = wb.addWorksheet();
 
     let header = [
-        "MM_Code",
-        "BB_Sub",
-        "SoW_Description",
-        "UoM",
-        "Region",
-        "Unit_Price"        
-      ]
+      "Material_Type",
+      "MM_Code",
+      "MM_Description",
+      "UoM",
+      "Unit_Price",
+      "BB",
+      "BB_Sub",
+      "Region",
+      "FTV_or_SSO_SLA_or_SSO_Lite_SLA_or_CBO",
+      "Remarks_or_Acceptance",
+      "SoW_Description_or_Site_Type",
+      "ZERV_(18)",
+      "ZEXT_(40)",
+      "Note",
+    ];
 
     ws.addRow(header);
 
-    ws.addRow([
-      "MM_Code",
-      "BB_Sub",
-      "SoW_Description",
-      "UoM",
-      "Region",
-      100
-    ]);
+    ws.addRow(["MM_Code", "BB_Sub", "SoW_Description", "UoM", "Region", 100]);
 
     const PPFormat = await wb.xlsx.writeBuffer();
     saveAs(new Blob([PPFormat]), "Material " + modul_name + " Template.xlsx");
@@ -344,7 +345,7 @@ class MatNDONRO extends React.Component {
               className="btn-pill"
               disabled={this.state.rowsXLS.length === 0}
               onClick={this.saveMatStockWHBulk}
-              style={{height: '30px', width : '100px'}}
+              style={{ height: "30px", width: "100px" }}
             >
               Save
             </Button>{" "}

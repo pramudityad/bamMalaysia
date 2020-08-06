@@ -20,7 +20,6 @@ import * as XLSX from "xlsx";
 import ModalCreateNew from "../Component/ModalCreateNew";
 import { getDatafromAPIMY } from "../../helper/asyncFunction";
 
-
 const modul_name = "NDO -NRO";
 
 const MaterialDB = [
@@ -85,14 +84,22 @@ class MatNDONRO extends React.Component {
     const ws = wb.addWorksheet();
 
     let header = [
-        "MM_Code",
-        "BB_Sub",
-        "SoW_Description",
-        "UoM",
-        "Region",
-        "Unit_Price"        
-      ]
-    header = header.concat(this.state.vendor_list)
+      "Material_Type",
+      "MM_Code",
+      "MM_Description",
+      "UoM",
+      "Unit_Price",
+      "BB",
+      "BB_Sub",
+      "Region",
+      "FTV_or_SSO_SLA_or_SSO_Lite_SLA_or_CBO",
+      "Remarks_or_Acceptance",
+      "SoW_Description_or_Site_Type",
+      "ZERV_(18)",
+      "ZEXT_(40)",
+      "Note",
+    ];
+    header = header.concat(this.state.vendor_list);
 
     ws.addRow(header);
 
