@@ -481,8 +481,13 @@ class MYASGDetail extends Component {
     });
   }
 
-  getMaterialList() {
+  getMaterialList() {    
     let filter_array = [];
+    this.state.matfilter.mat_type !== "" && filter_array.push(
+      '"Material_Type":{"$regex" : "' +
+      this.state.matfilter.mat_type +
+        '", "$options" : "i"}'
+    );
     this.state.filter_list[0] !== "" &&
       filter_array.push(
         '"MM_Code":{"$regex" : "' +
@@ -491,7 +496,7 @@ class MYASGDetail extends Component {
       );
     this.state.filter_list[1] !== "" &&
       filter_array.push(
-        '"Material_type":{"$regex" : "' +
+        '"Material_Type":{"$regex" : "' +
           this.state.filter_list[1] +
           '", "$options" : "i"}'
       );
@@ -507,12 +512,22 @@ class MYASGDetail extends Component {
           this.state.filter_list[3] +
           '", "$options" : "i"}'
       );
+      this.state.matfilter.region === "All" &&
+      filter_array.push(
+        '"Region": {"$exists" : 1}'
+      );  
+      this.state.matfilter.region !== "" && this.state.matfilter.region !== "All" &&
+      filter_array.push(
+        '"Region":{"$regex" : "' +
+          this.state.matfilter.region +
+          '", "$options" : "i"}'
+      );
     this.state.filter_list[4] !== "" &&
       filter_array.push(
         '"Region":{"$regex" : "' +
           this.state.filter_list[4] +
           '", "$options" : "i"}'
-      );
+      );    
     this.state.filter_list[5] !== "" &&
       filter_array.push(
         '"Unit_Price":{"$regex" : "' +
@@ -537,7 +552,7 @@ class MYASGDetail extends Component {
     ).then((res) => {
       if (res.data !== undefined) {
         const items = res.data._items;
-        const totalData = res.data.totalResults;
+        const totalData = res.data._meta.total;
         this.setState({ material_list: items, totalData: totalData });
       }
     });
@@ -1203,17 +1218,20 @@ class MYASGDetail extends Component {
     return searchBar;
   };
 
-  handleMaterialFilter(e) {
+  handleMaterialFilter(e){
     let value = e.target.value;
     let name = e.target.name;
     this.setState(
-      (prevState) => ({
+      (prevState) => ({        
         matfilter: {
           ...prevState.matfilter,
-          [name]: value,
+          [name]: value,          
         },
       }),
-      () => this.hideRegion()
+      () => {
+        this.hideRegion()
+        this.getMaterialList()
+      }
     );
   }
 
@@ -2208,6 +2226,7 @@ class MYASGDetail extends Component {
                       onChange={this.handleMaterialFilter}
                     >
                       <option value="" disabled selected hidden></option>
+                      <option value="All">All</option>
                       <option value="KV">KV</option>
                       <option value="ER">ER</option>
                       <option value="EM">EM</option>

@@ -2,6 +2,10 @@ import React from 'react';
 
 const Dashboard = React.lazy(() => import('./views/Dashboard'));
 
+const MatNDONDRO = React.lazy(() => import('./views/Material/matlibNDONRO'));
+const MatHW = React.lazy(() => import('./views/Material/matlibHW'));
+const MatARP = React.lazy(() => import('./views/Material/matlibARP'));
+
 
 const LMRCreation = React.lazy(() => import('./views/MYAssignment/MYASGCreation'));
 const LMREdit = React.lazy(() => import('./views/MYAssignment/MYASGEdit'));
@@ -13,6 +17,10 @@ const LMRList = React.lazy(() => import('./views/MYAssignment/MYASGList'));
 const routes = [
   { path: '/', exact: true, name: 'Home' },
   { path: '/dashboard', name: 'Dashboard', component: Dashboard },
+
+  { path: '/mm-data-ndonro', exact: true, name: 'MM Code Dat NDO-NRO', component: MatNDONDRO },
+  { path: '/mm-data-hw', exact: true, name: 'MM Code Data HW', component: MatHW },
+  { path: '/mm-data-arp', exact: true, name: 'MM Code Data ARP', component: MatARP },
 
 
   { path: '/lmr-list', exact: true, name: 'Assignment LMR List', component: LMRList },
