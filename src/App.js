@@ -30,7 +30,7 @@ class App extends Component {
 
   componentDidMount() {
     const keycloak = Keycloak('/keycloakMY.json');
-    keycloak.init({onLoad: 'login-required'}).then(authenticated => {
+    keycloak.init({onLoad: 'login-required',checkLoginIframe : false}).then(authenticated => {
       this.setState({ key: keycloak, authenticated: authenticated });
     })
   }
