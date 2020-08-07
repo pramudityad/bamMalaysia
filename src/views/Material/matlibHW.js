@@ -18,20 +18,165 @@ import { saveAs } from "file-saver";
 import Excel from "exceljs";
 import * as XLSX from "xlsx";
 import ModalCreateNew from "../Component/ModalCreateNew";
+import Loading from "../Component/Loading";
+import { ExcelRenderer } from "react-excel-renderer";
+import { getDatafromAPIMY, postDatatoAPINODE } from "../../helper/asyncFunction";
+
+const DefaultNotif = React.lazy(() =>
+  import("../../views/DefaultView/DefaultNotif")
+);
 
 const modul_name = "HW";
+const BearerToken =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjYXNfaWQiOiIxOTM2YmE0Yy0wMjlkLTQ1MzktYWRkOC1mZjc2OTNiMDlmZmUiLCJyb2xlcyI6WyJCQU0tU3VwZXJBZG1pbiJdLCJhY2NvdW50IjoiMSIsImlhdCI6MTU5MjQ3MDI4Mn0.tIJSzHa-ewhqz0Ail7J0maIZx4R9P1aXE2E_49pe4KY";
+const MaterialDB = [
+  {
+    MM_Code: "MM Code",
+    BB_Sub: "BB_sub",
+    SoW_Description: "SoW Description",
+    UoM: "UoM",
+    Region: "Region",
+    Unit_Price: 100,
+    MM_Description: "MM Description",
+    Acceptance: "Acceptance",
+    Vendor_List: [
+      {
+        Vendor_Name: "TUMPAT SOLUTIONS",
+        Identifier: 0,
+      },
 
-class MatNDONRO extends React.Component {
+      {
+        Vendor_Name: "FA FRONTLINERS SDN BHD",
+        Identifier: 1,
+      },
+    ],
+  },
+  {
+    MM_Code: "MM Code1",
+    BB_Sub: "BB_sub1",
+    SoW_Description: "SoW Description1",
+    UoM: "UoM1",
+    Region: "Region1",
+    Unit_Price: 200,
+    MM_Description: "MM Description1",
+    Acceptance: "Acceptance1",
+    Vendor_List: [
+      {
+        Vendor_Name: "TUMPAT SOLUTIONS",
+        Identifier: 1,
+      },
+
+      {
+        Vendor_Name: "FA FRONTLINERS SDN BHD",
+        Identifier: 0,
+      },
+    ],
+  },
+];
+
+class MatHW extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      tokenUser: BearerToken,
       dropdownOpen: new Array(3).fill(false),
       createModal: false,
+      modal_loading: false,
+      action_status: null,
+      action_message: null,
       rowsXLS: [],
+      vendor_list: [],      
     };
     this.toggle = this.toggle.bind(this);
+    this.toggleLoading = this.toggleLoading.bind(this);
     this.togglecreateModal = this.togglecreateModal.bind(this);
     this.resettogglecreateModal = this.resettogglecreateModal.bind(this);
+  }
+
+  componentDidMount() {
+    this.getVendorList();
+    // this.getMaterialList();
+  }
+
+  getVendorList() {
+    getDatafromAPIMY("/vendor_data_non_page?sort=[('Name',-1)]").then((res) => {
+      if (res.data !== undefined) {
+        const items = res.data._items;
+        const vendor_data = items.map((a) => a.Name);
+        this.setState({ vendor_list: vendor_data });
+      }
+    });
+  }
+
+  getMaterialList() {
+    let whereAnd =
+      '{ "Material_Type":{"$regex" : "' + modul_name + '", "$options" : "i"}}';
+    this.getDatafromAPIMY(
+      "/mm_code_data?where=" +
+        whereAnd +
+        "&max_results=" +
+        this.state.perPage +
+        "&page=" +
+        this.state.activePage
+    ).then((res) => {
+      if (res.data !== undefined) {
+        const items = res.data._items;
+        const totalData = res.data._meta.total;
+        this.setState({ material_list: items, totalData: totalData });
+      }
+    });
+  }
+
+  exportMatStatus = async () => {
+    const wb = new Excel.Workbook();
+    const ws = wb.addWorksheet();
+
+    let header = [
+      "Material_Type",
+      "MM_Code",
+      "MM_Description",
+      "UoM",
+      "Unit_Price",
+      "BB",
+      "BB_Sub",
+      "Region",
+      "FTV_or_SSO_SLA_or_SSO_Lite_SLA_or_CBO",
+      "Remarks_or_Acceptance",
+      "SoW_Description_or_Site_Type",
+      "ZERV_(18)",
+      "ZEXT_(40)",
+      "Note",
+    ];    
+
+    ws.addRow(header);
+
+    ws.addRow([
+      "Material_Type",
+      "MM_Code",
+      "MM_Description",
+      "UoM",
+      "Unit_Price",
+      "BB",
+      "BB_Sub",
+      "Region",
+      "FTV_or_SSO_SLA_or_SSO_Lite_SLA_or_CBO",
+      "Remarks_or_Acceptance",
+      "SoW_Description_or_Site_Type",
+      "ZERV_(18)",
+      "ZEXT_(40)",
+      "Note",
+      "",
+      1,
+    ]);
+
+    const PPFormat = await wb.xlsx.writeBuffer();
+    saveAs(new Blob([PPFormat]), "Material " + modul_name + " Template.xlsx");
+  };
+
+  toggleLoading() {
+    this.setState((prevState) => ({
+      modal_loading: !prevState.modal_loading,
+    }));
   }
 
   toggle(i) {
@@ -55,62 +200,46 @@ class MatNDONRO extends React.Component {
     });
   }
 
-  fileHandlerMaterial = (input) => {
-    const file = input.target.files[0];
-    const reader = new FileReader();
-    const rABS = !!reader.readAsBinaryString;
-    // console.log("rABS");
-    reader.onload = (e) => {
-      /* Parse data */
-      const bstr = e.target.result;
-      const wb = XLSX.read(bstr, {
-        type: rABS ? "binary" : "array",
-        cellDates: true,
+  fileHandlerMaterial = (event) => {
+    let fileObj = event.target.files[0];
+    if (fileObj !== undefined) {
+      ExcelRenderer(fileObj, (err, rest) => {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log("rest.rows", JSON.stringify(rest.rows));
+          this.setState({
+            rowsXLS: rest.rows,
+          });
+        }
       });
-      /* Get first worksheet */
-      const wsname = wb.SheetNames[0];
-      const ws = wb.Sheets[wsname];
-      /* Convert array of arrays */
-      const data = XLSX.utils.sheet_to_json(ws, { header: 1, devfal: null });
-      /* Update state */
-      this.ArrayEmptytoNull(data);
-    };
-    if (rABS) reader.readAsBinaryString(file);
-    else reader.readAsArrayBuffer(file);
+    }
   };
 
-  exportMatStatus = async () => {
-    const wb = new Excel.Workbook();
-    const ws = wb.addWorksheet();
-
-    let header = [
-      "Material_Type",
-      "MM_Code",
-      "MM_Description",
-      "UoM",
-      "Unit_Price",
-      "BB",
-      "BB_Sub",
-      "Region",
-      "FTV_or_SSO_SLA_or_SSO_Lite_SLA_or_CBO",
-      "Remarks_or_Acceptance",
-      "SoW_Description_or_Site_Type",
-      "ZERV_(18)",
-      "ZEXT_(40)",
-      "Note",
-    ];
-
-    ws.addRow(header);
-
-    ws.addRow(["MM_Code", "BB_Sub", "SoW_Description", "UoM", "Region", 100]);
-
-    const PPFormat = await wb.xlsx.writeBuffer();
-    saveAs(new Blob([PPFormat]), "Material " + modul_name + " Template.xlsx");
+  saveMatStockWHBulk = async () => {
+    this.toggleLoading();
+    this.togglecreateModal();
+    const BulkXLSX = this.state.rowsXLS;
+    const res = await postDatatoAPINODE("/mmCode/createMmCode", {
+      materialData: BulkXLSX,
+    }, this.state.tokenUser);
+    if (res.data !== undefined) {
+      this.setState({ action_status: "success" });
+      this.toggleLoading();
+    } else {
+      this.setState({ action_status: "failed" }, () => {
+        this.toggleLoading();
+      });
+    }
   };
 
   render() {
     return (
       <div className="animated fadeIn">
+        <DefaultNotif
+          actionMessage={this.state.action_message}
+          actionStatus={this.state.action_status}
+        />
         <Row>
           <Col xl="12">
             <Card style={{}}>
@@ -225,15 +354,7 @@ class MatNDONRO extends React.Component {
                             <th>
                               <Button
                                 color="ghost-dark"
-                                onClick={() => this.requestSort("origin")}
-                              >
-                                <b>Material Type</b>
-                              </Button>
-                            </th>
-                            <th>
-                              <Button
-                                color="ghost-dark"
-                                onClick={() => this.requestSort("material_id")}
+                                // onClick={() => this.requestSort("origin")}
                               >
                                 <b>MM Code</b>
                               </Button>
@@ -241,45 +362,59 @@ class MatNDONRO extends React.Component {
                             <th>
                               <Button
                                 color="ghost-dark"
-                                onClick={() =>
-                                  this.requestSort("material_name")
-                                }
+                                // onClick={() => this.requestSort("material_id")}
                               >
-                                <b>MM Description</b>
+                                <b>BB Sub</b>
+                              </Button>
+                            </th>
+                            <th>
+                              <Button
+                                color="ghost-dark"
+                                // onClick={() =>
+                                //   this.requestSort("material_name")
+                                // }
+                              >
+                                <b>SoW Description</b>
                               </Button>
                             </th>
                             <th>UoM</th>
+                            <th>Region</th>
                             <th>Price</th>
-                            {/* <th></th> */}
-                            {/* <th></th> */}
+                            <th>Unit_Price</th>
+                            <th>MM_Description</th>
                           </tr>
                         </thead>
                         <tbody>
-                          {/* {this.state.all_data.map((e) => (
-                          <React.Fragment key={e._id + "frag"}>
-                            <tr
-                              style={{ backgroundColor: "#d3d9e7" }}
-                              className="fixbody"
-                              key={e._id}
-                            >                              
-                              <td style={{ textAlign: "center" }}>
-                                {e.origin}
-                              </td>
-                              <td style={{ textAlign: "center" }}>
-                                {e.material_id}
-                              </td>
-                              <td style={{ textAlign: "center" }}>
-                                {e.material_name}
-                              </td>
-                              <td style={{ textAlign: "center" }}>
-                                {e.description}
-                              </td>
-                              <td style={{ textAlign: "center" }}>
-                                {e.category}
-                              </td>
-                            </tr>
-                          </React.Fragment>
-                        ))} */}
+                          {MaterialDB.map((e) => (
+                            <React.Fragment key={e._id + "frag"}>
+                              <tr
+                                style={{ backgroundColor: "#d3d9e7" }}
+                                className="fixbody"
+                                key={e._id}
+                              >
+                                <td style={{ textAlign: "center" }}>
+                                  {e.MM_Code}
+                                </td>
+                                <td style={{ textAlign: "center" }}>
+                                  {e.BB_Sub}
+                                </td>
+                                <td style={{ textAlign: "center" }}>
+                                  {e.SoW_Description}
+                                </td>
+                                <td style={{ textAlign: "center" }}>{e.UoM}</td>
+                                <td style={{ textAlign: "center" }}>
+                                  {e.Region}
+                                </td>
+                                <td style={{ textAlign: "center" }}>
+                                  {e.SoW_Description}
+                                </td>
+                                <td style={{ textAlign: "center" }}>{e.UoM}</td>
+                                <td style={{ textAlign: "center" }}>
+                                  {e.Region}
+                                </td>      
+                              </tr>
+                            </React.Fragment>
+                          ))}
                         </tbody>
                       </Table>
                     </div>
@@ -329,15 +464,6 @@ class MatNDONRO extends React.Component {
             </table>
           </div>
           <ModalFooter>
-            {/* <Button
-          block
-          color="link"
-          className="btn-pill"
-          onClick={this.exportMatStatus}
-          size="sm"
-        >
-          Download Template
-        </Button>{" "} */}
             <Button
               size="sm"
               block
@@ -351,9 +477,17 @@ class MatNDONRO extends React.Component {
             </Button>{" "}
           </ModalFooter>
         </ModalCreateNew>
+
+        {/* Modal Loading */}
+        <Loading
+          isOpen={this.state.modal_loading}
+          toggle={this.toggleLoading}
+          className={"modal-sm modal--loading "}
+        ></Loading>
+        {/* end Modal Loading */}
       </div>
     );
   }
 }
 
-export default MatNDONRO;
+export default MatHW;

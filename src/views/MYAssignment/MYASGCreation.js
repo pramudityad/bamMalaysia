@@ -157,6 +157,7 @@ class MYASGCreation extends Component {
         region: "",
       },
       hide_region: false,
+      vendor_selected: "",
     };
     this.handleChangeCD = this.handleChangeCD.bind(this);
     this.loadOptionsCDID = this.loadOptionsCDID.bind(this);
@@ -182,6 +183,7 @@ class MYASGCreation extends Component {
   }
 
   toggleMaterial(number_child_form) {
+    this.getMaterialList();
     if (number_child_form !== undefined && isNaN(number_child_form) === false) {
       this.setState({ current_material_select: number_child_form });
     } else {
@@ -270,7 +272,7 @@ class MYASGCreation extends Component {
   componentDidMount() {
     this.getVendorList();
     this.getProjectList();
-    this.getMaterialList();
+    // this.getMaterialList();
     this.getDataCD();
     document.title = "LMR Creation | BAM";
   }
@@ -403,7 +405,7 @@ class MYASGCreation extends Component {
     lmr_form["vendor_code"] = dataVendor.Vendor_Code;
     lmr_form["vendor_name"] = dataVendor.Name;
     lmr_form["vendor_email"] = dataVendor.Email;
-    this.setState({ lmr_form: lmr_form });
+    this.setState({ lmr_form: lmr_form, vendor_selected: lmr_form["vendor_name"]});
     // console.log(this.state.lmr_form)
   }
 
