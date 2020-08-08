@@ -95,7 +95,7 @@ class MatHW extends React.Component {
 
   componentDidMount() {
     this.getVendorList();
-    // this.getMaterialList();
+    this.getMaterialList();
   }
 
   getVendorList() {
@@ -111,7 +111,7 @@ class MatHW extends React.Component {
   getMaterialList() {
     let whereAnd =
       '{ "Material_Type":{"$regex" : "' + modul_name + '", "$options" : "i"}}';
-    this.getDatafromAPIMY(
+    getDatafromAPIMY(
       "/mm_code_data?where=" +
         whereAnd +
         "&max_results=" +
@@ -122,7 +122,7 @@ class MatHW extends React.Component {
       if (res.data !== undefined) {
         const items = res.data._items;
         const totalData = res.data._meta.total;
-        this.setState({ material_list: items, totalData: totalData });
+        this.setState({ material_list: items, totalData: totalData }, ()=> console.log(this.state.material_list));
       }
     });
   }
@@ -151,7 +151,7 @@ class MatHW extends React.Component {
     ws.addRow(header);
 
     ws.addRow([
-      "Material_Type",
+      modul_name,
       "MM_Code",
       "MM_Description",
       "UoM",
@@ -221,15 +221,32 @@ class MatHW extends React.Component {
     this.togglecreateModal();
     const BulkXLSX = this.state.rowsXLS;
     const res = await postDatatoAPINODE("/mmCode/createMmCode", {
-      materialData: BulkXLSX,
+      mm_data: BulkXLSX,
     }, this.state.tokenUser);
     if (res.data !== undefined) {
       this.setState({ action_status: "success" });
       this.toggleLoading();
     } else {
-      this.setState({ action_status: "failed" }, () => {
-        this.toggleLoading();
-      });
+      if (
+        res.response !== undefined &&
+        res.response.data !== undefined &&
+        res.response.data.error !== undefined
+      ) {
+        if (res.response.data.error.message !== undefined) {
+          this.setState({
+            action_status: "failed",
+            action_message: res.response.data.error.message,
+          });
+        } else {
+          this.setState({
+            action_status: "failed",
+            action_message: res.response.data.error,
+          });
+        }
+      } else {
+        this.setState({ action_status: "failed" });
+      }
+      this.toggleLoading();
     }
   };
 
@@ -385,7 +402,7 @@ class MatHW extends React.Component {
                           </tr>
                         </thead>
                         <tbody>
-                          {MaterialDB.map((e) => (
+                          {this.state.material_list !== undefined && this.state.material_list !== null && this.state.material_list.map((e) => (
                             <React.Fragment key={e._id + "frag"}>
                               <tr
                                 style={{ backgroundColor: "#d3d9e7" }}

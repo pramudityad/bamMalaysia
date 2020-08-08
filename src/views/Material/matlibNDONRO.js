@@ -23,13 +23,14 @@ import { ExcelRenderer } from "react-excel-renderer";
 import {
   getDatafromAPIMY,
   postDatatoAPINODE,
+  getDatafromAPINODE,
 } from "../../helper/asyncFunction";
 
 const DefaultNotif = React.lazy(() =>
   import("../../views/DefaultView/DefaultNotif")
 );
 
-const modul_name = "NDO -NRO";
+const modul_name = "NDO NRO";
 const BearerToken =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjYXNfaWQiOiIxOTM2YmE0Yy0wMjlkLTQ1MzktYWRkOC1mZjc2OTNiMDlmZmUiLCJyb2xlcyI6WyJCQU0tU3VwZXJBZG1pbiJdLCJhY2NvdW50IjoiMSIsImlhdCI6MTU5MjQ3MDI4Mn0.tIJSzHa-ewhqz0Ail7J0maIZx4R9P1aXE2E_49pe4KY";
 const MaterialDB = [
@@ -100,7 +101,7 @@ class MatNDONRO extends React.Component {
 
   componentDidMount() {
     this.getVendorList();
-    // this.getMaterialList();
+    this.getMaterialList();
   }
 
   getVendorList() {
@@ -116,18 +117,19 @@ class MatNDONRO extends React.Component {
   getMaterialList() {
     let whereAnd =
       '{ "Material_Type":{"$regex" : "' + modul_name + '", "$options" : "i"}}';
-    this.getDatafromAPIMY(
-      "/mm_code_data?where=" +
-        whereAnd +
-        "&max_results=" +
-        this.state.perPage +
-        "&page=" +
-        this.state.activePage
+    getDatafromAPINODE(
+      // "/mm_code_data?where=" +
+      //   whereAnd +
+      //   "&max_results=" +
+      //   this.state.perPage +
+      //   "&page=" +
+      //   this.state.activePage
+      "/mmCode/getMm", this.state.tokenUser
     ).then((res) => {
       if (res.data !== undefined) {
         const items = res.data._items;
         const totalData = res.data._meta.total;
-        this.setState({ material_list: items, totalData: totalData });
+        this.setState({ material_list: items, totalData: totalData }, ()=> console.log(this.state.material_list));
       }
     });
   }
@@ -157,7 +159,7 @@ class MatNDONRO extends React.Component {
     ws.addRow(header);
 
     ws.addRow([
-      "Material_Type",
+      modul_name,
       "MM_Code",
       "MM_Description",
       "UoM",
@@ -229,7 +231,7 @@ class MatNDONRO extends React.Component {
     const res = await postDatatoAPINODE(
       "/mmCode/createMmCode",
       {
-        materialData: BulkXLSX,
+        mm_data: BulkXLSX,
       },
       this.state.tokenUser
     );
@@ -237,9 +239,26 @@ class MatNDONRO extends React.Component {
       this.setState({ action_status: "success" });
       this.toggleLoading();
     } else {
-      this.setState({ action_status: "failed" }, () => {
-        this.toggleLoading();
-      });
+      if (
+        res.response !== undefined &&
+        res.response.data !== undefined &&
+        res.response.data.error !== undefined
+      ) {
+        if (res.response.data.error.message !== undefined) {
+          this.setState({
+            action_status: "failed",
+            action_message: res.response.data.error.message,
+          });
+        } else {
+          this.setState({
+            action_status: "failed",
+            action_message: res.response.data.error,
+          });
+        }
+      } else {
+        this.setState({ action_status: "failed" });
+      }
+      this.toggleLoading();
     }
   };
 
