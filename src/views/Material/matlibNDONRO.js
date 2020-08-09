@@ -127,9 +127,9 @@ class MatNDONRO extends React.Component {
       "/mmCode/getMm", this.state.tokenUser
     ).then((res) => {
       if (res.data !== undefined) {
-        const items = res.data._items;
-        const totalData = res.data._meta.total;
-        this.setState({ material_list: items, totalData: totalData }, ()=> console.log(this.state.material_list));
+        const items = res.data.data;
+        const totalData = res.data.totalResults;
+        this.setState({ material_list: items, totalData: totalData }, ()=> console.log(this.state.material_list[0]));
       }
     });
   }
@@ -411,15 +411,15 @@ class MatNDONRO extends React.Component {
                             <th>Price</th>
                             <th>Unit_Price</th>
                             <th>MM_Description</th>
-                            {MaterialDB[0].Vendor_List.map((e) => (
-                              <React.Fragment key={e._id + "frag"}>
-                                <th>{e.Vendor_Name}</th>
+                            {this.state.vendor_list !== undefined && this.state.vendor_list !== null && this.state.vendor_list.map((e) => (
+                              <React.Fragment key={e + "frag"}>
+                                <th>{e}</th>
                               </React.Fragment>
                             ))}
                           </tr>
                         </thead>
                         <tbody>
-                          {MaterialDB.map((e) => (
+                          {this.state.material_list !== undefined && this.state.material_list !== null && this.state.material_list.map((e) => (
                             <React.Fragment key={e._id + "frag"}>
                               <tr
                                 style={{ backgroundColor: "#d3d9e7" }}
