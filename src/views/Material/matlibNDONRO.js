@@ -124,7 +124,7 @@ class MatNDONRO extends React.Component {
       //   this.state.perPage +
       //   "&page=" +
       //   this.state.activePage
-      "/mmCode/getMm", this.state.tokenUser
+      '/mmCode/getMm?q={"Material_Type": "NDO NRO"}', this.state.tokenUser
     ).then((res) => {
       if (res.data !== undefined) {
         const items = res.data.data;
