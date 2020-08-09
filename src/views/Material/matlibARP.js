@@ -164,9 +164,7 @@ class MatARP extends React.Component {
       "SoW_Description_or_Site_Type",
       "ZERV_(18)",
       "ZEXT_(40)",
-      "Note",
-      "",
-      1,
+      "Note"
     ]);
 
     const PPFormat = await wb.xlsx.writeBuffer();
