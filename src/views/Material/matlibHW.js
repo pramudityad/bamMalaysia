@@ -137,14 +137,7 @@ class MatHW extends React.Component {
       "MM_Description",
       "UoM",
       "Unit_Price",
-      "BB",
-      "BB_Sub",
-      "Region",
-      "FTV_or_SSO_SLA_or_SSO_Lite_SLA_or_CBO",
-      "Remarks_or_Acceptance",
-      "SoW_Description_or_Site_Type",
-      "ZERV_(18)",
-      "ZEXT_(40)",
+      "Currency", "Info_Rec", "Vendor_ID", "Vendor_Name", "Valid_To", "Created_On", "Created_By", "Status_Price_in_SAP",
       "Note",
     ];    
 
@@ -156,14 +149,7 @@ class MatHW extends React.Component {
       "MM_Description",
       "UoM",
       "Unit_Price",
-      "BB",
-      "BB_Sub",
-      "Region",
-      "FTV_or_SSO_SLA_or_SSO_Lite_SLA_or_CBO",
-      "Remarks_or_Acceptance",
-      "SoW_Description_or_Site_Type",
-      "ZERV_(18)",
-      "ZEXT_(40)",
+      "Currency", "Info_Rec", "Vendor_ID", "Vendor_Name", "Valid_To", "Created_On", "Created_By", "Status_Price_in_SAP",
       "Note"
     ]);
 
@@ -366,37 +352,19 @@ class MatHW extends React.Component {
                         // className="fixed-matlib"
                         >
                           <tr align="center">
-                            <th>
-                              <Button
-                                color="ghost-dark"
-                                // onClick={() => this.requestSort("origin")}
-                              >
-                                <b>MM Code</b>
-                              </Button>
-                            </th>
-                            <th>
-                              <Button
-                                color="ghost-dark"
-                                // onClick={() => this.requestSort("material_id")}
-                              >
-                                <b>BB Sub</b>
-                              </Button>
-                            </th>
-                            <th>
-                              <Button
-                                color="ghost-dark"
-                                // onClick={() =>
-                                //   this.requestSort("material_name")
-                                // }
-                              >
-                                <b>SoW Description</b>
-                              </Button>
-                            </th>
-                            <th>UoM</th>
-                            <th>Region</th>
-                            <th>Price</th>
-                            <th>Unit_Price</th>
+                            <th>MM_Code</th>
                             <th>MM_Description</th>
+                            <th>UoM</th>
+                            <th>Unit_Price</th>
+                            <th>Currency</th>
+                            <th>Info_Rec</th>
+                            <th>Vendor_ID</th>
+                            <th>Vendor_Name</th>
+                            <th>Valid_To</th>
+                            <th>Created_On</th>
+                            <th>Created_By</th>
+                            <th>Status_Price_in_SAP</th>
+                            <th>Note</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -407,26 +375,19 @@ class MatHW extends React.Component {
                                 className="fixbody"
                                 key={e._id}
                               >
-                                <td style={{ textAlign: "center" }}>
-                                  {e.MM_Code}
-                                </td>
-                                <td style={{ textAlign: "center" }}>
-                                  {e.BB_Sub}
-                                </td>
-                                <td style={{ textAlign: "center" }}>
-                                  {e.SoW_Description}
-                                </td>
+                                <td style={{ textAlign: "center" }}>{e.MM_Code}</td>
+                                <td style={{ textAlign: "center" }}>{e.MM_Description}</td>
                                 <td style={{ textAlign: "center" }}>{e.UoM}</td>
-                                <td style={{ textAlign: "center" }}>
-                                  {e.Region}
-                                </td>
-                                <td style={{ textAlign: "center" }}>
-                                  {e.SoW_Description}
-                                </td>
-                                <td style={{ textAlign: "center" }}>{e.UoM}</td>
-                                <td style={{ textAlign: "center" }}>
-                                  {e.Region}
-                                </td>      
+                                <td style={{ textAlign: "center" }}>{e.Unit_Price}</td>
+                                <td style={{ textAlign: "center" }}>{e.Currency}</td>
+                                <td style={{ textAlign: "center" }}>{e.Info_Rec}</td>
+                                <td style={{ textAlign: "center" }}>{e.Vendor_ID}</td>
+                                <td style={{ textAlign: "center" }}>{e.Vendor_Name}</td>
+                                <td style={{ textAlign: "center" }}>{e.Valid_To}</td>
+                                <td style={{ textAlign: "center" }}>{e.Created_On}</td>
+                                <td style={{ textAlign: "center" }}>{e.Created_By}</td>
+                                <td style={{ textAlign: "center" }}>{e.Status_Price_in_SAP}</td>
+                                <td style={{ textAlign: "center" }}>{e.Note}</td>
                               </tr>
                             </React.Fragment>
                           ))}

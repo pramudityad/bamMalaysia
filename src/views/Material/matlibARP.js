@@ -137,14 +137,7 @@ class MatARP extends React.Component {
       "MM_Description",
       "UoM",
       "Unit_Price",
-      "BB",
-      "BB_Sub",
-      "Region",
-      "FTV_or_SSO_SLA_or_SSO_Lite_SLA_or_CBO",
-      "Remarks_or_Acceptance",
-      "SoW_Description_or_Site_Type",
-      "ZERV_(18)",
-      "ZEXT_(40)",
+      "Currency", "Remarks_or_Acceptance", "Vendor_ID", "Vendor_Name", "ZERV_(18)", "ZEXT_(40)",
       "Note",
     ];
 
@@ -156,14 +149,7 @@ class MatARP extends React.Component {
       "MM_Description",
       "UoM",
       "Unit_Price",
-      "BB",
-      "BB_Sub",
-      "Region",
-      "FTV_or_SSO_SLA_or_SSO_Lite_SLA_or_CBO",
-      "Remarks_or_Acceptance",
-      "SoW_Description_or_Site_Type",
-      "ZERV_(18)",
-      "ZEXT_(40)",
+      "Currency", "Remarks_or_Acceptance", "Vendor_ID", "Vendor_Name", "ZERV_(18)", "ZEXT_(40)",
       "Note"
     ]);
 
@@ -366,37 +352,17 @@ class MatARP extends React.Component {
                         // className="fixed-matlib"
                         >
                           <tr align="center">
-                            <th>
-                              <Button
-                                color="ghost-dark"
-                                // onClick={() => this.requestSort("origin")}
-                              >
-                                <b>MM Code</b>
-                              </Button>
-                            </th>
-                            <th>
-                              <Button
-                                color="ghost-dark"
-                                // onClick={() => this.requestSort("material_id")}
-                              >
-                                <b>BB Sub</b>
-                              </Button>
-                            </th>
-                            <th>
-                              <Button
-                                color="ghost-dark"
-                                // onClick={() =>
-                                //   this.requestSort("material_name")
-                                // }
-                              >
-                                <b>SoW Description</b>
-                              </Button>
-                            </th>
-                            <th>UoM</th>
-                            <th>Region</th>
-                            <th>Price</th>
-                            <th>Unit_Price</th>
+                            <th>MM_Code</th>
                             <th>MM_Description</th>
+                            <th>UoM</th>
+                            <th>Unit_Price</th>
+                            <th>Currency</th>
+                            <th>Remarks_or_Acceptance</th>
+                            <th>Vendor_ID</th>
+                            <th>Vendor_Name</th>
+                            <th>ZERV_(18)</th>
+                            <th>ZEXT_(40)</th>
+                            <th>Note</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -407,26 +373,17 @@ class MatARP extends React.Component {
                                 className="fixbody"
                                 key={e._id}
                               >
-                                <td style={{ textAlign: "center" }}>
-                                  {e.MM_Code}
-                                </td>
-                                <td style={{ textAlign: "center" }}>
-                                  {e.BB_Sub}
-                                </td>
-                                <td style={{ textAlign: "center" }}>
-                                  {e.SoW_Description}
-                                </td>
-                                <td style={{ textAlign: "center" }}>{e.UoM}</td>
-                                <td style={{ textAlign: "center" }}>
-                                  {e.Region}
-                                </td>
-                                <td style={{ textAlign: "center" }}>
-                                  {e.SoW_Description}
-                                </td>
-                                <td style={{ textAlign: "center" }}>{e.UoM}</td>
-                                <td style={{ textAlign: "center" }}>
-                                  {e.Region}
-                                </td>
+                            <td style={{ textAlign: "center" }}>{e.MM_Code}</td>
+                            <td style={{ textAlign: "center" }}>{e.MM_Description}</td>
+                            <td style={{ textAlign: "center" }}>{e.UoM}</td>
+                            <td style={{ textAlign: "center" }}>{e.Unit_Price}</td>
+                            <td style={{ textAlign: "center" }}>{e.Currency}</td>
+                            <td style={{ textAlign: "center" }}>{e.Remarks_or_Acceptance}</td>
+                            <td style={{ textAlign: "center" }}>{e.Vendor_ID}</td>
+                            <td style={{ textAlign: "center" }}>{e.Vendor_Name}</td>
+                            <td style={{ textAlign: "center" }}>{e["ZERV_(18)"]}</td>
+                            <td style={{ textAlign: "center" }}>{e["ZEXT_(40)"]}</td>
+                            <td style={{ textAlign: "center" }}>{e.Note}</td>
                               </tr>
                             </React.Fragment>
                           ))}
