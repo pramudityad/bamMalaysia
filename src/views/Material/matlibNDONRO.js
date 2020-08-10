@@ -18,10 +18,21 @@ import { saveAs } from "file-saver";
 import Excel from "exceljs";
 import * as XLSX from "xlsx";
 import ModalCreateNew from "../Component/ModalCreateNew";
-import { getDatafromAPIMY } from "../../helper/asyncFunction";
+import Loading from "../Component/Loading";
+import { ExcelRenderer } from "react-excel-renderer";
+import {
+  getDatafromAPIMY,
+  postDatatoAPINODE,
+  getDatafromAPINODE,
+} from "../../helper/asyncFunction";
 
-const modul_name = "NDO -NRO";
+const DefaultNotif = React.lazy(() =>
+  import("../../views/DefaultView/DefaultNotif")
+);
 
+const modul_name = "NDO NRO";
+const BearerToken =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjYXNfaWQiOiIxOTM2YmE0Yy0wMjlkLTQ1MzktYWRkOC1mZjc2OTNiMDlmZmUiLCJyb2xlcyI6WyJCQU0tU3VwZXJBZG1pbiJdLCJhY2NvdW50IjoiMSIsImlhdCI6MTU5MjQ3MDI4Mn0.tIJSzHa-ewhqz0Ail7J0maIZx4R9P1aXE2E_49pe4KY";
 const MaterialDB = [
   {
     MM_Code: "MM Code",
@@ -32,10 +43,15 @@ const MaterialDB = [
     Unit_Price: 100,
     MM_Description: "MM Description",
     Acceptance: "Acceptance",
-    Vendor: [
+    Vendor_List: [
       {
-        0: "TUMPAT SOLUTIONS",
-        1: "FA FRONTLINERS SDN BHD",
+        Vendor_Name: "TUMPAT SOLUTIONS",
+        Identifier: 0,
+      },
+
+      {
+        Vendor_Name: "FA FRONTLINERS SDN BHD",
+        Identifier: 1,
       },
     ],
   },
@@ -48,6 +64,17 @@ const MaterialDB = [
     Unit_Price: 200,
     MM_Description: "MM Description1",
     Acceptance: "Acceptance1",
+    Vendor_List: [
+      {
+        Vendor_Name: "TUMPAT SOLUTIONS",
+        Identifier: 1,
+      },
+
+      {
+        Vendor_Name: "FA FRONTLINERS SDN BHD",
+        Identifier: 0,
+      },
+    ],
   },
 ];
 
@@ -55,26 +82,54 @@ class MatNDONRO extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      tokenUser: BearerToken,
       dropdownOpen: new Array(3).fill(false),
       createModal: false,
+      modal_loading: false,
+      action_status: null,
+      action_message: null,
       rowsXLS: [],
       vendor_list: [],
+      material_list: [],
+      totalData: 0,
     };
     this.toggle = this.toggle.bind(this);
+    this.toggleLoading = this.toggleLoading.bind(this);
     this.togglecreateModal = this.togglecreateModal.bind(this);
     this.resettogglecreateModal = this.resettogglecreateModal.bind(this);
   }
 
   componentDidMount() {
     this.getVendorList();
+    this.getMaterialList();
   }
 
   getVendorList() {
-    getDatafromAPIMY("/vendor_data").then((res) => {
+    getDatafromAPIMY("/vendor_data_non_page?sort=[('Name',-1)]").then((res) => {
       if (res.data !== undefined) {
         const items = res.data._items;
         const vendor_data = items.map((a) => a.Name);
         this.setState({ vendor_list: vendor_data });
+      }
+    });
+  }
+
+  getMaterialList() {
+    let whereAnd =
+      '{ "Material_Type":{"$regex" : "' + modul_name + '", "$options" : "i"}}';
+    getDatafromAPINODE(
+      // "/mm_code_data?where=" +
+      //   whereAnd +
+      //   "&max_results=" +
+      //   this.state.perPage +
+      //   "&page=" +
+      //   this.state.activePage
+      '/mmCode/getMm?q={"Material_Type": "NDO NRO"}', this.state.tokenUser
+    ).then((res) => {
+      if (res.data !== undefined) {
+        const items = res.data.data;
+        const totalData = res.data.totalResults;
+        this.setState({ material_list: items, totalData: totalData }, ()=> console.log(this.state.material_list[0]));
       }
     });
   }
@@ -104,20 +159,33 @@ class MatNDONRO extends React.Component {
     ws.addRow(header);
 
     ws.addRow([
+      modul_name,
       "MM_Code",
-      "BB_Sub",
-      "SoW_Description",
+      "MM_Description",
       "UoM",
+      "Unit_Price",
+      "BB",
+      "BB_Sub",
       "Region",
-      100,
-      "v",
+      "FTV_or_SSO_SLA_or_SSO_Lite_SLA_or_CBO",
+      "Remarks_or_Acceptance",
+      "SoW_Description_or_Site_Type",
+      "ZERV_(18)",
+      "ZEXT_(40)",
+      "Note",
       "",
-      "v",
+      1,
     ]);
 
     const PPFormat = await wb.xlsx.writeBuffer();
     saveAs(new Blob([PPFormat]), "Material " + modul_name + " Template.xlsx");
   };
+
+  toggleLoading() {
+    this.setState((prevState) => ({
+      modal_loading: !prevState.modal_loading,
+    }));
+  }
 
   toggle(i) {
     const newArray = this.state.dropdownOpen.map((element, index) => {
@@ -140,33 +208,67 @@ class MatNDONRO extends React.Component {
     });
   }
 
-  fileHandlerMaterial = (input) => {
-    const file = input.target.files[0];
-    const reader = new FileReader();
-    const rABS = !!reader.readAsBinaryString;
-    // console.log("rABS");
-    reader.onload = (e) => {
-      /* Parse data */
-      const bstr = e.target.result;
-      const wb = XLSX.read(bstr, {
-        type: rABS ? "binary" : "array",
-        cellDates: true,
+  fileHandlerMaterial = (event) => {
+    let fileObj = event.target.files[0];
+    if (fileObj !== undefined) {
+      ExcelRenderer(fileObj, (err, rest) => {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log("rest.rows", JSON.stringify(rest.rows));
+          this.setState({
+            rowsXLS: rest.rows,
+          });
+        }
       });
-      /* Get first worksheet */
-      const wsname = wb.SheetNames[0];
-      const ws = wb.Sheets[wsname];
-      /* Convert array of arrays */
-      const data = XLSX.utils.sheet_to_json(ws, { header: 1, devfal: null });
-      /* Update state */
-      this.ArrayEmptytoNull(data);
-    };
-    if (rABS) reader.readAsBinaryString(file);
-    else reader.readAsArrayBuffer(file);
+    }
+  };
+
+  saveMatStockWHBulk = async () => {
+    this.toggleLoading();
+    this.togglecreateModal();
+    const BulkXLSX = this.state.rowsXLS;
+    const res = await postDatatoAPINODE(
+      "/mmCode/createMmCode",
+      {
+        mm_data: BulkXLSX,
+      },
+      this.state.tokenUser
+    );
+    if (res.data !== undefined) {
+      this.setState({ action_status: "success" });
+      this.toggleLoading();
+    } else {
+      if (
+        res.response !== undefined &&
+        res.response.data !== undefined &&
+        res.response.data.error !== undefined
+      ) {
+        if (res.response.data.error.message !== undefined) {
+          this.setState({
+            action_status: "failed",
+            action_message: res.response.data.error.message,
+          });
+        } else {
+          this.setState({
+            action_status: "failed",
+            action_message: res.response.data.error,
+          });
+        }
+      } else {
+        this.setState({ action_status: "failed" });
+      }
+      this.toggleLoading();
+    }
   };
 
   render() {
     return (
       <div className="animated fadeIn">
+        <DefaultNotif
+          actionMessage={this.state.action_message}
+          actionStatus={this.state.action_status}
+        />
         <Row>
           <Col xl="12">
             <Card style={{}}>
@@ -281,7 +383,7 @@ class MatNDONRO extends React.Component {
                             <th>
                               <Button
                                 color="ghost-dark"
-                                onClick={() => this.requestSort("origin")}
+                                // onClick={() => this.requestSort("origin")}
                               >
                                 <b>MM Code</b>
                               </Button>
@@ -289,7 +391,7 @@ class MatNDONRO extends React.Component {
                             <th>
                               <Button
                                 color="ghost-dark"
-                                onClick={() => this.requestSort("material_id")}
+                                // onClick={() => this.requestSort("material_id")}
                               >
                                 <b>BB Sub</b>
                               </Button>
@@ -297,9 +399,9 @@ class MatNDONRO extends React.Component {
                             <th>
                               <Button
                                 color="ghost-dark"
-                                onClick={() =>
-                                  this.requestSort("material_name")
-                                }
+                                // onClick={() =>
+                                //   this.requestSort("material_name")
+                                // }
                               >
                                 <b>SoW Description</b>
                               </Button>
@@ -309,15 +411,15 @@ class MatNDONRO extends React.Component {
                             <th>Price</th>
                             <th>Unit_Price</th>
                             <th>MM_Description</th>
-                            {this.state.vendor_list.map((vendor, i) => (
-                              <React.Fragment key={i + "frag"}>
-                                <th>{vendor}</th>
+                            {this.state.vendor_list !== undefined && this.state.vendor_list !== null && this.state.vendor_list.map((e) => (
+                              <React.Fragment key={e + "frag"}>
+                                <th>{e}</th>
                               </React.Fragment>
                             ))}
                           </tr>
                         </thead>
                         <tbody>
-                          {MaterialDB.map((e) => (
+                          {this.state.material_list !== undefined && this.state.material_list !== null && this.state.material_list.map((e) => (
                             <React.Fragment key={e._id + "frag"}>
                               <tr
                                 style={{ backgroundColor: "#d3d9e7" }}
@@ -337,6 +439,31 @@ class MatNDONRO extends React.Component {
                                 <td style={{ textAlign: "center" }}>
                                   {e.Region}
                                 </td>
+                                <td style={{ textAlign: "center" }}>
+                                  {e.SoW_Description}
+                                </td>
+                                <td style={{ textAlign: "center" }}>{e.UoM}</td>
+                                <td style={{ textAlign: "center" }}>
+                                  {e.Region}
+                                </td>
+                                {e.Vendor_List !== undefined &&
+                                  e.Vendor_List !== null &&
+                                  e.Vendor_List.map((vendor) => (
+                                    <React.Fragment key={vendor._id + "frag"}>
+                                      <td>
+                                        <th style={{ textAlign: "center" }}>
+                                          {vendor.Identifier === 1 ? (
+                                            <i
+                                              class="fa fa-check"
+                                              aria-hidden="true"
+                                            ></i>
+                                          ) : (
+                                            ""
+                                          )}
+                                        </th>
+                                      </td>
+                                    </React.Fragment>
+                                  ))}
                               </tr>
                             </React.Fragment>
                           ))}
@@ -389,15 +516,6 @@ class MatNDONRO extends React.Component {
             </table>
           </div>
           <ModalFooter>
-            {/* <Button
-          block
-          color="link"
-          className="btn-pill"
-          onClick={this.exportMatStatus}
-          size="sm"
-        >
-          Download Template
-        </Button>{" "} */}
             <Button
               size="sm"
               block
@@ -411,6 +529,14 @@ class MatNDONRO extends React.Component {
             </Button>{" "}
           </ModalFooter>
         </ModalCreateNew>
+
+        {/* Modal Loading */}
+        <Loading
+          isOpen={this.state.modal_loading}
+          toggle={this.toggleLoading}
+          className={"modal-sm modal--loading "}
+        ></Loading>
+        {/* end Modal Loading */}
       </div>
     );
   }

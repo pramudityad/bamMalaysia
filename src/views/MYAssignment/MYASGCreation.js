@@ -21,10 +21,11 @@ import { Link, Redirect } from "react-router-dom";
 import AsyncSelect from "react-select/async";
 import Select from "react-select";
 import "./LMRMY.css";
-
+import {getDatafromAPINODE} from "../../helper/asyncFunction"
 const DefaultNotif = React.lazy(() =>
   import("../../views/DefaultView/DefaultNotif")
 );
+
 
 // const BearerToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjYXNfaWQiOiI1MmVhNTZhMS0zNDMxLTRlMmQtYWExZS1hNTc3ODQzMTMxYzEiLCJyb2xlcyI6WyJCQU0tU3VwZXJBZG1pbiJdLCJhY2NvdW50IjoiMSIsImlhdCI6MTU5MTY5MTE4MH0.FpbzlssSQyaAbJOzNf3KLqHPnYo_ccBtBWu6n87h1RQ';
 const BearerToken =
@@ -150,13 +151,14 @@ class MYASGCreation extends Component {
       validation_form: {},
       current_material_select: null,
       data_user: this.props.dataUser,
-      filter_list: new Array(7).fill(""),
+      filter_list: new Array(8).fill(""),
       cd_id_project: "",
       matfilter:{
         mat_type: "",
         region: "",
       },
       hide_region: false,
+      vendor_selected: "",
     };
     this.handleChangeCD = this.handleChangeCD.bind(this);
     this.loadOptionsCDID = this.loadOptionsCDID.bind(this);
@@ -182,6 +184,7 @@ class MYASGCreation extends Component {
   }
 
   toggleMaterial(number_child_form) {
+    this.getMaterialList();
     if (number_child_form !== undefined && isNaN(number_child_form) === false) {
       this.setState({ current_material_select: number_child_form });
     } else {
@@ -270,7 +273,7 @@ class MYASGCreation extends Component {
   componentDidMount() {
     this.getVendorList();
     this.getProjectList();
-    this.getMaterialList();
+    // this.getMaterialList();
     this.getDataCD();
     document.title = "LMR Creation | BAM";
   }
@@ -376,8 +379,14 @@ class MYASGCreation extends Component {
           this.state.filter_list[6] +
           '", "$options" : "i"}'
       );
+      // vendor
+      // this.state.filter_list[7] !== "" && this.state.lmr_form.vendor_code !== "" &&
+      // filter_array.push(
+      //   '"Vendor_List":{"$regex" : "' +
+      //   this.state.lmr_form.vendor_code +
+      //     '", "$options" : "i"}'
+      // );
     let whereAnd = "{" + filter_array.join(",") + "}";
-    // let filter = '"mm_code":{"$regex" : "' + this.state.filter_list + '", "$options" : "i"}';
     this.getDatafromAPIMY(
       "/mm_code_data?where=" +
         whereAnd +
@@ -385,10 +394,21 @@ class MYASGCreation extends Component {
         this.state.perPage +
         "&page=" +
         this.state.activePage
-    ).then((res) => {
+        // getDatafromAPINODE(
+        //   '/mmCode/getMm?q=' +
+        //     whereAnd 
+        //     // +
+        //     // "&max_results=" +
+        //     // this.state.perPage +
+        //     // "&page=" +
+        //     // this.state.activePage
+        //     , this.state.tokenUser
+        ).then((res) => {
       if (res.data !== undefined) {
         const items = res.data._items;
         const totalData = res.data._meta.total;
+        // const items = res.data.data;
+        // const totalData = res.data.totalResults;
         this.setState({ material_list: items, totalData: totalData });
       }
     });
@@ -403,7 +423,7 @@ class MYASGCreation extends Component {
     lmr_form["vendor_code"] = dataVendor.Vendor_Code;
     lmr_form["vendor_name"] = dataVendor.Name;
     lmr_form["vendor_email"] = dataVendor.Email;
-    this.setState({ lmr_form: lmr_form });
+    this.setState({ lmr_form: lmr_form, vendor_selected: lmr_form["vendor_name"]});
     // console.log(this.state.lmr_form)
   }
 
@@ -713,7 +733,7 @@ class MYASGCreation extends Component {
   }
 
   hideRegion(){
-    if(this.state.matfilter.mat_type === "Hardware" || this.state.matfilter.mat_type === "ARP"){
+    if(this.state.matfilter.mat_type === "HW" || this.state.matfilter.mat_type === "ARP"){
       this.setState({hide_region: true})
     }else{
       this.setState({hide_region: false})
@@ -1062,7 +1082,7 @@ class MYASGCreation extends Component {
                               Select Material Type
                             </option>
                             <option value="NRO Service">NRO Service</option>
-                            <option value="NRO LM">NRO LM</option>
+                            <option value="NRO LM">NRO NRO</option>
                             <option value="NDO Service">NDO Service</option>
                             <option value="NDO Service">NDO HW</option>
                             {/* {this.state.vendor_list.map((e) => (
@@ -1344,9 +1364,10 @@ class MYASGCreation extends Component {
                   <option value="" disabled selected hidden>
                     
                   </option>
-                  <option value="NDO">NDO</option>
-                  <option value="NRO & LM">NRO & LM</option>
-                  <option value="Hardware">Hardware</option>
+                  {/* <option value="NDO">NDO</option> */}
+                  <option value="">All</option>
+                  <option value="NDO NRO">NDO NRO</option>
+                  <option value="HW">HW</option>
                   <option value="ARP">ARP</option>
                 </Input>
               </FormGroup>
