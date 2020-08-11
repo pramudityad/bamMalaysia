@@ -369,11 +369,11 @@ class MatNDO extends React.Component {
                                 <td style={{ textAlign: "center" }}>{e.Unit_Price}</td>
                                 <td style={{ textAlign: "center" }}>{e.Currency}</td>
                                 <td style={{ textAlign: "center" }}>{e.Info_Rec}</td>
-                                <td style={{ textAlign: "center" }}>{e.Vendor_ID}</td>
-                                <td style={{ textAlign: "center" }}>{e.Vendor_Name}</td>
                                 <td style={{ textAlign: "center" }}>{e.Valid_To}</td>
                                 <td style={{ textAlign: "center" }}>{e.Created_On}</td>
                                 <td style={{ textAlign: "center" }}>{e.Created_By}</td>
+                                <td style={{ textAlign: "center" }}>{e.Vendor_ID}</td>
+                                <td style={{ textAlign: "center" }}>{e.Vendor_Name}</td>
                                 <td style={{ textAlign: "center" }}>{e.Note}</td>
                               </tr>
                             </React.Fragment>

@@ -78,6 +78,12 @@ const MaterialDB = [
   },
 ];
 
+class TabelNRO extends React.Component {
+  getVendorRow(){
+    
+  }
+}
+
 class MatNRO extends React.Component {
   constructor(props) {
     super(props);
