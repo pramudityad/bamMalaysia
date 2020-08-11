@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Fragment } from "react";
 import {
   Card,
   CardBody,
@@ -79,8 +79,63 @@ const MaterialDB = [
 ];
 
 class TabelNRO extends React.Component {
-  getVendorRow(){
-    
+  getVendorRow(material_vendor, vendor_name){
+    const Matdata = material_vendor.find(e=>e.vendor_name === vendor_name);
+    if(Matdata !== undefined){
+      return(
+        <Fragment>
+          <td>{Matdata.Vendor_Name}</td>
+        </Fragment>
+      )
+    }
+  }
+
+  render(){
+    return(
+      <Table responsive bordered size="sm">
+          <thead>
+            <tr>
+              <th><b>MM Code</b></th>
+              <th><b>BB Sub</b></th>
+              <th><b>SoW Description</b></th>
+              <th><b>UoM</b></th>
+              <th><b>Region</b></th>
+              <th><b>Unit_Price</b></th>
+              <th><b>MM_Description</b></th>
+              {this.props.Vendor_header.Vendor_List.map(vendor => 
+                <Fragment><th>{vendor.Vendor_Name}</th></Fragment>
+               )}
+            </tr>           
+          </thead>
+          <tbody>
+          {this.props.DataMaterial.map(e =>
+            <tr>
+              <td style={{ textAlign: "center" }}>
+                                  {e.MM_Code}
+                                </td>
+                                <td style={{ textAlign: "center" }}>
+                                  {e.BB_Sub}
+                                </td>
+                                <td style={{ textAlign: "center" }}>
+                                  {e.SoW_Description}
+                                </td>
+                                <td style={{ textAlign: "center" }}>{e.UoM}</td>
+                                <td style={{ textAlign: "center" }}>
+                                  {e.Region}
+                                </td>
+                                <td style={{ textAlign: "center" }}>
+                                  {e.SoW_Description}
+                                </td>
+                                <td style={{ textAlign: "center" }}>{e.UoM}</td>
+                                <td style={{ textAlign: "center" }}>
+                                  {e.Region}
+                                </td>
+                                {this.props.Vendor_header.Vendor_List.map((vendor, i) => 
+                this.getVendorRow())}
+            </tr>)}          
+          </tbody>
+      </Table>
+    )
   }
 }
 
@@ -123,16 +178,19 @@ class MatNRO extends React.Component {
   getMaterialList() {
     let whereAnd =
       '{ "Material_Type":{"$regex" : "' + modul_name + '", "$options" : "i"}}';
-    getDatafromAPINODE(
+      // getDatafromAPIMY(
       // "/mm_code_data?where=" +
       //   whereAnd +
       //   "&max_results=" +
       //   this.state.perPage +
       //   "&page=" +
       //   this.state.activePage
-      '/mmCode/getMm?q={"Material_Type": "NDO NRO"}', this.state.tokenUser
+      getDatafromAPINODE(
+      '/mmCode/getMm?q={"Material_Type": "NRO"}', this.state.tokenUser
     ).then((res) => {
       if (res.data !== undefined) {
+        // const items = res.data._items;
+        // const totalData = res.data._meta.total;
         const items = res.data.data;
         const totalData = res.data.totalResults;
         this.setState({ material_list: items, totalData: totalData }, ()=> console.log(this.state.material_list[0]));
