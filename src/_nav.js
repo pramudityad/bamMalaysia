@@ -16,8 +16,13 @@ export default {
       icon: 'icon-folder-alt',
       children: [
         {
-          name: 'NDO - NRO',
-          url: '/mm-data-ndonro',
+          name: 'NDO',
+          url: '/mm-data-ndo',
+          icon: 'icon-list',
+        },
+        {
+          name: 'NRO',
+          url: '/mm-data-nro',
           icon: 'icon-list',
         },
         {

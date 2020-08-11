@@ -27,10 +27,10 @@ import {
 } from "../../helper/asyncFunction";
 
 const DefaultNotif = React.lazy(() =>
-  import("../../views/DefaultView/DefaultNotif")
+  import("../DefaultView/DefaultNotif")
 );
 
-const modul_name = "NDO NRO";
+const modul_name = "NRO";
 const BearerToken =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjYXNfaWQiOiIxOTM2YmE0Yy0wMjlkLTQ1MzktYWRkOC1mZjc2OTNiMDlmZmUiLCJyb2xlcyI6WyJCQU0tU3VwZXJBZG1pbiJdLCJhY2NvdW50IjoiMSIsImlhdCI6MTU5MjQ3MDI4Mn0.tIJSzHa-ewhqz0Ail7J0maIZx4R9P1aXE2E_49pe4KY";
 const MaterialDB = [
@@ -78,7 +78,7 @@ const MaterialDB = [
   },
 ];
 
-class MatNDONRO extends React.Component {
+class MatNRO extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -542,4 +542,4 @@ class MatNDONRO extends React.Component {
   }
 }
 
-export default MatNDONRO;
+export default MatNRO;
