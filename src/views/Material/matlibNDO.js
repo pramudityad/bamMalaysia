@@ -151,7 +151,6 @@ class MatNDO extends React.Component {
       "Remarks_or_Acceptance",
       "SoW_Description_or_Site_Type",
       "Vendor_ID",
-      "Vendor_Name",
       "Note",
     ];
 
@@ -169,7 +168,6 @@ class MatNDO extends React.Component {
       "Remarks_or_Acceptance",
       "SoW_Description_or_Site_Type",
       "Vendor_ID",
-      "Vendor_Name",
       "Note",
     ]);
 
@@ -264,19 +262,17 @@ class MatNDO extends React.Component {
     let dataForm = [ 
       [
         "Material_Type",
-        "MM_Code",
-        "MM_Description",
-        "UoM",
-        "Unit_Price",
-        "BB",
-        "BB_Sub",
-        "Region",
-        "FTV_or_SSO_SLA_or_SSO_Lite_SLA_or_CBO",
-        "Remarks_or_Acceptance",
-        "SoW_Description_or_Site_Type",
-        "ZERV_(18)",
-        "ZEXT_(40)",
-        "Note",
+      "MM_Code",
+      "MM_Description",
+      "UoM",
+      "Unit_Price",
+      "BB",
+      "BB_Sub",
+      "Region",
+      "Remarks_or_Acceptance",
+      "SoW_Description_or_Site_Type",
+      "Vendor_ID",
+      "Note",
       ],
       [
         modul_name,

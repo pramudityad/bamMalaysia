@@ -128,6 +128,7 @@ class MYASGCreation extends Component {
         plant: "MY",
         customer: "CELCOM",
         request_type: "Add LMR",
+        custom_site_display: "",
       },
       lmr_edit: true,
       modal_loading: false,
@@ -627,12 +628,13 @@ class MYASGCreation extends Component {
         e.target.options[e.target.selectedIndex].text;
     }    
     if (field === "cd_id" && this.state.lmr_edit === false) {
-      let cdData = this.state.list_cd_id.find((e) => e.CD_ID === value);
+      let cdData = this.state.list_cd_id.find((e) => e.CD_ID === value);   
+      let custom_site_display = cdData.LOC_ID+'_'+cdData.Site_Name       
       dataLMR[parseInt(idx)]["site_id"] = cdData.Site_Name;
       dataLMR[parseInt(idx)]["project_name"] = cdData.Project;
       dataLMR[parseInt(idx)]["so_or_nw"] = cdData.Network_Element_Name;
       dataLMR[parseInt(idx)]["activity"] = cdData.Network_Element_Name;
-      this.setState({ cd_id_project: cdData.Project });
+      this.setState({ cd_id_project: cdData.Project, custom_site_display: custom_site_display});
     }
     
     // if (field === "cd_id" && this.state.lmr_edit === false) {
@@ -1151,7 +1153,8 @@ class MYASGCreation extends Component {
                             type="text"
                             name={i + " /// site_id"}
                             id={i + " /// site_id"}
-                            value={lmr.site_id}
+                            // ref={this.state.custom_site_display}
+                            value={this.state.custom_site_display}
                             onChange={this.handleChangeFormLMRChild}
                             // readOnly
                           />
@@ -1366,7 +1369,8 @@ class MYASGCreation extends Component {
                   </option>
                   {/* <option value="NDO">NDO</option> */}
                   <option value="">All</option>
-                  <option value="NDO NRO">NDO NRO</option>
+                  <option value="NDO">NDO</option>
+                  <option value="NRO">NRO</option>
                   <option value="HW">HW</option>
                   <option value="ARP">ARP</option>
                 </Input>
@@ -1399,6 +1403,8 @@ class MYASGCreation extends Component {
             <Table responsive striped bordered size="sm">
               <thead>
                 <th></th>
+                <th>BB</th>
+                <th>BB Sub</th>
                 <th>MM Code</th>
                 <th>Material Type</th>
                 <th>SoW</th>
@@ -1448,6 +1454,8 @@ class MYASGCreation extends Component {
                         Select
                       </Button>
                     </td>
+                    <td>{e.BB}</td>
+                    <td>{e.BB_Sub}</td>
                     <td>{e.MM_Code}</td>
                     <td>{e.Material_Type}</td>
                     <td>{e.SoW_Description}</td>
