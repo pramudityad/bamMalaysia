@@ -20,7 +20,10 @@ import * as XLSX from "xlsx";
 import ModalCreateNew from "../Component/ModalCreateNew";
 import Loading from "../Component/Loading";
 import { ExcelRenderer } from "react-excel-renderer";
-import { getDatafromAPIMY, postDatatoAPINODE } from "../../helper/asyncFunction";
+import {
+  getDatafromAPIMY,
+  postDatatoAPINODE,
+} from "../../helper/asyncFunction";
 
 const DefaultNotif = React.lazy(() =>
   import("../../views/DefaultView/DefaultNotif")
@@ -85,12 +88,14 @@ class MatHW extends React.Component {
       action_status: null,
       action_message: null,
       rowsXLS: [],
-      vendor_list: [],      
+      vendor_list: [],
+      PPForm: new Array(12).fill(""),
     };
     this.toggle = this.toggle.bind(this);
     this.toggleLoading = this.toggleLoading.bind(this);
     this.togglecreateModal = this.togglecreateModal.bind(this);
     this.resettogglecreateModal = this.resettogglecreateModal.bind(this);
+    this.togglePPForm = this.togglePPForm.bind(this);
   }
 
   componentDidMount() {
@@ -122,7 +127,9 @@ class MatHW extends React.Component {
       if (res.data !== undefined) {
         const items = res.data._items;
         const totalData = res.data._meta.total;
-        this.setState({ material_list: items, totalData: totalData }, ()=> console.log(this.state.material_list));
+        this.setState({ material_list: items, totalData: totalData }, () =>
+          console.log(this.state.material_list)
+        );
       }
     });
   }
@@ -137,9 +144,16 @@ class MatHW extends React.Component {
       "MM_Description",
       "UoM",
       "Unit_Price",
-      "Currency", "Info_Rec", "Vendor_ID", "Vendor_Name", "Valid_To", "Created_On", "Created_By", "Status_Price_in_SAP",
+      "Currency",
+      "Info_Rec",
+      "Vendor_ID",
+      "Vendor_Name",
+      "Valid_To",
+      "Created_On",
+      "Created_By",
+      "Status_Price_in_SAP",
       "Note",
-    ];    
+    ];
 
     ws.addRow(header);
 
@@ -149,8 +163,15 @@ class MatHW extends React.Component {
       "MM_Description",
       "UoM",
       "Unit_Price",
-      "Currency", "Info_Rec", "Vendor_ID", "Vendor_Name", "Valid_To", "Created_On", "Created_By", "Status_Price_in_SAP",
-      "Note"
+      "Currency",
+      "Info_Rec",
+      "Vendor_ID",
+      "Vendor_Name",
+      "Valid_To",
+      "Created_On",
+      "Created_By",
+      "Status_Price_in_SAP",
+      "Note",
     ]);
 
     const PPFormat = await wb.xlsx.writeBuffer();
@@ -204,9 +225,13 @@ class MatHW extends React.Component {
     this.toggleLoading();
     this.togglecreateModal();
     const BulkXLSX = this.state.rowsXLS;
-    const res = await postDatatoAPINODE("/mmCode/createMmCode", {
-      mm_data: BulkXLSX,
-    }, this.state.tokenUser);
+    const res = await postDatatoAPINODE(
+      "/mmCode/createMmCode",
+      {
+        mm_data: BulkXLSX,
+      },
+      this.state.tokenUser
+    );
     if (res.data !== undefined) {
       this.setState({ action_status: "success" });
       this.toggleLoading();
@@ -234,7 +259,144 @@ class MatHW extends React.Component {
     }
   };
 
+  saveNew = async () => {
+    this.togglePPForm();
+    this.toggleLoading();
+    let dataForm = [
+      [
+        "Material_Type",
+        "MM_Code",
+        "MM_Description",
+        "UoM",
+        "Unit_Price",
+        "BB",
+        "BB_Sub",
+        "Region",
+        "FTV_or_SSO_SLA_or_SSO_Lite_SLA_or_CBO",
+        "Remarks_or_Acceptance",
+        "SoW_Description_or_Site_Type",
+        "ZERV_(18)",
+        "ZEXT_(40)",
+        "Note",
+      ],
+      [
+        modul_name,
+        "MM_Code",
+        this.state.PPForm[2],
+        this.state.PPForm[3],
+        this.state.PPForm[4],
+        this.state.PPForm[5],
+        this.state.PPForm[6],
+        this.state.PPForm[7],
+        this.state.PPForm[8],
+        this.state.PPForm[9],
+        this.state.PPForm[10],
+        this.state.PPForm[11],
+        this.state.PPForm[12],
+      ],
+    ];
+    const res = await postDatatoAPINODE(
+      "/mmCode/createMmCode",
+      {
+        mm_data: dataForm,
+      },
+      this.state.tokenUser
+    );
+    if (res.data !== undefined) {
+      this.setState({ action_status: "success" });
+      this.toggleLoading();
+    } else {
+      if (
+        res.response !== undefined &&
+        res.response.data !== undefined &&
+        res.response.data.error !== undefined
+      ) {
+        if (res.response.data.error.message !== undefined) {
+          this.setState({
+            action_status: "failed",
+            action_message: res.response.data.error.message,
+          });
+        } else {
+          this.setState({
+            action_status: "failed",
+            action_message: res.response.data.error,
+          });
+        }
+      } else {
+        this.setState({ action_status: "failed" });
+      }
+      this.toggleLoading();
+    }
+  };
+
+  handleChangeForm = (e) => {
+    const value = e.target.value;
+    const index = e.target.name;
+    let dataForm = this.state.PPForm;
+    dataForm[parseInt(index)] = value;
+    this.setState({ PPForm: dataForm }, () => console.log(this.state.PPForm));
+  };
+
+  togglePPForm() {
+    this.setState((prevState) => ({
+      modalPPForm: !prevState.modalPPForm,
+    }));
+  }
+
+  downloadAll = async () => {
+    let download_all = [];
+    let getAll_nonpage = this.state.material_list;
+
+    if (getAll_nonpage !== undefined) {
+      download_all = getAll_nonpage;
+    }
+
+    const wb = new Excel.Workbook();
+    const ws = wb.addWorksheet();
+
+    let headerRow = [
+      "Material_Type",
+      "MM_Code",
+      "MM_Description",
+      "UoM",
+      "Unit_Price",
+      "BB",
+      "BB_Sub",
+      "Region",
+      "FTV_or_SSO_SLA_or_SSO_Lite_SLA_or_CBO",
+      "Remarks_or_Acceptance",
+      "SoW_Description_or_Site_Type",
+      "ZERV_(18)",
+      "ZEXT_(40)",
+      "Note",
+    ];
+    ws.addRow(headerRow);
+
+    for (let i = 0; i < download_all.length; i++) {
+      let e = download_all[i];
+      ws.addRow([
+        e.MM_Code,
+        e.MM_Description,
+        e.UoM,
+        e.Unit_Price,
+        e.BB,
+        e.BB_Sub,
+        e.Region,
+        e.FTV_or_SSO_SLA_or_SSO_Lite_SLA_or_CBO,
+        e.Remarks_or_Acceptance,
+        e.SoW_Description_or_Site_Type,
+        e.ZERV_18,
+        e.ZEXT_40,
+        e.Note,
+      ]);
+    }
+
+    const allocexport = await wb.xlsx.writeBuffer();
+    saveAs(new Blob([allocexport]), "All " + modul_name + ".xlsx");
+  };
+
   render() {
+    const NROForm = this.state.NROForm;
     return (
       <div className="animated fadeIn">
         <DefaultNotif
@@ -255,19 +417,29 @@ class MatHW extends React.Component {
                 >
                   <div>
                     <div>
-                      <Button
-                        block
-                        color="success"
-                        onClick={this.togglecreateModal}
-                        size="sm"
-                        // id="toggleCollapse1"
+                      <Dropdown
+                        isOpen={this.state.dropdownOpen[2]}
+                        toggle={() => {
+                          this.toggle(2);
+                        }}
                       >
-                        <i className="fa fa-plus-square" aria-hidden="true">
-                          {" "}
-                          &nbsp;{" "}
-                        </i>{" "}
-                        New
-                      </Button>
+                        <DropdownToggle block color="success" size="sm">
+                          <i className="fa fa-plus-square" aria-hidden="true">
+                            {" "}
+                            &nbsp;{" "}
+                          </i>{" "}
+                          New
+                        </DropdownToggle>
+                        <DropdownMenu>
+                          <DropdownItem onClick={this.togglecreateModal}>
+                            {" "}
+                            Bulk
+                          </DropdownItem>
+                          <DropdownItem onClick={this.togglePPForm}>
+                            Form{" "}
+                          </DropdownItem>
+                        </DropdownMenu>
+                      </Dropdown>
                     </div>
                   </div>
                   &nbsp;&nbsp;&nbsp;
@@ -302,7 +474,7 @@ class MatHW extends React.Component {
 
               <CardBody>
                 <Row>
-                  <Col>
+                  {/* <Col>
                     <div style={{ marginBottom: "10px" }}>
                       <div
                         style={{
@@ -341,7 +513,7 @@ class MatHW extends React.Component {
                         />
                       </div>
                     </div>
-                  </Col>
+                  </Col> */}
                 </Row>
                 <Row>
                   <Col>
@@ -368,29 +540,57 @@ class MatHW extends React.Component {
                           </tr>
                         </thead>
                         <tbody>
-                          {this.state.material_list !== undefined && this.state.material_list !== null && this.state.material_list.map((e) => (
-                            <React.Fragment key={e._id + "frag"}>
-                              <tr
-                                style={{ backgroundColor: "#d3d9e7" }}
-                                className="fixbody"
-                                key={e._id}
-                              >
-                                <td style={{ textAlign: "center" }}>{e.MM_Code}</td>
-                                <td style={{ textAlign: "center" }}>{e.MM_Description}</td>
-                                <td style={{ textAlign: "center" }}>{e.UoM}</td>
-                                <td style={{ textAlign: "center" }}>{e.Unit_Price}</td>
-                                <td style={{ textAlign: "center" }}>{e.Currency}</td>
-                                <td style={{ textAlign: "center" }}>{e.Info_Rec}</td>
-                                <td style={{ textAlign: "center" }}>{e.Vendor_ID}</td>
-                                <td style={{ textAlign: "center" }}>{e.Vendor_Name}</td>
-                                <td style={{ textAlign: "center" }}>{e.Valid_To}</td>
-                                <td style={{ textAlign: "center" }}>{e.Created_On}</td>
-                                <td style={{ textAlign: "center" }}>{e.Created_By}</td>
-                                <td style={{ textAlign: "center" }}>{e.Status_Price_in_SAP}</td>
-                                <td style={{ textAlign: "center" }}>{e.Note}</td>
-                              </tr>
-                            </React.Fragment>
-                          ))}
+                          {this.state.material_list !== undefined &&
+                            this.state.material_list !== null &&
+                            this.state.material_list.map((e) => (
+                              <React.Fragment key={e._id + "frag"}>
+                                <tr
+                                  style={{ backgroundColor: "#d3d9e7" }}
+                                  className="fixbody"
+                                  key={e._id}
+                                >
+                                  <td style={{ textAlign: "center" }}>
+                                    {e.MM_Code}
+                                  </td>
+                                  <td style={{ textAlign: "center" }}>
+                                    {e.MM_Description}
+                                  </td>
+                                  <td style={{ textAlign: "center" }}>
+                                    {e.UoM}
+                                  </td>
+                                  <td style={{ textAlign: "center" }}>
+                                    {e.Unit_Price}
+                                  </td>
+                                  <td style={{ textAlign: "center" }}>
+                                    {e.Currency}
+                                  </td>
+                                  <td style={{ textAlign: "center" }}>
+                                    {e.Info_Rec}
+                                  </td>
+                                  <td style={{ textAlign: "center" }}>
+                                    {e.Vendor_ID}
+                                  </td>
+                                  <td style={{ textAlign: "center" }}>
+                                    {e.Vendor_Name}
+                                  </td>
+                                  <td style={{ textAlign: "center" }}>
+                                    {e.Valid_To}
+                                  </td>
+                                  <td style={{ textAlign: "center" }}>
+                                    {e.Created_On}
+                                  </td>
+                                  <td style={{ textAlign: "center" }}>
+                                    {e.Created_By}
+                                  </td>
+                                  <td style={{ textAlign: "center" }}>
+                                    {e.Status_Price_in_SAP}
+                                  </td>
+                                  <td style={{ textAlign: "center" }}>
+                                    {e.Note}
+                                  </td>
+                                </tr>
+                              </React.Fragment>
+                            ))}
                         </tbody>
                       </Table>
                     </div>
@@ -413,6 +613,171 @@ class MatHW extends React.Component {
             </Card>
           </Col>
         </Row>
+
+        {/* Modal New Single PP */}
+        <Modal
+          isOpen={this.state.modalPPForm}
+          toggle={this.togglePPForm}
+          className="modal--form"
+        >
+          <ModalHeader>Form {modul_name}</ModalHeader>
+          <ModalBody>
+            <Row>
+              <Col sm="12">
+                {/* <FormGroup>
+                  <Label>Material_Type</Label>
+                  <Input
+                    type="text"
+                    name="0"
+                    placeholder=""
+                    value={this.state.PPForm[0]}
+                    onChange={this.handleChangeForm}
+                  />
+                </FormGroup>
+                <FormGroup>
+                  <Label>MM_Code</Label>
+                  <Input
+                    type="text"
+                    name="1"
+                    placeholder=""
+                    value={this.state.PPForm[1]}
+                    onChange={this.handleChangeForm}
+                  />
+                </FormGroup> */}
+                <FormGroup row>
+                  <Col xs="12">
+                    <FormGroup>
+                      <Label>MM_Description</Label>
+                      <Input
+                        type="text"
+                        name="2"
+                        placeholder=""
+                        value={this.state.PPForm[2]}
+                        onChange={this.handleChangeForm}
+                      />
+                    </FormGroup>
+                  </Col>
+                  <Col xs="12">
+                    <FormGroup>
+                      <Label>UoM</Label>
+                      <Input
+                        type="text"
+                        name="3"
+                        placeholder=""
+                        value={this.state.PPForm[3]}
+                        onChange={this.handleChangeForm}
+                      />
+                    </FormGroup>
+                  </Col>
+                  <Col xs="12">
+                    <FormGroup>
+                      <Label>Unit_Price</Label>
+                      <Input
+                        type="number"
+                        name="4"
+                        placeholder=""
+                        value={this.state.PPForm[4]}
+                        onChange={this.handleChangeForm}
+                      />
+                    </FormGroup>
+                  </Col>
+                </FormGroup>
+                <FormGroup row>
+                  <Col xs="12">
+                    <FormGroup>
+                      <Label>Bundle ID</Label>
+                      <Input
+                        type="text"
+                        name="5"
+                        placeholder=""
+                        value={this.state.PPForm[5]}
+                        onChange={this.handleChangeForm}
+                      />
+                    </FormGroup>
+                  </Col>
+                  <Col xs="6">
+                    <FormGroup>
+                      <Label>Currency</Label>
+                      <Input
+                        type="text"
+                        name="6"
+                        placeholder=""
+                        value={this.state.PPForm[6]}
+                        onChange={this.handleChangeForm}
+                      />
+                    </FormGroup>
+                  </Col>
+                </FormGroup>
+                <FormGroup>
+                  <Label>Info_Rec</Label>
+                  <Input
+                    type="text"
+                    name="7"
+                    placeholder=""
+                    value={this.state.PPForm[7]}
+                    onChange={this.handleChangeForm}
+                  />
+                </FormGroup>
+                <FormGroup>
+                  <Label>Vendor_ID</Label>
+                  <Input
+                    type="text"
+                    name="8"
+                    placeholder=""
+                    value={this.state.PPForm[8]}
+                    onChange={this.handleChangeForm}
+                  />
+                </FormGroup>
+                <FormGroup>
+                  <Label>Vendor_Name</Label>
+                  <Input
+                    type="text"
+                    name="9"
+                    placeholder=""
+                    value={this.state.PPForm[9]}
+                    onChange={this.handleChangeForm}
+                  />
+                </FormGroup>
+                <FormGroup>
+                  <Label>Valid_To</Label>
+                  <Input
+                    type="text"
+                    name="10"
+                    placeholder=""
+                    value={this.state.PPForm[10]}
+                    onChange={this.handleChangeForm}
+                  />
+                </FormGroup>
+                <FormGroup>
+                  <Label>Status_Price_in_SAP</Label>
+                  <Input
+                    type="text"
+                    name="11"
+                    placeholder=""
+                    value={this.state.PPForm[11]}
+                    onChange={this.handleChangeForm}
+                  />
+                </FormGroup>
+                <FormGroup>
+                  <Label>Note</Label>
+                  <Input
+                    type="text"
+                    name="12"
+                    placeholder=""
+                    value={this.state.PPForm[12]}
+                    onChange={this.handleChangeForm}
+                  />
+                </FormGroup>
+              </Col>
+            </Row>
+          </ModalBody>
+          <ModalFooter>
+            <Button color="success" onClick={this.saveNew}>
+              Submit
+            </Button>
+          </ModalFooter>
+        </Modal>
+        {/*  Modal New PP*/}
 
         {/* Modal create New */}
         <ModalCreateNew

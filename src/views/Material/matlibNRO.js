@@ -26,10 +26,28 @@ import {
   getDatafromAPINODE,
 } from "../../helper/asyncFunction";
 
-const DefaultNotif = React.lazy(() =>
-  import("../DefaultView/DefaultNotif")
+const DefaultNotif = React.lazy(() => import("../DefaultView/DefaultNotif"));
+const Checkbox = ({
+  type = "checkbox",
+  name,
+  checked = false,
+  onChange,
+  value,
+  id,
+  matId,
+  key,
+}) => (
+  <input
+    key={key}
+    type={type}
+    name={name}
+    checked={checked}
+    onChange={onChange}
+    value={value}
+    id={id}
+    matId={matId}
+  />
 );
-
 const modul_name = "NRO";
 const BearerToken =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjYXNfaWQiOiIxOTM2YmE0Yy0wMjlkLTQ1MzktYWRkOC1mZjc2OTNiMDlmZmUiLCJyb2xlcyI6WyJCQU0tU3VwZXJBZG1pbiJdLCJhY2NvdW50IjoiMSIsImlhdCI6MTU5MjQ3MDI4Mn0.tIJSzHa-ewhqz0Ail7J0maIZx4R9P1aXE2E_49pe4KY";
@@ -79,63 +97,99 @@ const MaterialDB = [
 ];
 
 class TabelNRO extends React.Component {
-  getVendorRow(material_vendor, vendor_name){
-    const Matdata = material_vendor.find(e=>e.vendor_name === vendor_name);
-    if(Matdata !== undefined){
-      return(
+  getVendorRow(material_data, vendor, mat_id) {
+    // const matId = mat_id;
+    // console.log("_id Mat ", mat_id);
+    const Matdata = material_data.find((e) => e.Vendor_Name === vendor.Name);
+    console.log(Matdata)
+    if (Matdata !== undefined) {
+      return (
         <Fragment>
-          <td>{Matdata.Vendor_Name}</td>
+          <td>
+            <Checkbox
+            checked={!this.props.CheckVendor}
+              // checked={this.props.vendorCheked.get(Matdata)}
+              onChange={this.props.handleCheckVendor}
+              name={vendor._id}
+              value={vendor.Vendor_Code}
+              id={vendor._id}
+              matId={mat_id}
+              // key={mat_id}
+            />
+          </td>
         </Fragment>
-      )
+      );
+    } else {
+      return (
+        <Fragment>
+          <td>
+            <Checkbox
+              // checked={false}
+              // checked={this.props.vendorCheked.get(vendor.Name)}
+              onChange={this.props.handleCheckVendor}
+              name={vendor.Name}
+              value={vendor.Vendor_Code}
+              id={vendor._id}
+              matId={mat_id}
+              // key={mat_id}
+            />
+          </td>
+        </Fragment>
+      );
     }
   }
 
-  render(){
-    return(
+  render() {
+    return (
       <Table responsive bordered size="sm">
-          <thead>
+        <thead>
+          <tr>
+            <th>
+              <b>MM Code</b>
+            </th>
+            <th>
+              <b>BB Sub</b>
+            </th>
+            <th>
+              <b>SoW Description</b>
+            </th>
+            <th>
+              <b>UoM</b>
+            </th>
+            <th>
+              <b>Region</b>
+            </th>
+            <th>
+              <b>Unit_Price</b>
+            </th>
+            <th>
+              <b>MM_Description</b>
+            </th>
+            {this.props.Vendor_header.map((vendor) => (
+              <Fragment key={vendor._id}>
+                <th>{vendor.Name}</th>
+              </Fragment>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {this.props.DataMaterial.map((e) => (
             <tr>
-              <th><b>MM Code</b></th>
-              <th><b>BB Sub</b></th>
-              <th><b>SoW Description</b></th>
-              <th><b>UoM</b></th>
-              <th><b>Region</b></th>
-              <th><b>Unit_Price</b></th>
-              <th><b>MM_Description</b></th>
-              {this.props.Vendor_header.Vendor_List.map(vendor => 
-                <Fragment><th>{vendor.Vendor_Name}</th></Fragment>
-               )}
-            </tr>           
-          </thead>
-          <tbody>
-          {this.props.DataMaterial.map(e =>
-            <tr>
-              <td style={{ textAlign: "center" }}>
-                                  {e.MM_Code}
-                                </td>
-                                <td style={{ textAlign: "center" }}>
-                                  {e.BB_Sub}
-                                </td>
-                                <td style={{ textAlign: "center" }}>
-                                  {e.SoW_Description}
-                                </td>
-                                <td style={{ textAlign: "center" }}>{e.UoM}</td>
-                                <td style={{ textAlign: "center" }}>
-                                  {e.Region}
-                                </td>
-                                <td style={{ textAlign: "center" }}>
-                                  {e.SoW_Description}
-                                </td>
-                                <td style={{ textAlign: "center" }}>{e.UoM}</td>
-                                <td style={{ textAlign: "center" }}>
-                                  {e.Region}
-                                </td>
-                                {this.props.Vendor_header.Vendor_List.map((vendor, i) => 
-                this.getVendorRow())}
-            </tr>)}          
-          </tbody>
+              <td style={{ textAlign: "center" }}>{e.MM_Code}</td>
+              <td style={{ textAlign: "center" }}>{e.BB_Sub}</td>
+              <td style={{ textAlign: "center" }}>{e.SoW_Description}</td>
+              <td style={{ textAlign: "center" }}>{e.UoM}</td>
+              <td style={{ textAlign: "center" }}>{e.Region}</td>
+              <td style={{ textAlign: "center" }}>{e.SoW_Description}</td>
+              <td style={{ textAlign: "center" }}>{e.UoM}</td>
+              {this.props.Vendor_header.map((vendor, i) =>
+                this.getVendorRow(e.Vendor_List, vendor, e._id)
+              )}
+            </tr>
+          ))}
+        </tbody>
       </Table>
-    )
+    );
   }
 }
 
@@ -145,32 +199,45 @@ class MatNRO extends React.Component {
     this.state = {
       tokenUser: BearerToken,
       dropdownOpen: new Array(3).fill(false),
+      PPForm: new Array(11).fill(""),
+      vendorCheked: new Map(),
       createModal: false,
       modal_loading: false,
+      vendor_check: false,
       action_status: null,
       action_message: null,
       rowsXLS: [],
       vendor_list: [],
       material_list: [],
       totalData: 0,
+      mmcode_data_check: [
+        {
+          id: "",
+          Vendor_List: [],
+        },
+      ],
+      vendor_data_check: [],
+      modalPPForm: false,
     };
+    this.togglePPForm = this.togglePPForm.bind(this);
     this.toggle = this.toggle.bind(this);
     this.toggleLoading = this.toggleLoading.bind(this);
     this.togglecreateModal = this.togglecreateModal.bind(this);
     this.resettogglecreateModal = this.resettogglecreateModal.bind(this);
+    this.handleCheckVendor = this.handleCheckVendor.bind(this);
   }
 
   componentDidMount() {
     this.getVendorList();
-    this.getMaterialList();
+    this.getMaterialList();    
   }
 
   getVendorList() {
     getDatafromAPIMY("/vendor_data_non_page?sort=[('Name',-1)]").then((res) => {
       if (res.data !== undefined) {
         const items = res.data._items;
-        const vendor_data = items.map((a) => a.Name);
-        this.setState({ vendor_list: vendor_data });
+        // const vendor_data = items.map((a) => a.Name);
+        this.setState({ vendor_list: items });
       }
     });
   }
@@ -178,22 +245,23 @@ class MatNRO extends React.Component {
   getMaterialList() {
     let whereAnd =
       '{ "Material_Type":{"$regex" : "' + modul_name + '", "$options" : "i"}}';
-      // getDatafromAPIMY(
-      // "/mm_code_data?where=" +
-      //   whereAnd +
-      //   "&max_results=" +
-      //   this.state.perPage +
-      //   "&page=" +
-      //   this.state.activePage
-      getDatafromAPINODE(
-      '/mmCode/getMm?q={"Material_Type": "NRO"}', this.state.tokenUser
+    // getDatafromAPIMY(
+    // "/mm_code_data?where=" +
+    //   whereAnd +
+    //   "&max_results=" +
+    //   this.state.perPage +
+    //   "&page=" +
+    //   this.state.activePage
+    getDatafromAPINODE(
+      '/mmCode/getMm?q={"Material_Type": "NRO"}',
+      this.state.tokenUser
     ).then((res) => {
       if (res.data !== undefined) {
         // const items = res.data._items;
         // const totalData = res.data._meta.total;
         const items = res.data.data;
         const totalData = res.data.totalResults;
-        this.setState({ material_list: items, totalData: totalData }, ()=> console.log(this.state.material_list[0]));
+        this.setState({ material_list: items, totalData: totalData });
       }
     });
   }
@@ -326,6 +394,173 @@ class MatNRO extends React.Component {
     }
   };
 
+  handleCheckVendor = (event) => {
+    console.log(event.target.getAttribute("matId"));
+    console.log(event.target.name);
+    console.log(event.target.value);
+    console.log(event.target.id);
+    const matId = event.target.getAttribute("matId");
+    const isChecked = event.target.checked;
+    const item = event.target.name;
+
+    this.setState(
+      {
+        vendor_data_check: this.state.vendor_data_check.concat([
+          {
+            Vendor_Name: event.target.name,
+            Vendor_Code: event.target.value,
+            _id: event.target.id,
+          },
+        ]),
+        vendor_check: !this.state.vendor_check
+      },
+      () => console.log(this.state.vendor_data_check)
+    );
+    this.setState((prevState) => ({
+      vendorCheked: prevState.vendorCheked.set( item, isChecked),
+    }));
+  };
+
+  updateVendorChange = async () => {};
+
+  saveNew = async () => {
+    this.togglePPForm();
+    this.toggleLoading();
+    let dataForm = [
+      [
+        "Material_Type",
+        "MM_Code",
+        "MM_Description",
+        "UoM",
+        "Unit_Price",
+        "BB",
+        "BB_Sub",
+        "Region",
+        "FTV_or_SSO_SLA_or_SSO_Lite_SLA_or_CBO",
+        "Remarks_or_Acceptance",
+        "SoW_Description_or_Site_Type",
+        "ZERV_(18)",
+        "ZEXT_(40)",
+        "Note",
+      ],
+      [
+        modul_name,
+        "MM_Code",
+        this.state.PPForm[2],
+        this.state.PPForm[3],
+        this.state.PPForm[4],
+        this.state.PPForm[5],
+        this.state.PPForm[6],
+        this.state.PPForm[7],
+        this.state.PPForm[8],
+        this.state.PPForm[9],
+        this.state.PPForm[10],
+        this.state.PPForm[11],
+      ]
+    ]
+    const res = await postDatatoAPINODE(
+      "/mmCode/createMmCode",
+      {
+        mm_data: dataForm,
+      },
+      this.state.tokenUser
+    );
+    if (res.data !== undefined) {
+      this.setState({ action_status: "success" });
+      this.toggleLoading();
+    } else {
+      if (
+        res.response !== undefined &&
+        res.response.data !== undefined &&
+        res.response.data.error !== undefined
+      ) {
+        if (res.response.data.error.message !== undefined) {
+          this.setState({
+            action_status: "failed",
+            action_message: res.response.data.error.message,
+          });
+        } else {
+          this.setState({
+            action_status: "failed",
+            action_message: res.response.data.error,
+          });
+        }
+      } else {
+        this.setState({ action_status: "failed" });
+      }
+      this.toggleLoading();
+    }
+  };
+
+  handleChangeForm = (e) => {
+    const value = e.target.value;
+    const index = e.target.name;
+    let dataForm = this.state.PPForm;
+    dataForm[parseInt(index)] = value;
+    this.setState({ PPForm: dataForm }, () => console.log(this.state.PPForm));
+  };
+
+  togglePPForm() {
+    this.setState((prevState) => ({
+      modalPPForm: !prevState.modalPPForm,
+    }));
+  }
+
+  downloadAll = async () => {
+    let download_all = [];
+    let getAll_nonpage = this.state.material_list
+
+    if (getAll_nonpage !== undefined) {
+      download_all = getAll_nonpage;
+    }
+
+    const wb = new Excel.Workbook();
+    const ws = wb.addWorksheet();
+
+    let headerRow = [
+      "Material_Type",
+      "MM_Code",
+      "MM_Description",
+      "UoM",
+      "Unit_Price",
+      "BB",
+      "BB_Sub",
+      "Region",
+      "FTV_or_SSO_SLA_or_SSO_Lite_SLA_or_CBO",
+      "Remarks_or_Acceptance",
+      "SoW_Description_or_Site_Type",
+      "ZERV_(18)",
+      "ZEXT_(40)",
+      "Note",
+      "Vendor"
+    ];
+    ws.addRow(headerRow);
+
+    for (let i = 0; i < download_all.length; i++) {
+      let e = download_all[i];
+      ws.addRow([
+        e.Material_Type,
+        e.MM_Code,
+        e.MM_Description,
+        e.UoM,
+        e.Unit_Price,
+        e.BB,
+        e.BB_Sub,
+        e.Region,
+        e.FTV_or_SSO_SLA_or_SSO_Lite_SLA_or_CBO,
+        e.Remarks_or_Acceptance,
+        e.SoW_Description_or_Site_Type,
+        e.ZERV_18,
+        e.ZEXT_40,
+        e.Note,
+        e.Vendor_List
+      ]);
+    }
+
+    const allocexport = await wb.xlsx.writeBuffer();
+    saveAs(new Blob([allocexport]), 'All ' + modul_name + '.xlsx');
+  }
+
   render() {
     return (
       <div className="animated fadeIn">
@@ -347,19 +582,29 @@ class MatNRO extends React.Component {
                 >
                   <div>
                     <div>
-                      <Button
-                        block
-                        color="success"
-                        onClick={this.togglecreateModal}
-                        size="sm"
-                        // id="toggleCollapse1"
+                      <Dropdown
+                        isOpen={this.state.dropdownOpen[2]}
+                        toggle={() => {
+                          this.toggle(2);
+                        }}
                       >
-                        <i className="fa fa-plus-square" aria-hidden="true">
-                          {" "}
-                          &nbsp;{" "}
-                        </i>{" "}
-                        New
-                      </Button>
+                        <DropdownToggle block color="success" size="sm">
+                          <i className="fa fa-plus-square" aria-hidden="true">
+                            {" "}
+                            &nbsp;{" "}
+                          </i>{" "}
+                          New
+                        </DropdownToggle>
+                        <DropdownMenu>
+                          <DropdownItem onClick={this.togglecreateModal}>
+                            {" "}
+                            Bulk
+                          </DropdownItem>
+                          <DropdownItem onClick={this.togglePPForm}>
+                            Form{" "}
+                          </DropdownItem>
+                        </DropdownMenu>
+                      </Dropdown>
                     </div>
                   </div>
                   &nbsp;&nbsp;&nbsp;
@@ -394,7 +639,7 @@ class MatNRO extends React.Component {
 
               <CardBody>
                 <Row>
-                  <Col>
+                  {/* <Col>
                     <div style={{ marginBottom: "10px" }}>
                       <div
                         style={{
@@ -433,106 +678,18 @@ class MatNRO extends React.Component {
                         />
                       </div>
                     </div>
-                  </Col>
+                  </Col> */}
                 </Row>
                 <Row>
                   <Col>
                     <div className="divtable">
-                      <Table responsive bordered size="sm">
-                        <thead
-                        // style={{ backgroundColor: "#73818f" }}
-                        // className="fixed-matlib"
-                        >
-                          <tr align="center">
-                            <th>
-                              <Button
-                                color="ghost-dark"
-                                // onClick={() => this.requestSort("origin")}
-                              >
-                                <b>MM Code</b>
-                              </Button>
-                            </th>
-                            <th>
-                              <Button
-                                color="ghost-dark"
-                                // onClick={() => this.requestSort("material_id")}
-                              >
-                                <b>BB Sub</b>
-                              </Button>
-                            </th>
-                            <th>
-                              <Button
-                                color="ghost-dark"
-                                // onClick={() =>
-                                //   this.requestSort("material_name")
-                                // }
-                              >
-                                <b>SoW Description</b>
-                              </Button>
-                            </th>
-                            <th>UoM</th>
-                            <th>Region</th>
-                            <th>Price</th>
-                            <th>Unit_Price</th>
-                            <th>MM_Description</th>
-                            {this.state.vendor_list !== undefined && this.state.vendor_list !== null && this.state.vendor_list.map((e) => (
-                              <React.Fragment key={e + "frag"}>
-                                <th>{e}</th>
-                              </React.Fragment>
-                            ))}
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {this.state.material_list !== undefined && this.state.material_list !== null && this.state.material_list.map((e) => (
-                            <React.Fragment key={e._id + "frag"}>
-                              <tr
-                                style={{ backgroundColor: "#d3d9e7" }}
-                                className="fixbody"
-                                key={e._id}
-                              >
-                                <td style={{ textAlign: "center" }}>
-                                  {e.MM_Code}
-                                </td>
-                                <td style={{ textAlign: "center" }}>
-                                  {e.BB_Sub}
-                                </td>
-                                <td style={{ textAlign: "center" }}>
-                                  {e.SoW_Description}
-                                </td>
-                                <td style={{ textAlign: "center" }}>{e.UoM}</td>
-                                <td style={{ textAlign: "center" }}>
-                                  {e.Region}
-                                </td>
-                                <td style={{ textAlign: "center" }}>
-                                  {e.SoW_Description}
-                                </td>
-                                <td style={{ textAlign: "center" }}>{e.UoM}</td>
-                                <td style={{ textAlign: "center" }}>
-                                  {e.Region}
-                                </td>
-                                {e.Vendor_List !== undefined &&
-                                  e.Vendor_List !== null &&
-                                  e.Vendor_List.map((vendor) => (
-                                    <React.Fragment key={vendor._id + "frag"}>
-                                      <td>
-                                        <th style={{ textAlign: "center" }}>
-                                          {vendor.Identifier === 1 ? (
-                                            <i
-                                              class="fa fa-check"
-                                              aria-hidden="true"
-                                            ></i>
-                                          ) : (
-                                            ""
-                                          )}
-                                        </th>
-                                      </td>
-                                    </React.Fragment>
-                                  ))}
-                              </tr>
-                            </React.Fragment>
-                          ))}
-                        </tbody>
-                      </Table>
+                      <TabelNRO
+                        CheckVendor={this.state.vendor_check}
+                        handleCheckVendor={this.handleCheckVendor}
+                        Vendor_header={this.state.vendor_list}
+                        DataMaterial={this.state.material_list}
+                        vendorCheked={this.state.vendorCheked}
+                      />
                     </div>
                   </Col>
                 </Row>
@@ -553,6 +710,171 @@ class MatNRO extends React.Component {
             </Card>
           </Col>
         </Row>
+
+        {/* Modal New Single PP */}
+        <Modal
+          isOpen={this.state.modalPPForm}
+          toggle={this.togglePPForm}
+          className="modal--form"
+        >
+          <ModalHeader>Form {modul_name}</ModalHeader>
+          <ModalBody>
+            <Row>
+              <Col sm="12">
+                <FormGroup>
+                  <Label>Bundle ID</Label>
+                  <Input
+                    type="text"
+                    name="1"
+                    placeholder=""
+                    value={this.state.PPForm[1]}
+                    onChange={this.handleChangeForm}
+                  />
+                </FormGroup>
+                <FormGroup>
+                  <Label>Bundle ID</Label>
+                  <Input
+                    type="text"
+                    name="1"
+                    placeholder=""
+                    value={this.state.PPForm[1]}
+                    onChange={this.handleChangeForm}
+                  />
+                </FormGroup>
+                <FormGroup row>
+                  <Col xs="12">
+                    <FormGroup>
+                      <Label>BB Sub</Label>
+                      <Input
+                    type="text"
+                    name="1"
+                    placeholder=""
+                    value={this.state.PPForm[1]}
+                    onChange={this.handleChangeForm}
+                  />
+                    </FormGroup>
+                  </Col>
+                  <Col xs="12">
+                    <FormGroup>
+                      <Label>SoW Description</Label>
+                      <Input
+                    type="text"
+                    name="1"
+                    placeholder=""
+                    value={this.state.PPForm[1]}
+                    onChange={this.handleChangeForm}
+                  />
+                    </FormGroup>
+                  </Col>
+                  <Col xs="12">
+                    <FormGroup>
+                      <Label>UoM</Label>
+                      <Input
+                    type="text"
+                    name="1"
+                    placeholder=""
+                    value={this.state.PPForm[1]}
+                    onChange={this.handleChangeForm}
+                  />
+                    </FormGroup>
+                  </Col>
+                </FormGroup>
+                <FormGroup row>
+                  <Col xs="12">
+                    <FormGroup>
+                      <Label>Region</Label>
+                      <Input
+                    type="text"
+                    name="1"
+                    placeholder=""
+                    value={this.state.PPForm[1]}
+                    onChange={this.handleChangeForm}
+                  />
+                    </FormGroup>
+                  </Col>
+                  <Col xs="6">
+                    <FormGroup>
+                      <Label>Unit_Price</Label>
+                      <Input
+                    type="text"
+                    name="1"
+                    placeholder=""
+                    value={this.state.PPForm[1]}
+                    onChange={this.handleChangeForm}
+                  />
+                    </FormGroup>
+                  </Col>
+                </FormGroup>
+                <FormGroup>
+                  <Label>MM_Description</Label>
+                  <Input
+                    type="text"
+                    name="1"
+                    placeholder=""
+                    value={this.state.PPForm[1]}
+                    onChange={this.handleChangeForm}
+                  />
+                </FormGroup>
+                <FormGroup>
+                  <Label>Bundle ID</Label>
+                  <Input
+                    type="text"
+                    name="1"
+                    placeholder=""
+                    value={this.state.PPForm[1]}
+                    onChange={this.handleChangeForm}
+                  />
+                </FormGroup>
+                <FormGroup>
+                  <Label>Bundle ID</Label>
+                  <Input
+                    type="text"
+                    name="1"
+                    placeholder=""
+                    value={this.state.PPForm[1]}
+                    onChange={this.handleChangeForm}
+                  />
+                </FormGroup>
+                <FormGroup>
+                  <Label>Bundle ID</Label>
+                  <Input
+                    type="text"
+                    name="1"
+                    placeholder=""
+                    value={this.state.PPForm[1]}
+                    onChange={this.handleChangeForm}
+                  />
+                </FormGroup>
+                <FormGroup>
+                  <Label>Bundle ID</Label>
+                  <Input
+                    type="text"
+                    name="1"
+                    placeholder=""
+                    value={this.state.PPForm[1]}
+                    onChange={this.handleChangeForm}
+                  />
+                </FormGroup>
+                <FormGroup>
+                  <Label>Bundle ID</Label>
+                  <Input
+                    type="text"
+                    name="1"
+                    placeholder=""
+                    value={this.state.PPForm[1]}
+                    onChange={this.handleChangeForm}
+                  />
+                </FormGroup>
+              </Col>
+            </Row>
+          </ModalBody>
+          <ModalFooter>
+            <Button color="success" onClick={this.saveNew}>
+              Submit
+            </Button>
+          </ModalFooter>
+        </Modal>
+        {/*  Modal New PP*/}
 
         {/* Modal create New */}
         <ModalCreateNew
