@@ -21,11 +21,10 @@ import { Link, Redirect } from "react-router-dom";
 import AsyncSelect from "react-select/async";
 import Select from "react-select";
 import "./LMRMY.css";
-import {getDatafromAPINODE} from "../../helper/asyncFunction"
+import { getDatafromAPINODE } from "../../helper/asyncFunction";
 const DefaultNotif = React.lazy(() =>
   import("../../views/DefaultView/DefaultNotif")
 );
-
 
 // const BearerToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjYXNfaWQiOiI1MmVhNTZhMS0zNDMxLTRlMmQtYWExZS1hNTc3ODQzMTMxYzEiLCJyb2xlcyI6WyJCQU0tU3VwZXJBZG1pbiJdLCJhY2NvdW50IjoiMSIsImlhdCI6MTU5MTY5MTE4MH0.FpbzlssSQyaAbJOzNf3KLqHPnYo_ccBtBWu6n87h1RQ';
 const BearerToken =
@@ -154,7 +153,7 @@ class MYASGCreation extends Component {
       data_user: this.props.dataUser,
       filter_list: new Array(8).fill(""),
       cd_id_project: "",
-      matfilter:{
+      matfilter: {
         mat_type: "",
         region: "",
       },
@@ -185,8 +184,8 @@ class MYASGCreation extends Component {
   }
 
   toggleMaterial(number_child_form) {
-    this.getMaterialList();
     if (number_child_form !== undefined && isNaN(number_child_form) === false) {
+      this.getMaterialList(number_child_form);
       this.setState({ current_material_select: number_child_form });
     } else {
       this.setState({ current_material_select: null });
@@ -299,7 +298,7 @@ class MYASGCreation extends Component {
   }
 
   onChangeDebounced(e) {
-    this.getMaterialList();
+    this.getMaterialList(this.state.creation_lmr_child_form);
   }
 
   getProjectList() {
@@ -321,95 +320,115 @@ class MYASGCreation extends Component {
     // this.setState({vendor_list : vendorList});
   }
 
-  getMaterialList() {    
+  getMaterialList(number_child_form) {
     let filter_array = [];
-    this.state.matfilter.mat_type !== "" && filter_array.push(
-      '"Material_Type":{"$regex" : "' +
-      this.state.matfilter.mat_type +
-        '", "$options" : "i"}'
-    );
+    // vendor
+    if (
+      this.state.creation_lmr_child_form[number_child_form] !== undefined && this.state.creation_lmr_child_form[number_child_form]
+        .Per_Site_Material_Type === "NRO"
+    ) {
+      this.state.lmr_form.vendor_code !== "" &&
+        filter_array.push(
+          '"Vendor_List.Vendor_Code":"' + this.state.lmr_form.vendor_code + '"'
+        );
+    } else {
+      this.state.lmr_form.vendor_code !== "" && this.state.lmr_form.vendor_code !== "NRO" &&
+        filter_array.push(
+          '"Vendor_ID":"' + this.state.lmr_form.vendor_code + '"'
+        );
+    }
+
+    this.state.matfilter.mat_type !== "" &&
+      filter_array.push(
+        '"Material_Type":{"$regex" : "' +
+          this.state.matfilter.mat_type +
+          '", "$options" : "i"}'
+      );
     this.state.filter_list[0] !== "" &&
       filter_array.push(
-        '"MM_Code":{"$regex" : "' +
+        '"BB":{"$regex" : "' +
           this.state.filter_list[0] +
           '", "$options" : "i"}'
       );
     this.state.filter_list[1] !== "" &&
       filter_array.push(
-        '"Material_Type":{"$regex" : "' +
+        '"BB_Sub":{"$regex" : "' +
           this.state.filter_list[1] +
           '", "$options" : "i"}'
       );
     this.state.filter_list[2] !== "" &&
       filter_array.push(
-        '"SoW_Description":{"$regex" : "' +
+        '"MM_Code":{"$regex" : "' +
           this.state.filter_list[2] +
           '", "$options" : "i"}'
       );
     this.state.filter_list[3] !== "" &&
       filter_array.push(
-        '"UoM":{"$regex" : "' +
+        '"Material_Type":{"$regex" : "' +
           this.state.filter_list[3] +
           '", "$options" : "i"}'
       );
-      this.state.matfilter.region === "All" &&
+    this.state.filter_list[4] !== "" &&
       filter_array.push(
-        '"Region": {"$exists" : 1}'
-      );  
-      this.state.matfilter.region !== "" && this.state.matfilter.region !== "All" &&
+        '"SoW_Description":{"$regex" : "' +
+          this.state.filter_list[4] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list[5] !== "" &&
+      filter_array.push(
+        '"UoM":{"$regex" : "' +
+          this.state.filter_list[5] +
+          '", "$options" : "i"}'
+      );
+    this.state.matfilter.region === "All" &&
+      filter_array.push('"Region": {"$exists" : 1}');
+    this.state.matfilter.region !== "" &&
+      this.state.matfilter.region !== "All" &&
       filter_array.push(
         '"Region":{"$regex" : "' +
           this.state.matfilter.region +
           '", "$options" : "i"}'
       );
-    this.state.filter_list[4] !== "" &&
-      filter_array.push(
-        '"Region":{"$regex" : "' +
-          this.state.filter_list[4] +
-          '", "$options" : "i"}'
-      );    
-    this.state.filter_list[5] !== "" &&
-      filter_array.push(
-        '"Unit_Price":{"$regex" : "' +
-          this.state.filter_list[5] +
-          '", "$options" : "i"}'
-      );
     this.state.filter_list[6] !== "" &&
       filter_array.push(
-        '"MM_Description":{"$regex" : "' +
+        '"Region":{"$regex" : "' +
           this.state.filter_list[6] +
           '", "$options" : "i"}'
       );
-      // vendor
-      // this.state.filter_list[7] !== "" && this.state.lmr_form.vendor_code !== "" &&
-      // filter_array.push(
-      //   '"Vendor_List":{"$regex" : "' +
-      //   this.state.lmr_form.vendor_code +
-      //     '", "$options" : "i"}'
-      // );
+    // this.state.filter_list[7] !== "" &&
+    //   filter_array.push(
+    //     '"Unit_Price":{"$regex" : "' +
+    //       this.state.filter_list[7] +
+    //       '", "$options" : "i"}'
+    //   );
+    // this.state.filter_list[8] !== "" &&
+    //   filter_array.push(
+    //     '"MM_Description":{"$regex" : "' +
+    //       this.state.filter_list[8] +
+    //       '", "$options" : "i"}'
+    //   );
     let whereAnd = "{" + filter_array.join(",") + "}";
-    this.getDatafromAPIMY(
-      "/mm_code_data?where=" +
-        whereAnd +
-        "&max_results=" +
-        this.state.perPage +
-        "&page=" +
-        this.state.activePage
-        // getDatafromAPINODE(
-        //   '/mmCode/getMm?q=' +
-        //     whereAnd 
-        //     // +
-        //     // "&max_results=" +
-        //     // this.state.perPage +
-        //     // "&page=" +
-        //     // this.state.activePage
-        //     , this.state.tokenUser
-        ).then((res) => {
+    // this.getDatafromAPIMY(
+    //   "/mm_code_data?where=" +
+    //     whereAnd +
+    //     "&max_results=" +
+    //     this.state.perPage +
+    //     "&page=" +
+    //     this.state.activePage
+    getDatafromAPINODE(
+      "/mmCode/getMm?q=" + whereAnd,
+      // +
+      // "&max_results=" +
+      // this.state.perPage +
+      // "&page=" +
+      // this.state.activePage
+      this.state.tokenUser
+    ).then((res) => {
       if (res.data !== undefined) {
-        const items = res.data._items;
-        const totalData = res.data._meta.total;
-        // const items = res.data.data;
-        // const totalData = res.data.totalResults;
+        // const items = res.data._items;
+        // const totalData = res.data._meta.total;
+        const items = res.data.data;
+        const totalData = res.data.totalResults;
         this.setState({ material_list: items, totalData: totalData });
       }
     });
@@ -424,7 +443,10 @@ class MYASGCreation extends Component {
     lmr_form["vendor_code"] = dataVendor.Vendor_Code;
     lmr_form["vendor_name"] = dataVendor.Name;
     lmr_form["vendor_email"] = dataVendor.Email;
-    this.setState({ lmr_form: lmr_form, vendor_selected: lmr_form["vendor_name"]});
+    this.setState(
+      { lmr_form: lmr_form, vendor_selected: lmr_form["vendor_name"] },
+      () => console.log(dataVendor.Vendor_Code)
+    );
     // console.log(this.state.lmr_form)
   }
 
@@ -595,7 +617,7 @@ class MYASGCreation extends Component {
     if (value !== (null && undefined)) {
       value = value.toString();
     }
-    if (name === "LMR_Type" && value !== "Per Site"){
+    if (name === "LMR_Type" && value !== "Per Site") {
       this.setState({ lmr_edit: false });
     } else {
       if (name === "project_name") {
@@ -606,9 +628,11 @@ class MYASGCreation extends Component {
           lmr_form["id_project_doc"] = dataProject._id;
         }
       }
-    } 
+    }
     lmr_form[name.toString()] = value;
-    this.setState({ lmr_form: lmr_form }, ()=> console.log(this.state.lmr_form));   
+    this.setState({ lmr_form: lmr_form }, () =>
+      console.log(this.state.lmr_form)
+    );
   }
 
   handleChangeFormLMRChild(e) {
@@ -626,39 +650,19 @@ class MYASGCreation extends Component {
     if (field === "cd_id") {
       dataLMR[parseInt(idx)][field] =
         e.target.options[e.target.selectedIndex].text;
-    }    
+    }
     if (field === "cd_id" && this.state.lmr_edit === false) {
-      let cdData = this.state.list_cd_id.find((e) => e.CD_ID === value);   
-      let custom_site_display = cdData.LOC_ID+'_'+cdData.Site_Name       
+      let cdData = this.state.list_cd_id.find((e) => e.CD_ID === value);
+      let custom_site_display = cdData.LOC_ID + "_" + cdData.Site_Name;
       dataLMR[parseInt(idx)]["site_id"] = cdData.Site_Name;
       dataLMR[parseInt(idx)]["project_name"] = cdData.Project;
       dataLMR[parseInt(idx)]["so_or_nw"] = cdData.Network_Element_Name;
       dataLMR[parseInt(idx)]["activity"] = cdData.Network_Element_Name;
-      this.setState({ cd_id_project: cdData.Project, custom_site_display: custom_site_display});
+      this.setState({
+        cd_id_project: cdData.Project,
+        custom_site_display: custom_site_display,
+      });
     }
-    
-    // if (field === "cd_id" && this.state.lmr_edit === false) {
-    //   let cdData = this.state.list_cd_id.find((e) => e.CD_ID === value);
-    //   dataLMR[parseInt(idx)]["site_id"] = cdData.Site_Name;
-    //   dataLMR[parseInt(idx)]["project_name"] = cdData.Project;
-    //   console.log(cdData)
-    //   if (field === "Per_Site_Material_Type") {
-    //     // let cdData = this.state.list_cd_id.find((e) => e.CD_ID === value);
-        
-    //     dataLMR[parseInt(idx)]["so_or_nw"] = cdData.Network_Element_Name;
-    //     console.log('so_or_nw ',cdData.Network_Element_Name)
-    //     dataLMR[parseInt(idx)]["activity"] = cdData.Network_Element_Name;
-    //   }
-    //   this.setState({ cd_id_project: cdData.Project });
-    // }
-    // if (field === "Per_Site_Material_Type" && field === "cd_id" &&  this.state.lmr_edit === false) {
-    //   let cdData = this.state.list_cd_id.find((e) => e.CD_ID === value);
-    //   console.log(cdData)
-    //   dataLMR[parseInt(idx)]["so_or_nw"] = cdData.Network_Element_Name;
-    //   console.log('so_or_nw ',cdData.Network_Element_Name)
-    //   dataLMR[parseInt(idx)]["activity"] = cdData.Network_Element_Name;
-    // }
-    // console.log(dataLMR)
     this.setState({ creation_lmr_child_form: dataLMR }, () =>
       console.log(this.state.creation_lmr_child_form)
     );
@@ -711,35 +715,38 @@ class MYASGCreation extends Component {
     return searchBar;
   };
 
-  handleDeleteLMRChild(index){
+  handleDeleteLMRChild(index) {
     let LMRChild = this.state.creation_lmr_child_form;
-    LMRChild.splice(index,1);
-    this.setState({creation_lmr_child_form : LMRChild });
+    LMRChild.splice(index, 1);
+    this.setState({ creation_lmr_child_form: LMRChild });
   }
 
-  handleMaterialFilter(e){
+  handleMaterialFilter(e) {
     let value = e.target.value;
     let name = e.target.name;
     this.setState(
-      (prevState) => ({        
+      (prevState) => ({
         matfilter: {
           ...prevState.matfilter,
-          [name]: value,          
+          [name]: value,
         },
       }),
       () => {
-        this.hideRegion()
-        this.getMaterialList()
+        this.hideRegion();
+        this.getMaterialList();
       }
     );
   }
 
-  hideRegion(){
-    if(this.state.matfilter.mat_type === "HW" || this.state.matfilter.mat_type === "ARP"){
-      this.setState({hide_region: true})
-    }else{
-      this.setState({hide_region: false})
-    } 
+  hideRegion() {
+    if (
+      this.state.matfilter.mat_type === "HW" ||
+      this.state.matfilter.mat_type === "ARP"
+    ) {
+      this.setState({ hide_region: true });
+    } else {
+      this.setState({ hide_region: false });
+    }
   }
 
   render() {
@@ -1083,10 +1090,10 @@ class MYASGCreation extends Component {
                             <option value="" disabled selected hidden>
                               Select Material Type
                             </option>
-                            <option value="NRO Service">NRO Service</option>
-                            <option value="NRO LM">NRO NRO</option>
-                            <option value="NDO Service">NDO Service</option>
-                            <option value="NDO Service">NDO HW</option>
+                            <option value="NRO">NRO</option>
+                            <option value="NDO">NDO</option>
+                            <option value="HW">HW</option>
+                            <option value="ARP">ARP</option>
                             {/* {this.state.vendor_list.map((e) => (
                             <option value={e.Vendor_Code}>{e.Name}</option>
                           ))} */}
@@ -1292,7 +1299,14 @@ class MYASGCreation extends Component {
                         </FormGroup>
                       </Col>
                       <Col md={1}>
-                        <Button color="danger" size="sm" onClick={e => this.handleDeleteLMRChild(i)} style={{float : 'right', marginTop : '30px'}}><span className="fa fa-times"></span></Button>
+                        <Button
+                          color="danger"
+                          size="sm"
+                          onClick={(e) => this.handleDeleteLMRChild(i)}
+                          style={{ float: "right", marginTop: "30px" }}
+                        >
+                          <span className="fa fa-times"></span>
+                        </Button>
                       </Col>
                       {/* <Col md={3}>
                         <FormGroup>
@@ -1319,7 +1333,7 @@ class MYASGCreation extends Component {
                             disabled
                           />
                         </FormGroup>
-                      </Col> */}                      
+                      </Col> */}
                     </Row>
                     <hr className="upload-line--lmr"></hr>
                   </Form>
@@ -1354,52 +1368,54 @@ class MYASGCreation extends Component {
           className={"modal-lg"}
         >
           <ModalBody>
-          <div style={{marginLeft:'10px'}}>
-          <Row md={1}>
-              <FormGroup>
-                <Label><b>Material Type</b></Label>
-                <Input
-                  type="select"
-                  name={"mat_type"}
-                  value={matfilter.mat_type}
-                  onChange={this.handleMaterialFilter}
-                >
-                  <option value="" disabled selected hidden>
-                    
-                  </option>
-                  {/* <option value="NDO">NDO</option> */}
-                  <option value="">All</option>
-                  <option value="NDO">NDO</option>
-                  <option value="NRO">NRO</option>
-                  <option value="HW">HW</option>
-                  <option value="ARP">ARP</option>
-                </Input>
-              </FormGroup>
-            {/* </Row>
+            <div style={{ marginLeft: "10px" }}>
+              <Row md={1}>
+                <FormGroup>
+                  <Label>
+                    <b>Material Type</b>
+                  </Label>
+                  <Input
+                    type="select"
+                    name={"mat_type"}
+                    value={matfilter.mat_type}
+                    onChange={this.handleMaterialFilter}
+                  >
+                    <option value="" disabled selected hidden></option>
+                    {/* <option value="NDO">NDO</option> */}
+                    <option value="">All</option>
+                    <option value="NDO">NDO</option>
+                    <option value="NRO">NRO</option>
+                    <option value="HW">HW</option>
+                    <option value="ARP">ARP</option>
+                  </Input>
+                </FormGroup>
+                {/* </Row>
             <Row md={1}> */}
-            &nbsp;&nbsp;&nbsp;
-            {this.state.hide_region !== true ? (
-              <FormGroup>
-                <Label><b>Region</b></Label>
-                <Input
-                  type="select"
-                  name={"region"}
-                  value={matfilter.region}
-                  onChange={this.handleMaterialFilter}
-                >
-                  <option value="" disabled selected hidden>
-                    
-                  </option>
-                  <option value="All">All</option>
-                  <option value="KV">KV</option>
-                  <option value="ER">ER</option>
-                  <option value="EM">EM</option>
-                </Input>
-              </FormGroup>
-            ): ""}              
-            </Row>
-          </div>
-                                  
+                &nbsp;&nbsp;&nbsp;
+                {this.state.hide_region !== true ? (
+                  <FormGroup>
+                    <Label>
+                      <b>Region</b>
+                    </Label>
+                    <Input
+                      type="select"
+                      name={"region"}
+                      value={matfilter.region}
+                      onChange={this.handleMaterialFilter}
+                    >
+                      <option value="" disabled selected hidden></option>
+                      <option value="All">All</option>
+                      <option value="KV">KV</option>
+                      <option value="ER">ER</option>
+                      <option value="EM">EM</option>
+                    </Input>
+                  </FormGroup>
+                ) : (
+                  ""
+                )}
+              </Row>
+            </div>
+
             <Table responsive striped bordered size="sm">
               <thead>
                 <th></th>
