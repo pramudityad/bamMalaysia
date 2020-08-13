@@ -270,6 +270,7 @@ class MatNRO extends React.Component {
     const wb = new Excel.Workbook();
     const ws = wb.addWorksheet();
 
+    const vendorName = this.state.vendor_list.map((a) => a.Name)
     let header = [
       "Material_Type",
       "MM_Code",
@@ -286,7 +287,7 @@ class MatNRO extends React.Component {
       "ZEXT_(40)",
       "Note",
     ];
-    header = header.concat(this.state.vendor_list);
+    header = header.concat(vendorName);
 
     ws.addRow(header);
 
