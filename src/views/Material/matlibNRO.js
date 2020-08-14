@@ -97,22 +97,19 @@ const MaterialDB = [
 ];
 
 class TabelNRO extends React.Component {
-  getVendorRow(material_data, vendor, mat_id) {
-    // const matId = mat_id;
-    // console.log("_id Mat ", mat_id);
-    const Matdata = material_data.find((e) => e.Vendor_Name === vendor.Name);
-    console.log(Matdata)
+  getVendorRow(material_vendor_data, vendor, mat_id) {
+    const Matdata = material_vendor_data.find((e) => e.Vendor_Code === vendor.Vendor_Code);
     if (Matdata !== undefined) {
       return (
         <Fragment>
           <td>
             <Checkbox
-            checked={!this.props.CheckVendor}
-              // checked={this.props.vendorCheked.get(Matdata)}
+              // checked={!this.props.CheckVendor}
+              checked={this.props.vendorChecked.has(mat_id+" /// "+vendor.Vendor_Code) ? this.props.vendorChecked.get(mat_id+" /// "+vendor.Vendor_Code) : true}
               onChange={this.props.handleCheckVendor}
-              name={vendor._id}
+              name={mat_id+" /// "+vendor.Vendor_Code}
               value={vendor.Vendor_Code}
-              id={vendor._id}
+              id={vendor.Vendor_Code}
               matId={mat_id}
               // key={mat_id}
             />
@@ -124,13 +121,12 @@ class TabelNRO extends React.Component {
         <Fragment>
           <td>
             <Checkbox
-              // checked={false}
-              // checked={this.props.vendorCheked.get(vendor.Name)}
-              onChange={this.props.handleCheckVendor}
-              name={vendor.Name}
+              checked={this.props.vendorChecked.get(mat_id+" /// "+vendor.Vendor_Code)}
               value={vendor.Vendor_Code}
-              id={vendor._id}
+              id={vendor.Vendor_Code}
+              name={mat_id+" /// "+vendor.Vendor_Code}
               matId={mat_id}
+              onChange={this.props.handleCheckVendor}
               // key={mat_id}
             />
           </td>
@@ -200,7 +196,7 @@ class MatNRO extends React.Component {
       tokenUser: BearerToken,
       dropdownOpen: new Array(3).fill(false),
       PPForm: new Array(11).fill(""),
-      vendorCheked: new Map(),
+      vendorChecked: new Map(),
       createModal: false,
       modal_loading: false,
       vendor_check: false,
@@ -225,6 +221,7 @@ class MatNRO extends React.Component {
     this.togglecreateModal = this.togglecreateModal.bind(this);
     this.resettogglecreateModal = this.resettogglecreateModal.bind(this);
     this.handleCheckVendor = this.handleCheckVendor.bind(this);
+    this.saveUpdateNROVendorData = this.saveUpdateNROVendorData.bind(this);
   }
 
   componentDidMount() {
@@ -395,30 +392,62 @@ class MatNRO extends React.Component {
     }
   };
 
-  handleCheckVendor = (event) => {
-    console.log(event.target.getAttribute("matId"));
-    console.log(event.target.name);
-    console.log(event.target.value);
-    console.log(event.target.id);
-    const matId = event.target.getAttribute("matId");
-    const isChecked = event.target.checked;
-    const item = event.target.name;
+  saveUpdateNROVendorData(){
+    const dataVendor = this.state.vendor_list;
+    const dataMaterial = this.state.material_list;
+    const dataVendorMatChecked = this.state.vendorChecked;
+    let dataVendorMatUpdate = [];
+    for (const [key, value] of dataVendorMatChecked.entries()) {
+      const dataKey = key.split(" /// ");
+      const data_id_mat = dataKey[0];
+      const data_id_vendor = dataKey[1];
+      const matFind = dataMaterial.find(mat => mat._id === data_id_mat);
+      const venFind = dataVendor.find(ven => ven.Vendor_Code === data_id_vendor);
+      console.log(key, data_id_mat, data_id_vendor);
+      let dataExistIdx = dataVendorMatUpdate.findIndex(exi => exi._id === matFind._id);
+      if(dataExistIdx !== -1){
+        if(value === false){
+          dataVendorMatUpdate[dataExistIdx]["Vendor_List"] = dataVendorMatUpdate[dataExistIdx].Vendor_List.filter(ven => ven.Vendor_Code !== data_id_vendor);
+        }else{
+          const dataVendorExist = dataVendorMatUpdate[dataExistIdx].Vendor_List.find(ven => ven.Vendor_Code === data_id_vendor);
+          if(dataVendorExist === undefined){
+            dataVendorMatUpdate[dataExistIdx]["Vendor_List"].push({                          
+              "Vendor_Name": venFind.Name,
+              "Vendor_Code": venFind.Vendor_Code,
+              "_id": venFind._id
+            });
+          }
+        }
+      }else{
+        dataVendorMatUpdate.push({
+          "_id" : data_id_mat,
+          "Vendor_List" : matFind.Vendor_List
+        })
+      }
+      if(value === false){
+        dataVendorMatUpdate[dataVendorMatUpdate.length-1]["Vendor_List"] = dataVendorMatUpdate[dataVendorMatUpdate.length-1].Vendor_List.filter(ven => ven.Vendor_Code !== data_id_vendor);
+        console.log(dataVendorMatUpdate[dataVendorMatUpdate.length-1].Vendor_List.filter(ven => ven.Vendor_Code !== data_id_vendor));
+      }else{
+        const dataVendorExist = dataVendorMatUpdate[dataVendorMatUpdate.length-1].Vendor_List.find(ven => ven.Vendor_Code === data_id_vendor);
+        if(dataVendorExist === undefined){
+          dataVendorMatUpdate[dataVendorMatUpdate.length-1]["Vendor_List"].push({                          
+            "Vendor_Name": venFind.Name,
+            "Vendor_Code": venFind.Vendor_Code,
+            "_id": venFind._id
+          });
+        }
+      }
+    }
+    console.log("dataVendorMatUpdate", dataVendorMatUpdate);
+  }
 
-    this.setState(
-      {
-        vendor_data_check: this.state.vendor_data_check.concat([
-          {
-            Vendor_Name: event.target.name,
-            Vendor_Code: event.target.value,
-            _id: event.target.id,
-          },
-        ]),
-        vendor_check: !this.state.vendor_check
-      },
-      () => console.log(this.state.vendor_data_check)
-    );
+  handleCheckVendor = (event) => {
+    const isChecked = event.target.checked;
+
+    const Identifier = event.target.name
+
     this.setState((prevState) => ({
-      vendorCheked: prevState.vendorCheked.set( item, isChecked),
+      vendorChecked: prevState.vendorChecked.set( Identifier, isChecked),
     }));
   };
 
@@ -640,46 +669,6 @@ class MatNRO extends React.Component {
 
               <CardBody>
                 <Row>
-                  {/* <Col>
-                    <div style={{ marginBottom: "10px" }}>
-                      <div
-                        style={{
-                          float: "left",
-                          margin: "5px",
-                          display: "inline-flex",
-                        }}
-                      >
-                        <Input
-                          type="select"
-                          name="select"
-                          id="selectLimit"
-                          onChange={this.handleChangeLimit}
-                        >
-                          <option value={"10"}>10</option>
-                          <option value={"25"}>25</option>
-                          <option value={"50"}>50</option>
-                          <option value={"100"}>100</option>
-                          <option value={"noPg=1"}>All</option>
-                        </Input>
-                      </div>
-                      <div
-                        style={{
-                          float: "right",
-                          margin: "5px",
-                          display: "inline-flex",
-                        }}
-                      >
-                        <input
-                          className="search-box-material"
-                          type="text"
-                          name="filter"
-                          placeholder="Search Material"
-                          onChange={this.handleChangeFilter}
-                          value={this.state.filter_list}
-                        />
-                      </div>
-                    </div>
-                  </Col> */}
                 </Row>
                 <Row>
                   <Col>
@@ -689,7 +678,7 @@ class MatNRO extends React.Component {
                         handleCheckVendor={this.handleCheckVendor}
                         Vendor_header={this.state.vendor_list}
                         DataMaterial={this.state.material_list}
-                        vendorCheked={this.state.vendorCheked}
+                        vendorChecked={this.state.vendorChecked}
                       />
                     </div>
                   </Col>
@@ -708,6 +697,11 @@ class MatNRO extends React.Component {
                   </Col>
                 </Row>
               </CardBody>
+              <CardFooter>
+                <Button color="warning" size="sm" onClick={this.saveUpdateNROVendorData}>
+                  Save Update Vendor
+                </Button>
+              </CardFooter>
             </Card>
           </Col>
         </Row>
