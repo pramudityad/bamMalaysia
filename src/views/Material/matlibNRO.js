@@ -140,30 +140,44 @@ class TabelNRO extends React.Component {
       <Table responsive bordered size="sm">
         <thead>
           <tr>
-            <th>
+            <th rowSpan="2">
               <b>MM Code</b>
             </th>
-            <th>
+            <th rowSpan="2">
               <b>BB Sub</b>
             </th>
-            <th>
+            <th rowSpan="2">
               <b>SoW Description</b>
             </th>
-            <th>
+            <th rowSpan="2">
               <b>UoM</b>
             </th>
-            <th>
+            <th rowSpan="2">
               <b>Region</b>
             </th>
-            <th>
+            <th rowSpan="2">
               <b>Unit_Price</b>
             </th>
-            <th>
+            <th rowSpan="2">
               <b>MM_Description</b>
             </th>
             {this.props.Vendor_header.map((vendor) => (
               <Fragment key={vendor._id}>
                 <th>{vendor.Name}</th>
+              </Fragment>
+            ))}
+          </tr>
+          <tr>
+          {this.props.Vendor_header.map((vendor) => (
+              <Fragment key={vendor._id}>
+                <th>{<Checkbox
+              checked={this.props.vendorCheckedPage ? true : false}
+              value={vendor.Vendor_Code}
+              id={vendor.Vendor_Code}
+              name={vendor.Vendor_Code}
+              onChange={this.props.handleCheckVendorPage}
+              // key={mat_id}
+            />}</th>
               </Fragment>
             ))}
           </tr>
@@ -197,6 +211,7 @@ class MatNRO extends React.Component {
       dropdownOpen: new Array(3).fill(false),
       PPForm: new Array(11).fill(""),
       vendorChecked: new Map(),
+      vendorCheckedPage: false,
       createModal: false,
       modal_loading: false,
       vendor_check: false,
@@ -220,7 +235,6 @@ class MatNRO extends React.Component {
     this.toggleLoading = this.toggleLoading.bind(this);
     this.togglecreateModal = this.togglecreateModal.bind(this);
     this.resettogglecreateModal = this.resettogglecreateModal.bind(this);
-    this.handleCheckVendor = this.handleCheckVendor.bind(this);
     this.saveUpdateNROVendorData = this.saveUpdateNROVendorData.bind(this);
   }
 
@@ -445,10 +459,26 @@ class MatNRO extends React.Component {
     const isChecked = event.target.checked;
 
     const Identifier = event.target.name
+    console.log(Identifier)
 
     this.setState((prevState) => ({
       vendorChecked: prevState.vendorChecked.set( Identifier, isChecked),
     }));
+  };
+
+  handleCheckVendorPage = (event) => {
+    const isChecked = event.target.checked;
+    let getMaterialId = this.state.material_list;
+    getMaterialId = getMaterialId.map(e => e._id)
+    for (let i = 0; i < getMaterialId.length; i++) {
+      const Identifier = event.target.name+" /// "+getMaterialId[i]
+      console.log(Identifier)
+      this.setState((prevState) => ({
+        vendorChecked: prevState.vendorChecked.set( Identifier, isChecked),
+      }));
+    }
+    console.log(this.state.vendorChecked)
+    this.setState(prevState => ({ vendorCheckedPage: !prevState.vendorCheckedPage }), ()=> console.log(this.state.vendorCheckedPage))
   };
 
   updateVendorChange = async () => {};
@@ -679,6 +709,7 @@ class MatNRO extends React.Component {
                         Vendor_header={this.state.vendor_list}
                         DataMaterial={this.state.material_list}
                         vendorChecked={this.state.vendorChecked}
+                        handleCheckVendorPage={this.handleCheckVendorPage}
                       />
                     </div>
                   </Col>
