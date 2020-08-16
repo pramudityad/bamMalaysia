@@ -135,7 +135,14 @@ class TabelNRO extends React.Component {
     }
   }
 
-  render() {
+  getVendorColumn(){
+
+  }
+
+  render() {  
+    let MatIdcol = [];
+    MatIdcol.push(this.props.DataMaterial.map((a => a._id))) 
+    // console.log('MatIdcol ', MatIdcol)
     return (
       <Table responsive bordered size="sm">
         <thead>
@@ -168,15 +175,15 @@ class TabelNRO extends React.Component {
             ))}
           </tr>
           <tr>
-          {this.props.Vendor_header.map((vendor) => (
+          {this.props.Vendor_header.map((vendor, i) => (          
               <Fragment key={vendor._id}>
                 <th>{<Checkbox
-              checked={this.props.vendorCheckedPage ? true : false}
+              checked={this.props.vendorCheckedPage}
               value={vendor.Vendor_Code}
               id={vendor.Vendor_Code}
+              // name={MatIdcol[i]+" /// "+vendor.Vendor_Code}
               name={vendor.Vendor_Code}
               onChange={this.props.handleCheckVendorPage}
-              // key={mat_id}
             />}</th>
               </Fragment>
             ))}
@@ -209,7 +216,7 @@ class MatNRO extends React.Component {
     this.state = {
       tokenUser: BearerToken,
       dropdownOpen: new Array(3).fill(false),
-      PPForm: new Array(11).fill(""),
+      PPForm: new Array(13).fill(""),
       vendorChecked: new Map(),
       vendorCheckedPage: false,
       createModal: false,
@@ -409,13 +416,18 @@ class MatNRO extends React.Component {
   saveUpdateNROVendorData(){
     const dataVendor = this.state.vendor_list;
     const dataMaterial = this.state.material_list;
+    console.log(dataMaterial)
     const dataVendorMatChecked = this.state.vendorChecked;
+    console.log('dataVendorMatChecked ',dataVendorMatChecked)
     let dataVendorMatUpdate = [];
     for (const [key, value] of dataVendorMatChecked.entries()) {
       const dataKey = key.split(" /// ");
       const data_id_mat = dataKey[0];
+      console.log('data_id_mat ',data_id_mat)
+
       const data_id_vendor = dataKey[1];
       const matFind = dataMaterial.find(mat => mat._id === data_id_mat);
+      console.log('matFind ',matFind)
       const venFind = dataVendor.find(ven => ven.Vendor_Code === data_id_vendor);
       console.log(key, data_id_mat, data_id_vendor);
       let dataExistIdx = dataVendorMatUpdate.findIndex(exi => exi._id === matFind._id);
@@ -463,25 +475,37 @@ class MatNRO extends React.Component {
 
     this.setState((prevState) => ({
       vendorChecked: prevState.vendorChecked.set( Identifier, isChecked),
-    }));
+    }), () => console.log(this.state.vendorChecked));
   };
 
   handleCheckVendorPage = (event) => {
     const isChecked = event.target.checked;
     let getMaterialId = this.state.material_list;
-    getMaterialId = getMaterialId.map(e => e._id)
-    for (let i = 0; i < getMaterialId.length; i++) {
-      const Identifier = event.target.name+" /// "+getMaterialId[i]
-      console.log(Identifier)
-      this.setState((prevState) => ({
-        vendorChecked: prevState.vendorChecked.set( Identifier, isChecked),
-      }));
+    if(isChecked){
+      getMaterialId = getMaterialId.map(e => e._id)
+      for (let i = 0; i < getMaterialId.length; i++) {
+        const Identifier = getMaterialId[i]+" /// "+event.target.name
+  
+        // console.log(Identifier)
+        this.setState((prevState) => ({
+          vendorChecked: prevState.vendorChecked.set( Identifier, isChecked),
+        }));
+      }
+    }else{
+      getMaterialId = getMaterialId.map(e => e._id)
+      for (let i = 0; i < getMaterialId.length; i++) {
+        const Identifier = getMaterialId[i]+" /// "+event.target.name
+  
+        // console.log(Identifier)
+        this.setState((prevState) => ({
+          vendorChecked: prevState.vendorChecked.set( Identifier, isChecked),
+        }));
+      }
     }
+
     console.log(this.state.vendorChecked)
     this.setState(prevState => ({ vendorCheckedPage: !prevState.vendorCheckedPage }), ()=> console.log(this.state.vendorCheckedPage))
   };
-
-  updateVendorChange = async () => {};
 
   saveNew = async () => {
     this.togglePPForm();
@@ -516,6 +540,8 @@ class MatNRO extends React.Component {
         this.state.PPForm[9],
         this.state.PPForm[10],
         this.state.PPForm[11],
+        this.state.PPForm[12],
+        this.state.PPForm[13],
       ]
     ]
     const res = await postDatatoAPINODE(
@@ -729,8 +755,8 @@ class MatNRO extends React.Component {
                 </Row>
               </CardBody>
               <CardFooter>
-                <Button color="warning" size="sm" onClick={this.saveUpdateNROVendorData}>
-                  Save Update Vendor
+                <Button color="info" size="sm" onClick={this.saveUpdateNROVendorData}>
+                  Update Vendor
                 </Button>
               </CardFooter>
             </Card>
@@ -748,58 +774,58 @@ class MatNRO extends React.Component {
             <Row>
               <Col sm="12">
                 <FormGroup>
-                  <Label>Bundle ID</Label>
+                  <Label>MM_Description</Label>
                   <Input
                     type="text"
-                    name="1"
+                    name="2"
                     placeholder=""
-                    value={this.state.PPForm[1]}
+                    value={this.state.PPForm[2]}
                     onChange={this.handleChangeForm}
                   />
                 </FormGroup>
                 <FormGroup>
-                  <Label>Bundle ID</Label>
+                  <Label>UoM</Label>
                   <Input
                     type="text"
-                    name="1"
+                    name="3"
                     placeholder=""
-                    value={this.state.PPForm[1]}
+                    value={this.state.PPForm[3]}
                     onChange={this.handleChangeForm}
                   />
                 </FormGroup>
                 <FormGroup row>
                   <Col xs="12">
                     <FormGroup>
-                      <Label>BB Sub</Label>
+                      <Label>Unit_Price</Label>
                       <Input
                     type="text"
-                    name="1"
+                    name="4"
                     placeholder=""
-                    value={this.state.PPForm[1]}
+                    value={this.state.PPForm[4]}
                     onChange={this.handleChangeForm}
                   />
                     </FormGroup>
                   </Col>
                   <Col xs="12">
                     <FormGroup>
-                      <Label>SoW Description</Label>
+                      <Label>BB</Label>
                       <Input
                     type="text"
-                    name="1"
+                    name="5"
                     placeholder=""
-                    value={this.state.PPForm[1]}
+                    value={this.state.PPForm[5]}
                     onChange={this.handleChangeForm}
                   />
                     </FormGroup>
                   </Col>
                   <Col xs="12">
                     <FormGroup>
-                      <Label>UoM</Label>
+                      <Label>BB_Sub</Label>
                       <Input
                     type="text"
-                    name="1"
+                    name="6"
                     placeholder=""
-                    value={this.state.PPForm[1]}
+                    value={this.state.PPForm[6]}
                     onChange={this.handleChangeForm}
                   />
                     </FormGroup>
@@ -811,86 +837,76 @@ class MatNRO extends React.Component {
                       <Label>Region</Label>
                       <Input
                     type="text"
-                    name="1"
+                    name="7"
                     placeholder=""
-                    value={this.state.PPForm[1]}
+                    value={this.state.PPForm[7]}
                     onChange={this.handleChangeForm}
                   />
                     </FormGroup>
                   </Col>
                   <Col xs="6">
                     <FormGroup>
-                      <Label>Unit_Price</Label>
+                      <Label>FTV_or_SSO_SLA_or_SSO_Lite_SLA_or_CBO</Label>
                       <Input
                     type="text"
-                    name="1"
+                    name="8"
                     placeholder=""
-                    value={this.state.PPForm[1]}
+                    value={this.state.PPForm[8]}
                     onChange={this.handleChangeForm}
                   />
                     </FormGroup>
                   </Col>
                 </FormGroup>
                 <FormGroup>
-                  <Label>MM_Description</Label>
+                  <Label>Remarks_or_Acceptance</Label>
                   <Input
                     type="text"
-                    name="1"
+                    name="9"
                     placeholder=""
-                    value={this.state.PPForm[1]}
+                    value={this.state.PPForm[9]}
                     onChange={this.handleChangeForm}
                   />
-                </FormGroup>
+                </FormGroup>   
                 <FormGroup>
-                  <Label>Bundle ID</Label>
+                  <Label>SoW_Description_or_Site_Type</Label>
                   <Input
                     type="text"
-                    name="1"
+                    name="10"
                     placeholder=""
-                    value={this.state.PPForm[1]}
+                    value={this.state.PPForm[10]}
                     onChange={this.handleChangeForm}
                   />
-                </FormGroup>
+                </FormGroup>   
                 <FormGroup>
-                  <Label>Bundle ID</Label>
+                  <Label>ZERV_(18)</Label>
                   <Input
                     type="text"
-                    name="1"
+                    name="11"
                     placeholder=""
-                    value={this.state.PPForm[1]}
+                    value={this.state.PPForm[11]}
                     onChange={this.handleChangeForm}
                   />
-                </FormGroup>
+                </FormGroup>  
                 <FormGroup>
-                  <Label>Bundle ID</Label>
+                  <Label>ZEXT_(40)</Label>
                   <Input
                     type="text"
-                    name="1"
+                    name="12"
                     placeholder=""
-                    value={this.state.PPForm[1]}
+                    value={this.state.PPForm[12]}
                     onChange={this.handleChangeForm}
                   />
-                </FormGroup>
+                </FormGroup>   
                 <FormGroup>
-                  <Label>Bundle ID</Label>
+                  <Label>Note</Label>
                   <Input
                     type="text"
-                    name="1"
+                    name="13"
                     placeholder=""
-                    value={this.state.PPForm[1]}
+                    value={this.state.PPForm[13]}
                     onChange={this.handleChangeForm}
                   />
-                </FormGroup>
-                <FormGroup>
-                  <Label>Bundle ID</Label>
-                  <Input
-                    type="text"
-                    name="1"
-                    placeholder=""
-                    value={this.state.PPForm[1]}
-                    onChange={this.handleChangeForm}
-                  />
-                </FormGroup>
+                </FormGroup>        
               </Col>
             </Row>
           </ModalBody>
