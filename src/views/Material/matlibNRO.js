@@ -24,6 +24,7 @@ import {
   getDatafromAPIMY,
   postDatatoAPINODE,
   getDatafromAPINODE,
+  patchDatatoAPINODE,
 } from "../../helper/asyncFunction";
 
 const DefaultNotif = React.lazy(() => import("../DefaultView/DefaultNotif"));
@@ -413,23 +414,23 @@ class MatNRO extends React.Component {
     }
   };
 
-  saveUpdateNROVendorData(){
+  saveUpdateNROVendorData = async () =>{
+    this.toggleLoading();
     const dataVendor = this.state.vendor_list;
     const dataMaterial = this.state.material_list;
-    console.log(dataMaterial)
+    // console.log(dataMaterial)
     const dataVendorMatChecked = this.state.vendorChecked;
-    console.log('dataVendorMatChecked ',dataVendorMatChecked)
+    // console.log('dataVendorMatChecked ',dataVendorMatChecked)
     let dataVendorMatUpdate = [];
     for (const [key, value] of dataVendorMatChecked.entries()) {
       const dataKey = key.split(" /// ");
       const data_id_mat = dataKey[0];
-      console.log('data_id_mat ',data_id_mat)
-
+      // console.log('data_id_mat ',data_id_mat)
       const data_id_vendor = dataKey[1];
       const matFind = dataMaterial.find(mat => mat._id === data_id_mat);
-      console.log('matFind ',matFind)
+      // console.log('matFind ',matFind)
       const venFind = dataVendor.find(ven => ven.Vendor_Code === data_id_vendor);
-      console.log(key, data_id_mat, data_id_vendor);
+      // console.log(key, data_id_mat, data_id_vendor);
       let dataExistIdx = dataVendorMatUpdate.findIndex(exi => exi._id === matFind._id);
       if(dataExistIdx !== -1){
         if(value === false){
@@ -465,6 +466,32 @@ class MatNRO extends React.Component {
       }
     }
     console.log("dataVendorMatUpdate", dataVendorMatUpdate);
+    const res = await patchDatatoAPINODE('/mmCode/updateMmCode', {data:dataVendorMatUpdate}, this.state.tokenUser);
+    if (res.data !== undefined) {
+      this.setState({ action_status: "success" });
+      this.toggleLoading();
+    } else {
+      if (
+        res.response !== undefined &&
+        res.response.data !== undefined &&
+        res.response.data.error !== undefined
+      ) {
+        if (res.response.data.error.message !== undefined) {
+          this.setState({
+            action_status: "failed",
+            action_message: res.response.data.error.message,
+          });
+        } else {
+          this.setState({
+            action_status: "failed",
+            action_message: res.response.data.error,
+          });
+        }
+      } else {
+        this.setState({ action_status: "failed" });
+      }
+      this.toggleLoading();
+    }
   }
 
   handleCheckVendor = (event) => {

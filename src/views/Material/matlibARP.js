@@ -690,12 +690,19 @@ class MatARP extends React.Component {
                 <FormGroup>
                   <Label>Vendor_ID</Label>
                   <Input
-                    type="text"
+                    type="select"
                     name="7"
                     placeholder=""
                     value={this.state.PPForm[7]}
                     onChange={this.handleChangeForm}
-                  />
+                  >
+                    <option selected="true" disabled="disabled">
+                      Select Vendor
+                    </option>
+                    {this.state.vendor_list.map((asp) => (
+                      <option value={asp.Vendor_Code}>{asp.Name}</option>
+                    ))}
+                  </Input>
                 </FormGroup>
                 <FormGroup>
                   <Label>Vendor_Name</Label>

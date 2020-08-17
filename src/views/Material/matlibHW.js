@@ -107,8 +107,8 @@ class MatHW extends React.Component {
     getDatafromAPIMY("/vendor_data_non_page?sort=[('Name',-1)]").then((res) => {
       if (res.data !== undefined) {
         const items = res.data._items;
-        const vendor_data = items.map((a) => a.Name);
-        this.setState({ vendor_list: vendor_data });
+        // const vendor_data = items.map((a) => a.Name);
+        this.setState({ vendor_list: items });
       }
     });
   }
@@ -140,14 +140,12 @@ class MatHW extends React.Component {
 
     let header = [
       "Material_Type",
-      "MM_Code",
       "MM_Description",
       "UoM",
       "Unit_Price",
       "Currency",
       "Info_Rec",
       "Vendor_ID",
-      "Vendor_Name",
       "Valid_To",
       "Created_On",
       "Created_By",
@@ -159,14 +157,12 @@ class MatHW extends React.Component {
 
     ws.addRow([
       modul_name,
-      "MM_Code",
       "MM_Description",
       "UoM",
       "Unit_Price",
       "Currency",
       "Info_Rec",
       "Vendor_ID",
-      "Vendor_Name",
       "Valid_To",
       "Created_On",
       "Created_By",
@@ -262,6 +258,13 @@ class MatHW extends React.Component {
   saveNew = async () => {
     this.togglePPForm();
     this.toggleLoading();
+    const today = new Date();
+    const date =
+      today.getFullYear() +
+      "-" +
+      (today.getMonth() + 1) +
+      "-" +
+      today.getDate();
     let dataForm = [
       [
         "Material_Type",
@@ -269,14 +272,13 @@ class MatHW extends React.Component {
         "MM_Description",
         "UoM",
         "Unit_Price",
-        "BB",
-        "BB_Sub",
-        "Region",
-        "FTV_or_SSO_SLA_or_SSO_Lite_SLA_or_CBO",
-        "Remarks_or_Acceptance",
-        "SoW_Description_or_Site_Type",
-        "ZERV_(18)",
-        "ZEXT_(40)",
+        "Currency",
+        "Info_Rec",
+        "Vendor_ID",
+        "Valid_To",
+        "Created_On",
+        "Created_By",
+        "Status_Price_in_SAP",
         "Note",
       ],
       [
@@ -290,7 +292,7 @@ class MatHW extends React.Component {
         this.state.PPForm[7],
         this.state.PPForm[8],
         this.state.PPForm[9],
-        this.state.PPForm[10],
+        "",
         this.state.PPForm[11],
         this.state.PPForm[12],
       ],
@@ -683,9 +685,9 @@ class MatHW extends React.Component {
                   </Col>
                 </FormGroup>
                 <FormGroup row>
-                  <Col xs="12">
+                  <Col xs="6">
                     <FormGroup>
-                      <Label>Bundle ID</Label>
+                      <Label>Currency</Label>
                       <Input
                         type="text"
                         name="5"
@@ -695,31 +697,46 @@ class MatHW extends React.Component {
                       />
                     </FormGroup>
                   </Col>
-                  <Col xs="6">
-                    <FormGroup>
-                      <Label>Currency</Label>
-                      <Input
-                        type="text"
-                        name="6"
-                        placeholder=""
-                        value={this.state.PPForm[6]}
-                        onChange={this.handleChangeForm}
-                      />
-                    </FormGroup>
-                  </Col>
                 </FormGroup>
                 <FormGroup>
                   <Label>Info_Rec</Label>
                   <Input
                     type="text"
-                    name="7"
+                    name="6"
                     placeholder=""
-                    value={this.state.PPForm[7]}
+                    value={this.state.PPForm[6]}
                     onChange={this.handleChangeForm}
                   />
                 </FormGroup>
                 <FormGroup>
                   <Label>Vendor_ID</Label>
+                  <Input
+                    type="select"
+                    name="7"
+                    placeholder=""
+                    value={this.state.PPForm[7]}
+                    onChange={this.handleChangeForm}
+                  >
+                    <option selected="true" disabled="disabled">
+                      Select Vendor
+                    </option>
+                    {this.state.vendor_list.map((asp) => (
+                      <option value={asp.Vendor_Code}>{asp.Name}</option>
+                    ))}
+                  </Input>
+                </FormGroup>
+                {/* <FormGroup>
+                  <Label>Vendor_Name</Label>
+                  <Input
+                    type="text"
+                    name="9"
+                    placeholder=""
+                    value={this.state.PPForm[9]}
+                    onChange={this.handleChangeForm}
+                  />
+                </FormGroup> */}
+                <FormGroup>
+                  <Label>Valid_To</Label>
                   <Input
                     type="text"
                     name="8"
@@ -729,22 +746,12 @@ class MatHW extends React.Component {
                   />
                 </FormGroup>
                 <FormGroup>
-                  <Label>Vendor_Name</Label>
+                  <Label>Created_On</Label>
                   <Input
-                    type="text"
+                    type="date"
                     name="9"
                     placeholder=""
                     value={this.state.PPForm[9]}
-                    onChange={this.handleChangeForm}
-                  />
-                </FormGroup>
-                <FormGroup>
-                  <Label>Valid_To</Label>
-                  <Input
-                    type="text"
-                    name="10"
-                    placeholder=""
-                    value={this.state.PPForm[10]}
                     onChange={this.handleChangeForm}
                   />
                 </FormGroup>

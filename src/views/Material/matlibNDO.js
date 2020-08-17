@@ -141,12 +141,11 @@ class MatNDO extends React.Component {
 
     let header = [
       "Material_Type",
-      "MM_Code",
-      "MM_Description",
-      "UoM",
-      "Unit_Price",
       "BB",
       "BB_Sub",
+      "MM_Description",
+      "UoM",
+      "Unit_Price",      
       "Region",
       "Remarks_or_Acceptance",
       "SoW_Description_or_Site_Type",
@@ -158,12 +157,11 @@ class MatNDO extends React.Component {
 
     ws.addRow([
       modul_name,
-      "MM_Code",
-      "MM_Description",
-      "UoM",
-      1000,
       "BB",
       "BB_Sub",
+      "MM_Description",
+      "pcs",
+      1000,      
       "Region",
       "Remarks_or_Acceptance",
       "SoW_Description_or_Site_Type",
@@ -389,6 +387,20 @@ class MatNDO extends React.Component {
     saveAs(new Blob([allocexport]), 'All ' + modul_name + '.xlsx');
   }
 
+  findVendorName(vendor_id){
+    getDatafromAPIMY(
+      '/vendor_data?where={"Vendor_Code":"'+vendor_id+'"}'
+    ).then((res) => {
+      if (res.data._items.length !== 0) {
+        const vendorName = res.data._items.map(e=>e.Name).join(' ');
+        return vendorName
+        // console.log(vendorName)
+      }else{
+        return null
+      }
+    })
+  }
+
   render() {
     const NROForm = this.state.NROForm;
     return (
@@ -573,7 +585,7 @@ class MatNDO extends React.Component {
                                     {e.Vendor_ID}
                                   </td>
                                   <td style={{ textAlign: "center" }}>
-                                    {e.Vendor_Name}
+                                    {this.findVendorName(e.Vendor_ID)}
                                   </td>
                                   <td style={{ textAlign: "center" }}>
                                     {e.Note}
@@ -699,12 +711,19 @@ class MatNDO extends React.Component {
                 <FormGroup>
                   <Label>Vendor_ID</Label>
                   <Input
-                    type="text"
+                    type="select"
                     name="7"
                     placeholder=""
                     value={this.state.PPForm[7]}
                     onChange={this.handleChangeForm}
-                  />
+                  >
+                    <option selected="true" disabled="disabled">
+                      Select Vendor
+                    </option>
+                    {this.state.vendor_list.map((asp) => (
+                      <option value={asp.Vendor_Code}>{asp.Name}</option>
+                    ))}
+                  </Input>
                 </FormGroup>
                 <FormGroup>
                   <Label>Vendor_Name</Label>
