@@ -97,3 +97,23 @@ export const deleteDataFromAPINODE = async (url, props) => {
     return respond;
   }
 };
+
+export const deleteDataFromAPINODE2 = async (url, props, data) => {
+  try {
+    let respond = await axios.delete(process.env.REACT_APP_API_URL_NODE + url, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + props,
+      },
+      data
+    });
+    if (respond.status >= 200 && respond.status < 300) {
+      console.log("respond delete Data", respond);
+    }
+    return respond;
+  } catch (err) {
+    let respond = err;
+    console.log("respond delete Data err", err);
+    return respond;
+  }
+};

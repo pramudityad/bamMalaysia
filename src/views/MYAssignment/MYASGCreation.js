@@ -1369,28 +1369,7 @@ class MYASGCreation extends Component {
         >
           <ModalBody>
             <div style={{ marginLeft: "10px" }}>
-              <Row md={1}>
-                <FormGroup>
-                  <Label>
-                    <b>Material Type</b>
-                  </Label>
-                  <Input
-                    type="select"
-                    name={"mat_type"}
-                    value={matfilter.mat_type}
-                    onChange={this.handleMaterialFilter}
-                  >
-                    <option value="" disabled selected hidden></option>
-                    {/* <option value="NDO">NDO</option> */}
-                    <option value="All">All</option>
-                    <option value="NDO">NDO</option>
-                    <option value="NRO">NRO</option>
-                    <option value="HW">HW</option>
-                    <option value="ARP">ARP</option>
-                  </Input>
-                </FormGroup>
-                {/* </Row>
-            <Row md={1}> */}
+              <Row md={1}>            
                 &nbsp;&nbsp;&nbsp;
                 {this.state.hide_region !== true ? (
                   <FormGroup>

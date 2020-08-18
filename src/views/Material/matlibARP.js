@@ -506,8 +506,8 @@ class MatARP extends React.Component {
                 </Row>
                 <Row>
                   <Col>
-                    <div className="divtable">
-                      <Table responsive bordered size="sm">
+                    <div >
+                      <Table striped hover bordered responsive size="sm">
                         <thead
                         // style={{ backgroundColor: "#73818f" }}
                         // className="fixed-matlib"

@@ -145,7 +145,7 @@ class TabelNRO extends React.Component {
     MatIdcol.push(this.props.DataMaterial.map((a => a._id))) 
     // console.log('MatIdcol ', MatIdcol)
     return (
-      <Table responsive bordered size="sm">
+      <Table striped hover bordered responsive size="sm">
         <thead>
           <tr>
             <th rowSpan="2">

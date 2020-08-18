@@ -18,11 +18,14 @@ import { saveAs } from "file-saver";
 import Excel from "exceljs";
 import * as XLSX from "xlsx";
 import ModalCreateNew from "../Component/ModalCreateNew";
+import ModalDelete from "../Component/ModalDelete";
+
 import Loading from "../Component/Loading";
 import { ExcelRenderer } from "react-excel-renderer";
 import {
   getDatafromAPIMY,
   postDatatoAPINODE,
+  deleteDataFromAPINODE2
 } from "../../helper/asyncFunction";
 
 const DefaultNotif = React.lazy(() =>
@@ -90,6 +93,14 @@ class MatNDO extends React.Component {
       rowsXLS: [],
       vendor_list: [],
       PPForm: new Array(11).fill(""),
+      danger: false,
+      selected_id: "",
+      selected_name: "",
+      prevPage: 0,
+      activePage: 1,
+      totalData: 0,
+      perPage: 10,
+      modalEdit: false,
 
     };
     this.toggle = this.toggle.bind(this);
@@ -118,7 +129,7 @@ class MatNDO extends React.Component {
     let whereAnd =
       '{ "Material_Type":{"$regex" : "' + modul_name + '", "$options" : "i"}}';
     getDatafromAPIMY(
-      "/mm_code_data?where=" +
+      "/mm_code_data?srt=_id:-1&where=" +
         whereAnd +
         "&max_results=" +
         this.state.perPage +
@@ -403,6 +414,81 @@ class MatNDO extends React.Component {
     })
   }
 
+  toggleDelete=(e) => {
+    const modalDelete = this.state.danger;
+    if (modalDelete === false) {
+      const _id = e.currentTarget.value;
+      const name = e.currentTarget.name;
+      this.setState({
+        danger: !this.state.danger,
+        selected_id: _id,
+        selected_name: name,
+      });
+    } else {
+      this.setState({
+        danger: false,
+      });
+    }
+    this.setState((prevState) => ({
+      modalDelete: !prevState.modalDelete,
+    }));
+  }
+
+  DeleteData = async () => {
+    const objData = this.state.selected_id;
+    this.toggleLoading();
+    this.toggleDelete();
+    const DelData = deleteDataFromAPINODE2(
+      "/mmCode/deleteMmCode", this.state.tokenUser, {data:[objData]}
+    ).then((res) => {
+      if (res.data !== undefined) {
+        this.setState({ action_status: "success" });
+        this.toggleLoading();
+      } else {
+        this.setState({ action_status: "failed" }, () => {
+          this.toggleLoading();
+        });
+      }
+    });
+  };
+
+  handlePageChange = (pageNumber) => {
+    this.setState({ activePage: pageNumber }, () => {
+      this.getMaterialList();
+    });
+  }
+
+  toggleEdit = (e) => {
+    const modalEdit = this.state.modalEdit;
+    if (modalEdit === false) {
+      const value = e.currentTarget.value;
+      const aEdit = this.state.material_list.find((e) => e._id === value);
+      let dataForm = this.state.PPForm;
+
+      dataForm[2] = aEdit.BB;
+      dataForm[3] = aEdit.BB_Sub;
+      dataForm[4] = aEdit.MM_Description;
+      dataForm[5] = aEdit.UoM;
+      dataForm[6] = aEdit.Unit_Price;
+      dataForm[7] = aEdit.Currency;
+      dataForm[8] = aEdit.Region;
+      dataForm[9] = aEdit.Remarks_or_Acceptance;
+      dataForm[10] = aEdit.SoW_Description_or_Site_Type;
+      dataForm[11] = aEdit.Vendor;
+      dataForm[12] = aEdit.Note;
+      this.setState({ PPForm: dataForm, selected_id: value });
+    } else {
+      this.setState({ PPForm: new Array(11).fill("") });
+    }
+    this.setState((prevState) => ({
+      modalEdit: !prevState.modalEdit,
+    }));
+  }
+
+  UpdateForm = async () => {
+
+  }
+
   render() {
     const NROForm = this.state.NROForm;
     return (
@@ -525,8 +611,8 @@ class MatNDO extends React.Component {
                 </Row>
                 <Row>
                   <Col>
-                    <div className="divtable">
-                      <Table responsive bordered size="sm">
+                    <div >
+                      <Table striped hover bordered responsive size="sm">
                         <thead
                         // style={{ backgroundColor: "#73818f" }}
                         // className="fixed-matlib"
@@ -544,6 +630,7 @@ class MatNDO extends React.Component {
                             <th>Vendor_ID</th>
                             <th>Vendor_Name</th>
                             <th>Note</th>
+                            <th colspan="2"></th>
                           </tr>
                         </thead>
                         <tbody>
@@ -587,25 +674,54 @@ class MatNDO extends React.Component {
                                     {e.Vendor_ID}
                                   </td>
                                   <td style={{ textAlign: "center" }}>
-                                    {this.findVendorName(e.Vendor_ID)}
+                                    {/* {this.findVendorName(e.Vendor_ID)} */}
                                   </td>
                                   <td style={{ textAlign: "center" }}>
                                     {e.Note}
+                                  </td>
+                                  <td>
+                                    <Button
+                                      size="sm"
+                                      color="secondary"
+                                      value={e._id}
+                                      onClick={this.toggleEdit}
+                                      title="Edit"
+                                    >
+                                      <i className="fas fa-edit"></i>
+                                    </Button>
+                                  </td>
+                                  <td>
+                                  <Button
+                                      size="sm"
+                                      color="danger"
+                                      value={e._id}
+                                      name={e.MM_Code}
+                                      onClick={this.toggleDelete}
+                                      title="Delete"
+                                    >
+                                      <i
+                                        className="fa fa-trash"
+                                        aria-hidden="true"
+                                      ></i>
+                                    </Button>
                                   </td>
                                 </tr>
                               </React.Fragment>
                             ))}
                         </tbody>
-                      </Table>
+                      </Table>                      
                     </div>
                   </Col>
                 </Row>
+                <div style={{ margin: "8px 0px" }}>
+                  <small>Showing {this.state.totalData} entries</small>
+                </div>
                 <Row>
                   <Col>
                     <Pagination
                       activePage={this.state.activePage}
                       itemsCountPerPage={this.state.perPage}
-                      totalItemsCount={this.state.total_dataParent}
+                      totalItemsCount={this.state.totalData}
                       pageRangeDisplayed={5}
                       onChange={this.handlePageChange}
                       itemClass="page-item"
@@ -768,6 +884,156 @@ class MatNDO extends React.Component {
         </Modal>
         {/*  Modal New PP*/}
 
+           {/* Modal Update */}
+           <Modal
+          isOpen={this.state.modalEdit}
+          toggle={this.toggleEdit}
+          className="modal--form"
+        >
+          <ModalHeader>Form {modul_name}</ModalHeader>
+          <ModalBody>
+            <Row>
+              <Col sm="12">
+                <FormGroup>
+                  <Label>BB</Label>
+                  <Input
+                    type="text"
+                    name="2"
+                    placeholder=""
+                    value={this.state.PPForm[2]}
+                    onChange={this.handleChangeForm}
+                  />
+                </FormGroup>
+                <FormGroup>
+                  <Label>BB_Sub</Label>
+                  <Input
+                    type="text"
+                    name="3"
+                    placeholder=""
+                    value={this.state.PPForm[3]}
+                    onChange={this.handleChangeForm}
+                  />
+                </FormGroup>
+                <FormGroup row>
+                  <Col xs="12">
+                    <FormGroup>
+                      <Label>MM_Description</Label>
+                      <Input
+                    type="text"
+                    name="4"
+                    placeholder=""
+                    value={this.state.PPForm[4]}
+                    onChange={this.handleChangeForm}
+                  />
+                    </FormGroup>
+                  </Col>
+                  <Col xs="12">
+                    <FormGroup>
+                      <Label>UoM</Label>
+                      <Input
+                    type="text"
+                    name="5"
+                    placeholder=""
+                    value={this.state.PPForm[5]}
+                    onChange={this.handleChangeForm}
+                  />
+                    </FormGroup>
+                  </Col>
+                  <Col xs="12">
+                    <FormGroup>
+                      <Label>Unit_Price</Label>
+                      <Input
+                    type="number"
+                    name="6"
+                    placeholder=""
+                    value={this.state.PPForm[6]}
+                    onChange={this.handleChangeForm}
+                  />
+                    </FormGroup>
+                  </Col>
+                </FormGroup>
+                <FormGroup row>      
+                  <Col xs="6">
+                    <FormGroup>
+                      <Label>Currency</Label>
+                      <Input
+                    type="text"
+                    name="7"
+                    placeholder=""
+                    value={this.state.PPForm[7]}
+                    onChange={this.handleChangeForm}
+                  />
+                    </FormGroup>
+                  </Col>
+                </FormGroup>
+                <FormGroup>
+                  <Label>Region</Label>
+                  <Input
+                    type="text"
+                    name="8"
+                    placeholder=""
+                    value={this.state.PPForm[8]}
+                    onChange={this.handleChangeForm}
+                  />
+                </FormGroup>
+                <FormGroup>
+                  <Label>Remarks_or_Acceptance</Label>
+                  <Input
+                    type="text"
+                    name="9"
+                    placeholder=""
+                    value={this.state.PPForm[9]}
+                    onChange={this.handleChangeForm}
+                  />
+                </FormGroup>
+                <FormGroup>
+                  <Label>SoW_Description_or_Site_Type</Label>
+                  <Input
+                    type="text"
+                    name="10"
+                    placeholder=""
+                    value={this.state.PPForm[10]}
+                    onChange={this.handleChangeForm}
+                  />
+                </FormGroup>
+                <FormGroup>
+                  <Label>Vendor</Label>
+                  <Input
+                    type="select"
+                    name="11"
+                    placeholder=""
+                    value={this.state.PPForm[11]}
+                    onChange={this.handleChangeForm}
+                  >
+                    <option selected="true" disabled="disabled">
+                      Select Vendor
+                    </option>
+                    {this.state.vendor_list.map((asp) => (
+                      <option value={asp.Vendor_Code}>{asp.Name}</option>
+                    ))}
+                  </Input>
+                </FormGroup>
+                <FormGroup>
+                  <Label>Note</Label>
+                  <Input
+                    type="text"
+                    name="12"
+                    placeholder=""
+                    value={this.state.PPForm[12]}
+                    onChange={this.handleChangeForm}
+                  />
+                </FormGroup>
+              </Col>
+            </Row>
+          </ModalBody>
+          <ModalFooter>
+            <Button color="success" onClick={this.UpdateForm}>
+              Update
+            </Button>
+          </ModalFooter>
+        </Modal>
+        {/*  Modal New PP*/}
+
         {/* Modal create New */}
         <ModalCreateNew
           isOpen={this.state.createModal}
@@ -815,6 +1081,22 @@ class MatNDO extends React.Component {
           className={"modal-sm modal--loading "}
         ></Loading>
         {/* end Modal Loading */}
+
+         {/* Modal confirmation delete */}
+         <ModalDelete
+          isOpen={this.state.danger}
+          toggle={this.toggleDelete}
+          className={"modal-danger " + this.props.className}
+          title={"Delete "+ this.state.selected_name}
+          body={"Are you sure ?"}
+        >
+          <Button color="danger" onClick={this.DeleteData}>
+            Delete
+          </Button>
+          <Button color="secondary" onClick={this.toggleDelete}>
+            Cancel
+          </Button>
+        </ModalDelete>
       </div>
     );
   }
