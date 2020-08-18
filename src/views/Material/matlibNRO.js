@@ -666,7 +666,7 @@ class MatNRO extends React.Component {
         e.ZERV_18,
         e.ZEXT_40,
         e.Note,
-        e.Vendor_List
+        e.Vendor_List.map(vendor => vendor.Vendor_Name)
       ]);
     }
 

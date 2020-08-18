@@ -2185,16 +2185,66 @@ class MYASGDetail extends Component {
         </Modal>
         {/* End Modal Create LMR Child */}
 
-        {/* Modal Material Dasboard */}
-        <Modal
+         {/* Modal Material Dasboard */}
+         <Modal
           isOpen={this.state.modal_material}
           toggle={this.toggleMaterial}
           className={"modal-lg"}
         >
           <ModalBody>
+            <div style={{ marginLeft: "10px" }}>
+              <Row md={1}>
+                <FormGroup>
+                  <Label>
+                    <b>Material Type</b>
+                  </Label>
+                  <Input
+                    type="select"
+                    name={"mat_type"}
+                    value={matfilter.mat_type}
+                    onChange={this.handleMaterialFilter}
+                  >
+                    <option value="" disabled selected hidden></option>
+                    {/* <option value="NDO">NDO</option> */}
+                    <option value="All">All</option>
+                    <option value="NDO">NDO</option>
+                    <option value="NRO">NRO</option>
+                    <option value="HW">HW</option>
+                    <option value="ARP">ARP</option>
+                  </Input>
+                </FormGroup>
+                {/* </Row>
+            <Row md={1}> */}
+                &nbsp;&nbsp;&nbsp;
+                {this.state.hide_region !== true ? (
+                  <FormGroup>
+                    <Label>
+                      <b>Region</b>
+                    </Label>
+                    <Input
+                      type="select"
+                      name={"region"}
+                      value={matfilter.region}
+                      onChange={this.handleMaterialFilter}
+                    >
+                      <option value="" disabled selected hidden></option>
+                      <option value="All">All</option>
+                      <option value="KV">KV</option>
+                      <option value="ER">ER</option>
+                      <option value="EM">EM</option>
+                    </Input>
+                  </FormGroup>
+                ) : (
+                  ""
+                )}
+              </Row>
+            </div>
+
             <Table responsive striped bordered size="sm">
               <thead>
                 <th></th>
+                <th>BB</th>
+                <th>BB Sub</th>
                 <th>MM Code</th>
                 <th>Material Type</th>
                 <th>SoW</th>
@@ -2207,7 +2257,7 @@ class MYASGDetail extends Component {
                 <tr>
                   <td></td>
                   {/* <td> */}
-                    {/* <div className="controls" style={{ width: "150px" }}>
+                  {/* <div className="controls" style={{ width: "150px" }}>
                       <InputGroup className="input-prepend">
                         <InputGroupAddon addonType="prepend">
                           <InputGroupText>
@@ -2223,7 +2273,7 @@ class MYASGDetail extends Component {
                         />
                       </InputGroup>
                     </div> */}
-                    {this.loopSearchBar()}
+                  {this.loopSearchBar()}
                   {/* </td>
                   <td></td>
                   <td></td>
@@ -2244,8 +2294,10 @@ class MYASGDetail extends Component {
                         Select
                       </Button>
                     </td>
-                    <td>{e.MM_Code}</td>
+                    <td>{e.BB}</td>
                     <td>{e.BB_Sub}</td>
+                    <td>{e.MM_Code}</td>
+                    <td>{e.Material_Type}</td>
                     <td>{e.SoW_Description}</td>
                     <td>{e.UoM}</td>
                     <td>{e.Region}</td>
@@ -2266,11 +2318,12 @@ class MYASGDetail extends Component {
             />
           </ModalBody>
           <ModalFooter>
-            <Button color="secondary" onClick={this.toggleLoading}>
+            <Button color="secondary" onClick={this.toggleMaterial}>
               Close
             </Button>
           </ModalFooter>
         </Modal>
+        
       </div>
     );
   }

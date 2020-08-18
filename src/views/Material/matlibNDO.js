@@ -108,8 +108,8 @@ class MatNDO extends React.Component {
     getDatafromAPIMY("/vendor_data_non_page?sort=[('Name',-1)]").then((res) => {
       if (res.data !== undefined) {
         const items = res.data._items;
-        const vendor_data = items.map((a) => a.Name);
-        this.setState({ vendor_list: vendor_data });
+        // const vendor_data = items.map((a) => a.Name);
+        this.setState({ vendor_list: items });
       }
     });
   }
@@ -260,17 +260,18 @@ class MatNDO extends React.Component {
     let dataForm = [ 
       [
         "Material_Type",
-      "MM_Code",
-      "MM_Description",
-      "UoM",
-      "Unit_Price",
-      "BB",
-      "BB_Sub",
-      "Region",
-      "Remarks_or_Acceptance",
-      "SoW_Description_or_Site_Type",
-      "Vendor_ID",
-      "Note",
+        "MM_Code",
+        "BB", 
+        "BB_Sub", 
+        "MM_Description", 
+        "UoM",
+        "Unit_Price",
+        "Currency",
+        "Region",
+        "Remarks_or_Acceptance",
+        "SoW_Description_or_Site_Type",
+        "Vendor_ID",
+        "Note",
       ],
       [
         modul_name,
@@ -285,6 +286,7 @@ class MatNDO extends React.Component {
         this.state.PPForm[9],
         this.state.PPForm[10],
         this.state.PPForm[11],
+        this.state.PPForm[12],
       ]
     ]
     const res = await postDatatoAPINODE(
@@ -626,35 +628,35 @@ class MatNDO extends React.Component {
           <ModalBody>
             <Row>
               <Col sm="12">
-                {/* <FormGroup>
-                  <Label>Material_Type</Label>
+                <FormGroup>
+                  <Label>BB</Label>
                   <Input
                     type="text"
-                    name="0"
+                    name="2"
                     placeholder=""
-                    value={this.state.PPForm[0]}
+                    value={this.state.PPForm[2]}
                     onChange={this.handleChangeForm}
                   />
                 </FormGroup>
                 <FormGroup>
-                  <Label>MM_Code</Label>
+                  <Label>BB_Sub</Label>
                   <Input
                     type="text"
-                    name="1"
+                    name="3"
                     placeholder=""
-                    value={this.state.PPForm[1]}
+                    value={this.state.PPForm[3]}
                     onChange={this.handleChangeForm}
                   />
-                </FormGroup> */}
+                </FormGroup>
                 <FormGroup row>
                   <Col xs="12">
                     <FormGroup>
                       <Label>MM_Description</Label>
                       <Input
                     type="text"
-                    name="2"
+                    name="4"
                     placeholder=""
-                    value={this.state.PPForm[2]}
+                    value={this.state.PPForm[4]}
                     onChange={this.handleChangeForm}
                   />
                     </FormGroup>
@@ -664,9 +666,9 @@ class MatNDO extends React.Component {
                       <Label>UoM</Label>
                       <Input
                     type="text"
-                    name="3"
+                    name="5"
                     placeholder=""
-                    value={this.state.PPForm[3]}
+                    value={this.state.PPForm[5]}
                     onChange={this.handleChangeForm}
                   />
                     </FormGroup>
@@ -676,9 +678,9 @@ class MatNDO extends React.Component {
                       <Label>Unit_Price</Label>
                       <Input
                     type="number"
-                    name="4"
+                    name="6"
                     placeholder=""
-                    value={this.state.PPForm[4]}
+                    value={this.state.PPForm[6]}
                     onChange={this.handleChangeForm}
                   />
                     </FormGroup>
@@ -690,31 +692,51 @@ class MatNDO extends React.Component {
                       <Label>Currency</Label>
                       <Input
                     type="text"
-                    name="5"
+                    name="7"
                     placeholder=""
-                    value={this.state.PPForm[5]}
+                    value={this.state.PPForm[7]}
                     onChange={this.handleChangeForm}
                   />
                     </FormGroup>
                   </Col>
                 </FormGroup>
                 <FormGroup>
-                  <Label>Remarks_or_Acceptance</Label>
+                  <Label>Region</Label>
                   <Input
                     type="text"
-                    name="6"
+                    name="8"
                     placeholder=""
-                    value={this.state.PPForm[6]}
+                    value={this.state.PPForm[8]}
                     onChange={this.handleChangeForm}
                   />
                 </FormGroup>
                 <FormGroup>
-                  <Label>Vendor_ID</Label>
+                  <Label>Remarks_or_Acceptance</Label>
+                  <Input
+                    type="text"
+                    name="9"
+                    placeholder=""
+                    value={this.state.PPForm[9]}
+                    onChange={this.handleChangeForm}
+                  />
+                </FormGroup>
+                <FormGroup>
+                  <Label>SoW_Description_or_Site_Type</Label>
+                  <Input
+                    type="text"
+                    name="10"
+                    placeholder=""
+                    value={this.state.PPForm[10]}
+                    onChange={this.handleChangeForm}
+                  />
+                </FormGroup>
+                <FormGroup>
+                  <Label>Vendor</Label>
                   <Input
                     type="select"
-                    name="7"
+                    name="11"
                     placeholder=""
-                    value={this.state.PPForm[7]}
+                    value={this.state.PPForm[11]}
                     onChange={this.handleChangeForm}
                   >
                     <option selected="true" disabled="disabled">
@@ -726,42 +748,12 @@ class MatNDO extends React.Component {
                   </Input>
                 </FormGroup>
                 <FormGroup>
-                  <Label>Vendor_Name</Label>
-              <Input
-                    type="text"
-                    name="8"
-                    placeholder=""
-                    value={this.state.PPForm[8]}
-                    onChange={this.handleChangeForm}
-                  />
-                </FormGroup>
-                <FormGroup>
-                  <Label>ZERV_(18)</Label>
-                  <Input
-                    type="text"
-                    name="9"
-                    placeholder=""
-                    value={this.state.PPForm[9]}
-                    onChange={this.handleChangeForm}
-                  />
-                </FormGroup>
-                <FormGroup>
-                  <Label>ZEXT_(40)</Label>
-                  <Input
-                    type="text"
-                    name="10"
-                    placeholder=""
-                    value={this.state.PPForm[10]}
-                    onChange={this.handleChangeForm}
-                  />
-                </FormGroup>
-                <FormGroup>
                   <Label>Note</Label>
                   <Input
                     type="text"
-                    name="11"
+                    name="12"
                     placeholder=""
-                    value={this.state.PPForm[11]}
+                    value={this.state.PPForm[12]}
                     onChange={this.handleChangeForm}
                   />
                 </FormGroup>

@@ -19,7 +19,7 @@ const routes = [
   { path: '/', exact: true, name: 'Home' },
   { path: '/dashboard', name: 'Dashboard', component: Dashboard },
 
-  { path: '/mm-data-ndo', exact: true, name: 'MM Code Dat NRO', component: MatNDO },
+  { path: '/mm-data-ndo', exact: true, name: 'MM Code Dat NDO', component: MatNDO },
   { path: '/mm-data-nro', exact: true, name: 'MM Code Dat NRO', component: MatNRO },
   { path: '/mm-data-hw', exact: true, name: 'MM Code Data HW', component: MatHW },
   { path: '/mm-data-arp', exact: true, name: 'MM Code Data ARP', component: MatARP },
