@@ -23,7 +23,11 @@ import { ExcelRenderer } from "react-excel-renderer";
 import {
   getDatafromAPIMY,
   postDatatoAPINODE,
+  patchDatatoAPINODE,
+  deleteDataFromAPINODE2,
+  getDatafromAPINODE
 } from "../../helper/asyncFunction";
+import ModalDelete from "../Component/ModalDelete";
 
 const DefaultNotif = React.lazy(() =>
   import("../../views/DefaultView/DefaultNotif")
@@ -32,50 +36,6 @@ const DefaultNotif = React.lazy(() =>
 const modul_name = "ARP";
 const BearerToken =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjYXNfaWQiOiIxOTM2YmE0Yy0wMjlkLTQ1MzktYWRkOC1mZjc2OTNiMDlmZmUiLCJyb2xlcyI6WyJCQU0tU3VwZXJBZG1pbiJdLCJhY2NvdW50IjoiMSIsImlhdCI6MTU5MjQ3MDI4Mn0.tIJSzHa-ewhqz0Ail7J0maIZx4R9P1aXE2E_49pe4KY";
-const MaterialDB = [
-  {
-    MM_Code: "MM Code",
-    BB_Sub: "BB_sub",
-    SoW_Description: "SoW Description",
-    UoM: "UoM",
-    Region: "Region",
-    Unit_Price: 100,
-    MM_Description: "MM Description",
-    Acceptance: "Acceptance",
-    Vendor_List: [
-      {
-        Vendor_Name: "TUMPAT SOLUTIONS",
-        Identifier: 0,
-      },
-
-      {
-        Vendor_Name: "FA FRONTLINERS SDN BHD",
-        Identifier: 1,
-      },
-    ],
-  },
-  {
-    MM_Code: "MM Code1",
-    BB_Sub: "BB_sub1",
-    SoW_Description: "SoW Description1",
-    UoM: "UoM1",
-    Region: "Region1",
-    Unit_Price: 200,
-    MM_Description: "MM Description1",
-    Acceptance: "Acceptance1",
-    Vendor_List: [
-      {
-        Vendor_Name: "TUMPAT SOLUTIONS",
-        Identifier: 1,
-      },
-
-      {
-        Vendor_Name: "FA FRONTLINERS SDN BHD",
-        Identifier: 0,
-      },
-    ],
-  },
-];
 
 class MatARP extends React.Component {
   constructor(props) {
@@ -90,6 +50,14 @@ class MatARP extends React.Component {
       action_message: null,
       rowsXLS: [],
       vendor_list: [],
+      danger: false,
+      selected_id: "",
+      selected_name: "",
+      prevPage: 0,
+      activePage: 1,
+      totalData: 0,
+      perPage: 10,
+      modalEdit: false,
     };
     this.toggle = this.toggle.bind(this);
     this.toggleLoading = this.toggleLoading.bind(this);
@@ -107,26 +75,24 @@ class MatARP extends React.Component {
     getDatafromAPIMY("/vendor_data_non_page?sort=[('Name',-1)]").then((res) => {
       if (res.data !== undefined) {
         const items = res.data._items;
-        const vendor_data = items.map((a) => a.Name);
-        this.setState({ vendor_list: vendor_data });
+        // const vendor_data = items.map((a) => a.Name);
+        this.setState({ vendor_list: items });
       }
     });
   }
 
   getMaterialList() {
-    let whereAnd =
-      '{ "Material_Type":{"$regex" : "' + modul_name + '", "$options" : "i"}}';
-    getDatafromAPIMY(
-      "/mm_code_data?where=" +
-        whereAnd +
-        "&max_results=" +
+    getDatafromAPINODE(
+      '/mmCode/getMm?q={"Material_Type": "'+modul_name+'"}' +
+        "&lmt=" +
         this.state.perPage +
-        "&page=" +
-        this.state.activePage
+        "&pg=" +
+        this.state.activePage,
+      this.state.tokenUser
     ).then((res) => {
       if (res.data !== undefined) {
-        const items = res.data._items;
-        const totalData = res.data._meta.total;
+        const items = res.data.data;
+        const totalData = res.data.totalResults;
         this.setState({ material_list: items, totalData: totalData });
       }
     });
@@ -140,12 +106,11 @@ class MatARP extends React.Component {
       "Material_Type",
       "MM_Code",
       "MM_Description",
-      "UoM",
+      "Vendor_ID",
       "Unit_Price",
       "Currency",
-      "Remarks_or_Acceptance",
-      "Vendor_ID",
-      "Vendor_Name",
+      "UoM",           
+      "Remarks_or_Acceptance",      
       "ZERV_(18)",
       "ZEXT_(40)",
       "Note",
@@ -155,17 +120,6 @@ class MatARP extends React.Component {
 
     ws.addRow([
       modul_name,
-      "MM_Code",
-      "MM_Description",
-      "UoM",
-      "Unit_Price",
-      "Currency",
-      "Remarks_or_Acceptance",
-      "Vendor_ID",
-      "Vendor_Name",
-      "ZERV_(18)",
-      "ZEXT_(40)",
-      "Note",
     ]);
 
     const PPFormat = await wb.xlsx.writeBuffer();
@@ -268,7 +222,8 @@ class MatARP extends React.Component {
         "Region",
         "FTV_or_SSO_SLA_or_SSO_Lite_SLA_or_CBO",
         "Remarks_or_Acceptance",
-        "SoW_Description_or_Site_Type",
+        "Vendor_ID",
+        "Vendor_Name",
         "ZERV_(18)",
         "ZEXT_(40)",
         "Note",
@@ -285,7 +240,10 @@ class MatARP extends React.Component {
         this.state.PPForm[8],
         this.state.PPForm[9],
         this.state.PPForm[10],
+        this.findVendorName(this.state.PPForm[10]),
         this.state.PPForm[11],
+        this.state.PPForm[12],
+        this.state.PPForm[13],
       ],
     ];
     const res = await postDatatoAPINODE(
@@ -383,6 +341,138 @@ class MatARP extends React.Component {
     const allocexport = await wb.xlsx.writeBuffer();
     saveAs(new Blob([allocexport]), "All " + modul_name + ".xlsx");
   };
+
+  findVendorName = (vendor_id) => {
+    let vendordata = this.state.vendor_list.find(element => element.Vendor_Code === vendor_id);
+    if(vendordata !== undefined){
+      return vendordata.Name
+    }else{
+      return null
+    }
+    
+  }
+
+  toggleDelete=(e) => {
+    const modalDelete = this.state.danger;
+    if (modalDelete === false) {
+      const _id = e.currentTarget.value;
+      const name = e.currentTarget.name;
+      this.setState({
+        danger: !this.state.danger,
+        selected_id: _id,
+        selected_name: name,
+      });
+    } else {
+      this.setState({
+        danger: false,
+      });
+    }
+    this.setState((prevState) => ({
+      modalDelete: !prevState.modalDelete,
+    }));
+  }
+
+  DeleteData = async () => {
+    const objData = this.state.selected_id;
+    this.toggleLoading();
+    this.toggleDelete();
+    const DelData = deleteDataFromAPINODE2(
+      "/mmCode/deleteMmCode", this.state.tokenUser, {data:[objData]}
+    ).then((res) => {
+      if (res.data !== undefined) {
+        this.setState({ action_status: "success" });
+        this.toggleLoading();
+      } else {
+        this.setState({ action_status: "failed" }, () => {
+          this.toggleLoading();
+        });
+      }
+    });
+  };
+
+  handlePageChange = (pageNumber) => {
+    this.setState({ activePage: pageNumber }, () => {
+      this.getMaterialList();
+    });
+  }
+
+  toggleEdit = (e) => {
+    const modalEdit = this.state.modalEdit;
+    if (modalEdit === false) {
+      const value = e.currentTarget.value;
+      const aEdit = this.state.material_list.find((e) => e._id === value);
+      let dataForm = this.state.PPForm;
+
+      dataForm[2] = aEdit.MM_Description;
+      dataForm[3] = aEdit.UoM;
+      dataForm[4] = aEdit.Unit_Price;
+      dataForm[5] = aEdit.Currency;
+      dataForm[6] = aEdit.Remarks_or_Acceptance;
+      dataForm[7] = aEdit.Vendor_ID;
+      dataForm[8] = aEdit.Vendor_Name;
+      dataForm[9] = aEdit.ZERV_18;
+      dataForm[10] = aEdit.ZEXT_40;
+      dataForm[11] = aEdit.Note;
+      this.setState({ PPForm: dataForm, selected_id: value });
+    } else {
+      this.setState({ PPForm: new Array(11).fill("") });
+    }
+    this.setState((prevState) => ({
+      modalEdit: !prevState.modalEdit,
+    }));
+  }
+
+  saveUpdate = async () => {
+    this.toggleEdit();
+    this.toggleLoading();
+    let dataForm =      
+      {
+        _id: this.state.selected_id,
+        MM_Description: this.state.PPForm[2],
+        UoM: this.state.PPForm[3],
+        Unit_Price: this.state.PPForm[4],
+        Currency: this.state.PPForm[5],
+        Info_Rec: this.state.PPForm[6],
+        Vendor_ID: this.state.PPForm[7],
+        Vendor_Name: this.findVendorName(this.state.PPForm[7]),
+        Valid_To: this.state.PPForm[8],
+        Created_On: this.state.PPForm[9],
+        Status_Price_in_SAP: this.state.PPForm[10],
+        Note: this.state.PPForm[11],
+      }
+    const res = await patchDatatoAPINODE(
+      "/mmCode/updateMmCode",
+      {
+        data: [dataForm],
+      },
+      this.state.tokenUser
+    );
+    if (res.data !== undefined) {
+      this.setState({ action_status: "success" });
+      this.toggleLoading();
+    } else {
+      if (
+        res.response !== undefined &&
+        res.response.data !== undefined &&
+        res.response.data.error !== undefined
+      ) {
+        if (res.response.data.error.message !== undefined) {
+          this.setState({
+            action_status: "failed",
+            action_message: res.response.data.error.message,
+          });
+        } else {
+          this.setState({
+            action_status: "failed",
+            action_message: res.response.data.error,
+          });
+        }
+      } else {
+        this.setState({ action_status: "failed" });
+      }
+      this.toggleLoading();
+    }
+  }
 
   render() {
     const NROForm = this.state.NROForm;
@@ -524,6 +614,7 @@ class MatARP extends React.Component {
                             <th>ZERV_(18)</th>
                             <th>ZEXT_(40)</th>
                             <th>Note</th>
+                            <th colspan="2"></th>
                           </tr>
                         </thead>
                         <tbody>
@@ -558,7 +649,7 @@ class MatARP extends React.Component {
                                     {e.Vendor_ID}
                                   </td>
                                   <td style={{ textAlign: "center" }}>
-                                    {e.Vendor_Name}
+                                  {this.findVendorName(e.Vendor_ID)}
                                   </td>
                                   <td style={{ textAlign: "center" }}>
                                     {e["ZERV_(18)"]}
@@ -569,6 +660,32 @@ class MatARP extends React.Component {
                                   <td style={{ textAlign: "center" }}>
                                     {e.Note}
                                   </td>
+                                  <td>
+                                    <Button
+                                      size="sm"
+                                      color="secondary"
+                                      value={e._id}
+                                      onClick={this.toggleEdit}
+                                      title="Edit"
+                                    >
+                                      <i className="fa fa-edit" aria-hidden="true"></i>
+                                    </Button>
+                                  </td>
+                                  <td>
+                                  <Button
+                                      size="sm"
+                                      color="danger"
+                                      value={e._id}
+                                      name={e.MM_Code}
+                                      onClick={this.toggleDelete}
+                                      title="Delete"
+                                    >
+                                      <i
+                                        className="fa fa-trash"
+                                        aria-hidden="true"
+                                      ></i>
+                                    </Button>
+                                  </td>
                                 </tr>
                               </React.Fragment>
                             ))}
@@ -577,12 +694,15 @@ class MatARP extends React.Component {
                     </div>
                   </Col>
                 </Row>
+                <div style={{ margin: "8px 0px" }}>
+                  <small>Showing {this.state.totalData} entries</small>
+                </div>
                 <Row>
                   <Col>
                     <Pagination
                       activePage={this.state.activePage}
                       itemsCountPerPage={this.state.perPage}
-                      totalItemsCount={this.state.total_dataParent}
+                      totalItemsCount={this.state.totalData}
                       pageRangeDisplayed={5}
                       onChange={this.handlePageChange}
                       itemClass="page-item"
@@ -700,19 +820,9 @@ class MatARP extends React.Component {
                       Select Vendor
                     </option>
                     {this.state.vendor_list.map((asp) => (
-                      <option value={asp.Vendor_Code}>{asp.Name}</option>
+                      <option value={asp.Vendor_Code}>{asp.Vendor_Code}-{asp.Name}</option>
                     ))}
                   </Input>
-                </FormGroup>
-                <FormGroup>
-                  <Label>Vendor_Name</Label>
-                  <Input
-                    type="text"
-                    name="8"
-                    placeholder=""
-                    value={this.state.PPForm[8]}
-                    onChange={this.handleChangeForm}
-                  />
                 </FormGroup>
                 <FormGroup>
                   <Label>ZERV_(18)</Label>
@@ -802,6 +912,173 @@ class MatARP extends React.Component {
           className={"modal-sm modal--loading "}
         ></Loading>
         {/* end Modal Loading */}
+
+        
+        {/* Modal Update */}
+        <Modal
+          isOpen={this.state.modalEdit}
+          toggle={this.toggleEdit}
+          className="modal--form"
+        >
+          <ModalHeader>Form {modul_name}</ModalHeader>
+          <ModalBody>
+          <Row>
+              <Col sm="12">
+                {/* <FormGroup>
+                  <Label>Material_Type</Label>
+                  <Input
+                    type="text"
+                    name="0"
+                    placeholder=""
+                    value={this.state.PPForm[0]}
+                    onChange={this.handleChangeForm}
+                  />
+                </FormGroup>
+                <FormGroup>
+                  <Label>MM_Code</Label>
+                  <Input
+                    type="text"
+                    name="1"
+                    placeholder=""
+                    value={this.state.PPForm[1]}
+                    onChange={this.handleChangeForm}
+                  />
+                </FormGroup> */}
+                <FormGroup row>
+                  <Col xs="12">
+                    <FormGroup>
+                      <Label>MM_Description</Label>
+                      <Input
+                        type="text"
+                        name="2"
+                        placeholder=""
+                        value={this.state.PPForm[2]}
+                        onChange={this.handleChangeForm}
+                      />
+                    </FormGroup>
+                  </Col>
+                  <Col xs="12">
+                    <FormGroup>
+                      <Label>UoM</Label>
+                      <Input
+                        type="text"
+                        name="3"
+                        placeholder=""
+                        value={this.state.PPForm[3]}
+                        onChange={this.handleChangeForm}
+                      />
+                    </FormGroup>
+                  </Col>
+                  <Col xs="12">
+                    <FormGroup>
+                      <Label>Unit_Price</Label>
+                      <Input
+                        type="number"
+                        name="4"
+                        placeholder=""
+                        value={this.state.PPForm[4]}
+                        onChange={this.handleChangeForm}
+                      />
+                    </FormGroup>
+                  </Col>
+                </FormGroup>
+                <FormGroup row>
+                  <Col xs="12">
+                    <FormGroup>
+                      <Label>Currency</Label>
+                      <Input
+                        type="text"
+                        name="5"
+                        placeholder=""
+                        value={this.state.PPForm[5]}
+                        onChange={this.handleChangeForm}
+                      />
+                    </FormGroup>
+                  </Col>
+                </FormGroup>
+                <FormGroup>
+                  <Label>Remarks_or_Acceptance</Label>
+                  <Input
+                    type="text"
+                    name="6"
+                    placeholder=""
+                    value={this.state.PPForm[6]}
+                    onChange={this.handleChangeForm}
+                  />
+                </FormGroup>
+                <FormGroup>
+                  <Label>Vendor_ID</Label>
+                  <Input
+                    type="select"
+                    name="7"
+                    placeholder=""
+                    value={this.state.PPForm[7]}
+                    onChange={this.handleChangeForm}
+                  >
+                    <option selected="true" disabled="disabled">
+                      Select Vendor
+                    </option>
+                    {this.state.vendor_list.map((asp) => (
+                      <option value={asp.Vendor_Code}>{asp.Vendor_Code}-{asp.Name}</option>
+                    ))}
+                  </Input>
+                </FormGroup>     
+                <FormGroup>
+                  <Label>ZERV_(18)</Label>
+                  <Input
+                    type="text"
+                    name="9"
+                    placeholder=""
+                    value={this.state.PPForm[9]}
+                    onChange={this.handleChangeForm}
+                  />
+                </FormGroup>
+                <FormGroup>
+                  <Label>ZEXT_(40)</Label>
+                  <Input
+                    type="text"
+                    name="10"
+                    placeholder=""
+                    value={this.state.PPForm[10]}
+                    onChange={this.handleChangeForm}
+                  />
+                </FormGroup>
+                <FormGroup>
+                  <Label>Note</Label>
+                  <Input
+                    type="text"
+                    name="11"
+                    placeholder=""
+                    value={this.state.PPForm[11]}
+                    onChange={this.handleChangeForm}
+                  />
+                </FormGroup>
+              </Col>
+            </Row>
+          </ModalBody>
+          <ModalFooter>
+            <Button color="success" onClick={this.saveUpdate}>
+              Update
+            </Button>
+          </ModalFooter>
+        </Modal>
+        {/*  Modal New PP*/}
+
+        {/* Modal confirmation delete */}
+        <ModalDelete
+          isOpen={this.state.danger}
+          toggle={this.toggleDelete}
+          className={"modal-danger " + this.props.className}
+          title={"Delete "+ this.state.selected_name}
+          body={"Are you sure ?"}
+        >
+          <Button color="danger" onClick={this.DeleteData}>
+            Delete
+          </Button>
+          <Button color="secondary" onClick={this.toggleDelete}>
+            Cancel
+          </Button>
+        </ModalDelete>
       </div>
     );
   }

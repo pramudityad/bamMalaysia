@@ -25,7 +25,8 @@ import { ExcelRenderer } from "react-excel-renderer";
 import {
   getDatafromAPIMY,
   postDatatoAPINODE,
-  deleteDataFromAPINODE2
+  deleteDataFromAPINODE2,
+  patchDatatoAPINODE
 } from "../../helper/asyncFunction";
 
 const DefaultNotif = React.lazy(() =>
@@ -101,13 +102,11 @@ class MatNDO extends React.Component {
       totalData: 0,
       perPage: 10,
       modalEdit: false,
-
     };
     this.toggle = this.toggle.bind(this);
     this.toggleLoading = this.toggleLoading.bind(this);
     this.togglecreateModal = this.togglecreateModal.bind(this);
     this.resettogglecreateModal = this.resettogglecreateModal.bind(this);
-    this.togglePPForm = this.togglePPForm.bind(this);
   }
 
   componentDidMount() {
@@ -119,7 +118,6 @@ class MatNDO extends React.Component {
     getDatafromAPIMY("/vendor_data_non_page?sort=[('Name',-1)]").then((res) => {
       if (res.data !== undefined) {
         const items = res.data._items;
-        // const vendor_data = items.map((a) => a.Name);
         this.setState({ vendor_list: items });
       }
     });
@@ -139,7 +137,7 @@ class MatNDO extends React.Component {
       if (res.data !== undefined) {
         const items = res.data._items;
         const totalData = res.data._meta.total;
-        this.setState({ material_list: items, totalData: totalData }, () =>
+        this.setState({ material_list: items, totalData: totalData, }, () =>
           console.log(this.state.material_list)
         );
       }
@@ -282,6 +280,7 @@ class MatNDO extends React.Component {
         "Remarks_or_Acceptance",
         "SoW_Description_or_Site_Type",
         "Vendor_ID",
+        "Vendor_Name",
         "Note",
       ],
       [
@@ -297,6 +296,7 @@ class MatNDO extends React.Component {
         this.state.PPForm[9],
         this.state.PPForm[10],
         this.state.PPForm[11],
+        this.findVendorName(this.state.PPForm[11]),
         this.state.PPForm[12],
       ]
     ]
@@ -342,7 +342,7 @@ class MatNDO extends React.Component {
     this.setState({ PPForm: dataForm }, () => console.log(this.state.PPForm));
   };
 
-  togglePPForm() {
+  togglePPForm = () => {
     this.setState((prevState) => ({
       modalPPForm: !prevState.modalPPForm,
     }));
@@ -400,18 +400,14 @@ class MatNDO extends React.Component {
     saveAs(new Blob([allocexport]), 'All ' + modul_name + '.xlsx');
   }
 
-  findVendorName(vendor_id){
-    getDatafromAPIMY(
-      '/vendor_data?where={"Vendor_Code":"'+vendor_id+'"}'
-    ).then((res) => {
-      if (res.data._items.length !== 0) {
-        const vendorName = res.data._items.map(e=>e.Name).join(' ');
-        return vendorName
-        // console.log(vendorName)
-      }else{
-        return null
-      }
-    })
+  findVendorName = (vendor_id) => {
+    let vendordata = this.state.vendor_list.find(element => element.Vendor_Code === vendor_id);
+    if(vendordata !== undefined){
+      return vendordata.Name
+    }else{
+      return null
+    }
+    
   }
 
   toggleDelete=(e) => {
@@ -474,7 +470,7 @@ class MatNDO extends React.Component {
       dataForm[8] = aEdit.Region;
       dataForm[9] = aEdit.Remarks_or_Acceptance;
       dataForm[10] = aEdit.SoW_Description_or_Site_Type;
-      dataForm[11] = aEdit.Vendor;
+      dataForm[11] = aEdit.Vendor_ID;
       dataForm[12] = aEdit.Note;
       this.setState({ PPForm: dataForm, selected_id: value });
     } else {
@@ -485,12 +481,60 @@ class MatNDO extends React.Component {
     }));
   }
 
-  UpdateForm = async () => {
-
+  saveUpdate = async () => {
+    this.toggleEdit();
+    this.toggleLoading();
+    let dataForm =      
+      {
+        _id: this.state.selected_id,
+        BB: this.state.PPForm[2],
+        BB_Sub: this.state.PPForm[3],
+        MM_Description: this.state.PPForm[4],
+        UoM: this.state.PPForm[5],
+        Unit_Price: this.state.PPForm[6],
+        Currency: this.state.PPForm[7],
+        Region: this.state.PPForm[8],
+        Remarks_or_Acceptance: this.state.PPForm[9],
+        SoW_Description_or_Site_Type: this.state.PPForm[10],
+        Vendor_ID: this.state.PPForm[11],
+        Vendor_Name: this.findVendorName(this.state.PPForm[11]),
+        Note: this.state.PPForm[12],
+      }
+    const res = await patchDatatoAPINODE(
+      "/mmCode/updateMmCode",
+      {
+        data: [dataForm],
+      },
+      this.state.tokenUser
+    );
+    if (res.data !== undefined) {
+      this.setState({ action_status: "success" });
+      this.toggleLoading();
+    } else {
+      if (
+        res.response !== undefined &&
+        res.response.data !== undefined &&
+        res.response.data.error !== undefined
+      ) {
+        if (res.response.data.error.message !== undefined) {
+          this.setState({
+            action_status: "failed",
+            action_message: res.response.data.error.message,
+          });
+        } else {
+          this.setState({
+            action_status: "failed",
+            action_message: res.response.data.error,
+          });
+        }
+      } else {
+        this.setState({ action_status: "failed" });
+      }
+      this.toggleLoading();
+    }
   }
 
   render() {
-    const NROForm = this.state.NROForm;
     return (
       <div className="animated fadeIn">
         <DefaultNotif
@@ -656,25 +700,25 @@ class MatNDO extends React.Component {
                                     {e.Unit_Price}
                                   </td>
                                   <td style={{ textAlign: "center" }}>
-                                    {e.Currency}
+                                    {e.BB}
                                   </td>
                                   <td style={{ textAlign: "center" }}>
-                                    {e.Info_Rec}
+                                    {e.BB_Sub}
                                   </td>
                                   <td style={{ textAlign: "center" }}>
-                                    {e.Valid_To}
+                                    {e.Region}
                                   </td>
                                   <td style={{ textAlign: "center" }}>
-                                    {e.Created_On}
+                                    {e.Remarks_or_Acceptance}
                                   </td>
                                   <td style={{ textAlign: "center" }}>
-                                    {e.Created_By}
+                                    {e.SoW_Description_or_Site_Type}
                                   </td>
                                   <td style={{ textAlign: "center" }}>
                                     {e.Vendor_ID}
                                   </td>
                                   <td style={{ textAlign: "center" }}>
-                                    {/* {this.findVendorName(e.Vendor_ID)} */}
+                                    {this.findVendorName(e.Vendor_ID)}
                                   </td>
                                   <td style={{ textAlign: "center" }}>
                                     {e.Note}
@@ -687,7 +731,7 @@ class MatNDO extends React.Component {
                                       onClick={this.toggleEdit}
                                       title="Edit"
                                     >
-                                      <i className="fas fa-edit"></i>
+                                      <i className="fa fa-edit" aria-hidden="true"></i>
                                     </Button>
                                   </td>
                                   <td>
@@ -859,7 +903,7 @@ class MatNDO extends React.Component {
                       Select Vendor
                     </option>
                     {this.state.vendor_list.map((asp) => (
-                      <option value={asp.Vendor_Code}>{asp.Name}</option>
+                      <option value={asp.Vendor_Code}>{asp.Vendor_Code}-{asp.Name}</option>
                     ))}
                   </Input>
                 </FormGroup>
@@ -1027,7 +1071,7 @@ class MatNDO extends React.Component {
             </Row>
           </ModalBody>
           <ModalFooter>
-            <Button color="success" onClick={this.UpdateForm}>
+            <Button color="success" onClick={this.saveUpdate}>
               Update
             </Button>
           </ModalFooter>
