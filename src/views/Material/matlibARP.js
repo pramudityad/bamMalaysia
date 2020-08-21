@@ -93,7 +93,7 @@ class MatARP extends React.Component {
       if (res.data !== undefined) {
         const items = res.data.data;
         const totalData = res.data.totalResults;
-        this.setState({ material_list: items, totalData: totalData });
+        this.setState({ material_list: items, totalData: totalData }, ()=>console.log(items.map(e=>e._id)));
       }
     });
   }

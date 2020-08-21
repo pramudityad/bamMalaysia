@@ -319,7 +319,7 @@ class MatNRO extends React.Component {
       if (res.data !== undefined) {
         const items = res.data.data;
         const totalData = res.data.totalResults;
-        this.setState({ material_list: items, totalData: totalData });
+        this.setState({ material_list: items, totalData: totalData }, ()=>console.log(items.map(e=>e._id)));
       }
     });
   }
@@ -337,35 +337,21 @@ class MatNRO extends React.Component {
       "Unit_Price",
       "BB",
       "BB_Sub",
+      "SoW_Description_or_Site_Type",
       "Region",
       "FTV_or_SSO_SLA_or_SSO_Lite_SLA_or_CBO",
       "Remarks_or_Acceptance",
-      "SoW_Description_or_Site_Type",
+      
       "ZERV_(18)",
       "ZEXT_(40)",
       "Note",
     ];
-    header = header.concat(vendorName);
+    // header = header.concat(vendorName);
 
     ws.addRow(header);
 
     ws.addRow([
       modul_name,
-      "MM_Code",
-      "MM_Description",
-      "UoM",
-      "Unit_Price",
-      "BB",
-      "BB_Sub",
-      "Region",
-      "FTV_or_SSO_SLA_or_SSO_Lite_SLA_or_CBO",
-      "Remarks_or_Acceptance",
-      "SoW_Description_or_Site_Type",
-      "ZERV_(18)",
-      "ZEXT_(40)",
-      "Note",
-      "",
-      1,
     ]);
 
     const PPFormat = await wb.xlsx.writeBuffer();

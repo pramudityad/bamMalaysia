@@ -137,8 +137,7 @@ class MatNDO extends React.Component {
       if (res.data !== undefined) {
         const items = res.data._items;
         const totalData = res.data._meta.total;
-        this.setState({ material_list: items, totalData: totalData, }, () =>
-          console.log(this.state.material_list)
+        this.setState({ material_list: items, totalData: totalData, }, ()=>console.log(items.map(e=>e._id))
         );
       }
     });
@@ -152,12 +151,12 @@ class MatNDO extends React.Component {
       "Material_Type",
       "BB",
       "BB_Sub",
+      "SoW_Description_or_Site_Type",
       "MM_Description",
       "UoM",
       "Unit_Price",      
       "Region",
-      "Remarks_or_Acceptance",
-      "SoW_Description_or_Site_Type",
+      "Remarks_or_Acceptance",      
       "Vendor_ID",
       "Note",
     ];
@@ -166,16 +165,6 @@ class MatNDO extends React.Component {
 
     ws.addRow([
       modul_name,
-      "BB",
-      "BB_Sub",
-      "MM_Description",
-      "pcs",
-      1000,      
-      "Region",
-      "Remarks_or_Acceptance",
-      "SoW_Description_or_Site_Type",
-      "Vendor_ID",
-      "Note",
     ]);
 
     const PPFormat = await wb.xlsx.writeBuffer();
