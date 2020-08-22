@@ -26,7 +26,8 @@ import {
   getDatafromAPIMY,
   postDatatoAPINODE,
   patchDatatoAPINODE,
-  deleteDataFromAPINODE2
+  deleteDataFromAPINODE2,
+  getDatafromAPINODE
 } from "../../helper/asyncFunction";
 
 const DefaultNotif = React.lazy(() =>
@@ -126,19 +127,26 @@ class MatHW extends React.Component {
   }
 
   getMaterialList() {
-    let whereAnd =
-      '{ "Material_Type":{"$regex" : "' + modul_name + '", "$options" : "i"}}';
-    getDatafromAPIMY(
-      "/mm_code_data?where=" +
-        whereAnd +
-        "&max_results=" +
+    // let whereAnd =
+    //   '{ "Material_Type":{"$regex" : "' + modul_name + '", "$options" : "i"}}';
+    // getDatafromAPIMY(
+    //   "/mm_code_data?where=" +
+    //     whereAnd +
+    //     "&max_results=" +
+    //     this.state.perPage +
+    //     "&page=" +
+    //     this.state.activePage
+    getDatafromAPINODE(
+      '/mmCode/getMm?q={"Material_Type": "'+modul_name+'"}' +
+        "&lmt=" +
         this.state.perPage +
-        "&page=" +
-        this.state.activePage
+        "&pg=" +
+        this.state.activePage,
+      this.state.tokenUser
     ).then((res) => {
       if (res.data !== undefined) {
-        const items = res.data._items;
-        const totalData = res.data._meta.total;
+        const items = res.data.data;
+        const totalData = res.data.totalResults;
         this.setState({ material_list: items, totalData: totalData }, () =>
           console.log(this.state.material_list)
         );

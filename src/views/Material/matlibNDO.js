@@ -28,7 +28,7 @@ import {
   deleteDataFromAPINODE2,
   patchDatatoAPINODE
 } from "../../helper/asyncFunction";
-
+import {numToSSColumn} from '../../helper/basicFunction'
 const DefaultNotif = React.lazy(() =>
   import("../../views/DefaultView/DefaultNotif")
 );
@@ -152,16 +152,23 @@ class MatNDO extends React.Component {
       "BB",
       "BB_Sub",
       "SoW_Description_or_Site_Type",
-      "MM_Description",
+      "Remarks_or_Acceptance",        
       "UoM",
       "Unit_Price",      
       "Region",
-      "Remarks_or_Acceptance",      
+      "MM_Code",
+      "MM_Description",
       "Vendor_ID",
       "Note",
     ];
 
     ws.addRow(header);
+    for (let i = 1; i < header.length + 1; i++) {
+      ws.getCell(numToSSColumn(i) + '1').fill = { type: 'pattern',
+      pattern:'solid',
+      fgColor:{argb:'FFFFFF00'},
+      bgColor:{argb:'A9A9A9'}};
+    }
 
     ws.addRow([
       modul_name,

@@ -1401,10 +1401,10 @@ class MYASGCreation extends Component {
                 <th>BB</th>
                 <th>BB Sub</th>
                 <th>MM Code</th>
-                <th>Material Type</th>
                 <th>SoW</th>
-                <th>UoM</th>
                 <th>Region</th>
+                <th>UoM</th>
+                
                 <th>Unit Price</th>
                 <th>MM Description</th>
               </thead>
@@ -1452,10 +1452,10 @@ class MYASGCreation extends Component {
                     <td>{e.BB}</td>
                     <td>{e.BB_Sub}</td>
                     <td>{e.MM_Code}</td>
-                    <td>{e.Material_Type}</td>
                     <td>{e.SoW_Description}</td>
-                    <td>{e.UoM}</td>
                     <td>{e.Region}</td>
+                    <td>{e.UoM}</td>
+                    
                     <td>{e.Unit_Price}</td>
                     <td>{e.MM_Description}</td>
                   </tr>
