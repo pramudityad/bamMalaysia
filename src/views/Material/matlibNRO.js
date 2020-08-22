@@ -29,6 +29,7 @@ import {
   patchDatatoAPINODE,
   deleteDataFromAPINODE2,
 } from "../../helper/asyncFunction";
+import {numToSSColumn} from '../../helper/basicFunction'
 
 const DefaultNotif = React.lazy(() => import("../DefaultView/DefaultNotif"));
 const Checkbox = ({
@@ -159,14 +160,14 @@ class TabelNRO extends React.Component {
       <Table striped hover bordered responsive size="sm">
         <thead>
           <tr>
-            <th rowSpan="2">
-              <b>MM Code</b>
+          <th rowSpan="2">
+              <b>BB</b>
+            </th>
+          <th rowSpan="2">
+              <b>BB_Sub</b>
             </th>
             <th rowSpan="2">
-              <b>BB Sub</b>
-            </th>
-            <th rowSpan="2">
-              <b>SoW Description</b>
+              <b>SoW_Description</b>
             </th>
             <th rowSpan="2">
               <b>UoM</b>
@@ -176,6 +177,9 @@ class TabelNRO extends React.Component {
             </th>
             <th rowSpan="2">
               <b>Unit_Price</b>
+            </th>
+            <th rowSpan="2">
+              <b>MM Code</b>
             </th>
             <th rowSpan="2">
               <b>MM_Description</b>
@@ -209,13 +213,14 @@ class TabelNRO extends React.Component {
         <tbody>
           {this.props.DataMaterial.map((e) => (
             <tr>
-              <td style={{ textAlign: "center" }}>{e.MM_Code}</td>
+              <td style={{ textAlign: "center" }}>{e.BB}</td>
               <td style={{ textAlign: "center" }}>{e.BB_Sub}</td>
               <td style={{ textAlign: "center" }}>{e.SoW_Description}</td>
               <td style={{ textAlign: "center" }}>{e.UoM}</td>
               <td style={{ textAlign: "center" }}>{e.Region}</td>
-              <td style={{ textAlign: "center" }}>{e.SoW_Description}</td>
-              <td style={{ textAlign: "center" }}>{e.UoM}</td>
+              <td style={{ textAlign: "center" }}>{e.Unit_Price}</td>
+              <td style={{ textAlign: "center" }}>{e.MM_Code}</td>
+              <td style={{ textAlign: "center" }}>{e.MM_Description}</td>
               {this.props.Vendor_header.map((vendor, i) =>
                 this.getVendorRow(e.Vendor_List, vendor, e._id)
               )}
@@ -331,17 +336,16 @@ class MatNRO extends React.Component {
     const vendorName = this.state.vendor_list.map((a) => a.Name);
     let header = [
       "Material_Type",
-      "MM_Code",
-      "MM_Description",
-      "UoM",
-      "Unit_Price",
       "BB",
       "BB_Sub",
       "SoW_Description_or_Site_Type",
+      "UoM",
       "Region",
+      "Unit_Price",
+      "MM_Code",
+      "MM_Description",
       "FTV_or_SSO_SLA_or_SSO_Lite_SLA_or_CBO",
-      "Remarks_or_Acceptance",
-      
+      "Remarks_or_Acceptance",      
       "ZERV_(18)",
       "ZEXT_(40)",
       "Note",
@@ -349,6 +353,12 @@ class MatNRO extends React.Component {
     // header = header.concat(vendorName);
 
     ws.addRow(header);
+    for (let i = 1; i < header.length + 1; i++) {
+      ws.getCell(numToSSColumn(i) + '1').fill = { type: 'pattern',
+      pattern:'solid',
+      fgColor:{argb:'FFFFFF00'},
+      bgColor:{argb:'A9A9A9'}};
+    }
 
     ws.addRow([
       modul_name,

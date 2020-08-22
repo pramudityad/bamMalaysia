@@ -28,6 +28,7 @@ import {
   getDatafromAPINODE
 } from "../../helper/asyncFunction";
 import ModalDelete from "../Component/ModalDelete";
+import {numToSSColumn} from '../../helper/basicFunction'
 
 const DefaultNotif = React.lazy(() =>
   import("../../views/DefaultView/DefaultNotif")
@@ -117,6 +118,12 @@ class MatARP extends React.Component {
     ];
 
     ws.addRow(header);
+    for (let i = 1; i < header.length + 1; i++) {
+      ws.getCell(numToSSColumn(i) + '1').fill = { type: 'pattern',
+      pattern:'solid',
+      fgColor:{argb:'FFFFFF00'},
+      bgColor:{argb:'A9A9A9'}};
+    }
 
     ws.addRow([
       modul_name,

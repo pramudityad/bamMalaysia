@@ -175,6 +175,7 @@ class MYASGCreation extends Component {
     this.handleDeleteLMRChild = this.handleDeleteLMRChild.bind(this);
     this.deleteLMR = this.deleteLMR.bind(this);
     this.handleMaterialFilter = this.handleMaterialFilter.bind(this);
+    this.decideFilter = this.decideFilter.bind(this);
   }
 
   toggleLoading() {
@@ -185,7 +186,14 @@ class MYASGCreation extends Component {
 
   toggleMaterial(number_child_form) {
     if (number_child_form !== undefined && isNaN(number_child_form) === false) {
-      this.getMaterialList(number_child_form);
+      // this.getMaterialList(number_child_form);
+
+      if(this.state.creation_lmr_child_form[number_child_form] !== undefined && this.state.creation_lmr_child_form[number_child_form]
+        .Per_Site_Material_Type === "NRO"){
+          this.getMaterialListNRO(number_child_form);
+        }else{
+          this.getMaterialList(number_child_form);
+        }
       this.setState({ current_material_select: number_child_form });
     } else {
       this.setState({ current_material_select: null });
@@ -279,8 +287,10 @@ class MYASGCreation extends Component {
   }
 
   handlePageChange(pageNumber) {
+    let dataLMR = this.state.creation_lmr_child_form;
+    let type_material = dataLMR[parseInt(this.state.current_material_select)]["Per_Site_Material_Type"];
     this.setState({ activePage: pageNumber }, () => {
-      this.getMaterialList();
+      this.decideFilter(type_material)
     });
   }
 
@@ -298,7 +308,9 @@ class MYASGCreation extends Component {
   }
 
   onChangeDebounced(e) {
-    this.getMaterialList(this.state.creation_lmr_child_form);
+    let dataLMR = this.state.creation_lmr_child_form;
+    let type_material = dataLMR[parseInt(this.state.current_material_select)]["Per_Site_Material_Type"];
+    this.decideFilter(type_material)
   }
 
   getProjectList() {
@@ -323,21 +335,10 @@ class MYASGCreation extends Component {
   getMaterialList(number_child_form) {
     let filter_array = [];
     // vendor
-    if (
-      this.state.creation_lmr_child_form[number_child_form] !== undefined && this.state.creation_lmr_child_form[number_child_form]
-        .Per_Site_Material_Type === "NRO"
-    ) {
-      this.state.lmr_form.vendor_code !== "" &&
-        filter_array.push(
-          '"Vendor_List.Vendor_Code":"' + this.state.lmr_form.vendor_code + '"'
-        );
-    } else {
-      this.state.lmr_form.vendor_code !== "" && this.state.lmr_form.vendor_code !== "NRO" &&
-        filter_array.push(
-          '"Vendor_ID":"' + this.state.lmr_form.vendor_code + '"'
-        );
-    }
-
+    this.state.lmr_form.vendor_code !== "" && 
+    filter_array.push(
+      '"Vendor_ID":"' + this.state.lmr_form.vendor_code + '"'
+    );
     this.state.matfilter.mat_type !== "" &&
       filter_array.push(
         '"Material_Type":{"$regex" : "' +
@@ -374,10 +375,10 @@ class MYASGCreation extends Component {
           this.state.filter_list[4] +
           '", "$options" : "i"}'
       );
-    this.state.filter_list[5] !== "" &&
+    this.state.filter_list[6]!== "" &&
       filter_array.push(
         '"UoM":{"$regex" : "' +
-          this.state.filter_list[5] +
+          this.state.filter_list[6]+
           '", "$options" : "i"}'
       );
     this.state.matfilter.region === "All" &&
@@ -389,44 +390,101 @@ class MYASGCreation extends Component {
           this.state.matfilter.region +
           '", "$options" : "i"}'
       );
-    this.state.filter_list[6] !== "" &&
+    this.state.filter_list[5]!== "" &&
       filter_array.push(
         '"Region":{"$regex" : "' +
-          this.state.filter_list[6] +
+          this.state.filter_list[5]+
           '", "$options" : "i"}'
       );
-    // this.state.filter_list[7] !== "" &&
-    //   filter_array.push(
-    //     '"Unit_Price":{"$regex" : "' +
-    //       this.state.filter_list[7] +
-    //       '", "$options" : "i"}'
-    //   );
-    // this.state.filter_list[8] !== "" &&
-    //   filter_array.push(
-    //     '"MM_Description":{"$regex" : "' +
-    //       this.state.filter_list[8] +
-    //       '", "$options" : "i"}'
-    //   );
     let whereAnd = "{" + filter_array.join(",") + "}";
-    // this.getDatafromAPIMY(
-    //   "/mm_code_data?where=" +
-    //     whereAnd +
-    //     "&max_results=" +
-    //     this.state.perPage +
-    //     "&page=" +
-    //     this.state.activePage
     getDatafromAPINODE(
-      "/mmCode/getMm?q=" + whereAnd,
-      // +
-      // "&max_results=" +
-      // this.state.perPage +
-      // "&page=" +
-      // this.state.activePage
+      "/mmCode/getMm?q=" + whereAnd + "&lmt=" +
+      this.state.perPage +
+      "&pg=" +
+      this.state.activePage,
       this.state.tokenUser
     ).then((res) => {
       if (res.data !== undefined) {
-        // const items = res.data._items;
-        // const totalData = res.data._meta.total;
+        const items = res.data.data;
+        const totalData = res.data.totalResults;
+        this.setState({ material_list: items, totalData: totalData });
+      }
+    });
+  }
+
+  getMaterialListNRO(number_child_form) {
+    let filter_array = [];
+    // vendor
+    this.state.lmr_form.vendor_code !== "" &&
+    filter_array.push(
+      '"Vendor_List.Vendor_Code":"' + this.state.lmr_form.vendor_code + '"'
+    );
+    this.state.matfilter.mat_type !== "" &&
+      filter_array.push(
+        '"Material_Type":{"$regex" : "' +
+          this.state.matfilter.mat_type +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list[0] !== "" &&
+      filter_array.push(
+        '"BB":{"$regex" : "' +
+          this.state.filter_list[0] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list[1] !== "" &&
+      filter_array.push(
+        '"BB_Sub":{"$regex" : "' +
+          this.state.filter_list[1] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list[2] !== "" &&
+      filter_array.push(
+        '"MM_Code":{"$regex" : "' +
+          this.state.filter_list[2] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list[3] !== "" &&
+      filter_array.push(
+        '"Material_Type":{"$regex" : "' +
+          this.state.filter_list[3] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list[4] !== "" &&
+      filter_array.push(
+        '"SoW_Description":{"$regex" : "' +
+          this.state.filter_list[4] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list[6]!== "" &&
+      filter_array.push(
+        '"UoM":{"$regex" : "' +
+          this.state.filter_list[6]+
+          '", "$options" : "i"}'
+      );
+    this.state.matfilter.region === "All" &&
+      filter_array.push('"Region": {"$exists" : 1}');
+    this.state.matfilter.region !== "" &&
+      this.state.matfilter.region !== "All" &&
+      filter_array.push(
+        '"Region":{"$regex" : "' +
+          this.state.matfilter.region +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list[5] !== "" &&
+      filter_array.push(
+        '"Region":{"$regex" : "' +
+          this.state.filter_list[5] +
+          '", "$options" : "i"}'
+      );
+    let whereAnd = "{" + filter_array.join(",") + "}";
+    getDatafromAPINODE(
+      "/mmCode/getMm?q=" + whereAnd + "&lmt=" +
+      this.state.perPage +
+      "&pg=" +
+      this.state.activePage,
+      this.state.tokenUser
+    ).then((res) => {
+      if (res.data !== undefined) {
         const items = res.data.data;
         const totalData = res.data.totalResults;
         this.setState({ material_list: items, totalData: totalData });
@@ -724,6 +782,9 @@ class MYASGCreation extends Component {
   handleMaterialFilter(e) {
     let value = e.target.value;
     let name = e.target.name;
+    let dataLMR = this.state.creation_lmr_child_form;
+    let type_material = dataLMR[parseInt(this.state.current_material_select)]["Per_Site_Material_Type"];
+    // console.log()
     this.setState(
       (prevState) => ({
         matfilter: {
@@ -733,7 +794,7 @@ class MYASGCreation extends Component {
       }),
       () => {
         this.hideRegion();
-        this.getMaterialList();
+        this.decideFilter(type_material);
       }
     );
   }
@@ -747,6 +808,14 @@ class MYASGCreation extends Component {
     } else {
       this.setState({ hide_region: false });
     }
+  }
+
+  decideFilter(type_material){
+    if(type_material === "NRO"){
+        this.getMaterialListNRO();
+      }else{
+        this.getMaterialList();
+      }
   }
 
   render() {
@@ -1401,41 +1470,16 @@ class MYASGCreation extends Component {
                 <th>BB</th>
                 <th>BB Sub</th>
                 <th>MM Code</th>
+                <th>MM Description</th>
                 <th>SoW</th>
                 <th>Region</th>
-                <th>UoM</th>
-                
-                <th>Unit Price</th>
-                <th>MM Description</th>
+                <th>UoM</th>                
+                <th>Unit Price</th>                
               </thead>
               <tbody>
                 <tr>
-                  <td></td>
-                  {/* <td> */}
-                  {/* <div className="controls" style={{ width: "150px" }}>
-                      <InputGroup className="input-prepend">
-                        <InputGroupAddon addonType="prepend">
-                          <InputGroupText>
-                            <i className="fa fa-search"></i>
-                          </InputGroupText>
-                        </InputGroupAddon>
-                        <Input
-                          type="text"
-                          placeholder="Search"
-                          onChange={this.handleFilterList}
-                          value={this.state.filter_list}
-                          size="sm"
-                        />
-                      </InputGroup>
-                    </div> */}
+                  <td></td>    
                   {this.loopSearchBar()}
-                  {/* </td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td> */}
                 </tr>
                 {this.state.material_list.map((e) => (
                   <tr>
@@ -1452,12 +1496,11 @@ class MYASGCreation extends Component {
                     <td>{e.BB}</td>
                     <td>{e.BB_Sub}</td>
                     <td>{e.MM_Code}</td>
+                    <td>{e.MM_Description}</td>
                     <td>{e.SoW_Description}</td>
                     <td>{e.Region}</td>
-                    <td>{e.UoM}</td>
-                    
-                    <td>{e.Unit_Price}</td>
-                    <td>{e.MM_Description}</td>
+                    <td>{e.UoM}</td>                    
+                    <td>{e.Unit_Price}</td>                    
                   </tr>
                 ))}
               </tbody>

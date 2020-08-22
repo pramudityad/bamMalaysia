@@ -658,15 +658,15 @@ class MatNDO extends React.Component {
                         // className="fixed-matlib"
                         >
                           <tr align="center">
-                            <th>MM_Code</th>
-                            <th>MM_Description</th>
-                            <th>UoM</th>
-                            <th>Unit_Price</th>
                             <th>BB</th>
                             <th>BB_Sub</th>
-                            <th>Region</th>
-                            <th>Remarks_or_Acceptance</th>
                             <th>SoW_Description_or_Site_Type</th>
+                            <th>Remarks_or_Acceptance</th>
+                            <th>UoM</th>
+                            <th>Unit_Price</th>                            
+                            <th>Region</th>
+                            <th>MM_Code</th>
+                            <th>MM_Description</th>     
                             <th>Vendor_ID</th>
                             <th>Vendor_Name</th>
                             <th>Note</th>
@@ -683,11 +683,17 @@ class MatNDO extends React.Component {
                                   className="fixbody"
                                   key={e._id}
                                 >
-                                  <td style={{ textAlign: "center" }}>
-                                    {e.MM_Code}
+                                    <td style={{ textAlign: "center" }}>
+                                    {e.BB}
                                   </td>
                                   <td style={{ textAlign: "center" }}>
-                                    {e.MM_Description}
+                                    {e.BB_Sub}
+                                  </td>
+                                  <td style={{ textAlign: "center" }}>
+                                    {e.SoW_Description_or_Site_Type}
+                                  </td>
+                                  <td style={{ textAlign: "center" }}>
+                                    {e.Remarks_or_Acceptance}
                                   </td>
                                   <td style={{ textAlign: "center" }}>
                                     {e.UoM}
@@ -696,20 +702,14 @@ class MatNDO extends React.Component {
                                     {e.Unit_Price}
                                   </td>
                                   <td style={{ textAlign: "center" }}>
-                                    {e.BB}
-                                  </td>
-                                  <td style={{ textAlign: "center" }}>
-                                    {e.BB_Sub}
-                                  </td>
-                                  <td style={{ textAlign: "center" }}>
                                     {e.Region}
                                   </td>
                                   <td style={{ textAlign: "center" }}>
-                                    {e.Remarks_or_Acceptance}
+                                    {e.MM_Code}
                                   </td>
                                   <td style={{ textAlign: "center" }}>
-                                    {e.SoW_Description_or_Site_Type}
-                                  </td>
+                                    {e.MM_Description}
+                                  </td>                              
                                   <td style={{ textAlign: "center" }}>
                                     {e.Vendor_ID}
                                   </td>
