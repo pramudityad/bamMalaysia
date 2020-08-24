@@ -1436,7 +1436,7 @@ class MYASGCreation extends Component {
           toggle={this.toggleMaterial}
           className={"modal-lg"}
         >
-          <ModalBody>
+          <ModalBody style={{'max-height': 'calc(100vh - 210px)', 'overflow-y': 'auto'}}>            
             <div style={{ marginLeft: "10px" }}>
               <Row md={1}>            
                 &nbsp;&nbsp;&nbsp;
@@ -1454,6 +1454,7 @@ class MYASGCreation extends Component {
                       <option value="" disabled selected hidden></option>
                       <option value="All">All</option>
                       <option value="KV">KV</option>
+                      <option value="OKV">OKV</option>
                       <option value="ER">ER</option>
                       <option value="EM">EM</option>
                     </Input>
@@ -1463,7 +1464,7 @@ class MYASGCreation extends Component {
                 )}
               </Row>
             </div>
-
+            <div class="table-container">
             <Table responsive striped bordered size="sm">
               <thead>
                 <th></th>
@@ -1505,6 +1506,7 @@ class MYASGCreation extends Component {
                 ))}
               </tbody>
             </Table>
+            </div>
             <Pagination
               activePage={this.state.activePage}
               itemsCountPerPage={this.state.perPage}
