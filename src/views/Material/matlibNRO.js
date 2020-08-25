@@ -215,7 +215,7 @@ class TabelNRO extends React.Component {
             <tr>
               <td style={{ textAlign: "center" }}>{e.BB}</td>
               <td style={{ textAlign: "center" }}>{e.BB_Sub}</td>
-              <td style={{ textAlign: "center" }}>{e.SoW_Description}</td>
+              <td style={{ textAlign: "center" }}>{e.SoW_Description_or_Site_Type}</td>
               <td style={{ textAlign: "center" }}>{e.UoM}</td>
               <td style={{ textAlign: "center" }}>{e.Region}</td>
               <td style={{ textAlign: "center" }}>{e.Unit_Price}</td>

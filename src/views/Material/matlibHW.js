@@ -19,7 +19,7 @@ import Excel from "exceljs";
 import * as XLSX from "xlsx";
 import ModalCreateNew from "../Component/ModalCreateNew";
 import ModalDelete from "../Component/ModalDelete";
-
+import {convertDateFormat} from "../../helper/basicFunction"
 import Loading from "../Component/Loading";
 import { ExcelRenderer } from "react-excel-renderer";
 import {
@@ -46,7 +46,7 @@ const MaterialDB = [
     UoM: "UoM",
     Region: "Region",
     Unit_Price: 100,
-    MM_Description: "MM Description",
+    MM_Code: "MM Description",
     Acceptance: "Acceptance",
     Vendor_List: [
       {
@@ -67,7 +67,7 @@ const MaterialDB = [
     UoM: "UoM1",
     Region: "Region1",
     Unit_Price: 200,
-    MM_Description: "MM Description1",
+    MM_Code: "MM Description1",
     Acceptance: "Acceptance1",
     Vendor_List: [
       {
@@ -161,13 +161,13 @@ class MatHW extends React.Component {
 
     let header = [
       "Material_Type",
-      "MM_Description",
+      "MM_Code",
       "Vendor_ID",
       "Unit_Price",
       "UoM",      
       "Currency",
       "Info_Rec",
-      "Created_By",
+      "created_by",
       "Created_On",
       "Valid_To",
 
@@ -286,7 +286,6 @@ class MatHW extends React.Component {
       [
         "Material_Type",
         "MM_Code",
-        "MM_Description",
         "UoM",
         "Unit_Price",
         "Currency",
@@ -295,7 +294,7 @@ class MatHW extends React.Component {
         "Vendor_Name",
         "Valid_To",
         "Created_On",
-        "Created_By",
+        "created_by",
         "Status_Price_in_SAP",
         "Note",
       ],
@@ -378,7 +377,7 @@ class MatHW extends React.Component {
     let headerRow = [
       "Material_Type",
       "MM_Code",
-      "MM_Description",
+      "MM_Code",
       "UoM",
       "Unit_Price",
       "BB",
@@ -397,7 +396,7 @@ class MatHW extends React.Component {
       let e = download_all[i];
       ws.addRow([
         e.MM_Code,
-        e.MM_Description,
+        e.MM_Code,
         e.UoM,
         e.Unit_Price,
         e.BB,
@@ -477,7 +476,7 @@ class MatHW extends React.Component {
       const aEdit = this.state.material_list.find((e) => e._id === value);
       let dataForm = this.state.PPForm;
 
-      dataForm[2] = aEdit.MM_Description;
+      dataForm[2] = aEdit.MM_Code;
       dataForm[3] = aEdit.UoM;
       dataForm[4] = aEdit.Unit_Price;
       dataForm[5] = aEdit.Currency;
@@ -502,7 +501,7 @@ class MatHW extends React.Component {
     let dataForm =      
       {
         _id: this.state.selected_id,
-        MM_Description: this.state.PPForm[2],
+        MM_Code: this.state.PPForm[2],
         UoM: this.state.PPForm[3],
         Unit_Price: this.state.PPForm[4],
         Currency: this.state.PPForm[5],
@@ -679,7 +678,6 @@ class MatHW extends React.Component {
                         >
                           <tr align="center">
                             <th>MM_Code</th>
-                            <th>MM_Description</th>
                             <th>UoM</th>
                             <th>Unit_Price</th>
                             <th>Currency</th>
@@ -706,10 +704,7 @@ class MatHW extends React.Component {
                                 >
                                   <td style={{ textAlign: "center" }}>
                                     {e.MM_Code}
-                                  </td>
-                                  <td style={{ textAlign: "center" }}>
-                                    {e.MM_Description}
-                                  </td>
+                                  </td>                                 
                                   <td style={{ textAlign: "center" }}>
                                     {e.UoM}
                                   </td>
@@ -729,13 +724,13 @@ class MatHW extends React.Component {
                                     {this.findVendorName(e.Vendor_ID)}
                                   </td>
                                   <td style={{ textAlign: "center" }}>
-                                    {e.Valid_To}
+                                    {convertDateFormat(e.Valid_To)}
                                   </td>
                                   <td style={{ textAlign: "center" }}>
-                                    {e.Created_On}
+                                    {convertDateFormat(e.Created_On)}
                                   </td>
                                   <td style={{ textAlign: "center" }}>
-                                    {e.Created_By}
+                                    {e.created_by}
                                   </td>
                                   <td style={{ textAlign: "center" }}>
                                     {e.Status_Price_in_SAP}
@@ -831,7 +826,7 @@ class MatHW extends React.Component {
                 <FormGroup row>
                   <Col xs="12">
                     <FormGroup>
-                      <Label>MM_Description</Label>
+                      <Label>MM_Code</Label>
                       <Input
                         type="text"
                         name="2"
@@ -1049,7 +1044,7 @@ class MatHW extends React.Component {
                 <FormGroup row>
                   <Col xs="12">
                     <FormGroup>
-                      <Label>MM_Description</Label>
+                      <Label>MM_Code</Label>
                       <Input
                         type="text"
                         name="2"
