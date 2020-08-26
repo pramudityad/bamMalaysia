@@ -202,7 +202,7 @@ class TabelNRO extends React.Component {
                       id={vendor.Vendor_Code}
                       // name={MatIdcol[i]+" /// "+vendor.Vendor_Code}
                       name={vendor.Vendor_Code}
-                      onChange={this.props.handleCheckVendorPage}
+                      onChange={this.props.handleCheckVendorAll}
                     />
                   }
                 </th>
@@ -272,6 +272,7 @@ class MatNRO extends React.Component {
       rowsXLS: [],
       vendor_list: [],
       material_list: [],
+      material_list_all: [],
       totalData: 0,
       mmcode_data_check: [
         {
@@ -300,6 +301,7 @@ class MatNRO extends React.Component {
   componentDidMount() {
     this.getVendorList();
     this.getMaterialList();
+    this.getMaterialListAll();
   }
 
   getVendorList() {
@@ -325,6 +327,19 @@ class MatNRO extends React.Component {
         const items = res.data.data;
         const totalData = res.data.totalResults;
         this.setState({ material_list: items, totalData: totalData }, ()=>console.log(items.map(e=>e._id)));
+      }
+    });
+  }
+
+  getMaterialListAll() {
+    getDatafromAPINODE(
+      '/mmCode/getMm?q={"Material_Type": "'+modul_name+'"}' +
+        "&noPg=1",
+      this.state.tokenUser
+    ).then((res) => {
+      if (res.data !== undefined) {
+        const items = res.data.data;
+        this.setState({ material_list_all: items });
       }
     });
   }
@@ -452,22 +467,17 @@ class MatNRO extends React.Component {
   saveUpdateNROVendorData = async () => {
     this.toggleLoading();
     const dataVendor = this.state.vendor_list;
-    const dataMaterial = this.state.material_list;
-    // console.log(dataMaterial)
+    const dataMaterial = this.state.material_list_all;
     const dataVendorMatChecked = this.state.vendorChecked;
-    // console.log('dataVendorMatChecked ',dataVendorMatChecked)
     let dataVendorMatUpdate = [];
     for (const [key, value] of dataVendorMatChecked.entries()) {
       const dataKey = key.split(" /// ");
       const data_id_mat = dataKey[0];
-      // console.log('data_id_mat ',data_id_mat)
       const data_id_vendor = dataKey[1];
       const matFind = dataMaterial.find((mat) => mat._id === data_id_mat);
-      // console.log('matFind ',matFind)
       const venFind = dataVendor.find(
         (ven) => ven.Vendor_Code === data_id_vendor
       );
-      // console.log(key, data_id_mat, data_id_vendor);
       let dataExistIdx = dataVendorMatUpdate.findIndex(
         (exi) => exi._id === matFind._id
       );
@@ -569,9 +579,9 @@ class MatNRO extends React.Component {
     );
   };
 
-  handleCheckVendorPage = (event) => {
+  handleCheckVendorAll = (event) => {
     const isChecked = event.target.checked;
-    let getMaterialId = this.state.material_list;
+    let getMaterialId = this.state.material_list_all;
     if (isChecked) {
       getMaterialId = getMaterialId.map((e) => e._id);
       for (let i = 0; i < getMaterialId.length; i++) {
@@ -952,7 +962,7 @@ class MatNRO extends React.Component {
                         Vendor_header={this.state.vendor_list}
                         DataMaterial={this.state.material_list}
                         vendorChecked={this.state.vendorChecked}
-                        handleCheckVendorPage={this.handleCheckVendorPage}
+                        handleCheckVendorAll={this.handleCheckVendorAll}
                         toggleEdit={this.toggleEdit}
                         toggleDelete={this.toggleDelete}
                       />

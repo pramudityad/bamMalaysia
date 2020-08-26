@@ -16,6 +16,8 @@ import {
 import { Form, FormGroup, Label, FormText } from "reactstrap";
 import Pagination from "react-js-pagination";
 import { Modal, ModalBody, ModalHeader, ModalFooter } from "reactstrap";
+import {convertDateFormat} from "../../helper/basicFunction"
+
 import axios from "axios";
 import { Link, Redirect } from "react-router-dom";
 import AsyncSelect from "react-select/async";
@@ -49,70 +51,6 @@ const Checkbox = ({
   />
 );
 
-const projectList = [
-  {
-    Project: "Project DEMO 1",
-    Project_Year: "2020",
-  },
-  {
-    Project: "Project DEMO 3",
-    Project_Year: "2020",
-  },
-];
-
-const vendorList = [
-  {
-    _id: "5edf4b3836c2b6fd90858d26",
-    Name: "Bharti",
-    Vendor_Code: "12",
-    Email: "",
-    created_on: "2020-05-06 07:54:27",
-    updated_on: "2020-05-06 07:54:27",
-    _etag: "9e63333bd40166971ed8a4e1fd47f9996876edc9",
-  },
-  {
-    _id: "5ee084b7bb1141f864a300da",
-    Name: "Vendor Test 1",
-    Vendor_Code: "VendorTest1",
-    Email: "",
-    created_on: "2020-05-08 06:16:29",
-    updated_on: "2020-05-08 06:16:29",
-    _etag: "58f11185cc2708c5c33ade202691aa0937e8d478",
-  },
-];
-
-const MaterialDB = [
-  {
-    MM_Code: "MM Code",
-    BB_Sub: "BB_sub",
-    SoW_Description: "SoW Description",
-    UoM: "UoM",
-    Region: "Region",
-    Unit_Price: 100,
-    MM_Description: "MM Description",
-    Acceptance: "Acceptance",
-  },
-  {
-    MM_Code: "MM Code1",
-    BB_Sub: "BB_sub1",
-    SoW_Description: "SoW Description1",
-    UoM: "UoM1",
-    Region: "Region1",
-    Unit_Price: 200,
-    MM_Description: "MM Description1",
-    Acceptance: "Acceptance1",
-  },
-];
-
-const CDIDDB = [
-  {
-    CD_ID: "MM Code",
-  },
-  {
-    CD_ID: "MM Code1",
-  },
-];
-
 class MYASGCreation extends Component {
   constructor(props) {
     super(props);
@@ -132,6 +70,9 @@ class MYASGCreation extends Component {
       lmr_edit: true,
       modal_loading: false,
       modal_material: false,
+      modal_material_NRO: false,
+      modal_material_HW: false,
+      modal_material_ARP: false,
       list_project: [],
       creation_lmr_child_form: [],
       prevPage: 0,
@@ -184,16 +125,31 @@ class MYASGCreation extends Component {
     }));
   }
 
-  toggleMaterial(number_child_form) {
-    if (number_child_form !== undefined && isNaN(number_child_form) === false) {
-      // this.getMaterialList(number_child_form);
+  decideToggleMaterial = (number_child_form) => {
+    let Mat_type = this.state.creation_lmr_child_form[number_child_form]
+      .Per_Site_Material_Type;
+    console.log(Mat_type);
+    switch (Mat_type) {
+      case "NRO":
+        this.toggleMaterialNRO(number_child_form);
+        break;
+      case "NDO":
+        this.toggleMaterial(number_child_form);
+        break;
+      case "HW":
+        this.toggleMaterialHW(number_child_form);
+        break;
+      case "ARP":
+        this.toggleMaterialARP(number_child_form);
+        break;
+      default:
+        break;
+    }
+  };
 
-      if(this.state.creation_lmr_child_form[number_child_form] !== undefined && this.state.creation_lmr_child_form[number_child_form]
-        .Per_Site_Material_Type === "NRO"){
-          this.getMaterialListNRO(number_child_form);
-        }else{
-          this.getMaterialList(number_child_form);
-        }
+  toggleMaterial = (number_child_form) => {
+    if (number_child_form !== undefined && isNaN(number_child_form) === false) {
+      this.getMaterialList(number_child_form);
       this.setState({ current_material_select: number_child_form });
     } else {
       this.setState({ current_material_select: null });
@@ -201,7 +157,43 @@ class MYASGCreation extends Component {
     this.setState((prevState) => ({
       modal_material: !prevState.modal_material,
     }));
-  }
+  };
+
+  toggleMaterialNRO = (number_child_form) => {
+    if (number_child_form !== undefined && isNaN(number_child_form) === false) {
+      this.getMaterialListNRO(number_child_form);
+      this.setState({ current_material_select: number_child_form });
+    } else {
+      this.setState({ current_material_select: null });
+    }
+    this.setState((prevState) => ({
+      modal_material_NRO: !prevState.modal_material_NRO,
+    }));
+  };
+
+  toggleMaterialHW = (number_child_form) => {
+    if (number_child_form !== undefined && isNaN(number_child_form) === false) {
+      this.getMaterialListHW(number_child_form);
+      this.setState({ current_material_select: number_child_form });
+    } else {
+      this.setState({ current_material_select: null });
+    }
+    this.setState((prevState) => ({
+      modal_material_HW: !prevState.modal_material_HW,
+    }));
+  };
+
+  toggleMaterialARP = (number_child_form) => {
+    if (number_child_form !== undefined && isNaN(number_child_form) === false) {
+      this.getMaterialListARP(number_child_form);
+      this.setState({ current_material_select: number_child_form });
+    } else {
+      this.setState({ current_material_select: null });
+    }
+    this.setState((prevState) => ({
+      modal_material_ARP: !prevState.modal_material_ARP,
+    }));
+  };
 
   async postDatatoAPINODE(url, data) {
     try {
@@ -288,9 +280,12 @@ class MYASGCreation extends Component {
 
   handlePageChange(pageNumber) {
     let dataLMR = this.state.creation_lmr_child_form;
-    let type_material = dataLMR[parseInt(this.state.current_material_select)]["Per_Site_Material_Type"];
+    let type_material =
+      dataLMR[parseInt(this.state.current_material_select)][
+        "Per_Site_Material_Type"
+      ];
     this.setState({ activePage: pageNumber }, () => {
-      this.decideFilter(type_material)
+      this.decideFilter(type_material);
     });
   }
 
@@ -309,8 +304,11 @@ class MYASGCreation extends Component {
 
   onChangeDebounced(e) {
     let dataLMR = this.state.creation_lmr_child_form;
-    let type_material = dataLMR[parseInt(this.state.current_material_select)]["Per_Site_Material_Type"];
-    this.decideFilter(type_material)
+    let type_material =
+      dataLMR[parseInt(this.state.current_material_select)][
+        "Per_Site_Material_Type"
+      ];
+    this.decideFilter(type_material);
   }
 
   getProjectList() {
@@ -335,10 +333,10 @@ class MYASGCreation extends Component {
   getMaterialList(number_child_form) {
     let filter_array = [];
     // vendor
-    this.state.lmr_form.vendor_code !== "" && 
-    filter_array.push(
-      '"Vendor_ID":"' + this.state.lmr_form.vendor_code + '"'
-    );
+    this.state.lmr_form.vendor_code !== "" &&
+      filter_array.push(
+        '"Vendor_ID":"' + this.state.lmr_form.vendor_code + '"'
+      );
     this.state.matfilter.mat_type !== "" &&
       filter_array.push(
         '"Material_Type":{"$regex" : "' +
@@ -357,12 +355,12 @@ class MYASGCreation extends Component {
           this.state.filter_list[1] +
           '", "$options" : "i"}'
       );
-    this.state.filter_list[2] !== "" &&
-      filter_array.push(
-        '"MM_Code":{"$regex" : "' +
-          this.state.filter_list[2] +
-          '", "$options" : "i"}'
-      );
+    // this.state.filter_list[2] !== "" &&
+    //   filter_array.push(
+    //     '"MM_Code":{"$regex" : "' +
+    //       this.state.filter_list[2] +
+    //       '", "$options" : "i"}'
+    //   );
     this.state.filter_list[3] !== "" &&
       filter_array.push(
         '"Material_Type":{"$regex" : "' +
@@ -375,10 +373,10 @@ class MYASGCreation extends Component {
           this.state.filter_list[4] +
           '", "$options" : "i"}'
       );
-    this.state.filter_list[6]!== "" &&
+    this.state.filter_list[6] !== "" &&
       filter_array.push(
         '"UoM":{"$regex" : "' +
-          this.state.filter_list[6]+
+          this.state.filter_list[6] +
           '", "$options" : "i"}'
       );
     this.state.matfilter.region === "All" &&
@@ -390,24 +388,174 @@ class MYASGCreation extends Component {
           this.state.matfilter.region +
           '", "$options" : "i"}'
       );
-    this.state.filter_list[5]!== "" &&
+    this.state.filter_list[2] !== "" &&
       filter_array.push(
         '"Region":{"$regex" : "' +
-          this.state.filter_list[5]+
+          this.state.filter_list[2] +
           '", "$options" : "i"}'
       );
     let whereAnd = "{" + filter_array.join(",") + "}";
     getDatafromAPINODE(
-      "/mmCode/getMm?q=" + whereAnd + "&lmt=" +
-      this.state.perPage +
-      "&pg=" +
-      this.state.activePage,
+      "/mmCode/getMm?q=" +
+        whereAnd +
+        "&lmt=" +
+        this.state.perPage +
+        "&pg=" +
+        this.state.activePage,
       this.state.tokenUser
     ).then((res) => {
       if (res.data !== undefined) {
         const items = res.data.data;
         const totalData = res.data.totalResults;
-        this.setState({ material_list: items, totalData: totalData });
+        this.setState({ material_list: items, totalData: totalData }, () =>
+          console.log(this.state.material_list)
+        );
+      }
+    });
+  }
+
+  getMaterialListHW(number_child_form) {
+    let filter_array = [];
+    // vendor
+    this.state.lmr_form.vendor_code !== "" &&
+      filter_array.push(
+        '"Vendor_ID":"' + this.state.lmr_form.vendor_code + '"'
+      );
+    this.state.matfilter.mat_type !== "" &&
+      filter_array.push(
+        '"Material_Type":{"$regex" : "' +
+          this.state.matfilter.mat_type +
+          '", "$options" : "i"}'
+      );
+
+    this.state.filter_list[0] !== "" &&
+      filter_array.push(
+        '"MM_Code":{"$regex" : "' +
+          this.state.filter_list[0] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list[1] !== "" &&
+      filter_array.push(
+        '"UoM":{"$regex" : "' +
+          this.state.filter_list[1] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list[2] !== "" &&
+      filter_array.push(
+        '"Unit_Price":{"$regex" : "' +
+          this.state.filter_list[2] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list[3] !== "" &&
+      filter_array.push(
+        '"Currency":{"$regex" : "' +
+          this.state.filter_list[3] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list[4] !== "" &&
+      filter_array.push(
+        '"Info_Rec":{"$regex" : "' +
+          this.state.filter_list[4] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list[5] !== "" &&
+      filter_array.push(
+        '"Valid_To":{"$regex" : "' +
+          this.state.filter_list[5] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list[6] !== "" &&
+      filter_array.push(
+        '"Created_On":{"$regex" : "' +
+          this.state.filter_list[6] +
+          '", "$options" : "i"}'
+      );
+    let whereAnd = "{" + filter_array.join(",") + "}";
+    getDatafromAPINODE(
+      "/mmCode/getMm?q=" +
+        whereAnd +
+        "&lmt=" +
+        this.state.perPage +
+        "&pg=" +
+        this.state.activePage,
+      this.state.tokenUser
+    ).then((res) => {
+      if (res.data !== undefined) {
+        const items = res.data.data;
+        const totalData = res.data.totalResults;
+        this.setState({ material_list: items, totalData: totalData }, () =>
+          console.log(this.state.material_list)
+        );
+      }
+    });
+  }
+
+  getMaterialListARP(number_child_form) {
+    let filter_array = [];
+    // vendor
+    this.state.lmr_form.vendor_code !== "" &&
+      filter_array.push(
+        '"Vendor_ID":"' + this.state.lmr_form.vendor_code + '"'
+      );
+    this.state.matfilter.mat_type !== "" &&
+      filter_array.push(
+        '"Material_Type":{"$regex" : "' +
+          this.state.matfilter.mat_type +
+          '", "$options" : "i"}'
+      );
+
+    this.state.filter_list[0] !== "" &&
+      filter_array.push(
+        '"MM_Code":{"$regex" : "' +
+          this.state.filter_list[0] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list[1] !== "" &&
+      filter_array.push(
+        '"MM_Description":{"$regex" : "' +
+          this.state.filter_list[1] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list[2] !== "" &&
+      filter_array.push(
+        '"UoM":{"$regex" : "' +
+          this.state.filter_list[2] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list[3] !== "" &&
+      filter_array.push(
+        '"Unit_Price":{"$regex" : "' +
+          this.state.filter_list[3] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list[4] !== "" &&
+      filter_array.push(
+        '"Currency":{"$regex" : "' +
+          this.state.filter_list[4] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list[5] !== "" &&
+      filter_array.push(
+        '"Remarks_or_Acceptance":{"$regex" : "' +
+          this.state.filter_list[5] +
+          '", "$options" : "i"}'
+      );    
+    let whereAnd = "{" + filter_array.join(",") + "}";
+    getDatafromAPINODE(
+      "/mmCode/getMm?q=" +
+        whereAnd +
+        "&lmt=" +
+        this.state.perPage +
+        "&pg=" +
+        this.state.activePage,
+      this.state.tokenUser
+    ).then((res) => {
+      if (res.data !== undefined) {
+        const items = res.data.data;
+        const totalData = res.data.totalResults;
+        this.setState({ material_list: items, totalData: totalData }, () =>
+          console.log(this.state.material_list)
+        );
       }
     });
   }
@@ -416,9 +564,9 @@ class MYASGCreation extends Component {
     let filter_array = [];
     // vendor
     this.state.lmr_form.vendor_code !== "" &&
-    filter_array.push(
-      '"Vendor_List.Vendor_Code":"' + this.state.lmr_form.vendor_code + '"'
-    );
+      filter_array.push(
+        '"Vendor_List.Vendor_Code":"' + this.state.lmr_form.vendor_code + '"'
+      );
     this.state.matfilter.mat_type !== "" &&
       filter_array.push(
         '"Material_Type":{"$regex" : "' +
@@ -455,10 +603,10 @@ class MYASGCreation extends Component {
           this.state.filter_list[4] +
           '", "$options" : "i"}'
       );
-    this.state.filter_list[6]!== "" &&
+    this.state.filter_list[6] !== "" &&
       filter_array.push(
         '"UoM":{"$regex" : "' +
-          this.state.filter_list[6]+
+          this.state.filter_list[6] +
           '", "$options" : "i"}'
       );
     this.state.matfilter.region === "All" &&
@@ -478,10 +626,12 @@ class MYASGCreation extends Component {
       );
     let whereAnd = "{" + filter_array.join(",") + "}";
     getDatafromAPINODE(
-      "/mmCode/getMm?q=" + whereAnd + "&lmt=" +
-      this.state.perPage +
-      "&pg=" +
-      this.state.activePage,
+      "/mmCode/getMm?q=" +
+        whereAnd +
+        "&lmt=" +
+        this.state.perPage +
+        "&pg=" +
+        this.state.activePage,
       this.state.tokenUser
     ).then((res) => {
       if (res.data !== undefined) {
@@ -501,6 +651,7 @@ class MYASGCreation extends Component {
     lmr_form["vendor_code"] = dataVendor.Vendor_Code;
     lmr_form["vendor_name"] = dataVendor.Name;
     lmr_form["vendor_email"] = dataVendor.Email;
+    lmr_form["payment_term"] = dataVendor.PayT;
     this.setState(
       { lmr_form: lmr_form, vendor_selected: lmr_form["vendor_name"] },
       () => console.log(dataVendor.Vendor_Code)
@@ -676,8 +827,10 @@ class MYASGCreation extends Component {
       value = value.toString();
     }
     if (name === "LMR_Type" && value !== "Per Site") {
+      lmr_form["Plan_Cost_Reduction"] = "Yes"
       this.setState({ lmr_edit: false });
     } else {
+      lmr_form["Plan_Cost_Reduction"] = "No"
       if (name === "project_name") {
         let dataProject = this.state.list_project.find(
           (e) => e.Project === value
@@ -742,7 +895,7 @@ class MYASGCreation extends Component {
       data_material.Unit_Price;
     dataLMR[parseInt(this.state.current_material_select)]["quantity"] = 0;
     this.setState({ creation_lmr_child_form: dataLMR });
-    this.toggleMaterial();
+    // this.toggleMaterial();
   }
 
   loopSearchBar = () => {
@@ -783,7 +936,10 @@ class MYASGCreation extends Component {
     let value = e.target.value;
     let name = e.target.name;
     let dataLMR = this.state.creation_lmr_child_form;
-    let type_material = dataLMR[parseInt(this.state.current_material_select)]["Per_Site_Material_Type"];
+    let type_material =
+      dataLMR[parseInt(this.state.current_material_select)][
+        "Per_Site_Material_Type"
+      ];
     // console.log()
     this.setState(
       (prevState) => ({
@@ -810,12 +966,23 @@ class MYASGCreation extends Component {
     }
   }
 
-  decideFilter(type_material){
-    if(type_material === "NRO"){
+  decideFilter(type_material) {
+    switch (type_material) {
+      case "NRO":
         this.getMaterialListNRO();
-      }else{
+        break;
+      case "NDO":
         this.getMaterialList();
-      }
+        break;
+      case "HW":
+        this.getMaterialListHW();
+        break;
+      case "ARP":
+        this.getMaterialListARP();
+        break;
+      default:
+        break;
+    }
   }
 
   render() {
@@ -922,16 +1089,17 @@ class MYASGCreation extends Component {
                       <FormGroup>
                         <Label>Plan Cost Reduction</Label>
                         <Input
-                          type="select"
+                        readOnly
+                          type="text"
                           name="Plan_Cost_Reduction"
                           id="Plan_Cost_Reduction"
                           value={this.state.lmr_form.Plan_Cost_Reduction}
                           onChange={this.handleChangeFormLMR}
-                        >
-                          <option value={null} selected></option>
+                        />
+                          {/* <option value={null} selected></option>
                           <option value="Yes">Yes</option>
-                          <option value="No">No</option>
-                        </Input>
+                          <option value="No">No</option> */}
+                        {/* </Input> */}
                       </FormGroup>
                     </Col>
                   </Row>
@@ -1282,7 +1450,7 @@ class MYASGCreation extends Component {
                             name={i + " /// material"}
                             id={i + " /// material"}
                             value={lmr.material}
-                            onClick={() => this.toggleMaterial(i)}
+                            onClick={() => this.decideToggleMaterial(i)}
                             onChange={this.handleChangeFormLMRChild}
                           />
                         </FormGroup>
@@ -1436,9 +1604,14 @@ class MYASGCreation extends Component {
           toggle={this.toggleMaterial}
           className={"modal-lg"}
         >
-          <ModalBody style={{'max-height': 'calc(100vh - 210px)', 'overflow-y': 'auto'}}>            
+          <ModalBody
+            style={{
+              "max-height": "calc(100vh - 210px)",
+              "overflow-y": "auto",
+            }}
+          >
             <div style={{ marginLeft: "10px" }}>
-              <Row md={1}>            
+              <Row md={1}>
                 &nbsp;&nbsp;&nbsp;
                 {this.state.hide_region !== true ? (
                   <FormGroup>
@@ -1465,47 +1638,49 @@ class MYASGCreation extends Component {
               </Row>
             </div>
             <div class="table-container">
-            <Table responsive striped bordered size="sm">
-              <thead>
-                <th></th>
-                <th>BB</th>
-                <th>BB Sub</th>
-                <th>MM Code</th>
-                <th>MM Description</th>
-                <th>SoW</th>
-                <th>Region</th>
-                <th>UoM</th>                
-                <th>Unit Price</th>                
-              </thead>
-              <tbody>
-                <tr>
-                  <td></td>    
-                  {this.loopSearchBar()}
-                </tr>
-                {this.state.material_list.map((e) => (
+              <Table responsive striped bordered size="sm">
+                <thead>
+                  <th></th>
+                  <th>BB</th>
+                  <th>BB Sub</th>
+                  <th>Region</th>
+                  <th>MM Code</th>
+                  <th>MM Description</th>
+                  <th>SoW</th>
+                  <th>UoM</th>
+                  <th>Unit Price</th>
+                </thead>
+                <tbody>
                   <tr>
-                    <td>
-                      <Button
-                        color={"primary"}
-                        size="sm"
-                        value={e.MM_Code}
-                        onClick={this.handleChangeMaterial}
-                      >
-                        Select
-                      </Button>
-                    </td>
-                    <td>{e.BB}</td>
-                    <td>{e.BB_Sub}</td>
-                    <td>{e.MM_Code}</td>
-                    <td>{e.MM_Description}</td>
-                    <td>{e.SoW_Description}</td>
-                    <td>{e.Region}</td>
-                    <td>{e.UoM}</td>                    
-                    <td>{e.Unit_Price}</td>                    
+                    <td></td>
+                    {this.loopSearchBar()}
                   </tr>
-                ))}
-              </tbody>
-            </Table>
+                  {this.state.material_list !== null &&
+                    this.state.material_list !== undefined &&
+                    this.state.material_list.map((e) => (
+                      <tr>
+                        <td>
+                          <Button
+                            color={"primary"}
+                            size="sm"
+                            value={e.MM_Code}
+                            onClick={this.handleChangeMaterial}
+                          >
+                            Select
+                          </Button>
+                        </td>
+                        <td>{e.BB}</td>
+                        <td>{e.BB_Sub}</td>
+                        <td>{e.Region}</td>
+                        <td>{e.MM_Code}</td>
+                        <td>{e.MM_Description}</td>
+                        <td>{e.SoW_Description}</td>
+                        <td>{e.UoM}</td>
+                        <td>{e.Unit_Price}</td>
+                      </tr>
+                    ))}
+                </tbody>
+              </Table>
             </div>
             <Pagination
               activePage={this.state.activePage}
@@ -1524,6 +1699,267 @@ class MYASGCreation extends Component {
           </ModalFooter>
         </Modal>
         {/* end Modal Loading */}
+
+        {/* Modal Material NRO */}
+        <Modal
+          isOpen={this.state.modal_material_NRO}
+          toggle={this.toggleMaterialNRO}
+          className={"modal-lg"}
+        >
+          <ModalBody
+            style={{
+              "max-height": "calc(100vh - 210px)",
+              "overflow-y": "auto",
+            }}
+          >
+            <div style={{ marginLeft: "10px" }}>
+              <Row md={1}>
+                &nbsp;&nbsp;&nbsp;
+                {this.state.hide_region !== true ? (
+                  <FormGroup>
+                    <Label>
+                      <b>Region</b>
+                    </Label>
+                    <Input
+                      type="select"
+                      name={"region"}
+                      value={matfilter.region}
+                      onChange={this.handleMaterialFilter}
+                    >
+                      <option value="" disabled selected hidden></option>
+                      <option value="All">All</option>
+                      <option value="KV">KV</option>
+                      <option value="OKV">OKV</option>
+                      <option value="ER">ER</option>
+                      <option value="EM">EM</option>
+                    </Input>
+                  </FormGroup>
+                ) : (
+                  ""
+                )}
+              </Row>
+            </div>
+            <div class="table-container">
+              <Table responsive striped bordered size="sm">
+                <thead>
+                  <th></th>
+                  <th>BB</th>
+                  <th>BB Sub</th>
+                  <th>Region</th>
+                  <th>MM Code</th>
+                  <th>MM Description</th>
+                  <th>SoW</th>
+                  <th>UoM</th>
+                  <th>Unit Price</th>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td></td>
+                    {this.loopSearchBar()}
+                  </tr>
+                  {this.state.material_list !== null &&
+                    this.state.material_list !== undefined &&
+                    this.state.material_list.map((e) => (
+                      <tr>
+                        <td>
+                          <Button
+                            color={"primary"}
+                            size="sm"
+                            value={e.MM_Code}
+                            onClick={this.handleChangeMaterial}
+                          >
+                            Select
+                          </Button>
+                        </td>
+                        <td>{e.BB}</td>
+                        <td>{e.BB_Sub}</td>
+                        <td>{e.Region}</td>
+                        <td>{e.MM_Code}</td>
+                        <td>{e.MM_Description}</td>
+                        <td>{e.SoW_Description}</td>
+                        <td>{e.UoM}</td>
+                        <td>{e.Unit_Price}</td>
+                      </tr>
+                    ))}
+                </tbody>
+              </Table>
+            </div>
+            <Pagination
+              activePage={this.state.activePage}
+              itemsCountPerPage={this.state.perPage}
+              totalItemsCount={this.state.totalData}
+              pageRangeDisplayed={5}
+              onChange={this.handlePageChange}
+              itemClass="page-item"
+              linkClass="page-link"
+            />
+          </ModalBody>
+          <ModalFooter>
+            <Button color="secondary" onClick={this.toggleMaterialNRO}>
+              Close
+            </Button>
+          </ModalFooter>
+        </Modal>
+        {/* end Modal Loading */}
+
+        {/* Modal Material HW */}
+        <Modal
+          isOpen={this.state.modal_material_HW}
+          toggle={this.toggleMaterialHW}
+          className={"modal-lg"}
+        >
+          <ModalBody
+            style={{
+              "max-height": "calc(100vh - 210px)",
+              "overflow-y": "auto",
+            }}
+          >
+            <div style={{ marginLeft: "10px" }}>
+              <Row md={1}>
+                &nbsp;&nbsp;&nbsp;
+              </Row>
+            </div>
+            <div class="table-container">
+              <Table responsive striped bordered size="sm">
+                <thead>
+                  <th></th>
+                  <th>MM_Code</th>
+                  <th>UoM</th>
+                  <th>Unit_Price</th>
+                  <th>Currency</th>
+                  <th>Info_Rec</th>
+                  <th>Valid_To</th>
+                  <th>Created_On</th>
+                  <th>Created_By</th>
+                  <th>Status_Price_in_SAP</th>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td></td>
+                    {this.loopSearchBar()}
+                  </tr>
+                  {this.state.material_list !== null &&
+                    this.state.material_list !== undefined &&
+                    this.state.material_list.map((e) => (
+                      <tr>
+                        <td>
+                          <Button
+                            color={"primary"}
+                            size="sm"
+                            value={e.MM_Code}
+                            onClick={this.handleChangeMaterial}
+                          >
+                            Select
+                          </Button>
+                        </td>
+                        <td>{e.MM_Code}</td>
+                        <td>{e.UoM}</td>
+                        <td>{e.Unit_Price}</td>
+                        <td>{e.Currency}</td>
+                        <td>{e.Info_Rec}</td>
+                        <td>{convertDateFormat(e.Valid_To)}</td>
+                        <td>{convertDateFormat(e.Created_On)}</td>
+                        <td>{e.created_by}</td>
+                        <td>{e.Status_Price_in_SAP}</td>
+                      </tr>
+                    ))}
+                </tbody>
+              </Table>
+            </div>
+            <Pagination
+              activePage={this.state.activePage}
+              itemsCountPerPage={this.state.perPage}
+              totalItemsCount={this.state.totalData}
+              pageRangeDisplayed={5}
+              onChange={this.handlePageChange}
+              itemClass="page-item"
+              linkClass="page-link"
+            />
+          </ModalBody>
+          <ModalFooter>
+            <Button color="secondary" onClick={this.toggleMaterialHW}>
+              Close
+            </Button>
+          </ModalFooter>
+        </Modal>
+        {/* end Modal Loading */}
+
+        {/* Modal Material ARP */}
+        <Modal
+          isOpen={this.state.modal_material_ARP}
+          toggle={this.toggleMaterialARP}
+          className={"modal-lg"}
+        >
+          <ModalBody
+            style={{
+              "max-height": "calc(100vh - 210px)",
+              "overflow-y": "auto",
+            }}
+          >
+            <div style={{ marginLeft: "10px" }}>
+              <Row md={1}>
+                &nbsp;&nbsp;&nbsp;               
+              </Row>
+            </div>
+            <div class="table-container">
+              <Table responsive striped bordered size="sm">
+                <thead>
+                  <th></th>
+                  <th>MM_Code</th>
+                  <th>MM_Description</th>
+                  <th>UoM</th>
+                  <th>Unit_Price</th>
+                  <th>Currency</th>
+                  <th>Remarks_or_Acceptance</th>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td></td>
+                    {this.loopSearchBar()}
+                  </tr>
+                  {this.state.material_list !== null &&
+                    this.state.material_list !== undefined &&
+                    this.state.material_list.map((e) => (
+                      <tr>
+                        <td>
+                          <Button
+                            color={"primary"}
+                            size="sm"
+                            value={e.MM_Code}
+                            onClick={this.handleChangeMaterial}
+                          >
+                            Select
+                          </Button>
+                        </td>
+                        <td>{e.MM_Code}</td>
+                        <td>{e.MM_Description}</td>
+                        <td>{e.UoM}</td>
+                        <td>{e.Unit_Price}</td>
+                        <td>{e.Currency}</td>
+                        <td>{e.Remarks_or_Acceptance}</td>
+                      </tr>
+                    ))}
+                </tbody>
+              </Table>
+            </div>
+            <Pagination
+              activePage={this.state.activePage}
+              itemsCountPerPage={this.state.perPage}
+              totalItemsCount={this.state.totalData}
+              pageRangeDisplayed={5}
+              onChange={this.handlePageChange}
+              itemClass="page-item"
+              linkClass="page-link"
+            />
+          </ModalBody>
+          <ModalFooter>
+            <Button color="secondary" onClick={this.toggleMaterialARP}>
+              Close
+            </Button>
+          </ModalFooter>
+        </Modal>
+        {/* end Modal Loading */}
+
         {/* Modal Loading */}
         <Modal
           isOpen={this.state.modal_loading}
