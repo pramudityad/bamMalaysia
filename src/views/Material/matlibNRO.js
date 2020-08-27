@@ -698,7 +698,7 @@ class MatNRO extends React.Component {
 
   downloadAll = async () => {
     let download_all = [];
-    let getAll_nonpage = this.state.material_list;
+    let getAll_nonpage = this.state.material_list_all;
 
     if (getAll_nonpage !== undefined) {
       download_all = getAll_nonpage;
@@ -707,39 +707,46 @@ class MatNRO extends React.Component {
     const wb = new Excel.Workbook();
     const ws = wb.addWorksheet();
 
-    let headerRow = [
-      "Material_Type",
-      "MM_Code",
-      "MM_Description",
-      "UoM",
-      "Unit_Price",
+    const vendorName = this.state.vendor_list.map((a) => a.Name);
+    let header = [
       "BB",
       "BB_Sub",
-      "Region",
-      "FTV_or_SSO_SLA_or_SSO_Lite_SLA_or_CBO",
-      "Remarks_or_Acceptance",
       "SoW_Description_or_Site_Type",
+      "UoM",
+      "Region",
+      "Unit_Price",
+      "MM_Code",
+      "MM_Description",
+      "FTV_or_SSO_SLA_or_SSO_Lite_SLA_or_CBO",
+      "Remarks_or_Acceptance",      
       "ZERV_(18)",
       "ZEXT_(40)",
       "Note",
-      "Vendor",
+      "Vendor"
     ];
-    ws.addRow(headerRow);
+    // header = header.concat(vendorName);
+
+    ws.addRow(header);
+    for (let i = 1; i < header.length + 1; i++) {
+      ws.getCell(numToSSColumn(i) + '1').fill = { type: 'pattern',
+      pattern:'solid',
+      fgColor:{argb:'FFFFFF00'},
+      bgColor:{argb:'A9A9A9'}};
+    }
 
     for (let i = 0; i < download_all.length; i++) {
       let e = download_all[i];
       ws.addRow([
-        e.Material_Type,
-        e.MM_Code,
-        e.MM_Description,
-        e.UoM,
-        e.Unit_Price,
         e.BB,
         e.BB_Sub,
+        e.SoW_Description_or_Site_Type,
+        e.UoM,
         e.Region,
+        e.Unit_Price,
+        e.MM_Code,
+        e.MM_Description,
         e.FTV_or_SSO_SLA_or_SSO_Lite_SLA_or_CBO,
         e.Remarks_or_Acceptance,
-        e.SoW_Description_or_Site_Type,
         e.ZERV_18,
         e.ZEXT_40,
         e.Note,

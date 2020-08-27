@@ -59,6 +59,8 @@ class MatARP extends React.Component {
       totalData: 0,
       perPage: 10,
       modalEdit: false,
+      material_list: [],
+      material_list_all : []
     };
     this.toggle = this.toggle.bind(this);
     this.toggleLoading = this.toggleLoading.bind(this);
@@ -70,6 +72,7 @@ class MatARP extends React.Component {
   componentDidMount() {
     this.getVendorList();
     this.getMaterialList();
+    this.getMaterialListAll();
   }
 
   getVendorList() {
@@ -78,6 +81,19 @@ class MatARP extends React.Component {
         const items = res.data._items;
         // const vendor_data = items.map((a) => a.Name);
         this.setState({ vendor_list: items });
+      }
+    });
+  }
+
+  getMaterialListAll() {
+    getDatafromAPINODE(
+      '/mmCode/getMm?q={"Material_Type": "'+modul_name+'"}' +
+        "&noPg=1",
+      this.state.tokenUser
+    ).then((res) => {
+      if (res.data !== undefined) {
+        const items = res.data.data;
+        this.setState({ material_list_all: items });
       }
     });
   }
@@ -303,7 +319,7 @@ class MatARP extends React.Component {
 
   downloadAll = async () => {
     let download_all = [];
-    let getAll_nonpage = this.state.material_list;
+    let getAll_nonpage = this.state.material_list_all;
 
     if (getAll_nonpage !== undefined) {
       download_all = getAll_nonpage;
@@ -312,33 +328,37 @@ class MatARP extends React.Component {
     const wb = new Excel.Workbook();
     const ws = wb.addWorksheet();
 
-    let headerRow = [
-      "Material_Type",
+    let header = [
       "MM_Code",
       "MM_Description",
-      "UoM",
+      "Vendor_ID",
       "Unit_Price",
       "Currency",
-      "Remarks_or_Acceptance",
-      "Vendor_ID",
-      "Vendor_Name",
+      "UoM",           
+      "Remarks_or_Acceptance",      
       "ZERV_(18)",
       "ZEXT_(40)",
       "Note",
     ];
-    ws.addRow(headerRow);
+
+    ws.addRow(header);
+    for (let i = 1; i < header.length + 1; i++) {
+      ws.getCell(numToSSColumn(i) + '1').fill = { type: 'pattern',
+      pattern:'solid',
+      fgColor:{argb:'FFFFFF00'},
+      bgColor:{argb:'A9A9A9'}};
+    }
 
     for (let i = 0; i < download_all.length; i++) {
       let e = download_all[i];
       ws.addRow([
         e.MM_Code,
         e.MM_Description,
-        e.UoM,
+        e.Vendor_ID,
         e.Unit_Price,
         e.Currency,
+        e.UoM,
         e.Remarks_or_Acceptance,
-        e.Vendor_ID,
-        e.Vendor_Name,
         e.ZERV_18,
         e.ZEXT_40,
         e.Note,

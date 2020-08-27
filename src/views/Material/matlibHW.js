@@ -104,6 +104,8 @@ class MatHW extends React.Component {
       totalData: 0,
       perPage: 10,
       modalEdit: false,
+      material_list: [],
+      material_list_all: []
     };
     this.toggle = this.toggle.bind(this);
     this.toggleLoading = this.toggleLoading.bind(this);
@@ -115,6 +117,7 @@ class MatHW extends React.Component {
   componentDidMount() {
     this.getVendorList();
     this.getMaterialList();
+    this.getMaterialListAll();
   }
 
   getVendorList() {
@@ -123,6 +126,19 @@ class MatHW extends React.Component {
         const items = res.data._items;
         // const vendor_data = items.map((a) => a.Name);
         this.setState({ vendor_list: items });
+      }
+    });
+  }
+
+  getMaterialListAll() {
+    getDatafromAPINODE(
+      '/mmCode/getMm?q={"Material_Type": "'+modul_name+'"}' +
+        "&noPg=1",
+      this.state.tokenUser
+    ).then((res) => {
+      if (res.data !== undefined) {
+        const items = res.data.data;
+        this.setState({ material_list_all: items });
       }
     });
   }
@@ -365,7 +381,7 @@ class MatHW extends React.Component {
 
   downloadAll = async () => {
     let download_all = [];
-    let getAll_nonpage = this.state.material_list;
+    let getAll_nonpage = this.state.material_list_all;
 
     if (getAll_nonpage !== undefined) {
       download_all = getAll_nonpage;
@@ -374,39 +390,42 @@ class MatHW extends React.Component {
     const wb = new Excel.Workbook();
     const ws = wb.addWorksheet();
 
-    let headerRow = [
-      "Material_Type",
+    let header = [
       "MM_Code",
-      "MM_Code",
-      "UoM",
+      "Vendor_ID",
       "Unit_Price",
-      "BB",
-      "BB_Sub",
-      "Region",
-      "FTV_or_SSO_SLA_or_SSO_Lite_SLA_or_CBO",
-      "Remarks_or_Acceptance",
-      "SoW_Description_or_Site_Type",
-      "ZERV_(18)",
-      "ZEXT_(40)",
+      "UoM",      
+      "Currency",
+      "Info_Rec",
+      "created_by",
+      "Created_On",
+      "Valid_To",
+
+      "Status_Price_in_SAP",
       "Note",
     ];
-    ws.addRow(headerRow);
+
+    ws.addRow(header);
+    for (let i = 1; i < header.length + 1; i++) {
+      ws.getCell(numToSSColumn(i) + '1').fill = { type: 'pattern',
+      pattern:'solid',
+      fgColor:{argb:'FFFFFF00'},
+      bgColor:{argb:'A9A9A9'}};
+    }
 
     for (let i = 0; i < download_all.length; i++) {
       let e = download_all[i];
       ws.addRow([
         e.MM_Code,
-        e.MM_Code,
-        e.UoM,
+        e.Vendor_ID,
         e.Unit_Price,
-        e.BB,
-        e.BB_Sub,
-        e.Region,
-        e.FTV_or_SSO_SLA_or_SSO_Lite_SLA_or_CBO,
-        e.Remarks_or_Acceptance,
-        e.SoW_Description_or_Site_Type,
-        e.ZERV_18,
-        e.ZEXT_40,
+        e.UoM,
+        e.Currency,
+        e.Info_Rec,
+        e.created_by,
+        convertDateFormat(e.Created_On),
+        convertDateFormat(e.Valid_To),
+        e.Status_Price_in_SAP,
         e.Note,
       ]);
     }

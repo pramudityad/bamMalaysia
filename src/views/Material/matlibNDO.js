@@ -24,6 +24,7 @@ import Loading from "../Component/Loading";
 import { ExcelRenderer } from "react-excel-renderer";
 import {
   getDatafromAPIMY,
+  getDatafromAPINODE,
   postDatatoAPINODE,
   deleteDataFromAPINODE2,
   patchDatatoAPINODE
@@ -36,50 +37,6 @@ const DefaultNotif = React.lazy(() =>
 const modul_name = "NDO";
 const BearerToken =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjYXNfaWQiOiIxOTM2YmE0Yy0wMjlkLTQ1MzktYWRkOC1mZjc2OTNiMDlmZmUiLCJyb2xlcyI6WyJCQU0tU3VwZXJBZG1pbiJdLCJhY2NvdW50IjoiMSIsImlhdCI6MTU5MjQ3MDI4Mn0.tIJSzHa-ewhqz0Ail7J0maIZx4R9P1aXE2E_49pe4KY";
-const MaterialDB = [
-  {
-    MM_Code: "MM Code",
-    BB_Sub: "BB_sub",
-    SoW_Description: "SoW Description",
-    UoM: "UoM",
-    Region: "Region",
-    Unit_Price: 100,
-    MM_Description: "MM Description",
-    Acceptance: "Acceptance",
-    Vendor_List: [
-      {
-        Vendor_Name: "TUMPAT SOLUTIONS",
-        Identifier: 0,
-      },
-
-      {
-        Vendor_Name: "FA FRONTLINERS SDN BHD",
-        Identifier: 1,
-      },
-    ],
-  },
-  {
-    MM_Code: "MM Code1",
-    BB_Sub: "BB_sub1",
-    SoW_Description: "SoW Description1",
-    UoM: "UoM1",
-    Region: "Region1",
-    Unit_Price: 200,
-    MM_Description: "MM Description1",
-    Acceptance: "Acceptance1",
-    Vendor_List: [
-      {
-        Vendor_Name: "TUMPAT SOLUTIONS",
-        Identifier: 1,
-      },
-
-      {
-        Vendor_Name: "FA FRONTLINERS SDN BHD",
-        Identifier: 0,
-      },
-    ],
-  },
-];
 
 class MatNDO extends React.Component {
   constructor(props) {
@@ -102,6 +59,8 @@ class MatNDO extends React.Component {
       totalData: 0,
       perPage: 10,
       modalEdit: false,
+      material_list: [],
+      material_list_all: []
     };
     this.toggle = this.toggle.bind(this);
     this.toggleLoading = this.toggleLoading.bind(this);
@@ -112,6 +71,7 @@ class MatNDO extends React.Component {
   componentDidMount() {
     this.getVendorList();
     this.getMaterialList();
+    this.getMaterialListAll();
   }
 
   getVendorList() {
@@ -119,6 +79,19 @@ class MatNDO extends React.Component {
       if (res.data !== undefined) {
         const items = res.data._items;
         this.setState({ vendor_list: items });
+      }
+    });
+  }
+
+  getMaterialListAll() {
+    getDatafromAPINODE(
+      '/mmCode/getMm?q={"Material_Type": "'+modul_name+'"}' +
+        "&noPg=1",
+      this.state.tokenUser
+    ).then((res) => {
+      if (res.data !== undefined) {
+        const items = res.data.data;
+        this.setState({ material_list_all: items });
       }
     });
   }
@@ -271,7 +244,7 @@ class MatNDO extends React.Component {
         "MM_Description", 
         "UoM",
         "Unit_Price",
-        "Currency",
+
         "Region",
         "Remarks_or_Acceptance",
         "SoW_Description_or_Site_Type",
@@ -287,7 +260,7 @@ class MatNDO extends React.Component {
         this.state.PPForm[4],
         this.state.PPForm[5],
         this.state.PPForm[6],
-        this.state.PPForm[7],
+
         this.state.PPForm[8],
         this.state.PPForm[9],
         this.state.PPForm[10],
@@ -346,7 +319,7 @@ class MatNDO extends React.Component {
 
   downloadAll = async () => {
     let download_all = [];
-    let getAll_nonpage = this.state.material_list
+    let getAll_nonpage = this.state.material_list_all
 
     if (getAll_nonpage !== undefined) {
       download_all = getAll_nonpage;
@@ -356,38 +329,39 @@ class MatNDO extends React.Component {
     const ws = wb.addWorksheet();
 
     let headerRow = [
-      "Material_Type",
-      "MM_Code",
-      "MM_Description",
-      "UoM",
-      "Unit_Price",
       "BB",
       "BB_Sub",
-      "Region",
-      "FTV_or_SSO_SLA_or_SSO_Lite_SLA_or_CBO",
-      "Remarks_or_Acceptance",
       "SoW_Description_or_Site_Type",
-      "ZERV_(18)",
-      "ZEXT_(40)",
+      "Remarks_or_Acceptance",        
+      "UoM",
+      "Unit_Price",      
+      "Region",
+      "MM_Code",
+      "MM_Description",
+      "Vendor_ID",
       "Note",
     ];
     ws.addRow(headerRow);
+    for (let i = 1; i < headerRow.length + 1; i++) {
+      ws.getCell(numToSSColumn(i) + '1').fill = { type: 'pattern',
+      pattern:'solid',
+      fgColor:{argb:'FFFFFF00'},
+      bgColor:{argb:'A9A9A9'}};
+    }
 
     for (let i = 0; i < download_all.length; i++) {
       let e = download_all[i];
       ws.addRow([
-        e.MM_Code,
-        e.MM_Description,
-        e.UoM,
-        e.Unit_Price,
         e.BB,
         e.BB_Sub,
-        e.Region,
-        e.FTV_or_SSO_SLA_or_SSO_Lite_SLA_or_CBO,
-        e.Remarks_or_Acceptance,
         e.SoW_Description_or_Site_Type,
-        e.ZERV_18,
-        e.ZEXT_40,
+        e.Remarks_or_Acceptance,
+        e.UoM,
+        e.Unit_Price,
+        e.Region,
+        e.MM_Code,
+        e.MM_Description,
+        e.Vendor_ID,
         e.Note,
       ]);
     }
@@ -462,7 +436,7 @@ class MatNDO extends React.Component {
       dataForm[4] = aEdit.MM_Description;
       dataForm[5] = aEdit.UoM;
       dataForm[6] = aEdit.Unit_Price;
-      dataForm[7] = aEdit.Currency;
+
       dataForm[8] = aEdit.Region;
       dataForm[9] = aEdit.Remarks_or_Acceptance;
       dataForm[10] = aEdit.SoW_Description_or_Site_Type;
@@ -488,7 +462,7 @@ class MatNDO extends React.Component {
         MM_Description: this.state.PPForm[4],
         UoM: this.state.PPForm[5],
         Unit_Price: this.state.PPForm[6],
-        Currency: this.state.PPForm[7],
+
         Region: this.state.PPForm[8],
         Remarks_or_Acceptance: this.state.PPForm[9],
         SoW_Description_or_Site_Type: this.state.PPForm[10],
@@ -841,21 +815,7 @@ class MatNDO extends React.Component {
                   />
                     </FormGroup>
                   </Col>
-                </FormGroup>
-                <FormGroup row>      
-                  <Col xs="6">
-                    <FormGroup>
-                      <Label>Currency</Label>
-                      <Input
-                    type="text"
-                    name="7"
-                    placeholder=""
-                    value={this.state.PPForm[7]}
-                    onChange={this.handleChangeForm}
-                  />
-                    </FormGroup>
-                  </Col>
-                </FormGroup>
+                </FormGroup>              
                 <FormGroup>
                   <Label>Region</Label>
                   <Input
@@ -991,21 +951,7 @@ class MatNDO extends React.Component {
                   />
                     </FormGroup>
                   </Col>
-                </FormGroup>
-                <FormGroup row>      
-                  <Col xs="6">
-                    <FormGroup>
-                      <Label>Currency</Label>
-                      <Input
-                    type="text"
-                    name="7"
-                    placeholder=""
-                    value={this.state.PPForm[7]}
-                    onChange={this.handleChangeForm}
-                  />
-                    </FormGroup>
-                  </Col>
-                </FormGroup>
+                </FormGroup> 
                 <FormGroup>
                   <Label>Region</Label>
                   <Input
