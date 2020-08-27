@@ -383,11 +383,12 @@ class MatNDO extends React.Component {
     const modalDelete = this.state.danger;
     if (modalDelete === false) {
       const _id = e.currentTarget.value;
-      const name = e.currentTarget.name;
+      const name = this.state.material_list_all.find(e => e._id === _id)
       this.setState({
         danger: !this.state.danger,
         selected_id: _id,
-        selected_name: name,
+        selected_name: name.MM_Code,
+        selected_vendor: name.Vendor_ID
       });
     } else {
       this.setState({
@@ -1096,7 +1097,7 @@ class MatNDO extends React.Component {
           isOpen={this.state.danger}
           toggle={this.toggleDelete}
           className={"modal-danger " + this.props.className}
-          title={"Delete "+ this.state.selected_name}
+          title={"Delete "+ this.state.selected_name+ " for " + this.findVendorName(this.state.selected_vendor)}
           body={"Are you sure ?"}
         >
           <Button color="danger" onClick={this.DeleteData}>
