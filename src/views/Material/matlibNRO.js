@@ -633,7 +633,7 @@ class MatNRO extends React.Component {
       ],
       [
         modul_name,
-        "MM_Code",
+        this.state.PPForm[1],
         this.state.PPForm[2],
         this.state.PPForm[3],
         this.state.PPForm[4],
@@ -1016,6 +1016,16 @@ class MatNRO extends React.Component {
           <ModalBody>
             <Row>
               <Col sm="12">
+              <FormGroup>
+                  <Label>MM_Code</Label>
+                  <Input
+                    type="text"
+                    name="1"
+                    placeholder=""
+                    value={this.state.PPForm[1]}
+                    onChange={this.handleChangeForm}
+                  />
+                </FormGroup>
                 <FormGroup>
                   <Label>MM_Description</Label>
                   <Input
@@ -1241,6 +1251,16 @@ class MatNRO extends React.Component {
                 </FormGroup>
                 <FormGroup row>
                   <Col xs="12">
+                  <FormGroup>
+                  <Label>MM_Code</Label>
+                  <Input
+                    type="text"
+                    name="1"
+                    placeholder=""
+                    value={this.state.PPForm[1]}
+                    onChange={this.handleChangeForm}
+                  />
+                </FormGroup>
                     <FormGroup>
                       <Label>MM_Description</Label>
                       <Input

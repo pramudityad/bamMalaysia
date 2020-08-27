@@ -253,7 +253,7 @@ class MatARP extends React.Component {
       ],
       [
         modul_name,
-        "MM_Code",
+        this.state.PPForm[1],
         this.state.PPForm[2],
         this.state.PPForm[3],
         this.state.PPForm[4],
@@ -761,7 +761,7 @@ class MatARP extends React.Component {
                     value={this.state.PPForm[0]}
                     onChange={this.handleChangeForm}
                   />
-                </FormGroup>
+                </FormGroup> */}
                 <FormGroup>
                   <Label>MM_Code</Label>
                   <Input
@@ -771,7 +771,7 @@ class MatARP extends React.Component {
                     value={this.state.PPForm[1]}
                     onChange={this.handleChangeForm}
                   />
-                </FormGroup> */}
+                </FormGroup>                
                 <FormGroup row>
                   <Col xs="12">
                     <FormGroup>

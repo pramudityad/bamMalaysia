@@ -316,7 +316,6 @@ class MatHW extends React.Component {
       ],
       [
         modul_name,
-        "MM_Code",
         this.state.PPForm[2],
         this.state.PPForm[3],
         this.state.PPForm[4],

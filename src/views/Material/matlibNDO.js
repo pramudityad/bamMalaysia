@@ -254,13 +254,12 @@ class MatNDO extends React.Component {
       ],
       [
         modul_name,
-        "MM_Code",
+        this.state.PPForm[7],
         this.state.PPForm[2],
         this.state.PPForm[3],
         this.state.PPForm[4],
         this.state.PPForm[5],
         this.state.PPForm[6],
-
         this.state.PPForm[8],
         this.state.PPForm[9],
         this.state.PPForm[10],
@@ -462,7 +461,7 @@ class MatNDO extends React.Component {
         MM_Description: this.state.PPForm[4],
         UoM: this.state.PPForm[5],
         Unit_Price: this.state.PPForm[6],
-
+        MM_Code: this.state.PPForm[7],
         Region: this.state.PPForm[8],
         Remarks_or_Acceptance: this.state.PPForm[9],
         SoW_Description_or_Site_Type: this.state.PPForm[10],
@@ -779,6 +778,18 @@ class MatNDO extends React.Component {
                   />
                 </FormGroup>
                 <FormGroup row>
+                <Col xs="12">
+                    <FormGroup>
+                      <Label>MM_Code</Label>
+                      <Input
+                    type="text"
+                    name="7"
+                    placeholder=""
+                    value={this.state.PPForm[7]}
+                    onChange={this.handleChangeForm}
+                  />
+                    </FormGroup>
+                  </Col>
                   <Col xs="12">
                     <FormGroup>
                       <Label>MM_Description</Label>
@@ -929,6 +940,18 @@ class MatNDO extends React.Component {
                   </Col>
                   <Col xs="12">
                     <FormGroup>
+                      <Label>MM_Code</Label>
+                      <Input
+                    type="text"
+                    name="7"
+                    placeholder=""
+                    value={this.state.PPForm[7]}
+                    onChange={this.handleChangeForm}
+                  />
+                    </FormGroup>
+                  </Col>
+                  <Col xs="12">
+                    <FormGroup>
                       <Label>UoM</Label>
                       <Input
                     type="text"
@@ -950,8 +973,8 @@ class MatNDO extends React.Component {
                     onChange={this.handleChangeForm}
                   />
                     </FormGroup>
-                  </Col>
-                </FormGroup> 
+                  </Col>                  
+                </FormGroup>                 
                 <FormGroup>
                   <Label>Region</Label>
                   <Input
