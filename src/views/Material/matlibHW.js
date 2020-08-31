@@ -697,6 +697,7 @@ class MatHW extends React.Component {
                         >
                           <tr align="center">
                             <th>MM_Code</th>
+                            <th>MM_Description</th>
                             <th>UoM</th>
                             <th>Unit_Price</th>
                             <th>Currency</th>
@@ -723,6 +724,9 @@ class MatHW extends React.Component {
                                 >
                                   <td style={{ textAlign: "center" }}>
                                     {e.MM_Code}
+                                  </td>  
+                                  <td style={{ textAlign: "center" }}>
+                                    {e.MM_Description}
                                   </td>                                 
                                   <td style={{ textAlign: "center" }}>
                                     {e.UoM}
