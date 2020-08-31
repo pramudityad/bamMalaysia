@@ -696,14 +696,14 @@ class MatHW extends React.Component {
                         // className="fixed-matlib"
                         >
                           <tr align="center">
+                          <th>Info_Rec</th>
+                            <th>Vendor_ID</th>
+                            <th>Vendor_Name</th>
                             <th>MM_Code</th>
                             <th>MM_Description</th>
                             <th>UoM</th>
                             <th>Unit_Price</th>
-                            <th>Currency</th>
-                            <th>Info_Rec</th>
-                            <th>Vendor_ID</th>
-                            <th>Vendor_Name</th>
+                            <th>Currency</th>                            
                             <th>Valid_To</th>
                             <th>Created_On</th>
                             <th>Created_By</th>
@@ -722,6 +722,15 @@ class MatHW extends React.Component {
                                   className="fixbody"
                                   key={e._id}
                                 >
+                                    <td style={{ textAlign: "center" }}>
+                                    {e.Info_Rec}
+                                  </td>
+                                  <td style={{ textAlign: "center" }}>
+                                    {e.Vendor_ID}
+                                  </td>
+                                  <td style={{ textAlign: "center" }}>
+                                    {this.findVendorName(e.Vendor_ID)}
+                                  </td>
                                   <td style={{ textAlign: "center" }}>
                                     {e.MM_Code}
                                   </td>  
@@ -737,15 +746,7 @@ class MatHW extends React.Component {
                                   <td style={{ textAlign: "center" }}>
                                     {e.Currency}
                                   </td>
-                                  <td style={{ textAlign: "center" }}>
-                                    {e.Info_Rec}
-                                  </td>
-                                  <td style={{ textAlign: "center" }}>
-                                    {e.Vendor_ID}
-                                  </td>
-                                  <td style={{ textAlign: "center" }}>
-                                    {this.findVendorName(e.Vendor_ID)}
-                                  </td>
+                                
                                   <td style={{ textAlign: "center" }}>
                                     {convertDateFormat(e.Valid_To)}
                                   </td>
