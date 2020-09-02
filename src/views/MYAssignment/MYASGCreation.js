@@ -60,7 +60,7 @@ class MYASGCreation extends Component {
       tokenUser: BearerToken,
       lmr_form: {
         pgr: "MP2",
-        gl_account: "402102",
+        // gl_account: "402102",
         lmr_issued_by: this.props.dataUser.preferred_username,
         plant: "MY",
         customer: "CELCOM",
@@ -127,7 +127,7 @@ class MYASGCreation extends Component {
 
   decideToggleMaterial = (number_child_form) => {
     let Mat_type = this.state.creation_lmr_child_form[number_child_form]
-      .Per_Site_Material_Type;
+      .material_type;
     console.log(Mat_type);
     switch (Mat_type) {
       case "NRO":
@@ -282,7 +282,7 @@ class MYASGCreation extends Component {
     let dataLMR = this.state.creation_lmr_child_form;
     let type_material =
       dataLMR[parseInt(this.state.current_material_select)][
-        "Per_Site_Material_Type"
+        "material_type"
       ];
     this.setState({ activePage: pageNumber }, () => {
       this.decideFilter(type_material);
@@ -306,7 +306,7 @@ class MYASGCreation extends Component {
     let dataLMR = this.state.creation_lmr_child_form;
     let type_material =
       dataLMR[parseInt(this.state.current_material_select)][
-        "Per_Site_Material_Type"
+        "material_type"
       ];
     this.decideFilter(type_material);
   }
@@ -829,7 +829,8 @@ class MYASGCreation extends Component {
     if (name === "LMR_Type" && value !== "Per Site") {
       lmr_form["Plan_Cost_Reduction"] = "Yes"
       this.setState({ lmr_edit: false });
-    } else {
+    } 
+    if (name === "LMR_Type" && value !== "Cost Collector") {
       lmr_form["Plan_Cost_Reduction"] = "No"
       if (name === "project_name") {
         let dataProject = this.state.list_project.find(
@@ -854,21 +855,57 @@ class MYASGCreation extends Component {
     let field = idxField[1];
     console.log("field ", field);
     dataLMR[parseInt(idx)][field] = value;
+    if (field === "Per_Site_Material_Type" && value === "NRO Service"){
+      dataLMR[parseInt(idx)]["activity"] = 5640;
+      dataLMR[parseInt(idx)]["material_type"] = "NRO";
+    }
+    if (field === "Per_Site_Material_Type" && value === "NRO LM"){
+      dataLMR[parseInt(idx)]["activity"] = 5200;
+      dataLMR[parseInt(idx)]["material_type"] = "NRO";
+    }
+    if (field === "Per_Site_Material_Type" && value === "NDO Service"){
+      dataLMR[parseInt(idx)]["activity"] = 2010;
+      dataLMR[parseInt(idx)]["material_type"] = "NDO";
+    }
     if (field === "quantity" && isNaN(dataLMR[parseInt(idx)].price) === false) {
       dataLMR[parseInt(idx)]["total_amount"] =
         value * dataLMR[parseInt(idx)].price;
     }
-    if (field === "cd_id") {
-      dataLMR[parseInt(idx)][field] =
-        e.target.options[e.target.selectedIndex].text;
-    }
+    // if (field === "cd_id") {
+    //   dataLMR[parseInt(idx)][field] =
+    //     e.target.options[e.target.selectedIndex].text;
+    // }
+    // if (field === "cd_id" && this.state.lmr_edit === false) {
+    //   let cdData = this.state.list_cd_id.find((e) => e.CD_ID === value);
+    //   let custom_site_display = cdData.LOC_ID + "_" + cdData.Site_Name;
+    //   dataLMR[parseInt(idx)]["site_id"] = cdData.Site_Name;
+    //   dataLMR[parseInt(idx)]["project_name"] = cdData.Project;
+    //   dataLMR[parseInt(idx)]["so_or_nw"] = cdData.Network_Element_Name;
+    //   // dataLMR[parseInt(idx)]["activity"] = cdData.Network_Element_Name;
+    //   this.setState({
+    //     cd_id_project: cdData.Project,
+    //     custom_site_display: custom_site_display,
+    //   });
+    // }
+    this.setState({ creation_lmr_child_form: dataLMR }, () =>
+      console.log(this.state.creation_lmr_child_form)
+    );
+  }
+
+  handleChangeCDFormLMRChild = (e, action) => {
+    let dataLMR = this.state.creation_lmr_child_form;
+    let idxField = action.name.split(" /// ");
+    let value = e.value;
+    let idx = idxField[0];
+    let field = idxField[1];
+    // console.log(value, idx, field)
     if (field === "cd_id" && this.state.lmr_edit === false) {
       let cdData = this.state.list_cd_id.find((e) => e.CD_ID === value);
       let custom_site_display = cdData.LOC_ID + "_" + cdData.Site_Name;
       dataLMR[parseInt(idx)]["site_id"] = cdData.Site_Name;
       dataLMR[parseInt(idx)]["project_name"] = cdData.Project;
       dataLMR[parseInt(idx)]["so_or_nw"] = cdData.Network_Element_Name;
-      dataLMR[parseInt(idx)]["activity"] = cdData.Network_Element_Name;
+      // dataLMR[parseInt(idx)]["activity"] = cdData.Network_Element_Name;
       this.setState({
         cd_id_project: cdData.Project,
         custom_site_display: custom_site_display,
@@ -938,7 +975,7 @@ class MYASGCreation extends Component {
     let dataLMR = this.state.creation_lmr_child_form;
     let type_material =
       dataLMR[parseInt(this.state.current_material_select)][
-        "Per_Site_Material_Type"
+        "material_type"
       ];
     // console.log()
     this.setState(
@@ -986,6 +1023,8 @@ class MYASGCreation extends Component {
   }
 
   render() {
+    const cd_id_list = [];
+    this.state.list_cd_id.map((e)=> cd_id_list.push({label: e.CD_ID, value: e.CD_ID}));
     const matfilter = this.state.matfilter;
     // console.log("this.props.dataUser", this.props.dataUser);
     if (this.state.redirectSign !== false) {
@@ -1133,12 +1172,21 @@ class MYASGCreation extends Component {
                       <FormGroup>
                         <Label>GL Account</Label>
                         <Input
-                          type="text"
+                          type="select"
                           name="gl_account"
                           id="gl_account"
                           value={this.state.lmr_form.gl_account}
                           onChange={this.handleChangeFormLMR}
-                        ></Input>
+                        >
+                          <option value={null} selected></option>
+                            <option value="402201">3PP Material - 3PP Material HW - 402201</option>
+                            <option value="402203">3PP Material - 3PP Material SW - 402203</option>
+                            <option value="402612">3PP Material - 3PP Material Other Misc Consumable - 402612</option>
+                            <option value="402602">3PP Material - 3PP Material 3PP Support Contract - 402602</option>
+                            <option value="402603">ASP - ASP - 402603</option>
+                            <option value="402693">ARP - ASP (ARP) For CU ID only - 402693</option>
+
+                        </Input>
                       </FormGroup>
                     </Col>
                   </Row>
@@ -1325,12 +1373,12 @@ class MYASGCreation extends Component {
                             }
                           >
                             <option value="" disabled selected hidden>
-                              Select Material Type
+                              Select
                             </option>
-                            <option value="NRO">NRO</option>
-                            <option value="NDO">NDO</option>
-                            <option value="HW">HW</option>
-                            <option value="ARP">ARP</option>
+                            <option value="NRO Service">NRO Service</option>
+                            <option value="NRO LM">NRO LM</option>
+                            <option value="NDO Service">NDO Service</option>
+                            <option value="Transport">Transport</option>
                             {/* {this.state.vendor_list.map((e) => (
                             <option value={e.Vendor_Code}>{e.Name}</option>
                           ))} */}
@@ -1340,7 +1388,7 @@ class MYASGCreation extends Component {
                       <Col md={2}>
                         <FormGroup>
                           <Label>CD ID</Label>
-                          <Input
+                          {/* <Input
                             type="select"
                             name={i + " /// cd_id"}
                             id={i + " /// cd_id"}
@@ -1356,7 +1404,18 @@ class MYASGCreation extends Component {
                             {this.state.list_cd_id.map((e) => (
                               <option value={e.CD_ID}>{e.CD_ID}</option>
                             ))}
-                          </Input>
+                          </Input> */}
+                          <Select
+                        cacheOptions
+                        name={i + " /// cd_id"}
+                        id={i + " /// cd_id"}
+                        value={lmr.cd_id}
+                        options={cd_id_list}
+                        onChange={this.handleChangeCDFormLMRChild}
+                        disabled={
+                          this.state.lmr_form.LMR_Type === "Cost Collector"
+                        }
+                      />
                         </FormGroup>
                       </Col>
                       <Col md={2}>
@@ -1440,6 +1499,24 @@ class MYASGCreation extends Component {
                             value={lmr.tax_code}
                             onChange={this.handleChangeFormLMRChild}
                           />
+                        </FormGroup>
+                      </Col>
+                      <Col md={2}>
+                        <FormGroup>
+                          <Label>MM Data Type</Label>
+                          <Input
+                            type="select"
+                            name={i + " /// material_type"}
+                            id={i + " /// material_type"}
+                            value={lmr.material_type}
+                            onChange={this.handleChangeFormLMRChild}
+                          >
+                            <option value={null} selected></option>
+                            <option value="NRO">NRO</option>
+                            <option value="NDO">NDO</option>
+                            <option value="HW">HW</option>
+                            <option value="ARP">ARP</option>
+                            </Input>
                         </FormGroup>
                       </Col>
                       <Col md={2}>
