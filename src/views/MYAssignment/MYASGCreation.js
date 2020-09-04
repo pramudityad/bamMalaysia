@@ -859,6 +859,10 @@ class MYASGCreation extends Component {
       dataLMR[parseInt(idx)]["activity"] = "5640";
       dataLMR[parseInt(idx)]["material_type"] = "NRO";
     }
+    if (field === "Per_Site_Material_Type" && value === "Transport") {
+      dataLMR[parseInt(idx)]["activity"] = "";
+      dataLMR[parseInt(idx)]["material_type"] = "NRO";
+    }
     if (field === "Per_Site_Material_Type" && value === "NRO LM") {
       dataLMR[parseInt(idx)]["activity"] = "5200";
       dataLMR[parseInt(idx)]["material_type"] = "NRO";
@@ -882,14 +886,24 @@ class MYASGCreation extends Component {
     let value = e.value;
     let idx = idxField[0];
     let field = idxField[1];
-    // console.log(value, idx, field)
+    console.log(dataLMR[parseInt(idx)]["Per_Site_Material_Type"])
     if (field === "cd_id" && this.state.lmr_edit === false) {
       let cdData = this.state.list_cd_id.find((e) => e.CD_ID === value);
       let custom_site_display = cdData.LOC_ID + "_" + cdData.Site_Name;
       dataLMR[parseInt(idx)]["site_id"] = cdData.Site_Name;
       dataLMR[parseInt(idx)]["project_name"] = cdData.Project;
-      dataLMR[parseInt(idx)]["so_or_nw"] = cdData.Network_Element_Name;
-      // dataLMR[parseInt(idx)]["activity"] = cdData.Network_Element_Name;
+      if (dataLMR[parseInt(idx)]["Per_Site_Material_Type"] === "NRO Service") {
+        dataLMR[parseInt(idx)]["so_or_nw"] = cdData.NW_NRO;
+      }
+      if (dataLMR[parseInt(idx)]["Per_Site_Material_Type"] === "NRO LM") {
+        dataLMR[parseInt(idx)]["so_or_nw"] = cdData.NW_NRO;
+      }
+      if (dataLMR[parseInt(idx)]["Per_Site_Material_Type"] === "Transport") {
+        dataLMR[parseInt(idx)]["so_or_nw"] = cdData.NW_NRO;
+      }
+      if (dataLMR[parseInt(idx)]["Per_Site_Material_Type"] === "NDO Service") {
+        dataLMR[parseInt(idx)]["so_or_nw"] = cdData.NW_NDO;
+      }
       this.setState({
         cd_id_project: cdData.Project,
         custom_site_display: custom_site_display,
@@ -1401,24 +1415,7 @@ class MYASGCreation extends Component {
                       </Col>
                       <Col md={2}>
                         <FormGroup>
-                          <Label>CD ID</Label>
-                          {/* <Input
-                            type="select"
-                            name={i + " /// cd_id"}
-                            id={i + " /// cd_id"}
-                            value={lmr.cd_id}
-                            onChange={this.handleChangeFormLMRChild}
-                            disabled={
-                              this.state.lmr_form.LMR_Type === "Cost Collector"
-                            }
-                          >
-                            <option value="" disabled selected hidden>
-                              Select CD ID
-                            </option>
-                            {this.state.list_cd_id.map((e) => (
-                              <option value={e.CD_ID}>{e.CD_ID}</option>
-                            ))}
-                          </Input> */}
+                          <Label>CD ID</Label>        
                           <Select
                             cacheOptions
                             name={i + " /// cd_id"}
@@ -1426,7 +1423,7 @@ class MYASGCreation extends Component {
                             value={lmr.cd_id}
                             options={cd_id_list}
                             onChange={this.handleChangeCDFormLMRChild}
-                            disabled={
+                            isDisabled={
                               this.state.lmr_form.LMR_Type === "Cost Collector"
                             }
                           />
@@ -1465,7 +1462,7 @@ class MYASGCreation extends Component {
 
                       <Col md={2}>
                         <FormGroup>
-                          <Label>Site ID</Label>
+                          <Label>Site ID / Text ID</Label>
                           <Input
                             type="text"
                             name={i + " /// site_id"}
@@ -1473,7 +1470,9 @@ class MYASGCreation extends Component {
                             // ref={this.state.custom_site_display}
                             value={this.state.custom_site_display}
                             onChange={this.handleChangeFormLMRChild}
-                            // readOnly
+                            disabled={
+                              this.state.lmr_form.LMR_Type === "Cost Collector"
+                            }
                           />
                         </FormGroup>
                       </Col>
@@ -1486,7 +1485,9 @@ class MYASGCreation extends Component {
                             id={i + " /// so_or_nw"}
                             value={lmr.so_or_nw}
                             onChange={this.handleChangeFormLMRChild}
-                            // readOnly
+                            disabled={
+                              this.state.lmr_form.LMR_Type === "Cost Collector"
+                            }
                           />
                         </FormGroup>
                       </Col>
