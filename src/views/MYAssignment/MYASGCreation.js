@@ -16,7 +16,7 @@ import {
 import { Form, FormGroup, Label, FormText } from "reactstrap";
 import Pagination from "react-js-pagination";
 import { Modal, ModalBody, ModalHeader, ModalFooter } from "reactstrap";
-import {convertDateFormat} from "../../helper/basicFunction"
+import { convertDateFormat } from "../../helper/basicFunction";
 
 import axios from "axios";
 import { Link, Redirect } from "react-router-dom";
@@ -60,12 +60,11 @@ class MYASGCreation extends Component {
       tokenUser: BearerToken,
       lmr_form: {
         pgr: "MP2",
-        // gl_account: "402102",
+        gl_account: "",
         lmr_issued_by: this.props.dataUser.preferred_username,
         plant: "MY",
         customer: "CELCOM",
         request_type: "Add LMR",
-        custom_site_display: "",
       },
       lmr_edit: true,
       modal_loading: false,
@@ -100,6 +99,8 @@ class MYASGCreation extends Component {
       },
       hide_region: false,
       vendor_selected: "",
+      custom_site_display: "",
+      custom_gl_display: "",
     };
     this.handleChangeCD = this.handleChangeCD.bind(this);
     this.loadOptionsCDID = this.loadOptionsCDID.bind(this);
@@ -281,9 +282,7 @@ class MYASGCreation extends Component {
   handlePageChange(pageNumber) {
     let dataLMR = this.state.creation_lmr_child_form;
     let type_material =
-      dataLMR[parseInt(this.state.current_material_select)][
-        "material_type"
-      ];
+      dataLMR[parseInt(this.state.current_material_select)]["material_type"];
     this.setState({ activePage: pageNumber }, () => {
       this.decideFilter(type_material);
     });
@@ -305,9 +304,7 @@ class MYASGCreation extends Component {
   onChangeDebounced(e) {
     let dataLMR = this.state.creation_lmr_child_form;
     let type_material =
-      dataLMR[parseInt(this.state.current_material_select)][
-        "material_type"
-      ];
+      dataLMR[parseInt(this.state.current_material_select)]["material_type"];
     this.decideFilter(type_material);
   }
 
@@ -539,7 +536,7 @@ class MYASGCreation extends Component {
         '"Remarks_or_Acceptance":{"$regex" : "' +
           this.state.filter_list[5] +
           '", "$options" : "i"}'
-      );    
+      );
     let whereAnd = "{" + filter_array.join(",") + "}";
     getDatafromAPINODE(
       "/mmCode/getMm?q=" +
@@ -827,11 +824,11 @@ class MYASGCreation extends Component {
       value = value.toString();
     }
     if (name === "LMR_Type" && value !== "Per Site") {
-      lmr_form["Plan_Cost_Reduction"] = "Yes"
+      lmr_form["Plan_Cost_Reduction"] = "Yes";
       this.setState({ lmr_edit: false });
-    } 
+    }
     if (name === "LMR_Type" && value !== "Cost Collector") {
-      lmr_form["Plan_Cost_Reduction"] = "No"
+      lmr_form["Plan_Cost_Reduction"] = "No";
       if (name === "project_name") {
         let dataProject = this.state.list_project.find(
           (e) => e.Project === value
@@ -840,6 +837,9 @@ class MYASGCreation extends Component {
           lmr_form["id_project_doc"] = dataProject._id;
         }
       }
+    }
+    if (name === "gl_account") {
+      this.setState({custom_gl_display: e.target.value})
     }
     lmr_form[name.toString()] = value;
     this.setState({ lmr_form: lmr_form }, () =>
@@ -855,38 +855,22 @@ class MYASGCreation extends Component {
     let field = idxField[1];
     console.log("field ", field);
     dataLMR[parseInt(idx)][field] = value;
-    if (field === "Per_Site_Material_Type" && value === "NRO Service"){
-      dataLMR[parseInt(idx)]["activity"] = 5640;
+    if (field === "Per_Site_Material_Type" && value === "NRO Service") {
+      dataLMR[parseInt(idx)]["activity"] = "5640";
       dataLMR[parseInt(idx)]["material_type"] = "NRO";
     }
-    if (field === "Per_Site_Material_Type" && value === "NRO LM"){
-      dataLMR[parseInt(idx)]["activity"] = 5200;
+    if (field === "Per_Site_Material_Type" && value === "NRO LM") {
+      dataLMR[parseInt(idx)]["activity"] = "5200";
       dataLMR[parseInt(idx)]["material_type"] = "NRO";
     }
-    if (field === "Per_Site_Material_Type" && value === "NDO Service"){
-      dataLMR[parseInt(idx)]["activity"] = 2010;
+    if (field === "Per_Site_Material_Type" && value === "NDO Service") {
+      dataLMR[parseInt(idx)]["activity"] = "2010";
       dataLMR[parseInt(idx)]["material_type"] = "NDO";
     }
     if (field === "quantity" && isNaN(dataLMR[parseInt(idx)].price) === false) {
       dataLMR[parseInt(idx)]["total_amount"] =
         value * dataLMR[parseInt(idx)].price;
     }
-    // if (field === "cd_id") {
-    //   dataLMR[parseInt(idx)][field] =
-    //     e.target.options[e.target.selectedIndex].text;
-    // }
-    // if (field === "cd_id" && this.state.lmr_edit === false) {
-    //   let cdData = this.state.list_cd_id.find((e) => e.CD_ID === value);
-    //   let custom_site_display = cdData.LOC_ID + "_" + cdData.Site_Name;
-    //   dataLMR[parseInt(idx)]["site_id"] = cdData.Site_Name;
-    //   dataLMR[parseInt(idx)]["project_name"] = cdData.Project;
-    //   dataLMR[parseInt(idx)]["so_or_nw"] = cdData.Network_Element_Name;
-    //   // dataLMR[parseInt(idx)]["activity"] = cdData.Network_Element_Name;
-    //   this.setState({
-    //     cd_id_project: cdData.Project,
-    //     custom_site_display: custom_site_display,
-    //   });
-    // }
     this.setState({ creation_lmr_child_form: dataLMR }, () =>
       console.log(this.state.creation_lmr_child_form)
     );
@@ -914,7 +898,7 @@ class MYASGCreation extends Component {
     this.setState({ creation_lmr_child_form: dataLMR }, () =>
       console.log(this.state.creation_lmr_child_form)
     );
-  }
+  };
 
   handleChangeMaterial(e) {
     const value = e.target.value;
@@ -974,9 +958,7 @@ class MYASGCreation extends Component {
     let name = e.target.name;
     let dataLMR = this.state.creation_lmr_child_form;
     let type_material =
-      dataLMR[parseInt(this.state.current_material_select)][
-        "material_type"
-      ];
+      dataLMR[parseInt(this.state.current_material_select)]["material_type"];
     // console.log()
     this.setState(
       (prevState) => ({
@@ -1024,7 +1006,9 @@ class MYASGCreation extends Component {
 
   render() {
     const cd_id_list = [];
-    this.state.list_cd_id.map((e)=> cd_id_list.push({label: e.CD_ID, value: e.CD_ID}));
+    this.state.list_cd_id.map((e) =>
+      cd_id_list.push({ label: e.CD_ID, value: e.CD_ID })
+    );
     const matfilter = this.state.matfilter;
     // console.log("this.props.dataUser", this.props.dataUser);
     if (this.state.redirectSign !== false) {
@@ -1128,14 +1112,14 @@ class MYASGCreation extends Component {
                       <FormGroup>
                         <Label>Plan Cost Reduction</Label>
                         <Input
-                        readOnly
+                          readOnly
                           type="text"
                           name="Plan_Cost_Reduction"
                           id="Plan_Cost_Reduction"
                           value={this.state.lmr_form.Plan_Cost_Reduction}
                           onChange={this.handleChangeFormLMR}
                         />
-                          {/* <option value={null} selected></option>
+                        {/* <option value={null} selected></option>
                           <option value="Yes">Yes</option>
                           <option value="No">No</option> */}
                         {/* </Input> */}
@@ -1171,22 +1155,52 @@ class MYASGCreation extends Component {
                     <Col md={4}>
                       <FormGroup>
                         <Label>GL Account</Label>
-                        <Input
-                          type="select"
-                          name="gl_account"
-                          id="gl_account"
-                          value={this.state.lmr_form.gl_account}
-                          onChange={this.handleChangeFormLMR}
-                        >
-                          <option value={null} selected></option>
-                            <option value="402201">3PP Material - 3PP Material HW - 402201</option>
-                            <option value="402203">3PP Material - 3PP Material SW - 402203</option>
-                            <option value="402612">3PP Material - 3PP Material Other Misc Consumable - 402612</option>
-                            <option value="402602">3PP Material - 3PP Material 3PP Support Contract - 402602</option>
-                            <option value="402603">ASP - ASP - 402603</option>
-                            <option value="402693">ARP - ASP (ARP) For CU ID only - 402693</option>
 
-                        </Input>
+                        {this.state.lmr_form.LMR_Type === "Cost Collector" ? (
+                          <Input
+                            type="select"
+                            name="gl_account"
+                            id="gl_account"
+                            value={this.state.custom_gl_display}
+                            onChange={this.handleChangeFormLMR}
+                          >
+                            <option value={null} selected></option>
+                            <option value="402201">
+                              3PP Material - 3PP Material HW - 402201
+                            </option>
+                            <option value="402203">
+                              3PP Material - 3PP Material SW - 402203
+                            </option>
+                            <option value="402612">
+                              3PP Material - 3PP Material Other Misc Consumable
+                              - 402612
+                            </option>
+                            <option value="402602">
+                              3PP Material - 3PP Material 3PP Support Contract -
+                              402602
+                            </option>
+                            <option value="402603">ASP - ASP - 402603</option>
+                            <option value="402693">
+                              ARP - ASP (ARP) For CU ID only - 402693
+                            </option>
+                          </Input>
+                        ) : (
+                          <Input
+                            type="select"
+                            name="gl_account"
+                            id="gl_account"
+                            value={this.state.custom_gl_display}
+                            onChange={this.handleChangeFormLMR}
+                          >
+                            <option value={null} selected></option>
+                            <option value="402603">NRO service - 402603</option>
+                            <option value="402603">NDO service - 402603</option>
+                            <option value="402201">
+                              NRO local material - 402201
+                            </option>
+                            <option value="402102">Transport - 402102</option>
+                          </Input>
+                        )}
                       </FormGroup>
                     </Col>
                   </Row>
@@ -1406,16 +1420,16 @@ class MYASGCreation extends Component {
                             ))}
                           </Input> */}
                           <Select
-                        cacheOptions
-                        name={i + " /// cd_id"}
-                        id={i + " /// cd_id"}
-                        value={lmr.cd_id}
-                        options={cd_id_list}
-                        onChange={this.handleChangeCDFormLMRChild}
-                        disabled={
-                          this.state.lmr_form.LMR_Type === "Cost Collector"
-                        }
-                      />
+                            cacheOptions
+                            name={i + " /// cd_id"}
+                            id={i + " /// cd_id"}
+                            value={lmr.cd_id}
+                            options={cd_id_list}
+                            onChange={this.handleChangeCDFormLMRChild}
+                            disabled={
+                              this.state.lmr_form.LMR_Type === "Cost Collector"
+                            }
+                          />
                         </FormGroup>
                       </Col>
                       <Col md={2}>
@@ -1516,7 +1530,7 @@ class MYASGCreation extends Component {
                             <option value="NDO">NDO</option>
                             <option value="HW">HW</option>
                             <option value="ARP">ARP</option>
-                            </Input>
+                          </Input>
                         </FormGroup>
                       </Col>
                       <Col md={2}>
@@ -1892,9 +1906,7 @@ class MYASGCreation extends Component {
             }}
           >
             <div style={{ marginLeft: "10px" }}>
-              <Row md={1}>
-                &nbsp;&nbsp;&nbsp;
-              </Row>
+              <Row md={1}>&nbsp;&nbsp;&nbsp;</Row>
             </div>
             <div class="table-container">
               <Table responsive striped bordered size="sm">
@@ -1974,9 +1986,7 @@ class MYASGCreation extends Component {
             }}
           >
             <div style={{ marginLeft: "10px" }}>
-              <Row md={1}>
-                &nbsp;&nbsp;&nbsp;               
-              </Row>
+              <Row md={1}>&nbsp;&nbsp;&nbsp;</Row>
             </div>
             <div class="table-container">
               <Table responsive striped bordered size="sm">
