@@ -80,7 +80,7 @@ class MYASGCreation extends Component {
       perPage: 10,
       form_checking: {},
       list_cd_id: [],
-      cd_id_selected: null,
+      cd_id_selected: "",
       data_cd_id_selected: null,
       redirectSign: false,
       action_status: null,
@@ -101,6 +101,7 @@ class MYASGCreation extends Component {
       vendor_selected: "",
       custom_site_display: "",
       custom_gl_display: "",
+      so_nw_updated: "",
     };
     this.handleChangeCD = this.handleChangeCD.bind(this);
     this.loadOptionsCDID = this.loadOptionsCDID.bind(this);
@@ -742,7 +743,7 @@ class MYASGCreation extends Component {
         item_category: this.state.lmr_form.Item_Category,
         lmr_type: this.state.lmr_form.LMR_Type,
         plan_cost_reduction: this.state.lmr_form.Plan_Cost_Reduction,
-        cdid: dataChildForm[i].cd_id,
+        cdid: dataChildForm[i].cdid,
         per_site_material_type: dataChildForm[i].Per_Site_Material_Type,
         item_status: "Submit",
         work_status: "Waiting for PR-PO creation",
@@ -853,21 +854,35 @@ class MYASGCreation extends Component {
     let value = e.target.value;
     let idx = idxField[0];
     let field = idxField[1];
-    console.log("field ", field);
+    let cdData = this.state.list_cd_id.find((e) => e.CD_ID === dataLMR[parseInt(idx)]["cdid"]);    
+    // console.log('cdData ', cdData)
+    // console.log('check cd from per site ', dataLMR[parseInt(idx)]["cdid"])
     dataLMR[parseInt(idx)][field] = value;
-    if (field === "Per_Site_Material_Type" && value === "NRO Service") {
+    if (field === "Per_Site_Material_Type" && value === "NRO Service" ) {
+      if(dataLMR[parseInt(idx)]["cdid"] !== "" && cdData !== undefined){        
+        dataLMR[parseInt(idx)]["so_or_nw"] = cdData.NW_NRO;
+      }
       dataLMR[parseInt(idx)]["activity"] = "5640";
       dataLMR[parseInt(idx)]["material_type"] = "NRO";
     }
     if (field === "Per_Site_Material_Type" && value === "Transport") {
+      if(dataLMR[parseInt(idx)]["cdid"] !== "" && cdData !== undefined){        
+        dataLMR[parseInt(idx)]["so_or_nw"] = cdData.NW_NRO;
+      }
       dataLMR[parseInt(idx)]["activity"] = "";
       dataLMR[parseInt(idx)]["material_type"] = "NRO";
     }
     if (field === "Per_Site_Material_Type" && value === "NRO LM") {
+      if(dataLMR[parseInt(idx)]["cdid"] !== "" && cdData !== undefined){        
+        dataLMR[parseInt(idx)]["so_or_nw"] = cdData.NW_NRO;
+      }
       dataLMR[parseInt(idx)]["activity"] = "5200";
       dataLMR[parseInt(idx)]["material_type"] = "NRO";
     }
     if (field === "Per_Site_Material_Type" && value === "NDO Service") {
+      if(dataLMR[parseInt(idx)]["cdid"] !== "" && cdData !== undefined){        
+        dataLMR[parseInt(idx)]["so_or_nw"] = cdData.NW_NDO;
+      }
       dataLMR[parseInt(idx)]["activity"] = "2010";
       dataLMR[parseInt(idx)]["material_type"] = "NDO";
     }
@@ -875,7 +890,7 @@ class MYASGCreation extends Component {
       dataLMR[parseInt(idx)]["total_amount"] =
         value * dataLMR[parseInt(idx)].price;
     }
-    this.setState({ creation_lmr_child_form: dataLMR }, () =>
+    this.setState({ creation_lmr_child_form: dataLMR, so_nw_updated : dataLMR[parseInt(idx)]["so_or_nw"]}, () =>
       console.log(this.state.creation_lmr_child_form)
     );
   }
@@ -887,11 +902,12 @@ class MYASGCreation extends Component {
     let idx = idxField[0];
     let field = idxField[1];
     console.log(dataLMR[parseInt(idx)]["Per_Site_Material_Type"])
-    if (field === "cd_id" && this.state.lmr_edit === false) {
+    if (field === "cd_id" && this.state.lmr_form.LMR_Type === "Per Site") {
       let cdData = this.state.list_cd_id.find((e) => e.CD_ID === value);
       let custom_site_display = cdData.LOC_ID + "_" + cdData.Site_Name;
       dataLMR[parseInt(idx)]["site_id"] = cdData.Site_Name;
       dataLMR[parseInt(idx)]["project_name"] = cdData.Project;
+      dataLMR[parseInt(idx)]["cdid"] = value;
       if (dataLMR[parseInt(idx)]["Per_Site_Material_Type"] === "NRO Service") {
         dataLMR[parseInt(idx)]["so_or_nw"] = cdData.NW_NRO;
       }
@@ -907,6 +923,7 @@ class MYASGCreation extends Component {
       this.setState({
         cd_id_project: cdData.Project,
         custom_site_display: custom_site_display,
+        cd_id_selected: value
       });
     }
     this.setState({ creation_lmr_child_form: dataLMR }, () =>
@@ -1413,13 +1430,14 @@ class MYASGCreation extends Component {
                           </Input>
                         </FormGroup>
                       </Col>
-                      <Col md={2}>
+                      <Col md={3}>
                         <FormGroup>
                           <Label>CD ID</Label>        
                           <Select
                             cacheOptions
                             name={i + " /// cd_id"}
                             id={i + " /// cd_id"}
+                            // value={this.state.cd_id_selected}
                             value={lmr.cd_id}
                             options={cd_id_list}
                             onChange={this.handleChangeCDFormLMRChild}
@@ -1500,7 +1518,9 @@ class MYASGCreation extends Component {
                             id={i + " /// activity"}
                             value={lmr.activity}
                             onChange={this.handleChangeFormLMRChild}
-                            // readOnly
+                            disabled={
+                              this.state.lmr_form.LMR_Type === "Cost Collector"
+                            }
                           />
                         </FormGroup>
                       </Col>
