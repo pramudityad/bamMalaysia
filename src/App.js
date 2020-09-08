@@ -38,7 +38,7 @@ class App extends Component {
   render() {
     if (this.state.key) {
       if (this.state.authenticated){
-        localStorage.setItem('UserKey', this.state.key);
+        localStorage.setItem('UserKey', JSON.stringify(this.state.key));
         this.state.key.loadUserInfo().then(userInfo => {
           if(this.state.id !== userInfo.sub){
             this.setState({username: userInfo.name, email: userInfo.email, id: userInfo.sub});
@@ -49,8 +49,8 @@ class App extends Component {
           localStorage.setItem('userName', userInfo.name);
           localStorage.setItem('userEmail', userInfo.email);
           });
-        const userData = [{name:this.state.username, email:this.state.email, id:this.state.id}];
-        localStorage.setItem('UserData', userData);
+        const userData = {name:this.state.username, email:this.state.email, id:this.state.id};
+        localStorage.setItem('UserData', JSON.stringify(userData));
         return (
           <HashRouter>
               <React.Suspense fallback={loading()}>

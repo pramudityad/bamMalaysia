@@ -44,8 +44,10 @@ class DefaultLayout extends Component {
     this.props.history.push('/');
   }
   render() {
-    console.log('UserKey', localStorage.getItem('UserKey'));
-    console.log('UserData', localStorage.getItem('UserData'));
+    const userkey_obj = JSON.parse(localStorage.getItem('UserKey'));
+    const userdata_obj = JSON.parse(localStorage.getItem('UserData'));
+    console.log('UserKey', userkey_obj);
+    console.log('UserData', userdata_obj);
     return (
       <div className="app">
         <AppHeader fixed>
