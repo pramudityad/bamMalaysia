@@ -1,0 +1,72 @@
+.flex--card-account {
+  display: flex;
+  justify-content: center;
+}
+
+.flex--card-account > div{
+  width: 100%;
+  height: 300px;
+  margin: 20px;
+  text-align: center;
+  padding-top: 50px;
+  cursor: -webkit-grab;
+  cursor: grab;
+}
+
+.flex--card-account > div:hover{
+  width: 100%;
+  height: 300px;
+  /* margin: 5px; */
+  width: 110%;
+  /* background-color: rgba(176,190,197 ,1); */
+  /* background-color: rgba(120,144,156 ,1); */
+  background-color: rgba(255,255,255, 0.3);;
+  border-radius: 15px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.2);
+}
+
+.card-account--telkom{
+  /* background-color: #ef5350; */
+}
+
+.card-account--indosat{
+  /* background-color: #fcd401; */
+}
+
+.card-account--xl{
+  /* background-color: #1976D2; */
+}
+
+.card--error{
+  background-color: #E91E63;
+  color: #FAFAFA;
+  padding: 5px 10px 0 10px;
+  margin-bottom: 5px;
+}
+
+.grid-item {
+  background-color: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(0, 0, 0, 0.8);
+  padding: 20px;
+  font-size: 30px;
+  text-align: center;
+}
+
+.page--select-account{
+  background: url('../../assets/img/telecommunication-tower-riggers.jpg');
+  background-size: 1000px;
+}
+
+.background-container--login-page {
+  background-color: rgba(250,250,250 ,1);
+  border-radius: 15px;
+  padding: 15px 0px 10px 0px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.3), 0 6px 20px 0 rgba(0, 0, 0, 0.3);
+}
+
+.logo--ericsson-logo-bottom {
+  width : 150px;
+  margin-bottom : -150px !important;
+  background-color: black;
+  padding: 7px;
+}

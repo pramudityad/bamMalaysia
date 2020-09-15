@@ -30,6 +30,7 @@ import {
   getDatafromAPINODE
 } from "../../helper/asyncFunction";
 import {numToSSColumn} from '../../helper/basicFunction'
+import { connect } from 'react-redux';
 
 const DefaultNotif = React.lazy(() =>
   import("../../views/DefaultView/DefaultNotif")
@@ -87,7 +88,7 @@ class MatHW extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      tokenUser: BearerToken,
+      tokenUser: this.props.dataLogin.token,
       dropdownOpen: new Array(3).fill(false),
       createModal: false,
       modal_loading: false,
@@ -1225,4 +1226,11 @@ class MatHW extends React.Component {
   }
 }
 
-export default MatHW;
+const mapStateToProps = (state) => {
+  return {
+    dataLogin : state.loginData,
+    SidebarMinimize : state.minimizeSidebar
+  }
+}
+
+export default connect(mapStateToProps)(MatHW);

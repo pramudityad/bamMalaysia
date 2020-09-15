@@ -29,6 +29,7 @@ import {
 } from "../../helper/asyncFunction";
 import ModalDelete from "../Component/ModalDelete";
 import {numToSSColumn} from '../../helper/basicFunction'
+import { connect } from 'react-redux';
 
 const DefaultNotif = React.lazy(() =>
   import("../../views/DefaultView/DefaultNotif")
@@ -42,7 +43,7 @@ class MatARP extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      tokenUser: BearerToken,
+      tokenUser: this.props.dataLogin.token,
       dropdownOpen: new Array(3).fill(false),
       PPForm: new Array(11).fill(""),
       createModal: false,
@@ -1113,4 +1114,11 @@ class MatARP extends React.Component {
   }
 }
 
-export default MatARP;
+const mapStateToProps = (state) => {
+  return {
+    dataLogin : state.loginData,
+    SidebarMinimize : state.minimizeSidebar
+  }
+}
+
+export default connect(mapStateToProps)(MatARP);

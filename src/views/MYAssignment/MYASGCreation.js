@@ -24,6 +24,7 @@ import AsyncSelect from "react-select/async";
 import Select from "react-select";
 import "./LMRMY.css";
 import { getDatafromAPINODE } from "../../helper/asyncFunction";
+import { connect } from "react-redux";
 const DefaultNotif = React.lazy(() =>
   import("../../views/DefaultView/DefaultNotif")
 );
@@ -56,12 +57,12 @@ class MYASGCreation extends Component {
     super(props);
 
     this.state = {
-      // tokenUser: this.props.dataLogin.token,
-      tokenUser: BearerToken,
+      roleUser: this.props.dataLogin.role,
+      tokenUser: this.props.dataLogin.token,
       lmr_form: {
         pgr: "MP2",
         gl_account: "",
-        lmr_issued_by: this.props.dataUser.preferred_username,
+        lmr_issued_by: this.props.dataLogin.userName,
         plant: "MY",
         customer: "CELCOM",
         request_type: "Add LMR",
@@ -102,6 +103,7 @@ class MYASGCreation extends Component {
       custom_site_display: "",
       custom_gl_display: "",
       so_nw_updated: "",
+      getrole: "",
     };
     this.handleChangeCD = this.handleChangeCD.bind(this);
     this.loadOptionsCDID = this.loadOptionsCDID.bind(this);
@@ -272,10 +274,202 @@ class MYASGCreation extends Component {
     });
   }
 
+  getOptionbyRole1 = (role) => {
+    if (role !== undefined) {
+      if (role.includes("BAM-CPM") === true) {
+        return (
+          <>
+            <option value={null} selected></option>
+                            <option value="402603">NRO service - 402603</option>
+                            <option value="402603">NDO service - 402603</option>
+                            <option value="402201">
+                              NRO local material - 402201
+                            </option>
+          </>
+        );
+      }
+      if (role.includes("BAM-IM") === true) {
+        return (
+          <>
+            <option value="" disabled selected hidden>
+              Select
+            </option>
+            <option value={null} selected></option>
+                            <option value="402603">NRO service - 402603</option>
+                            <option value="402201">
+                              NRO local material - 402201
+                            </option>
+          </>
+        );
+      }
+      if (role.includes("BAM-IE Lead") === true) {
+        return (
+          <>
+            <option value="" disabled selected hidden>
+              Select
+            </option>
+            <option value={null} selected></option>
+                            <option value="402603">NRO service - 402603</option>
+                            <option value="402201">
+                              NRO local material - 402201
+                            </option>
+          </>
+        );
+      }
+      if (role.includes("BAM-MP") === true) {
+        return (
+          <>
+            <option value="" disabled selected hidden>
+              Select
+            </option>
+          </>
+        );
+      }
+      if (role.includes("BAM-PA") === true) {
+        return (
+          <>
+            <option value="" disabled selected hidden>
+              Select
+            </option>
+          </>
+        );
+      }
+    }
+  };
+
+  getOptionbyRole2 = (role) => {
+    if (role !== undefined) {
+      if (role.includes("BAM-CPM") === true) {
+        return (
+          <>
+            <option value={null} selected></option>
+            <option value="NRO">NRO</option>
+            <option value="NDO">NDO</option>
+            <option value="HW">HW</option>
+            <option value="ARP">ARP</option>
+          </>
+        );
+      }
+      if (role.includes("BAM-IM") === true) {
+        return (
+          <>
+            <option value="" disabled selected hidden>
+              Select
+            </option>
+            <option value={null} selected></option>
+            <option value="NRO">NRO</option>
+          </>
+        );
+      }
+      if (role.includes("BAM-IE Lead") === true) {
+        return (
+          <>
+            <option value="" disabled selected hidden>
+              Select
+            </option>
+            <option value="NRO Service">NRO Service</option>
+            <option value="NRO LM">NRO LM</option>
+          </>
+        );
+      }
+      if (role.includes("BAM-MP") === true) {
+        return (
+          <>
+            <option value={null} selected></option>
+
+            <option value="HW">HW</option>
+          </>
+        );
+      }
+      if (role.includes("BAM-PA") === true) {
+        return (
+          <>
+            <option value={null} selected></option>
+            <option value="ARP">ARP</option>
+          </>
+        );
+      }
+    }
+  };
+
+  getOptionbyLMR = (lmrtype) => {
+      if (lmrtype === "Cost Collector") {
+        return (
+          <>
+            <option value="" disabled selected hidden>
+              Select
+            </option>
+            <option value="Transport">Transport</option>
+            <option value="Others">Others</option>
+          </>
+        );
+      }
+      if (lmrtype === "Per Site") {
+        const role = this.state.roleUser
+        if (role !== undefined) {
+          if (role.includes("BAM-CPM") === true) {
+            return (
+              <>
+                <option value="" disabled selected hidden>
+                  Select
+                </option>
+                <option value="NRO Service">NRO Service</option>
+                <option value="NRO LM">NRO LM</option>
+                <option value="NDO Service">NDO Service</option>
+                <option value="Transport">Transport</option>
+              </>
+            );
+          }
+          if (role.includes("BAM-IM") === true) {
+            return (
+              <>
+                <option value="" disabled selected hidden>
+                  Select
+                </option>
+                <option value="NRO Service">NRO Service</option>
+                <option value="NRO LM">NRO LM</option>
+                <option value="Transport">Transport</option>
+              </>
+            );
+          }
+          if (role.includes("BAM-IE Lead") === true) {
+            return (
+              <>
+                <option value="" disabled selected hidden>
+                  Select
+                </option>
+                <option value="NRO Service">NRO Service</option>
+                <option value="NRO LM">NRO LM</option>
+              </>
+            );
+          }
+          if (role.includes("BAM-MP") === true) {
+            return (
+              <>
+                <option value="" disabled selected hidden>
+                  Select
+                </option>
+              </>
+            );
+          }
+          if (role.includes("BAM-PA") === true) {
+            return (
+              <>
+                <option value="" disabled selected hidden>
+                  Select
+                </option>
+              </>
+            );
+          }
+        }
+      }
+  };
+
   componentDidMount() {
     this.getVendorList();
     this.getProjectList();
     // this.getMaterialList();
+
     this.getDataCD();
     document.title = "LMR Creation | BAM";
   }
@@ -696,7 +890,7 @@ class MYASGCreation extends Component {
   async createLMR() {
     const dataForm = this.state.lmr_form;
     const dataChildForm = this.state.creation_lmr_child_form;
-    console.log(this.state.creation_lmr_child_form);
+    console.log('lmr child ',this.state.creation_lmr_child_form);
     const dataLMR = {
       plant: this.state.lmr_form.plant,
       customer: this.state.lmr_form.customer,
@@ -744,7 +938,7 @@ class MYASGCreation extends Component {
         lmr_type: this.state.lmr_form.LMR_Type,
         plan_cost_reduction: this.state.lmr_form.Plan_Cost_Reduction,
         cdid: dataChildForm[i].cdid,
-        per_site_material_type: dataChildForm[i].Per_Site_Material_Type,
+        // per_site_material_type: dataChildForm[i].Per_Site_Material_Type,
         item_status: "Submit",
         work_status: "Waiting for PR-PO creation",
         plant: this.state.lmr_form.plant,
@@ -840,7 +1034,7 @@ class MYASGCreation extends Component {
       }
     }
     if (name === "gl_account") {
-      this.setState({custom_gl_display: e.target.value})
+      this.setState({ custom_gl_display: e.target.options[e.target.selectedIndex].text });
     }
     lmr_form[name.toString()] = value;
     this.setState({ lmr_form: lmr_form }, () =>
@@ -850,80 +1044,100 @@ class MYASGCreation extends Component {
 
   handleChangeFormLMRChild(e) {
     let dataLMR = this.state.creation_lmr_child_form;
+    let dataparentLMR = this.state.lmr_form;
     let idxField = e.target.name.split(" /// ");
     let value = e.target.value;
     let idx = idxField[0];
     let field = idxField[1];
-    let cdData = this.state.list_cd_id.find((e) => e.CD_ID === dataLMR[parseInt(idx)]["cdid"]);    
-    // console.log('cdData ', cdData)
-    // console.log('check cd from per site ', dataLMR[parseInt(idx)]["cdid"])
+    let cdData = this.state.list_cd_id.find(
+      (e) => e.CD_ID === dataLMR[parseInt(idx)]["cdid"]
+    );
     dataLMR[parseInt(idx)][field] = value;
-    if (field === "Per_Site_Material_Type" && value === "NRO Service" ) {
-      if(dataLMR[parseInt(idx)]["cdid"] !== "" && cdData !== undefined){        
-        dataLMR[parseInt(idx)]["so_or_nw"] = cdData.NW_NRO;
-      }
-      dataLMR[parseInt(idx)]["activity"] = "5640";
-      dataLMR[parseInt(idx)]["material_type"] = "NRO";
-    }
-    if (field === "Per_Site_Material_Type" && value === "Transport") {
-      if(dataLMR[parseInt(idx)]["cdid"] !== "" && cdData !== undefined){        
-        dataLMR[parseInt(idx)]["so_or_nw"] = cdData.NW_NRO;
-      }
-      dataLMR[parseInt(idx)]["activity"] = "";
-      dataLMR[parseInt(idx)]["material_type"] = "NRO";
-    }
-    if (field === "Per_Site_Material_Type" && value === "NRO LM") {
-      if(dataLMR[parseInt(idx)]["cdid"] !== "" && cdData !== undefined){        
-        dataLMR[parseInt(idx)]["so_or_nw"] = cdData.NW_NRO;
-      }
-      dataLMR[parseInt(idx)]["activity"] = "5200";
-      dataLMR[parseInt(idx)]["material_type"] = "NRO";
-    }
-    if (field === "Per_Site_Material_Type" && value === "NDO Service") {
-      if(dataLMR[parseInt(idx)]["cdid"] !== "" && cdData !== undefined){        
-        dataLMR[parseInt(idx)]["so_or_nw"] = cdData.NW_NDO;
-      }
-      dataLMR[parseInt(idx)]["activity"] = "2010";
-      dataLMR[parseInt(idx)]["material_type"] = "NDO";
-    }
+
+    // use Per_Site_Material_Type
+    // if (field === "Per_Site_Material_Type" && value === "NRO Service") {
+    //   if (dataLMR[parseInt(idx)]["cdid"] !== "" && cdData !== undefined) {
+    //     dataLMR[parseInt(idx)]["so_or_nw"] = cdData.NW_NRO;
+    //   }
+    //   dataparentLMR["gl_account"] = "402603"
+    //   dataLMR[parseInt(idx)]["activity"] = "5640";
+    //   dataLMR[parseInt(idx)]["material_type"] = "NRO";
+    // }
+    // if (field === "Per_Site_Material_Type" && value === "Transport") {
+    //   if (dataLMR[parseInt(idx)]["cdid"] !== "" && cdData !== undefined) {
+    //     dataLMR[parseInt(idx)]["so_or_nw"] = cdData.NW_NRO;
+    //   }
+    //   dataparentLMR["gl_account"] = "402102"
+    //   dataLMR[parseInt(idx)]["activity"] = "803X";
+    //   dataLMR[parseInt(idx)]["material_type"] = "NRO";
+    // }
+    // if (field === "Per_Site_Material_Type" && value === "NRO LM") {
+    //   if (dataLMR[parseInt(idx)]["cdid"] !== "" && cdData !== undefined) {
+    //     dataLMR[parseInt(idx)]["so_or_nw"] = cdData.NW_NRO;
+    //   }
+    //   dataparentLMR["gl_account"] = "402201"
+    //   dataLMR[parseInt(idx)]["activity"] = "5200";
+    //   dataLMR[parseInt(idx)]["material_type"] = "NRO";
+    // }
+    // if (field === "Per_Site_Material_Type" && value === "NDO Service") {
+    //   if (dataLMR[parseInt(idx)]["cdid"] !== "" && cdData !== undefined) {
+    //     dataLMR[parseInt(idx)]["so_or_nw"] = cdData.NW_NDO;
+    //   }
+    //   dataparentLMR["gl_account"] = "402603"
+    //   dataLMR[parseInt(idx)]["activity"] = "2010";
+    //   dataLMR[parseInt(idx)]["material_type"] = "NDO";
+    // }
+    //  if (field === "Per_Site_Material_Type" && value === "Others") {
+    //   dataparentLMR["gl_account"] = ""
+    //   dataLMR[parseInt(idx)]["activity"] = "";
+    // }
+
     if (field === "quantity" && isNaN(dataLMR[parseInt(idx)].price) === false) {
       dataLMR[parseInt(idx)]["total_amount"] =
         value * dataLMR[parseInt(idx)].price;
     }
-    this.setState({ creation_lmr_child_form: dataLMR, so_nw_updated : dataLMR[parseInt(idx)]["so_or_nw"]}, () =>
-      console.log(this.state.creation_lmr_child_form)
+    this.setState(
+      {
+        lmr_form: dataparentLMR,
+        creation_lmr_child_form: dataLMR,
+        so_nw_updated: dataLMR[parseInt(idx)]["so_or_nw"],
+      },
+      () => console.log(this.state.creation_lmr_child_form)
     );
   }
 
   handleChangeCDFormLMRChild = (e, action) => {
     let dataLMR = this.state.creation_lmr_child_form;
+    let dataparentLMR_GL = this.state.custom_gl_display;
     let idxField = action.name.split(" /// ");
     let value = e.value;
     let idx = idxField[0];
-    let field = idxField[1];
-    console.log(dataLMR[parseInt(idx)]["Per_Site_Material_Type"])
+    let field = idxField[1];    
     if (field === "cd_id" && this.state.lmr_form.LMR_Type === "Per Site") {
       let cdData = this.state.list_cd_id.find((e) => e.CD_ID === value);
       let custom_site_display = cdData.LOC_ID + "_" + cdData.Site_Name;
+      dataLMR[parseInt(idx)]["custom_site_display"] = custom_site_display;
       dataLMR[parseInt(idx)]["site_id"] = cdData.Site_Name;
       dataLMR[parseInt(idx)]["project_name"] = cdData.Project;
       dataLMR[parseInt(idx)]["cdid"] = value;
-      if (dataLMR[parseInt(idx)]["Per_Site_Material_Type"] === "NRO Service") {
-        dataLMR[parseInt(idx)]["so_or_nw"] = cdData.NW_NRO;
+      if (dataparentLMR_GL === "Transport - 402102") {
+        dataLMR[parseInt(idx)]["so_or_nw"] = "";
+        dataLMR[parseInt(idx)]["activity"] = "803X";
       }
-      if (dataLMR[parseInt(idx)]["Per_Site_Material_Type"] === "NRO LM") {
+      if (dataparentLMR_GL === "NRO service - 402603") {
         dataLMR[parseInt(idx)]["so_or_nw"] = cdData.NW_NRO;
+        dataLMR[parseInt(idx)]["activity"] = "5640";
       }
-      if (dataLMR[parseInt(idx)]["Per_Site_Material_Type"] === "Transport") {
+      if (dataparentLMR_GL === "NRO local material - 402201") {
         dataLMR[parseInt(idx)]["so_or_nw"] = cdData.NW_NRO;
+        dataLMR[parseInt(idx)]["activity"] = "2000";
       }
-      if (dataLMR[parseInt(idx)]["Per_Site_Material_Type"] === "NDO Service") {
+      if (dataparentLMR_GL === "NDO service - 402603") {
         dataLMR[parseInt(idx)]["so_or_nw"] = cdData.NW_NDO;
+        dataLMR[parseInt(idx)]["activity"] = "5200";
       }
       this.setState({
-        cd_id_project: cdData.Project,
-        custom_site_display: custom_site_display,
-        cd_id_selected: value
+        cd_id_selected: value,
       });
     }
     this.setState({ creation_lmr_child_form: dataLMR }, () =>
@@ -1192,12 +1406,12 @@ class MYASGCreation extends Component {
                             type="select"
                             name="gl_account"
                             id="gl_account"
-                            value={this.state.custom_gl_display}
+                            value={this.state.lmr_form.gl_account}
                             onChange={this.handleChangeFormLMR}
                           >
                             <option value={null} selected></option>
-                            <option value="402201">
-                              3PP Material - 3PP Material HW - 402201
+                            <option value="402102">
+                            Transport - 402102
                             </option>
                             <option value="402203">
                               3PP Material - 3PP Material SW - 402203
@@ -1220,49 +1434,22 @@ class MYASGCreation extends Component {
                             type="select"
                             name="gl_account"
                             id="gl_account"
-                            value={this.state.custom_gl_display}
+                            value={this.state.lmr_form.gl_account}
                             onChange={this.handleChangeFormLMR}
                           >
-                            <option value={null} selected></option>
+                            {/* <option value={null} selected></option>
                             <option value="402603">NRO service - 402603</option>
                             <option value="402603">NDO service - 402603</option>
                             <option value="402201">
                               NRO local material - 402201
-                            </option>
-                            <option value="402102">Transport - 402102</option>
+                            </option> */}
+                            {this.getOptionbyRole1(this.state.roleUser)}
                           </Input>
                         )}
                       </FormGroup>
                     </Col>
                   </Row>
-                  <Row form>
-                    {/* <Col md={4}>
-                      <FormGroup>
-                        <Label>Project Name</Label>
-                        {this.state.lmr_edit === true ? 
-                        (<Input
-                          type="select"
-                          name="project_name"
-                          id="project_name"
-                          value={this.state.lmr_form.project_name}
-                          onChange={this.handleChangeFormLMR}
-                        >
-                          <option value="" disabled selected hidden>
-                            Select Project Name
-                          </option>
-                          {this.state.list_project.map((e) => (
-                            <option value={e.Project}>{e.Project}</option>
-                          ))}  
-                        </Input>) : (<Input
-                          type="text"
-                          name="project_name"
-                          id="project_name"
-                          value={this.state.lmr_form.project_name}
-                          onChange={this.handleChangeFormLMR}
-                          readOnly
-                        />)}
-                      </FormGroup>
-                    </Col> */}
+                  <Row form>                   
                     <Col md={4}>
                       <FormGroup>
                         <Label>Header Text</Label>
@@ -1404,7 +1591,7 @@ class MYASGCreation extends Component {
                 {this.state.creation_lmr_child_form.map((lmr, i) => (
                   <Form>
                     <Row form>
-                      <Col md={2}>
+                      {/* <Col md={2}>
                         <FormGroup>
                           <Label>Per Site Material Type</Label>
                           <Input
@@ -1413,31 +1600,21 @@ class MYASGCreation extends Component {
                             id={i + " /// Per_Site_Material_Type"}
                             value={lmr.Per_Site_Material_Type}
                             onChange={this.handleChangeFormLMRChild}
-                            disabled={
-                              this.state.lmr_form.LMR_Type === "Cost Collector"
-                            }
+                            // disabled={
+                            //   this.state.lmr_form.LMR_Type === "Cost Collector"
+                            // }
                           >
-                            <option value="" disabled selected hidden>
-                              Select
-                            </option>
-                            <option value="NRO Service">NRO Service</option>
-                            <option value="NRO LM">NRO LM</option>
-                            <option value="NDO Service">NDO Service</option>
-                            <option value="Transport">Transport</option>
-                            {/* {this.state.vendor_list.map((e) => (
-                            <option value={e.Vendor_Code}>{e.Name}</option>
-                          ))} */}
+                            {this.getOptionbyLMR(this.state.lmr_form.LMR_Type)}
                           </Input>
                         </FormGroup>
-                      </Col>
+                      </Col> */}
                       <Col md={3}>
                         <FormGroup>
-                          <Label>CD ID</Label>        
+                          <Label>CD ID</Label>
                           <Select
                             cacheOptions
                             name={i + " /// cd_id"}
                             id={i + " /// cd_id"}
-                            // value={this.state.cd_id_selected}
                             value={lmr.cd_id}
                             options={cd_id_list}
                             onChange={this.handleChangeCDFormLMRChild}
@@ -1450,7 +1627,7 @@ class MYASGCreation extends Component {
                       <Col md={2}>
                         <FormGroup>
                           <Label>Project Name</Label>
-                          {this.state.lmr_edit === true ? (
+                          {this.state.lmr_form.LMR_Type === "Cost Collector" ? (
                             <Input
                               type="select"
                               name={i + " /// project_name"}
@@ -1470,7 +1647,7 @@ class MYASGCreation extends Component {
                               type="text"
                               name={i + " /// project_name"}
                               id={i + " /// project_name"}
-                              value={this.state.cd_id_project}
+                              value={lmr.project_name}
                               // onChange={this.handleChangeFormLMRChild}
                               readOnly
                             />
@@ -1485,8 +1662,7 @@ class MYASGCreation extends Component {
                             type="text"
                             name={i + " /// site_id"}
                             id={i + " /// site_id"}
-                            // ref={this.state.custom_site_display}
-                            value={this.state.custom_site_display}
+                            value={lmr.custom_site_display}
                             onChange={this.handleChangeFormLMRChild}
                             disabled={
                               this.state.lmr_form.LMR_Type === "Cost Collector"
@@ -1503,9 +1679,9 @@ class MYASGCreation extends Component {
                             id={i + " /// so_or_nw"}
                             value={lmr.so_or_nw}
                             onChange={this.handleChangeFormLMRChild}
-                            disabled={
-                              this.state.lmr_form.LMR_Type === "Cost Collector"
-                            }
+                            // disabled={
+                            //   this.state.lmr_form.LMR_Type === "Cost Collector"
+                            // }
                           />
                         </FormGroup>
                       </Col>
@@ -1518,9 +1694,9 @@ class MYASGCreation extends Component {
                             id={i + " /// activity"}
                             value={lmr.activity}
                             onChange={this.handleChangeFormLMRChild}
-                            disabled={
-                              this.state.lmr_form.LMR_Type === "Cost Collector"
-                            }
+                            // disabled={
+                            //   this.state.lmr_form.LMR_Type === "Cost Collector"
+                            // }
                           />
                         </FormGroup>
                       </Col>
@@ -1545,12 +1721,9 @@ class MYASGCreation extends Component {
                             id={i + " /// material_type"}
                             value={lmr.material_type}
                             onChange={this.handleChangeFormLMRChild}
+                            // readOnly
                           >
-                            <option value={null} selected></option>
-                            <option value="NRO">NRO</option>
-                            <option value="NDO">NDO</option>
-                            <option value="HW">HW</option>
-                            <option value="ARP">ARP</option>
+                           {this.getOptionbyRole2(this.props.dataLogin.role)}
                           </Input>
                         </FormGroup>
                       </Col>
@@ -2098,4 +2271,11 @@ class MYASGCreation extends Component {
   }
 }
 
-export default MYASGCreation;
+const mapStateToProps = (state) => {
+  return {
+    dataLogin: state.loginData,
+    SidebarMinimize: state.minimizeSidebar,
+  };
+};
+
+export default connect(mapStateToProps)(MYASGCreation);

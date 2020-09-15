@@ -6,6 +6,7 @@ import Pagination from 'react-js-pagination';
 import Excel from 'exceljs';
 import { saveAs } from 'file-saver';
 import {convertDateFormatfull, convertDateFormat} from '../../helper/basicFunction'
+import { connect } from 'react-redux';
 
 
 // const BearerToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjYXNfaWQiOiI1MmVhNTZhMS0zNDMxLTRlMmQtYWExZS1hNTc3ODQzMTMxYzEiLCJyb2xlcyI6WyJCQU0tU3VwZXJBZG1pbiJdLCJhY2NvdW50IjoiMSIsImlhdCI6MTU5MTY5MTE4MH0.FpbzlssSQyaAbJOzNf3KLqHPnYo_ccBtBWu6n87h1RQ';
@@ -15,8 +16,7 @@ class MYASGList extends Component {
     super(props);
 
     this.state = {
-      // tokenUser: this.props.dataLogin.token,
-      tokenUser : BearerToken,
+      tokenUser: this.props.dataLogin.token,
       lmr_list: [],
       prevPage: 0,
       activePage: 1,
@@ -112,6 +112,7 @@ class MYASGList extends Component {
   componentDidMount() {
     this.getMRList();
     this.getAllMR();
+    // console.log('token ', this.props.dataLogin.token)
     document.title = 'LMR List | BAM';
   }
 
@@ -224,4 +225,12 @@ class MYASGList extends Component {
   }
 }
 
-export default MYASGList;
+const mapStateToProps = (state) => {
+  return {
+    dataLogin : state.loginData,
+    SidebarMinimize : state.minimizeSidebar
+  }
+}
+
+
+export default connect(mapStateToProps)(MYASGList);

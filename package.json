@@ -30,11 +30,13 @@
     "react-dom": "^16.8.6",
     "react-excel-renderer": "^1.1.0",
     "react-js-pagination": "^3.0.3",
+    "react-redux": "^7.2.1",
     "react-router-config": "^5.0.0",
     "react-router-dom": "^5.0.0",
     "react-select": "^3.1.0",
     "react-test-renderer": "^16.8.6",
     "reactstrap": "^7.1.0",
+    "redux": "^4.0.5",
     "simple-line-icons": "^2.4.1",
     "xlsx": "^0.16.2"
   },

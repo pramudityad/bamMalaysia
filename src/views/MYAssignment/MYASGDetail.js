@@ -31,6 +31,7 @@ import * as XLSX from "xlsx";
 import { Link } from "react-router-dom";
 import "./LMRMY.css";
 import { getDatafromAPINODE } from "../../helper/asyncFunction";
+import { connect } from "react-redux";
 
 import {
   convertDateFormatfull,
@@ -75,7 +76,7 @@ class MYASGDetail extends Component {
     this.state = {
       activity_list: [],
       // tokenUser: this.props.dataLogin.token,
-      tokenUser: BearerToken,
+      tokenUser: this.props.dataLogin.token,
       lmr_child_form: {},
       modal_loading: false,
       modalAddChild: false,
@@ -108,7 +109,7 @@ class MYASGDetail extends Component {
       lmr_form: {
         pgr: "MP2",
         gl_account: "402102",
-        lmr_issued_by: this.props.dataUser.preferred_username,
+        lmr_issued_by: this.props.dataLogin.userName,
         plant: "MY",
         customer: "CELCOM",
         request_type: "Delete LMR",
@@ -1830,8 +1831,6 @@ class MYASGDetail extends Component {
                       <tr>
                         <th style={{ width: "70%" }}></th>
                         <th>Request Type</th>
-                        <th>Per Site Material Type</th>
-
                         <th>Project Name</th>
                         <th>CD_ID</th>
                         <th>Site ID</th>
@@ -1883,8 +1882,6 @@ class MYASGDetail extends Component {
                               </Link>
                             </td>
                             <td>{e.request_type}</td>
-                            <td>{e.per_site_material_type}</td>
-
                             <td>{e.project_name}</td>
                             <td>{e.cdid}</td>
                             <td>{e.site_id}</td>
@@ -2885,4 +2882,11 @@ class MYASGDetail extends Component {
   }
 }
 
-export default MYASGDetail;
+const mapStateToProps = (state) => {
+  return {
+    dataLogin: state.loginData,
+    SidebarMinimize: state.minimizeSidebar,
+  };
+};
+
+export default connect(mapStateToProps)(MYASGDetail);

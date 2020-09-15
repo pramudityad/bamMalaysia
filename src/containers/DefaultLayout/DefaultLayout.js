@@ -2,6 +2,7 @@ import React, { Component, Suspense } from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import * as router from 'react-router-dom';
 import { Container } from 'reactstrap';
+import {connect} from 'react-redux';
 
 import {
   AppAside,
@@ -17,6 +18,7 @@ import {
 } from '@coreui/react';
 // sidebar nav config
 import navigation from '../../_nav';
+
 // routes config
 import routes from '../../routes';
 
@@ -31,7 +33,13 @@ class DefaultLayout extends Component {
     this.state = {
       name: "",
       email: "",
-      id: ""
+      id: "",
+      navMenu : navigation,
+      routes : this.props.dataLogin.account_id,
+      userRole : this.props.dataLogin.role,
+      minimize : this.props.SidebarMinimize,
+      vendor_name : this.props.dataLogin.vendor_name,
+      vendor_code : this.props.dataLogin.vendor_code,
     };
   }
 
@@ -43,11 +51,55 @@ class DefaultLayout extends Component {
     this.props.keycloak.logout();
     this.props.history.push('/');
   }
+
+  componentDidMount(){
+    this.showMenuByRole();
+  }
+
+  showMenuByRole(){
+    console.log("showByRole", this.state.userRole);
+    let rolesUser = this.props.dataLogin.role;
+    let dataMenu = this.state.navMenu.items;
+    let dataMenuRoles = [];
+    if(this.state.vendor_code !== undefined && this.state.vendor_code !== null && this.state.vendor_code.length !== 0){
+      rolesUser.push("BAM-ASP");
+    }
+    if(dataMenu !== undefined && dataMenu.length !== 0 && rolesUser.indexOf("Admin") === -1){
+      for(let i = 0; i < dataMenu.length; i++){
+        let dataMenuIndex = Object.assign({}, dataMenu[i])
+        if(dataMenu[i].roles !== undefined){
+          let allowed = dataMenu[i].roles.some(e => rolesUser.includes(e));
+          if(allowed === false){
+            // dataMenuIndex.splice(i,1);
+          }else{
+            dataMenuRoles.push(dataMenuIndex);
+            if(dataMenu[i].children !== undefined && dataMenu[i].children.length > 0){
+              for(let j = 0; j < dataMenu[i].children.length; j++){
+                if(dataMenu[i].children[j].roles !== undefined){
+                  let allowedChild = dataMenu[i].children[j].roles.some(e => rolesUser.includes(e));
+                  if(allowedChild === false){
+                    // dataMenuIndex.children.splice(j,1);
+                    dataMenuIndex.children = dataMenuIndex.children.filter(e => e.name !== dataMenu[i].children[j].name);
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      this.setState({navMenu : {items : dataMenuRoles}});
+    }
+  }
+
+  componentDidUpdate(){
+    if(this.state.minimize !== this.props.SidebarMinimize){
+      this.setState({minimize : this.props.SidebarMinimize});
+    }
+  }
+
+
   render() {
-    const userkey_obj = JSON.parse(localStorage.getItem('UserKey'));
-    const userdata_obj = JSON.parse(localStorage.getItem('UserData'));
-    console.log('UserKey', userkey_obj);
-    console.log('UserData', userdata_obj);
+    console.log("this.props", this.props);
     return (
       <div className="app">
         <AppHeader fixed>
@@ -60,7 +112,7 @@ class DefaultLayout extends Component {
             <AppSidebarHeader />
             <AppSidebarForm />
             <Suspense>
-            <AppSidebarNav navConfig={navigation} {...this.props} router={router}/>
+            <AppSidebarNav navConfig={this.state.navMenu} {...this.props} router={router}/>
             </Suspense>
             <AppSidebarFooter />
             <AppSidebarMinimizer />
@@ -103,4 +155,11 @@ class DefaultLayout extends Component {
   }
 }
 
-export default DefaultLayout;
+const mapStateToProps = (state) => {
+  return {
+    dataLogin : state.loginData,
+    SidebarMinimize : state.minimizeSidebar
+  }
+}
+
+export default connect(mapStateToProps)(DefaultLayout);

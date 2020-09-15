@@ -21,6 +21,7 @@ import { Link, Redirect } from "react-router-dom";
 import AsyncSelect from "react-select/async";
 import Select from "react-select";
 import "./LMRMY.css";
+import { connect } from 'react-redux';
 
 const DefaultNotif = React.lazy(() =>
   import("../../views/DefaultView/DefaultNotif")
@@ -120,11 +121,11 @@ class MYASGEdit extends Component {
 
     this.state = {
       // tokenUser: this.props.dataLogin.token,
-      tokenUser: BearerToken,
+      tokenUser: this.props.dataLogin.token,
       lmr_form: {
         pgr: "MP2",
         gl_account: "402102",
-        lmr_issued_by: this.props.dataUser.preferred_username,
+        lmr_issued_by: this.props.dataLogin.userName,
         plant: "MY",
         customer: "CELCOM",
         request_type: "Change LMR",
@@ -1379,4 +1380,12 @@ class MYASGEdit extends Component {
   }
 }
 
-export default MYASGEdit;
+const mapStateToProps = (state) => {
+  return {
+    dataLogin : state.loginData,
+    SidebarMinimize : state.minimizeSidebar
+  }
+}
+
+
+export default connect(mapStateToProps)(MYASGEdit);

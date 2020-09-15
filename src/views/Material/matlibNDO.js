@@ -19,6 +19,7 @@ import Excel from "exceljs";
 import * as XLSX from "xlsx";
 import ModalCreateNew from "../Component/ModalCreateNew";
 import ModalDelete from "../Component/ModalDelete";
+import { connect } from 'react-redux';
 
 import Loading from "../Component/Loading";
 import { ExcelRenderer } from "react-excel-renderer";
@@ -42,7 +43,7 @@ class MatNDO extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      tokenUser: BearerToken,
+      tokenUser: this.props.dataLogin.token,
       dropdownOpen: new Array(3).fill(false),
       createModal: false,
       modal_loading: false,
@@ -1112,4 +1113,11 @@ class MatNDO extends React.Component {
   }
 }
 
-export default MatNDO;
+const mapStateToProps = (state) => {
+  return {
+    dataLogin : state.loginData,
+    SidebarMinimize : state.minimizeSidebar
+  }
+}
+
+export default connect(mapStateToProps)(MatNDO);

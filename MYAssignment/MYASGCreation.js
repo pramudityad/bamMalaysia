@@ -128,7 +128,7 @@ class MYASGCreation extends Component {
 
     this.state = {
       // tokenUser: this.props.dataLogin.token,
-      tokenUser: BearerToken,
+      tokenUser: this.props.dataLogin.token,
       lmr_form: {
         pgr: "MP2",
         gl_account: "402102",

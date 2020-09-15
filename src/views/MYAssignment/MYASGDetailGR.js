@@ -41,7 +41,7 @@ class MYASGDetail extends Component {
     this.state = {
       activity_list: [],
       // tokenUser: this.props.dataLogin.token,
-      tokenUser: BearerToken,
+      tokenUser: this.props.dataLogin.token,
       lmr_child_form: {},
       modal_loading: false,
       modalAddChild: false,
