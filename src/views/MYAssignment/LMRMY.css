@@ -13,3 +13,9 @@
 .form-lmr-child td > select {
   width: 100px;
 }
+
+.row-alert-fixed .alert {
+  z-index: 1;
+  position: fixed;
+  top: 75px;
+}

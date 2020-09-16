@@ -441,6 +441,7 @@ class MatNRO extends React.Component {
     if (res.data !== undefined) {
       this.setState({ action_status: "success" });
       this.toggleLoading();
+      window.location.reload();
     } else {
       if (
         res.response !== undefined &&

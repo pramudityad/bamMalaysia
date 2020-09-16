@@ -208,6 +208,7 @@ class MatARP extends React.Component {
     if (res.data !== undefined) {
       this.setState({ action_status: "success" });
       this.toggleLoading();
+      window.location.reload();
     } else {
       if (
         res.response !== undefined &&
@@ -653,8 +654,8 @@ class MatARP extends React.Component {
                             this.state.material_list.map((e) => (
                               <React.Fragment key={e._id + "frag"}>
                                 <tr
-                                  style={{ backgroundColor: "#d3d9e7" }}
-                                  className="fixbody"
+                                  // style={{ backgroundColor: "#d3d9e7" }}
+                                  // className="fixbody"
                                   key={e._id}
                                 >
                                   <td style={{ textAlign: "center" }}>
