@@ -209,7 +209,7 @@ class MatNDO extends React.Component {
     if (res.data !== undefined) {
       this.setState({ action_status: "success" });
       this.toggleLoading();
-      window.location.reload();
+      setTimeout(function(){ window.location.reload(); }, 1500);
     } else {
       if (
         res.response !== undefined &&

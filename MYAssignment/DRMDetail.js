@@ -562,7 +562,7 @@ class DRMDetail extends React.Component {
       this.setState({ action_status: "success" }, () => {
         this.toggleLoading();
         setTimeout(function () {
-          window.location.reload();
+          setTimeout(function(){ window.location.reload(); }, 1500);
         }, 2000);
       });
     } else {
