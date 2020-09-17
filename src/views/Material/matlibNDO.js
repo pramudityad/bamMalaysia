@@ -70,6 +70,7 @@ class MatNDO extends React.Component {
   }
 
   componentDidMount() {
+    
     this.getVendorList();
     this.getMaterialList();
     this.getMaterialListAll();
@@ -98,6 +99,9 @@ class MatNDO extends React.Component {
   }
 
   getMaterialList() {
+    this.setState((prevState) => ({
+      modal_loading: !prevState.modal_loading,
+    }));
     let whereAnd =
       '{ "Material_Type":{"$regex" : "' + modul_name + '", "$options" : "i"}}';
     getDatafromAPIMY(
@@ -111,7 +115,7 @@ class MatNDO extends React.Component {
       if (res.data !== undefined) {
         const items = res.data._items;
         const totalData = res.data._meta.total;
-        this.setState({ material_list: items, totalData: totalData, }, ()=>console.log(items.map(e=>e._id))
+        this.setState({ material_list: items, totalData: totalData, modal_loading: !this.state.modal_loading}, ()=>console.log(items.map(e=>e._id))
         );
       }
     });

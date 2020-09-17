@@ -117,6 +117,7 @@ class MatHW extends React.Component {
   }
 
   componentDidMount() {
+    
     this.getVendorList();
     this.getMaterialList();
     this.getMaterialListAll();
@@ -146,15 +147,9 @@ class MatHW extends React.Component {
   }
 
   getMaterialList() {
-    // let whereAnd =
-    //   '{ "Material_Type":{"$regex" : "' + modul_name + '", "$options" : "i"}}';
-    // getDatafromAPIMY(
-    //   "/mm_code_data?where=" +
-    //     whereAnd +
-    //     "&max_results=" +
-    //     this.state.perPage +
-    //     "&page=" +
-    //     this.state.activePage
+    this.setState((prevState) => ({
+      modal_loading: !prevState.modal_loading,
+    }));
     getDatafromAPINODE(
       '/mmCode/getMm?q={"Material_Type": "'+modul_name+'"}' +
         "&lmt=" +
@@ -166,7 +161,7 @@ class MatHW extends React.Component {
       if (res.data !== undefined) {
         const items = res.data.data;
         const totalData = res.data.totalResults;
-        this.setState({ material_list: items, totalData: totalData }, () =>
+        this.setState({ material_list: items, totalData: totalData, modal_loading: !this.state.modal_loading }, () =>
           console.log(this.state.material_list)
         );
       }

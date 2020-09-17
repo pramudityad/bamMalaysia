@@ -299,7 +299,7 @@ class MatNRO extends React.Component {
     this.saveUpdateNROVendorData = this.saveUpdateNROVendorData.bind(this);
   }
 
-  componentDidMount() {
+  componentDidMount() {    
     this.getVendorList();
     this.getMaterialList();
     this.getMaterialListAll();
@@ -316,6 +316,9 @@ class MatNRO extends React.Component {
   }
 
   getMaterialList() {
+    this.setState((prevState) => ({
+      modal_loading: !prevState.modal_loading,
+    }));
     getDatafromAPINODE(
       '/mmCode/getMm?q={"Material_Type": "'+modul_name+'"}' +
         "&lmt=" +
@@ -327,7 +330,7 @@ class MatNRO extends React.Component {
       if (res.data !== undefined) {
         const items = res.data.data;
         const totalData = res.data.totalResults;
-        this.setState({ material_list: items, totalData: totalData }, ()=>console.log(items.map(e=>e._id)));
+        this.setState({ material_list: items, totalData: totalData, modal_loading: !this.state.modal_loading }, ()=>console.log(items.map(e=>e._id)));
       }
     });
   }
