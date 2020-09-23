@@ -277,7 +277,7 @@ class MYASGCreation extends Component {
 
   getOptionbyRole1 = (role) => {
     if (role !== undefined) {
-      if (role.includes("BAM-CPM") === true) {
+      if (role.includes("BAM-CPM") === true || role.includes("BAM-Sourcing") === true) {
         return (
           <>
             <option value="" selected></option>
@@ -334,7 +334,7 @@ class MYASGCreation extends Component {
 
   getOptionbyRole2 = (role) => {
     if (role !== undefined) {
-      if (role.includes("BAM-CPM") === true) {
+      if (role.includes("BAM-CPM") === true || role.includes("BAM-Sourcing") === true) {
         return (
           <>
             <option value="" selected></option>
@@ -387,7 +387,7 @@ class MYASGCreation extends Component {
 
   getOptionbyRole3 = (role) => {
     if (role !== undefined) {
-      if (role.includes("BAM-CPM") === true) {
+      if (role.includes("BAM-CPM") === true || role.includes("BAM-Sourcing") === true) {
         return (
           <>
             <option value="" selected></option>

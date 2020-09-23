@@ -25,6 +25,7 @@ import Excel from "exceljs";
 import { Modal, ModalBody, ModalHeader, ModalFooter } from "reactstrap";
 import * as XLSX from "xlsx";
 import { getDatafromAPIMY } from "../../helper/asyncFunction";
+import { connect } from 'react-redux';
 
 const DefaultNotif = React.lazy(() =>
   import("../../views/DefaultView/DefaultNotif")
@@ -104,23 +105,43 @@ class MYASGDetail extends Component {
   }
 
   addGR() {
-    this.setState({
-      ChildForm: this.state.ChildForm.concat([
-        {
-          Plant: "MY",
-          Request_Type: "Add GR",
-          PO_Number: this.state.list_pr_po.PO_Number,
-          PO_Item: this.state.list_pr_po.PO_Item,
-          PO_Price: this.state.list_pr_po.PO_Price,
-          PO_Qty: this.state.list_pr_po.PO_Qty,
-          Required_GR_Qty: "",
-          DN_No: "",
-          WCN_Link: "",
-          // Item_Status: "Waiting for GR",
-          // Work_Status: "Submit",
-        },
-      ]),
-    });
+    if(this.state.list_pr_po !== undefined){
+      this.setState({
+        ChildForm: this.state.ChildForm.concat([
+          {
+            Plant: "MY",
+            Request_Type: "Add GR",
+            PO_Number: this.state.list_pr_po.PO_Number,
+            PO_Item: this.state.list_pr_po.PO_Item,
+            PO_Price: this.state.list_pr_po.PO_Price,
+            PO_Qty: this.state.list_pr_po.PO_Qty,
+            Required_GR_Qty: "",
+            DN_No: "",
+            WCN_Link: "",
+            // Item_Status: "Waiting for GR",
+            // Work_Status: "Submit",
+          },
+        ]),
+      });
+    } else{
+      this.setState({
+        ChildForm: this.state.ChildForm.concat([
+          {
+            Plant: "MY",
+            Request_Type: "Add GR",
+            PO_Number: "",
+            PO_Item: "",
+            PO_Price: "",
+            PO_Qty: "",
+            Required_GR_Qty: "",
+            DN_No: "",
+            WCN_Link: "",
+            // Item_Status: "Waiting for GR",
+            // Work_Status: "Submit",
+          },
+        ]),
+      });
+    }
   }
 
   deleteSSOW = (idx) => () => {
@@ -324,7 +345,7 @@ class MYASGDetail extends Component {
     ).then((res) => {
       if (res.data !== undefined) {
         const dataLMRDetailPRPO = res.data._items[0];
-        this.setState({ list_pr_po: dataLMRDetailPRPO });
+        this.setState({ list_pr_po: dataLMRDetailPRPO }, () => console.log('prpo ',this.state.list_pr_po));
       }
     });
   }
@@ -796,7 +817,7 @@ class MYASGDetail extends Component {
 
   render() {
     const Dataform = this.state.Dataform;
-    const prpo = this.state.list_pr_po[0];
+    // const prpo = this.state.list_pr_po[0];
     return (
       <div>
         <DefaultNotif
@@ -959,13 +980,6 @@ class MYASGDetail extends Component {
                             <td>CD_ID</td>
                             <td>:</td>
                             <td>{this.state.lmr_lvl2.cdid}</td>
-                          </tr>
-                          <tr style={{ fontWeight: "425", fontSize: "15px" }}>
-                            <td>Per Site Material Type</td>
-                            <td>:</td>
-                            <td>
-                              {this.state.lmr_lvl2.per_site_material_type}
-                            </td>
                           </tr>
                           <tr style={{ fontWeight: "425", fontSize: "15px" }}>
                             <td>Site ID</td>
@@ -1513,11 +1527,11 @@ class MYASGDetail extends Component {
   }
 }
 
-// const mapStateToProps = (state) => {
-//   return {
-//     dataLogin: state.loginData,
-//   };
-// };
+const mapStateToProps = (state) => {
+  return {
+    dataLogin: state.loginData,
+  };
+};
 
-// export default connect(mapStateToProps)(MYASGDetail);
-export default MYASGDetail;
+export default connect(mapStateToProps)(MYASGDetail);
+// export default MYASGDetail;
