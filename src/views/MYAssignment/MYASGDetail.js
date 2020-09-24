@@ -32,6 +32,7 @@ import { Link } from "react-router-dom";
 import "./LMRMY.css";
 import { getDatafromAPINODE } from "../../helper/asyncFunction";
 import { connect } from "react-redux";
+import Select from "react-select";
 
 import {
   convertDateFormatfull,
@@ -76,6 +77,8 @@ class MYASGDetail extends Component {
     this.state = {
       activity_list: [],
       // tokenUser: this.props.dataLogin.token,
+      roleUser: this.props.dataLogin.role,
+
       tokenUser: this.props.dataLogin.token,
       lmr_child_form: {},
       modal_loading: false,
@@ -122,7 +125,10 @@ class MYASGDetail extends Component {
         region: "",
       },
       hide_region: false,
-      vendor_code: ""
+      vendor_code: "",
+      list_cd_id: [],
+      cd_id_selected: ""
+
     };
     this.toggleAddNew = this.toggleAddNew.bind(this);
     this.handleFilterList = this.handleFilterList.bind(this);
@@ -1282,8 +1288,17 @@ class MYASGDetail extends Component {
       this.getLMRDetailData(this.props.match.params.id);
     }
     // this.getMaterialList();
-    // this.getProjectList();
+    this.getDataCD();
+    this.getProjectList();
     document.title = "LMR Detail | BAM";
+  }
+
+  getDataCD() {
+    this.getDatafromAPIMY("/cdid_data").then((resCD) => {
+      if (resCD.data !== undefined) {
+        this.setState({ list_cd_id: resCD.data._items });
+      }
+    });
   }
 
   handleChangeFormLMRChild(e) {
@@ -1366,42 +1381,8 @@ class MYASGDetail extends Component {
     }
   }
 
-  // getMaterialList() {
-  //   this.getDatafromAPIMY("/mm_code_data").then((res) => {
-  //     if (res.data !== undefined) {
-  //       const items = res.data._items;
-  //       this.setState({ material_list: items });
-  //     }
-  //   });
-  // }
 
-  getDataCD() {
-    this.getDatafromAPIMY("/cdid_data").then((resCD) => {
-      if (resCD.data !== undefined) {
-        this.setState({ list_cd_id: resCD.data._items });
-      }
-    });
-  }
 
-  handleChangeFormLMRChildMultiple(e) {
-    let dataLMR = this.state.creation_lmr_child_form;
-    let idxField = e.target.name.split(" /// ");
-    let value = e.target.value;
-    let idx = idxField[0];
-    let field = idxField[1];
-    dataLMR[parseInt(idx)][field] = value;
-    if (field === "cd_id") {
-      let cdData = this.state.list_cd_id.find((e) => e.CD_ID === value);
-      dataLMR[parseInt(idx)]["site_id"] = cdData.Site_Name;
-      dataLMR[parseInt(idx)]["so_or_nw"] = cdData.Network_Element_Name;
-      dataLMR[parseInt(idx)]["activity"] = cdData.Network_Element_Name;
-      dataLMR[parseInt(idx)]["project_name"] = cdData.Project;
-      this.setState({ cd_id_project: dataLMR[parseInt(idx)]["project_name"] });
-    }
-    this.setState({ creation_lmr_child_form: dataLMR }, () =>
-      console.log(this.state.creation_lmr_child_form)
-    );
-  }
 
   async createLMRChild() {
     this.toggleLoading();
@@ -1434,7 +1415,7 @@ class MYASGDetail extends Component {
       "per_site_material_type",
       "item_status",
       "work_status",
-      "id_project_doc",
+      // "id_project_doc",
       "id_lmr_doc",
     ];
     dummryRow.push(headerRow);
@@ -1461,11 +1442,11 @@ class MYASGDetail extends Component {
         dataChild[0].item_category,
         dataChild[0].lmr_type,
         dataChild[0].plan_cost_reduction,
-        dataChildForm[i].cd_id,
+        dataChildForm[i].cd_id_selected,
         dataChildForm[i].Per_Site_Material_Type,
         "Submit",
         "Waiting for PR-PO creation",
-        dataChild[0].id_project_doc,
+        // dataChild[0].id_project_doc,
         this.props.match.params.id,
       ];
       dummryRow.push(rowChild);
@@ -1481,6 +1462,7 @@ class MYASGDetail extends Component {
       respondSaveLMRChild.status <= 300
     ) {
       this.setState({ action_status: "success" });
+      // setTimeout(function(){ window.location.reload(); }, 1500);
     } else {
       if (
         respondSaveLMRChild.response !== undefined &&
@@ -1570,7 +1552,128 @@ class MYASGDetail extends Component {
     }
   }
 
+  handleChangeFormLMRChildMultiple(e) {
+    let dataLMR = this.state.creation_lmr_child_form;
+    let idxField = e.target.name.split(" /// ");
+    let value = e.target.value;
+    let idx = idxField[0];
+    let field = idxField[1];
+    dataLMR[parseInt(idx)][field] = value;
+    if (field === "cd_id") {
+      let cdData = this.state.list_cd_id.find((e) => e.CD_ID === value);
+      dataLMR[parseInt(idx)]["site_id"] = cdData.Site_Name;
+      dataLMR[parseInt(idx)]["so_or_nw"] = cdData.Network_Element_Name;
+      dataLMR[parseInt(idx)]["activity"] = cdData.Network_Element_Name;
+      dataLMR[parseInt(idx)]["project_name"] = cdData.Project;
+      this.setState({ cd_id_project: dataLMR[parseInt(idx)]["project_name"] });
+    }
+    if (field === "quantity" && isNaN(dataLMR[parseInt(idx)].price) === false) {
+      dataLMR[parseInt(idx)]["total_amount"] =
+        value * dataLMR[parseInt(idx)].price;
+    }
+    this.setState({ creation_lmr_child_form: dataLMR }, () =>
+      console.log(this.state.creation_lmr_child_form)
+    );
+  }
+
+  handleChangeCDFormLMRChild = (e, action) => {
+    let dataLMR = this.state.creation_lmr_child_form;
+    let dataparentLMR_GL = this.state.lmr_detail.gl_account;
+    let idxField = action.name.split(" /// ");
+    let value = e.value;
+    console.log('cd ',value)
+    let idx = idxField[0];
+    let field = idxField[1];
+    // if (field === "cd_id" && this.state.lmr_detail.LMR_Type === "Per Site") {
+    //   let cdData = this.state.list_cd_id.find((e) => e.CD_ID === value);
+    //   let custom_site_display = cdData.LOC_ID + "_" + cdData.Site_Name;
+    //   dataLMR[parseInt(idx)]["custom_site_display"] = custom_site_display;
+    //   dataLMR[parseInt(idx)]["site_id"] = cdData.Site_Name;
+    //   dataLMR[parseInt(idx)]["project_name"] = cdData.Project;
+    //   dataLMR[parseInt(idx)]["cd_id"] = value;
+    //   if (dataparentLMR_GL === "Transport - 402102") {
+    //     dataLMR[parseInt(idx)]["so_or_nw"] = "";
+    //     dataLMR[parseInt(idx)]["activity"] = "803X";
+    //   }
+    //   if (dataparentLMR_GL === "NRO service - 402603") {
+    //     dataLMR[parseInt(idx)]["so_or_nw"] = cdData.NW_NRO;
+    //     dataLMR[parseInt(idx)]["activity"] = "5640";
+    //   }
+    //   if (dataparentLMR_GL === "NRO local material - 402201") {
+    //     dataLMR[parseInt(idx)]["so_or_nw"] = cdData.NW_HWAC;
+    //     dataLMR[parseInt(idx)]["activity"] = "2000";
+    //   }
+    //   if (dataparentLMR_GL === "NDO service - 402603") {
+    //     dataLMR[parseInt(idx)]["so_or_nw"] = cdData.NW_NDO;
+    //     dataLMR[parseInt(idx)]["activity"] = "5200";
+    //   }
+    //   if (dataparentLMR_GL === "3PP Hardware - 402201") {
+    //     dataLMR[parseInt(idx)]["so_or_nw"] = cdData.NW_HWAC;
+    //     dataLMR[parseInt(idx)]["activity"] = "2000";
+    //   }
+    //   this.setState({
+    //     cd_id_selected: value,
+    //   }, ()=> console.log(this.state.cd_id_selected));
+    // }
+    this.setState({cd_id_selected: value }, ()=> console.log(this.state.cd_id_selected)
+    );
+  };
+
+  getOptionbyRole2 = (role) => {
+    if (role !== undefined) {
+      if (role.includes("BAM-CPM") === true || role.includes("BAM-Sourcing") === true) {
+        return (
+          <>
+            <option value="" selected></option>
+            <option value="NRO">NRO</option>
+            <option value="NDO">NDO</option>
+            <option value="HW">HW</option>
+            <option value="ARP">ARP</option>
+          </>
+        );
+      }
+      if (role.includes("BAM-IM") === true) {
+        return (
+          <>
+            <option value="" selected></option>
+            <option value="NRO">NRO</option>
+          </>
+        );
+      }
+      if (role.includes("BAM-IE Lead") === true) {
+        return (
+          <>
+            <option value="" selected></option>
+
+            <option value="NRO">NRO</option>
+            <option value="NRO">NRO</option>
+          </>
+        );
+      }
+      if (role.includes("BAM-MP") === true) {
+        return (
+          <>
+            <option value="" selected></option>
+            <option value="HW">HW</option>
+          </>
+        );
+      }
+      if (role.includes("BAM-PA") === true) {
+        return (
+          <>
+            <option value="" selected></option>
+            <option value="ARP">ARP</option>
+          </>
+        );
+      }
+    }
+  };
+
   render() {
+    const cd_id_list = [];
+    this.state.list_cd_id.map((e) =>
+      cd_id_list.push({ label: e.CD_ID, value: e.CD_ID })
+    );
     const prpo = this.state.list_pr_po;
     const matfilter = this.state.matfilter;
     return (
@@ -1974,10 +2077,6 @@ class MYASGDetail extends Component {
                               </Button> */}
                               </td>
                             )}
-
-                            {/*}<td>{e.pr}</td>
-                          <td>{e.po}</td>
-                          <td>{e.item}</td>*/}
                           </tr>
                         ))
                       ) : (
@@ -2026,16 +2125,20 @@ class MYASGDetail extends Component {
                               onChange={this.handleChangeFormLMRChildMultiple}
                               readOnly
                               // style={{ width: "100%" }}
-                            />
-                            {/* <option value="" disabled selected hidden>
-                                Select CD ID
-                              </option>
-                              {this.state.list_cd_id.map((e) => (
-                                <option value={e.CD_ID}>{e.CD_ID}</option>
-                              ))}
-                            </Input> */}
+                            />       
+
+                            <Input
+                              type="select"
+                              name={i + " /// Per_Site_Material_Type"}
+                              id={i + " /// Per_Site_Material_Type"}
+                              value={lmr.Per_Site_Material_Type}
+                              onChange={this.handleChangeFormLMRChildMultiple}
+                              // style={{ width: "100%" }}
+                            >
+                            {this.getOptionbyRole2(this.state.roleUser)}
+                            </Input>          
                           </td>
-                          <td>
+                          {/* <td>
                             <Input
                               type="select"
                               name={i + " /// Per_Site_Material_Type"}
@@ -2052,10 +2155,36 @@ class MYASGDetail extends Component {
                             <option value="HW">HW</option>
                             <option value="ARP">ARP</option>
                             </Input>
-                          </td>
+                          </td> */}
 
                           <td>
-                            <Input
+                          {this.state.lmr_detail.LMR_Type === "Cost Collector" ? 
+                            (
+                              <Input
+                                type="select"
+                                name={i + " /// project_name"}
+                                id={i + " /// project_name"}
+                                value={lmr.project_name}
+                                onChange={this.handleChangeFormLMRChildMultiple}
+                              >
+                                <option value="" disabled selected hidden>
+                                  Select Project Name
+                                </option>
+                                {this.state.list_project.map((e) => (
+                                  <option value={e.Project}>{e.Project}</option>
+                                ))}
+                              </Input>
+                            ) : (
+                              <Input
+                                type="text"
+                                name={i + " /// project_name"}
+                                id={i + " /// project_name"}
+                                value={lmr.project_name}
+                                readOnly
+                              />
+                            )
+                          }
+                            {/* <Input
                               type="select"
                               name={i + " /// project_name"}
                               id={i + " /// project_name"}
@@ -2069,10 +2198,21 @@ class MYASGDetail extends Component {
                               {this.state.list_project.map((e) => (
                                 <option value={e.Project}>{e.Project}</option>
                               ))}
-                            </Input>
+                            </Input> */}
                           </td>
                           <td>
-                            <Input
+                          <Select
+                            cacheOptions
+                            name={i + " /// cd_id"}
+                            id={i + " /// cd_id"}
+                            value={lmr.cd_id}
+                            options={cd_id_list}
+                            onChange={this.handleChangeCDFormLMRChild}
+                            isDisabled={
+                              this.state.lmr_detail.LMR_Type === "Cost Collector"
+                            }
+                          />
+                            {/* <Input
                               type="select"
                               name={i + " /// cd_id"}
                               id={i + " /// cd_id"}
@@ -2086,7 +2226,7 @@ class MYASGDetail extends Component {
                               {this.state.list_cd_id.map((e) => (
                                 <option value={e.CD_ID}>{e.CD_ID}</option>
                               ))}
-                            </Input>
+                            </Input> */}
                           </td>
                           <td>
                             <Input
@@ -2094,8 +2234,11 @@ class MYASGDetail extends Component {
                               name={i + " /// site_id"}
                               id={i + " /// site_id"}
                               value={lmr.site_id}
-                              placeholder="Site ID"
+                              placeholder="Site ID / Text ID"
                               onChange={this.handleChangeFormLMRChildMultiple}
+                              disabled={
+                                this.state.lmr_detail.LMR_Type === "Cost Collector"
+                              }
                               // style={{ width: "100%" }}
                             />
                           </td>
@@ -2146,6 +2289,7 @@ class MYASGDetail extends Component {
                           </td>
                           <td>
                             <Input
+                            readOnly
                               type="textarea"
                               name={i + " /// description"}
                               id={i + " /// description"}
@@ -2157,7 +2301,8 @@ class MYASGDetail extends Component {
                           </td>
                           <td>
                             <Input
-                              type="number"
+                            readOnly
+                              type="text"
                               name={i + " /// price"}
                               id={i + " /// price"}
                               value={lmr.price}
@@ -2215,31 +2360,7 @@ class MYASGDetail extends Component {
                               onChange={this.handleChangeFormLMRChildMultiple}
                               style={{ width: "100%" }}
                             />
-                          </td>
-                          {/* <td>
-                            <Input
-                              type="text"
-                              name={i + " /// item_status"}
-                              id={i + " /// item_status"}
-                              placeholder="Item Status"
-                              value={lmr.item_status}
-                              onChange={this.handleChangeFormLMRChildMultiple}
-                              // style={{ width: "100%" }}
-                              readOnly
-                            />
-                          </td>
-                          <td>
-                            <Input
-                              type="text"
-                              name={i + " /// work_status"}
-                              id={i + " /// work_status"}
-                              placeholder="Work Status"
-                              value={lmr.work_status}
-                              onChange={this.handleChangeFormLMRChildMultiple}
-                              // style={{ width: "100%" }}
-                              readOnly
-                            />
-                          </td> */}
+                          </td>                   
                           <td></td>
                           <td></td>
                           <td></td>
@@ -2250,12 +2371,7 @@ class MYASGDetail extends Component {
                         </tr>
                       ))}
                       {this.state.creation_lmr_child_form.length !== 0 && (
-                        <Fragment>
-                          {/* <tr>
-                            <td colSpan="15" style={{ textAlign: "right" }}>
-                              &nbsp;
-                            </td>
-                          </tr> */}
+                        <Fragment>              
                           <tr>
                             <td colSpan="22" style={{ textAlign: "right" }}>
                               <Button
