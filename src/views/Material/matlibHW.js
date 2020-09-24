@@ -745,10 +745,10 @@ class MatHW extends React.Component {
                                   </td>
                                 
                                   <td style={{ textAlign: "center" }}>
-                                    {convertDateFormat(e.Valid_To)}
+                                    {e.Valid_To}
                                   </td>
                                   <td style={{ textAlign: "center" }}>
-                                    {convertDateFormat(e.Created_On)}
+                                    {e.Created_On}
                                   </td>
                                   <td style={{ textAlign: "center" }}>
                                     {e.created_by}
