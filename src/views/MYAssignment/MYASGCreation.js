@@ -349,8 +349,6 @@ class MYASGCreation extends Component {
         return (
           <>
             <option value="" selected></option>
-
-            <option value="" selected></option>
             <option value="NRO">NRO</option>
           </>
         );

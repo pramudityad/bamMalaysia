@@ -823,27 +823,7 @@ class MatHW extends React.Component {
           <ModalHeader>Form {modul_name}</ModalHeader>
           <ModalBody>
             <Row>
-              <Col sm="12">
-                {/* <FormGroup>
-                  <Label>Material_Type</Label>
-                  <Input
-                    type="text"
-                    name="0"
-                    placeholder=""
-                    value={this.state.PPForm[0]}
-                    onChange={this.handleChangeForm}
-                  />
-                </FormGroup>
-                <FormGroup>
-                  <Label>MM_Code</Label>
-                  <Input
-                    type="text"
-                    name="1"
-                    placeholder=""
-                    value={this.state.PPForm[1]}
-                    onChange={this.handleChangeForm}
-                  />
-                </FormGroup> */}
+              <Col sm="12">                
                 <FormGroup row>
                   <Col xs="12">
                     <FormGroup>
@@ -1041,32 +1021,13 @@ class MatHW extends React.Component {
           <ModalHeader>Form {modul_name}</ModalHeader>
           <ModalBody>
             <Row>
-            <Col sm="12">
-                {/* <FormGroup>
-                  <Label>Material_Type</Label>
-                  <Input
-                    type="text"
-                    name="0"
-                    placeholder=""
-                    value={this.state.PPForm[0]}
-                    onChange={this.handleChangeForm}
-                  />
-                </FormGroup>
-                <FormGroup>
-                  <Label>MM_Code</Label>
-                  <Input
-                    type="text"
-                    name="1"
-                    placeholder=""
-                    value={this.state.PPForm[1]}
-                    onChange={this.handleChangeForm}
-                  />
-                </FormGroup> */}
+            <Col sm="12">             
                 <FormGroup row>
                   <Col xs="12">
                     <FormGroup>
                       <Label>MM_Code</Label>
                       <Input
+                      readOnly
                         type="text"
                         name="2"
                         placeholder=""

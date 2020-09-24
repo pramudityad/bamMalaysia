@@ -442,7 +442,7 @@ class MatNDO extends React.Component {
       dataForm[4] = aEdit.MM_Description;
       dataForm[5] = aEdit.UoM;
       dataForm[6] = aEdit.Unit_Price;
-
+      dataForm[7] = aEdit.MM_Code;
       dataForm[8] = aEdit.Region;
       dataForm[9] = aEdit.Remarks_or_Acceptance;
       dataForm[10] = aEdit.SoW_Description_or_Site_Type;
@@ -949,6 +949,7 @@ class MatNDO extends React.Component {
                     <FormGroup>
                       <Label>MM_Code</Label>
                       <Input
+                      readOnly
                     type="text"
                     name="7"
                     placeholder=""

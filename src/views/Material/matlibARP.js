@@ -437,7 +437,7 @@ class MatARP extends React.Component {
       const value = e.currentTarget.value;
       const aEdit = this.state.material_list.find((e) => e._id === value);
       let dataForm = this.state.PPForm;
-
+      dataForm[1] = aEdit.MM_Code;
       dataForm[2] = aEdit.MM_Description;
       dataForm[3] = aEdit.UoM;
       dataForm[4] = aEdit.Unit_Price;
@@ -772,7 +772,7 @@ class MatARP extends React.Component {
                 </FormGroup> */}
                 <FormGroup>
                   <Label>MM_Code</Label>
-                  <Input
+                  <Input                  
                     type="text"
                     name="1"
                     placeholder=""
@@ -958,28 +958,21 @@ class MatARP extends React.Component {
           <ModalHeader>Form {modul_name}</ModalHeader>
           <ModalBody>
           <Row>
-              <Col sm="12">
-                {/* <FormGroup>
-                  <Label>Material_Type</Label>
-                  <Input
-                    type="text"
-                    name="0"
-                    placeholder=""
-                    value={this.state.PPForm[0]}
-                    onChange={this.handleChangeForm}
-                  />
-                </FormGroup>
-                <FormGroup>
-                  <Label>MM_Code</Label>
-                  <Input
-                    type="text"
-                    name="1"
-                    placeholder=""
-                    value={this.state.PPForm[1]}
-                    onChange={this.handleChangeForm}
-                  />
-                </FormGroup> */}
+              <Col sm="12">              
                 <FormGroup row>
+                <Col xs="12">
+                    <FormGroup>
+                      <Label>MM_Code</Label>
+                      <Input
+                      readOnly
+                        type="text"
+                        name="1"
+                        placeholder=""
+                        value={this.state.PPForm[1]}
+                        onChange={this.handleChangeForm}
+                      />
+                    </FormGroup>
+                  </Col>
                   <Col xs="12">
                     <FormGroup>
                       <Label>MM_Description</Label>

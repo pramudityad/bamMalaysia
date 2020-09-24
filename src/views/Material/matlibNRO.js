@@ -815,7 +815,7 @@ class MatNRO extends React.Component {
       const value = e.currentTarget.value;
       const aEdit = this.state.material_list.find((e) => e._id === value);
       let dataForm = this.state.PPForm;
-
+      dataForm[1] = aEdit.MM_Code;
       dataForm[2] = aEdit.BB;
       dataForm[3] = aEdit.BB_Sub;
       dataForm[4] = aEdit.MM_Description;
@@ -1259,6 +1259,7 @@ class MatNRO extends React.Component {
                   <FormGroup>
                   <Label>MM_Code</Label>
                   <Input
+                  readOnly
                     type="text"
                     name="1"
                     placeholder=""
