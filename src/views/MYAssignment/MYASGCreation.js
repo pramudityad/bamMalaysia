@@ -424,8 +424,7 @@ class MYASGCreation extends Component {
 
   handlePageChange(pageNumber) {
     let dataLMR = this.state.creation_lmr_child_form;
-    let type_material =
-      dataLMR[parseInt(this.state.current_material_select)]["material_type"];
+    let type_material = this.state.mm_data_type;
     this.setState({ activePage: pageNumber }, () => {
       this.decideFilter(type_material);
     });
@@ -447,7 +446,7 @@ class MYASGCreation extends Component {
   onChangeDebounced(e) {
     let dataLMR = this.state.creation_lmr_child_form;
     let type_material =
-      dataLMR[parseInt(this.state.current_material_select)]["material_type"];
+      this.state.mm_data_type;
     this.decideFilter(type_material);
   }
 
@@ -1153,8 +1152,7 @@ class MYASGCreation extends Component {
     let value = e.target.value;
     let name = e.target.name;
     let dataLMR = this.state.creation_lmr_child_form;
-    let type_material =
-      dataLMR[parseInt(this.state.current_material_select)]["material_type"];
+    let type_material = this.state.mm_data_type
     // console.log()
     this.setState(
       (prevState) => ({
@@ -1164,8 +1162,9 @@ class MYASGCreation extends Component {
         },
       }),
       () => {
-        this.hideRegion();
+        // this.hideRegion();
         this.decideFilter(type_material);
+        console.log(this.state.matfilter)
       }
     );
   }
@@ -1703,7 +1702,7 @@ class MYASGCreation extends Component {
                             id={i + " /// material"}
                             value={lmr.material}
                             onClick={() => this.decideToggleMaterial(i)}
-                            onChange={this.handleChangeFormLMRChild}
+                            // onChange={this.handleChangeFormLMRChild}
                           />
                         </FormGroup>
                       </Col>
@@ -2107,8 +2106,8 @@ class MYASGCreation extends Component {
                         <td>{e.Unit_Price}</td>
                         <td>{e.Currency}</td>
                         <td>{e.Info_Rec}</td>
-                        <td>{convertDateFormat(e.Valid_To)}</td>
-                        <td>{convertDateFormat(e.Created_On)}</td>
+                        <td>{e.Valid_To}</td>
+                        <td>{e.Created_On}</td>
                         <td>{e.created_by}</td>
                         <td>{e.Status_Price_in_SAP}</td>
                       </tr>
