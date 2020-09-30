@@ -62,8 +62,9 @@ class MYASGCreation extends Component {
       lmr_form: {
         pgr: "MP2",
         gl_account: "",
-        lmr_issued_by: this.props.dataLogin.userName,
-        plant: "MY",
+        // lmr_issued_by: this.props.dataLogin.userName,
+        lmr_issued_by: "EHAYZUX",
+        plant: "2172",
         customer: "CELCOM",
         request_type: "Add LMR",
       },
@@ -970,6 +971,12 @@ class MYASGCreation extends Component {
     if (value !== (null && undefined)) {
       value = value.toString();
     }
+    if(name === "Item_Category" && value ==="3PP"){
+      lmr_form["pgr"] = "MP1";
+    }
+    if(name === "Item_Category" && value ==="Service"){
+      lmr_form["pgr"] = "MP3";
+    }
     if (name === "LMR_Type" && value !== "Per Site") {
       lmr_form["Plan_Cost_Reduction"] = "Yes";
       this.setState({ lmr_edit: false });
@@ -1284,7 +1291,7 @@ class MYASGCreation extends Component {
                         >
                           <option value={null} selected></option>
                           <option value="Service">Service</option>
-                          <option value="3PP HW">3PP HW</option>
+                          <option value="3PP">3PP</option>
                         </Input>
                       </FormGroup>
                     </Col>
