@@ -249,6 +249,70 @@ class MYASGCreation extends Component {
     }
   }
 
+  async getCDfromACT(url) {
+    try {
+      let respond = await axios.get(url,{
+        headers: { 
+          // 'Access-Control-Allow-Origin': true,          
+          "Content-Type": "application/json",
+          Authorization: "Basic dXNlcml4dDpYUXJuMzJuNWtxb00=",
+          // "Cookie": "ci_session=69fu3c5n7hl9ihrstvm25rh4cuno432g"
+       },
+      //  auth: {
+      //   username: "userixt",
+      //   password: "XQrn32n5kqoM",
+      // },
+        // withCredentials:true,
+        // crossDomain: true,
+        // params: 
+          // {
+          //   "query_param": {
+          //     "table": "p_celc_tes2_m_site_data",
+          //     "columns": [
+          //       "m_id",
+          //             "JSON_UNQUOTE(JSON_EXTRACT(custom_property, '$.\"c02767d3-adf8-11e9-bb77-000d3aa3db8c\".\"value\"')) as workplan_id",
+          //             "JSON_UNQUOTE(JSON_EXTRACT(custom_property, '$.\"9ec14232-c1a5-11ea-af53-000d3aa3db8c\".\"value\"')) as workplan_name",
+          //             "JSON_UNQUOTE(JSON_EXTRACT(custom_property, '$.\"9ec4bff5-c1a5-11ea-af53-000d3aa3db8c\".\"value\"')) as network_element_name",
+          //             "JSON_UNQUOTE(JSON_EXTRACT(custom_property, '$.\"c0292f27-adf8-11e9-bb77-000d3aa3db8c\".\"value\"')) as program",
+          //             "JSON_UNQUOTE(JSON_EXTRACT(custom_property, '$.\"c02b9c03-adf8-11e9-bb77-000d3aa3db8c\".\"value\"')) as project",
+          //             "JSON_UNQUOTE(JSON_EXTRACT(custom_property, '$.\"fdee0f72-e056-11e9-acbc-000d3aa3db8c\".\"value\"')) as sub_project",
+          //             "JSON_UNQUOTE(JSON_EXTRACT(custom_property, '$.\"fdf0f5cf-e056-11e9-acbc-000d3aa3db8c\".\"value\"')) as po",
+          //             "JSON_UNQUOTE(JSON_EXTRACT(custom_property, '$.\"c02d5c22-adf8-11e9-bb77-000d3aa3db8c\".\"value\"')) as cluster",
+          //             "JSON_UNQUOTE(JSON_EXTRACT(custom_property, '$.\"c031052c-adf8-11e9-bb77-000d3aa3db8c\".\"value\"')) as pc_sc_npc",
+          //             "JSON_UNQUOTE(JSON_EXTRACT(custom_property, '$.\"c03262d4-adf8-11e9-bb77-000d3aa3db8c\".\"value\"')) as region",
+          //             "JSON_UNQUOTE(JSON_EXTRACT(custom_property, '$.\"c02ebba1-adf8-11e9-bb77-000d3aa3db8c\".\"value\"')) as site_category",
+          //             "JSON_UNQUOTE(JSON_EXTRACT(custom_property, '$.\"c02767d3-adf8-11e9-bb77-000d3aa3db8c\".\"value\"')) as ref_no",
+          //             "JSON_UNQUOTE(JSON_EXTRACT(custom_property, '$.\"c03aa61a-adf8-11e9-bb77-000d3aa3db8c\".\"value\"')) as loc_id",
+          //             "JSON_UNQUOTE(JSON_EXTRACT(custom_property, '$.\"c036b531-adf8-11e9-bb77-000d3aa3db8c\".\"value\"')) as site_name",
+          //             "JSON_UNQUOTE(JSON_EXTRACT(custom_property, '$.\"fdf28189-e056-11e9-acbc-000d3aa3db8c\".\"value\"')) as technology",
+          //             "JSON_UNQUOTE(JSON_EXTRACT(custom_property, '$.\"9ec58ad8-c1a5-11ea-af53-000d3aa3db8c\".\"value\"')) as final_planned_tech",
+          //             "JSON_UNQUOTE(JSON_EXTRACT(custom_property, '$.\"9ec672d3-c1a5-11ea-af53-000d3aa3db8c\".\"value\"')) as material_purchase",
+          //             "JSON_UNQUOTE(JSON_EXTRACT(custom_property, '$.\"9ec7dd57-c1a5-11ea-af53-000d3aa3db8c\".\"value\"')) as scope_status",
+          //             "JSON_UNQUOTE(JSON_EXTRACT(custom_property, '$.\"9ec90098-c1a5-11ea-af53-000d3aa3db8c\".\"value\"')) as wbs_hw",
+          //             "JSON_UNQUOTE(JSON_EXTRACT(custom_property, '$.\"9ec9e722-c1a5-11ea-af53-000d3aa3db8c\".\"value\"')) as wbs_nro",
+          //             "JSON_UNQUOTE(JSON_EXTRACT(custom_property, '$.\"9ecbfa81-c1a5-11ea-af53-000d3aa3db8c\".\"value\"')) as asp_assigned",
+          //             "JSON_UNQUOTE(JSON_EXTRACT(custom_property, '$.\"c03e0897-adf8-11e9-bb77-000d3aa3db8c\".\"value\"')) as fas_id"
+          //     ],
+          //     "join": {},
+          //     "condition": {
+          //         },
+          //     "pagination": "all",
+          //     "page_target": 1,
+          //     "length_per_page": 10
+          //   }
+          // }        
+      });
+      if (respond.status >= 200 && respond.status < 300) {
+        console.log("respond Get Data", respond);
+      }
+      return respond;
+    } catch (err) {
+      let respond = err;
+      console.log("respond Get Data", err);
+      return respond;
+    }
+  }
+
   async getDataFromAPINODE(url) {
     try {
       let respond = await axios.get(process.env.REACT_APP_API_URL_NODE + url, {
@@ -270,6 +334,50 @@ class MYASGCreation extends Component {
 
   getDataCD() {
     this.getDatafromAPIMY("/cdid_data").then((resCD) => {
+      if (resCD.data !== undefined) {
+        this.setState({ list_cd_id: resCD.data._items });
+      }
+    });
+  }
+
+  getDataCDACT() {
+    let params = {
+      "query_param": {
+        "table": "p_celc_tes2_m_site_data",
+        "columns": [
+          "m_id",
+                "JSON_UNQUOTE(JSON_EXTRACT(custom_property, '$.\"c02767d3-adf8-11e9-bb77-000d3aa3db8c\".\"value\"')) as workplan_id",
+                "JSON_UNQUOTE(JSON_EXTRACT(custom_property, '$.\"9ec14232-c1a5-11ea-af53-000d3aa3db8c\".\"value\"')) as workplan_name",
+                "JSON_UNQUOTE(JSON_EXTRACT(custom_property, '$.\"9ec4bff5-c1a5-11ea-af53-000d3aa3db8c\".\"value\"')) as network_element_name",
+                "JSON_UNQUOTE(JSON_EXTRACT(custom_property, '$.\"c0292f27-adf8-11e9-bb77-000d3aa3db8c\".\"value\"')) as program",
+                "JSON_UNQUOTE(JSON_EXTRACT(custom_property, '$.\"c02b9c03-adf8-11e9-bb77-000d3aa3db8c\".\"value\"')) as project",
+                "JSON_UNQUOTE(JSON_EXTRACT(custom_property, '$.\"fdee0f72-e056-11e9-acbc-000d3aa3db8c\".\"value\"')) as sub_project",
+                "JSON_UNQUOTE(JSON_EXTRACT(custom_property, '$.\"fdf0f5cf-e056-11e9-acbc-000d3aa3db8c\".\"value\"')) as po",
+                "JSON_UNQUOTE(JSON_EXTRACT(custom_property, '$.\"c02d5c22-adf8-11e9-bb77-000d3aa3db8c\".\"value\"')) as cluster",
+                "JSON_UNQUOTE(JSON_EXTRACT(custom_property, '$.\"c031052c-adf8-11e9-bb77-000d3aa3db8c\".\"value\"')) as pc_sc_npc",
+                "JSON_UNQUOTE(JSON_EXTRACT(custom_property, '$.\"c03262d4-adf8-11e9-bb77-000d3aa3db8c\".\"value\"')) as region",
+                "JSON_UNQUOTE(JSON_EXTRACT(custom_property, '$.\"c02ebba1-adf8-11e9-bb77-000d3aa3db8c\".\"value\"')) as site_category",
+                "JSON_UNQUOTE(JSON_EXTRACT(custom_property, '$.\"c02767d3-adf8-11e9-bb77-000d3aa3db8c\".\"value\"')) as ref_no",
+                "JSON_UNQUOTE(JSON_EXTRACT(custom_property, '$.\"c03aa61a-adf8-11e9-bb77-000d3aa3db8c\".\"value\"')) as loc_id",
+                "JSON_UNQUOTE(JSON_EXTRACT(custom_property, '$.\"c036b531-adf8-11e9-bb77-000d3aa3db8c\".\"value\"')) as site_name",
+                "JSON_UNQUOTE(JSON_EXTRACT(custom_property, '$.\"fdf28189-e056-11e9-acbc-000d3aa3db8c\".\"value\"')) as technology",
+                "JSON_UNQUOTE(JSON_EXTRACT(custom_property, '$.\"9ec58ad8-c1a5-11ea-af53-000d3aa3db8c\".\"value\"')) as final_planned_tech",
+                "JSON_UNQUOTE(JSON_EXTRACT(custom_property, '$.\"9ec672d3-c1a5-11ea-af53-000d3aa3db8c\".\"value\"')) as material_purchase",
+                "JSON_UNQUOTE(JSON_EXTRACT(custom_property, '$.\"9ec7dd57-c1a5-11ea-af53-000d3aa3db8c\".\"value\"')) as scope_status",
+                "JSON_UNQUOTE(JSON_EXTRACT(custom_property, '$.\"9ec90098-c1a5-11ea-af53-000d3aa3db8c\".\"value\"')) as wbs_hw",
+                "JSON_UNQUOTE(JSON_EXTRACT(custom_property, '$.\"9ec9e722-c1a5-11ea-af53-000d3aa3db8c\".\"value\"')) as wbs_nro",
+                "JSON_UNQUOTE(JSON_EXTRACT(custom_property, '$.\"9ecbfa81-c1a5-11ea-af53-000d3aa3db8c\".\"value\"')) as asp_assigned",
+                "JSON_UNQUOTE(JSON_EXTRACT(custom_property, '$.\"c03e0897-adf8-11e9-bb77-000d3aa3db8c\".\"value\"')) as fas_id"
+        ],
+        "join": {},
+        "condition": {
+            },
+        "pagination": "all",
+        "page_target": 1,
+        "length_per_page": 10
+      }
+    }
+    this.getCDfromACT('https://uat.act.e-dpm.com/index.php/android/get_data_new').then((resCD) => {
       if (resCD.data !== undefined) {
         this.setState({ list_cd_id: resCD.data._items });
       }
@@ -418,8 +526,8 @@ class MYASGCreation extends Component {
     this.getVendorList();
     this.getProjectList();
     // this.getMaterialList();
-
-    this.getDataCD();
+    this.getDataCDACT()
+    // this.getDataCD();
     document.title = "LMR Creation | BAM";
   }
 
