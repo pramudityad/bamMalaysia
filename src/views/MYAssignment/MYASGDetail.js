@@ -1964,7 +1964,8 @@ class MYASGDetail extends Component {
                       {this.state.lmr_detail.detail !== undefined ? (
                         this.state.lmr_detail.detail.map((e) => (
                           <tr>
-                            <td>
+                            {this.state.roleUser.includes("BAM-CPM") === true ? (
+                              <td>
                               <Link
                                 to={
                                   "/lmr-detail/" +
@@ -1984,6 +1985,7 @@ class MYASGDetail extends Component {
                                 </Button>
                               </Link>
                             </td>
+                            ):(<td></td>)}                            
                             <td>{e.request_type}</td>
                             <td>{e.project_name}</td>
                             <td>{e.cdid}</td>
