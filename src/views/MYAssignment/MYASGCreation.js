@@ -1134,30 +1134,31 @@ class MYASGCreation extends Component {
     let idx = idxField[0];
     let field = idxField[1];
     if (field === "cd_id" && this.state.lmr_form.LMR_Type === "Per Site") {
-      let cdData = this.state.list_cd_id.find((e) => e.CD_ID === value);
-      let custom_site_display = cdData.LOC_ID + "_" + cdData.Site_Name;
+      let cdData = this.state.list_cd_id_act.find((e) => e.workplan_id === value);
+      let custom_site_display = cdData.loc_id + "_" + cdData.site_name;
       dataLMR[parseInt(idx)]["custom_site_display"] = custom_site_display;
-      dataLMR[parseInt(idx)]["site_id"] = cdData.Site_Name;
-      dataLMR[parseInt(idx)]["project_name"] = cdData.Project;
+      dataLMR[parseInt(idx)]["site_id"] = cdData.site_name;
+      dataLMR[parseInt(idx)]["project_name"] = cdData.project;
       dataLMR[parseInt(idx)]["cdid"] = value;
       if (dataparentLMR_GL === "Transport - 402102") {
         dataLMR[parseInt(idx)]["so_or_nw"] = "";
         dataLMR[parseInt(idx)]["activity"] = "803X";
       }
       if (dataparentLMR_GL === "NRO service - 402603") {
-        dataLMR[parseInt(idx)]["so_or_nw"] = cdData.NW_NRO;
+        dataLMR[parseInt(idx)]["so_or_nw"] = cdData.wbs_nro;
         dataLMR[parseInt(idx)]["activity"] = "5640";
       }
       if (dataparentLMR_GL === "NRO local material - 402201") {
-        dataLMR[parseInt(idx)]["so_or_nw"] = cdData.NW_HWAC;
+        dataLMR[parseInt(idx)]["so_or_nw"] = cdData.wbs_hw;
         dataLMR[parseInt(idx)]["activity"] = "2000";
       }
       if (dataparentLMR_GL === "NDO service - 402603") {
-        dataLMR[parseInt(idx)]["so_or_nw"] = cdData.NW_NDO;
+        // should be NDO
+        dataLMR[parseInt(idx)]["so_or_nw"] = cdData.wbs_nro;
         dataLMR[parseInt(idx)]["activity"] = "5200";
       }
       if (dataparentLMR_GL === "3PP Hardware - 402201") {
-        dataLMR[parseInt(idx)]["so_or_nw"] = cdData.NW_HWAC;
+        dataLMR[parseInt(idx)]["so_or_nw"] = cdData.wbs_hw;
         dataLMR[parseInt(idx)]["activity"] = "2000";
       }
       this.setState({
@@ -1275,8 +1276,8 @@ class MYASGCreation extends Component {
 
   render() {
     const cd_id_list = [];
-    this.state.list_cd_id.map((e) =>
-      cd_id_list.push({ label: e.CD_ID, value: e.CD_ID })
+    this.state.list_cd_id_act.map((e) =>
+      cd_id_list.push({ label: e.workplan_id, value: e.workplan_id })
     );
     const matfilter = this.state.matfilter;
     // console.log("this.props.dataUser", this.props.dataUser);
