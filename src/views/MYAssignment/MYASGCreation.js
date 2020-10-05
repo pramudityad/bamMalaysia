@@ -418,7 +418,7 @@ class MYASGCreation extends Component {
     this.getVendorList();
     this.getProjectList();
     // this.getMaterialList();
-
+ 
     this.getDataCD();
     document.title = "LMR Creation | BAM";
   }
