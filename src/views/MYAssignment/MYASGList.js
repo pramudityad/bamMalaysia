@@ -15,6 +15,7 @@ class MYASGList extends Component {
     super(props);
 
     this.state = {
+      roleUser: this.props.dataLogin.role,
       tokenUser: this.props.dataLogin.token,
       lmr_list: [],
       prevPage: 0,
@@ -22,7 +23,9 @@ class MYASGList extends Component {
       totalData: 0,
       perPage: 10,
       filter_list: new Array(14).fill(""),
-      mr_all: []
+      mr_all: [],
+      lmr_list_filter: [],
+      lmr_list_pagination: [],
     }
     this.handlePageChange = this.handlePageChange.bind(this);
     this.handleFilterList = this.handleFilterList.bind(this);
@@ -54,15 +57,62 @@ class MYASGList extends Component {
   getMRList() {
     const page = this.state.activePage;
     const maxPage = this.state.perPage;
+
+
     let filter_array = [];
-    this.getDataFromAPINODE('/aspassignment/getAspAssignment?srt=_id:-1&lmt=' + maxPage + '&pg=' + page).then(res => {
+    // this.getDataFromAPINODE('/aspassignment/getAspAssignment?srt=_id:-1&q={"lmr_role":"'+this.state.roleUser[1]+'"}&lmt=' + maxPage + '&pg=' + page).then(res => {
+      this.getDataFromAPINODE('/aspassignment/getAspAssignment?srt=_id:-1&noPg=1').then(res => {
+
       console.log("MR List Sorted", res);
       if (res.data !== undefined) {
         const items = res.data.data;
         const totalData = res.data.totalResults;
-        this.setState({ lmr_list: items, totalData: totalData });
+        this.setState({ lmr_list: items, totalData: totalData }, () => this.filterbyService(this.state.lmr_list, this.state.roleUser));
       }
     })
+  }
+
+  filterbyService(lmr_list, role){
+    console.log('role ', this.state.roleUser[1])   
+    // const filter_list = this.state.lmr_list_filter 
+    const cpm_sourcing = ["Hardware","NRO Services","LM","Transport","NDO Services","T&M"]
+    const im_ie = ["NRO Services","LM","Transport"]
+    const mp = ["Hardware"]
+    const pa = ["T&M"]
+    const grpa = ["NRO Services","LM","Transport","NDO Services"]
+    if (role.includes("BAM-CPM") === true || role.includes("BAM-Sourcing") === true) {
+      lmr_list.filter(e => cpm_sourcing.includes(e.gl_type))
+      this.setState({lmr_list_filter: lmr_list}, ()=> this.dataViewPagination(this.state.lmr_list_filter))
+    }
+    if (role.includes("BAM-IM") === true || role.includes("BAM-IE Lead") === true) {
+      let filterlist = lmr_list.filter(e => im_ie.includes(e.gl_type))
+       this.setState({lmr_list_filter: filterlist}, ()=> this.dataViewPagination(this.state.lmr_list_filter))
+    }
+    if (role.includes("BAM-GR-PA") === true) {
+      let filterlist = lmr_list.filter(e => grpa.includes(e.gl_type))
+      this.setState({lmr_list_filter: filterlist}, ()=> this.dataViewPagination(this.state.lmr_list_filter))
+    }
+    if (role.includes("BAM-MP") === true) {
+      let filterlist = lmr_list.filter(e => mp.includes(e.gl_type))
+      this.setState({lmr_list_filter: filterlist}, ()=> this.dataViewPagination(this.state.lmr_list_filter))
+    }
+    if (role.includes("BAM-PA") === true) {
+      let filterlist =lmr_list.filter(e => pa.includes(e.gl_type))
+      this.setState({lmr_list_filter: filterlist}, ()=> this.dataViewPagination(this.state.lmr_list_filter))
+    }
+  }
+
+  dataViewPagination(dataView){
+    let perPage = this.state.perPage;
+    let dataPage = [];
+    if(perPage !== dataView.length){
+      let pageNow = this.state.activePage-1;
+      dataPage = dataView.slice(pageNow * perPage, (pageNow+1)*perPage);
+    }else{
+      dataPage = dataView;
+    }
+    console.log("dataPage", dataPage);
+    this.setState({lmr_list_pagination : dataPage})
   }
 
   getAllMR() {
@@ -189,7 +239,7 @@ class MYASGList extends Component {
                     </tr>
                   </thead>
                   <tbody>
-                    {this.state.lmr_list.map(e =>
+                    {this.state.lmr_list_pagination !== undefined && this.state.lmr_list_pagination.map(e =>
                       <tr>
                         <td>
                           <Link to={'/lmr-detail/'+e._id}><Button color="info" size="sm"><i className="fa fa-info-circle" style={{ marginRight: "8px" }}></i>Detail</Button></Link>
@@ -204,12 +254,12 @@ class MYASGList extends Component {
                   </tbody>
                 </Table>
                 <div style={{ margin: "8px 0px" }}>
-                  <small>Showing {this.state.totalData} entries</small>
+                  <small>Showing {this.state.lmr_list_filter.length} entries</small>
                 </div>
                 <Pagination
                   activePage={this.state.activePage}
                   itemsCountPerPage={this.state.perPage}
-                  totalItemsCount={this.state.totalData}
+                  totalItemsCount={this.state.lmr_list_filter.length}
                   pageRangeDisplayed={5}
                   onChange={this.handlePageChange}
                   itemClass="page-item"

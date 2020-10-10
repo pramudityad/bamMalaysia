@@ -363,11 +363,8 @@ class MatNRO extends React.Component {
       "Unit_Price",
       "MM_Code",
       "MM_Description",
-      "FTV_or_SSO_SLA_or_SSO_Lite_SLA_or_CBO",
-      "Remarks_or_Acceptance",      
-      "ZERV_(18)",
-      "ZEXT_(40)",
-      "Note",
+      "SLA",
+      "Remarks",      
     ];
     // header = header.concat(vendorName);
 
@@ -629,12 +626,8 @@ class MatNRO extends React.Component {
         "BB",
         "BB_Sub",
         "Region",
-        "FTV_or_SSO_SLA_or_SSO_Lite_SLA_or_CBO",
-        "Remarks_or_Acceptance",
-        "SoW_Description_or_Site_Type",
-        "ZERV_(18)",
-        "ZEXT_(40)",
-        "Note",
+        "SLA",
+        "Remarks",
       ],
       [
         modul_name,
@@ -722,12 +715,8 @@ class MatNRO extends React.Component {
       "Unit_Price",
       "MM_Code",
       "MM_Description",
-      "FTV_or_SSO_SLA_or_SSO_Lite_SLA_or_CBO",
-      "Remarks_or_Acceptance",      
-      "ZERV_(18)",
-      "ZEXT_(40)",
-      "Note",
-      "Vendor"
+      "SLA",
+      "Remarks",      
     ];
     // header = header.concat(vendorName);
 
