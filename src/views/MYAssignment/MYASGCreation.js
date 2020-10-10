@@ -403,6 +403,11 @@ class MYASGCreation extends Component {
     this.toggleLoading() 
   }
 
+  // UniqueProject = (listvalue) => {
+  //   const UniqueProject = [...new Set(listvalue.map(item => item.program))]
+  //   this.setState({list_project: UniqueProject})
+  // }
+
   getOptionbyRole1 = (role) => {
     if (role !== undefined) {
       if (role.includes("BAM-CPM") === true || role.includes("BAM-Sourcing") === true) {
