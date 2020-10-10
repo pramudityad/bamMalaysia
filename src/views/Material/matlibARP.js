@@ -130,13 +130,11 @@ class MatARP extends React.Component {
       "MM_Code",
       "MM_Description",
       "Vendor_ID",
+      "Vendor_Name",
       "Unit_Price",
       "Currency",
       "UoM",           
-      "Remarks_or_Acceptance",      
-      "ZERV_(18)",
-      "ZEXT_(40)",
-      "Note",
+      "Remarks",      
     ];
 
     ws.addRow(header);
@@ -251,12 +249,9 @@ class MatARP extends React.Component {
         "BB_Sub",
         "Region",
         "FTV_or_SSO_SLA_or_SSO_Lite_SLA_or_CBO",
-        "Remarks_or_Acceptance",
+        "Remarks",
         "Vendor_ID",
         "Vendor_Name",
-        "ZERV_(18)",
-        "ZEXT_(40)",
-        "Note",
       ],
       [
         modul_name,
@@ -342,10 +337,7 @@ class MatARP extends React.Component {
       "Unit_Price",
       "Currency",
       "UoM",           
-      "Remarks_or_Acceptance",      
-      "ZERV_(18)",
-      "ZEXT_(40)",
-      "Note",
+      "Remarks",      
     ];
 
     ws.addRow(header);
@@ -365,7 +357,7 @@ class MatARP extends React.Component {
         e.Unit_Price,
         e.Currency,
         e.UoM,
-        e.Remarks_or_Acceptance,
+        e.Remarks,
         e.ZERV_18,
         e.ZEXT_40,
         e.Note,
@@ -442,7 +434,7 @@ class MatARP extends React.Component {
       dataForm[3] = aEdit.UoM;
       dataForm[4] = aEdit.Unit_Price;
       dataForm[5] = aEdit.Currency;
-      dataForm[6] = aEdit.Remarks_or_Acceptance;
+      dataForm[6] = aEdit.Remarks;
       dataForm[7] = aEdit.Vendor_ID;
       dataForm[8] = aEdit.Vendor_Name;
       dataForm[9] = aEdit.ZERV_18;
@@ -643,7 +635,7 @@ class MatARP extends React.Component {
                             <th>UoM</th>
                             <th>Unit_Price</th>
                             <th>Currency</th>
-                            <th>Remarks_or_Acceptance</th>
+                            <th>Remarks</th>
                             <th>Vendor_ID</th>
                             <th>Vendor_Name</th>
                             <th>ZERV_(18)</th>
@@ -678,7 +670,7 @@ class MatARP extends React.Component {
                                     {e.Currency}
                                   </td>
                                   <td style={{ textAlign: "center" }}>
-                                    {e.Remarks_or_Acceptance}
+                                    {e.Remarks}
                                   </td>
                                   <td style={{ textAlign: "center" }}>
                                     {e.Vendor_ID}
@@ -833,7 +825,7 @@ class MatARP extends React.Component {
                   </Col>
                 </FormGroup>
                 <FormGroup>
-                  <Label>Remarks_or_Acceptance</Label>
+                  <Label>Remarks</Label>
                   <Input
                     type="text"
                     name="6"
@@ -1025,7 +1017,7 @@ class MatARP extends React.Component {
                   </Col>
                 </FormGroup>
                 <FormGroup>
-                  <Label>Remarks_or_Acceptance</Label>
+                  <Label>Remarks</Label>
                   <Input
                     type="text"
                     name="6"

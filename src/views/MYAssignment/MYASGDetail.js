@@ -1964,7 +1964,8 @@ class MYASGDetail extends Component {
                       {this.state.lmr_detail.detail !== undefined ? (
                         this.state.lmr_detail.detail.map((e) => (
                           <tr>
-                            <td>
+                            {this.state.roleUser.includes("BAM-CPM") === true || this.state.roleUser.includes("BAM-GR-PA") === true && (this.state.lmr_detail.mm_data_type === "NDO" || this.state.lmr_detail.mm_data_type === "NRO") || this.state.roleUser.includes("BAM-PA") === true && this.state.lmr_detail.mm_data_type === "ARP" ? (
+                              <td>
                               <Link
                                 to={
                                   "/lmr-detail/" +
@@ -1984,6 +1985,7 @@ class MYASGDetail extends Component {
                                 </Button>
                               </Link>
                             </td>
+                            ):(<td></td>)}                            
                             <td>{e.request_type}</td>
                             <td>{e.project_name}</td>
                             <td>{e.cdid}</td>
@@ -2083,7 +2085,7 @@ class MYASGDetail extends Component {
                         <Fragment></Fragment>
                       )}
                       <tr>
-                        <td colSpan="22" style={{ textAlign: "left" }}>
+                        {/* <td colSpan="22" style={{ textAlign: "left" }}>
                           {this.state.check_prpo.PO_Number === null ||
                           this.state.check_prpo.PO_Number === undefined ? (
                             this.state.lmr_detail.request_type === "Add LMR" ? (
@@ -2100,7 +2102,7 @@ class MYASGDetail extends Component {
                           ) : (
                             ""
                           )}
-                        </td>
+                        </td> */}
                       </tr>
                       {this.state.creation_lmr_child_form.map((lmr, i) => (
                         <tr className="form-lmr-child">

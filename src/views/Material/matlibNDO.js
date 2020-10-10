@@ -130,14 +130,15 @@ class MatNDO extends React.Component {
       "BB",
       "BB_Sub",
       "SoW_Description_or_Site_Type",
-      "Remarks_or_Acceptance",        
+      "SLA",        
       "UoM",
       "Unit_Price",      
       "Region",
       "MM_Code",
       "MM_Description",
       "Vendor_ID",
-      "Note",
+      "Vendor_Name",
+      "Remarks",
     ];
 
     ws.addRow(header);
@@ -252,7 +253,7 @@ class MatNDO extends React.Component {
         "Unit_Price",
 
         "Region",
-        "Remarks_or_Acceptance",
+        "SLA",
         "SoW_Description_or_Site_Type",
         "Vendor_ID",
         "Vendor_Name",
@@ -337,14 +338,15 @@ class MatNDO extends React.Component {
       "BB",
       "BB_Sub",
       "SoW_Description_or_Site_Type",
-      "Remarks_or_Acceptance",        
+      "SLA",        
       "UoM",
       "Unit_Price",      
       "Region",
       "MM_Code",
       "MM_Description",
       "Vendor_ID",
-      "Note",
+      "Vendor_Name",
+      "Remarks",
     ];
     ws.addRow(headerRow);
     for (let i = 1; i < headerRow.length + 1; i++) {
@@ -360,7 +362,7 @@ class MatNDO extends React.Component {
         e.BB,
         e.BB_Sub,
         e.SoW_Description_or_Site_Type,
-        e.Remarks_or_Acceptance,
+        e.SLA,
         e.UoM,
         e.Unit_Price,
         e.Region,
@@ -444,7 +446,7 @@ class MatNDO extends React.Component {
       dataForm[6] = aEdit.Unit_Price;
       dataForm[7] = aEdit.MM_Code;
       dataForm[8] = aEdit.Region;
-      dataForm[9] = aEdit.Remarks_or_Acceptance;
+      dataForm[9] = aEdit.SLA;
       dataForm[10] = aEdit.SoW_Description_or_Site_Type;
       dataForm[11] = aEdit.Vendor_ID;
       dataForm[12] = aEdit.Note;
@@ -470,7 +472,7 @@ class MatNDO extends React.Component {
         Unit_Price: this.state.PPForm[6],
         MM_Code: this.state.PPForm[7],
         Region: this.state.PPForm[8],
-        Remarks_or_Acceptance: this.state.PPForm[9],
+        SLA: this.state.PPForm[9],
         SoW_Description_or_Site_Type: this.state.PPForm[10],
         Vendor_ID: this.state.PPForm[11],
         Vendor_Name: this.findVendorName(this.state.PPForm[11]),
@@ -641,7 +643,7 @@ class MatNDO extends React.Component {
                             <th>BB</th>
                             <th>BB_Sub</th>
                             <th>SoW_Description_or_Site_Type</th>
-                            <th>Remarks_or_Acceptance</th>
+                            <th>SLA</th>
                             <th>UoM</th>
                             <th>Unit_Price</th>                            
                             <th>Region</th>
@@ -649,7 +651,7 @@ class MatNDO extends React.Component {
                             <th>MM_Description</th>     
                             <th>Vendor_ID</th>
                             <th>Vendor_Name</th>
-                            <th>Note</th>
+                            <th>Remarks</th>
                             <th colspan="2"></th>
                           </tr>
                         </thead>
@@ -673,7 +675,7 @@ class MatNDO extends React.Component {
                                     {e.SoW_Description_or_Site_Type}
                                   </td>
                                   <td style={{ textAlign: "center" }}>
-                                    {e.Remarks_or_Acceptance}
+                                    {e.SLA}
                                   </td>
                                   <td style={{ textAlign: "center" }}>
                                     {e.UoM}
@@ -845,7 +847,7 @@ class MatNDO extends React.Component {
                   />
                 </FormGroup>
                 <FormGroup>
-                  <Label>Remarks_or_Acceptance</Label>
+                  <Label>SLA</Label>
                   <Input
                     type="text"
                     name="9"
@@ -994,7 +996,7 @@ class MatNDO extends React.Component {
                   />
                 </FormGroup>
                 <FormGroup>
-                  <Label>Remarks_or_Acceptance</Label>
+                  <Label>SLA</Label>
                   <Input
                     type="text"
                     name="9"
