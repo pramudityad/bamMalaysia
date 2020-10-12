@@ -1269,7 +1269,7 @@ class MYASGCreation extends Component {
       data_material.Unit_Price;
     dataLMR[parseInt(this.state.current_material_select)]["quantity"] = 0;
     this.setState({ creation_lmr_child_form: dataLMR });
-    // this.toggleMaterial();
+    this.decideToggleMaterial();
   }
 
   loopSearchBar = () => {
