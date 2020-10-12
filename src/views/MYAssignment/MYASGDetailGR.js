@@ -832,7 +832,7 @@ class MYASGDetail extends Component {
                   {" "}
                   GR Detail{" "}
                 </span>
-                <div
+                {/* <div
                   className="card-header-actions"
                   style={{ display: "inline-flex" }}
                 >
@@ -865,7 +865,7 @@ class MYASGDetail extends Component {
                     </i>{" "}
                     &nbsp;Change GR
                   </Button>
-                </div>
+                </div> */}
               </CardHeader>
               <Collapse isOpen={this.state.collapse_add_child}>
                 <Card style={{ margin: "10px 10px 5px 10px" }}>
@@ -1272,7 +1272,7 @@ class MYASGDetail extends Component {
                   (<Button color="primary" size="sm" onClick={this.addGR}>
                   <i className="fa fa-plus">&nbsp;</i> GR Child
                 </Button>) : ("")} */}
-                  <Button color="primary" size="sm" onClick={this.addGR}>
+                  <Button color="primary" size="sm" onClick={this.addGR} disabled={this.state.list_pr_po !== undefined && this.state.list_pr_po.length !== 0}>
                     <i className="fa fa-plus">&nbsp;</i> GR Child
                   </Button>
                 </div>
