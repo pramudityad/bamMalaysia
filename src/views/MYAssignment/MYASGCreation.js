@@ -391,7 +391,7 @@ class MYASGCreation extends Component {
       if (resCD.data !== undefined) {
         if(resCD.data.result !== undefined ){
           const list_cd_act = resCD.data.result.raw_data
-          this.setState({ list_cd_id_act: list_cd_act });
+          this.setState({ list_cd_id_act: list_cd_act }, () => this.UniqueProject(list_cd_act));
         }
       }if(resCD === 500){
         this.setState({
@@ -403,10 +403,10 @@ class MYASGCreation extends Component {
     this.toggleLoading() 
   }
 
-  // UniqueProject = (listvalue) => {
-  //   const UniqueProject = [...new Set(listvalue.map(item => item.program))]
-  //   this.setState({list_project: UniqueProject})
-  // }
+  UniqueProject = (listvalue) => {
+    const UniqueProject = [...new Set(listvalue.map(item => item.project))]
+    this.setState({list_project: UniqueProject}, () => console.log('uniq ', this.state.list_project))
+  }
 
   getOptionbyRole1 = (role) => {
     if (role !== undefined) {
@@ -549,7 +549,7 @@ class MYASGCreation extends Component {
   componentDidMount() {
     // this.toggleLoading();
     this.getVendorList();
-    this.getProjectList();
+    // this.getProjectList();
     // this.getMaterialList();
     this.getDataCDACT()
     // this.getDataCD();
@@ -1119,17 +1119,17 @@ class MYASGCreation extends Component {
       lmr_form["Plan_Cost_Reduction"] = "Yes";
       this.setState({ lmr_edit: false });
     }
-    if (name === "LMR_Type" && value !== "Cost Collector") {
-      lmr_form["Plan_Cost_Reduction"] = "No";
-      if (name === "project_name") {
-        let dataProject = this.state.list_project.find(
-          (e) => e.Project === value
-        );
-        if (dataProject !== undefined) {
-          lmr_form["id_project_doc"] = dataProject._id;
-        }
-      }
-    }
+    // if (name === "LMR_Type" && value !== "Cost Collector") {
+    //   lmr_form["Plan_Cost_Reduction"] = "No";
+    //   if (name === "project_name") {
+    //     let dataProject = this.state.list_project.find(
+    //       (e) => e.Project === value
+    //     );
+    //     if (dataProject !== undefined) {
+    //       lmr_form["id_project_doc"] = dataProject._id;
+    //     }
+    //   }
+    // }
     if (name === "gl_account") {
       let selected_options = e.target.options[e.target.selectedIndex].text;
       let mm_data_type = "";
@@ -1762,7 +1762,7 @@ class MYASGCreation extends Component {
                                 Select Project Name
                               </option>
                               {this.state.list_project.map((e) => (
-                                <option value={e.Project}>{e.Project}</option>
+                                <option value={e}>{e}</option>
                               ))}
                             </Input>
                           ) : (
