@@ -632,15 +632,15 @@ class MatARP extends React.Component {
                           <tr align="center">
                             <th>MM_Code</th>
                             <th>MM_Description</th>
-                            <th>UoM</th>
+                            {/* <th>UoM</th> */}
                             <th>Unit_Price</th>
                             <th>Currency</th>
                             <th>Remarks</th>
                             <th>Vendor_ID</th>
                             <th>Vendor_Name</th>
-                            <th>ZERV_(18)</th>
+                            {/* <th>ZERV_(18)</th>
                             <th>ZEXT_(40)</th>
-                            <th>Note</th>
+                            <th>Note</th> */}
                             <th colspan="2"></th>
                           </tr>
                         </thead>
@@ -660,9 +660,9 @@ class MatARP extends React.Component {
                                   <td style={{ textAlign: "center" }}>
                                     {e.MM_Description}
                                   </td>
-                                  <td style={{ textAlign: "center" }}>
+                                  {/* <td style={{ textAlign: "center" }}>
                                     {e.UoM}
-                                  </td>
+                                  </td> */}
                                   <td style={{ textAlign: "center" }}>
                                     {e.Unit_Price}
                                   </td>
@@ -678,7 +678,7 @@ class MatARP extends React.Component {
                                   <td style={{ textAlign: "center" }}>
                                   {this.findVendorName(e.Vendor_ID)}
                                   </td>
-                                  <td style={{ textAlign: "center" }}>
+                                  {/* <td style={{ textAlign: "center" }}>
                                     {e["ZERV_(18)"]}
                                   </td>
                                   <td style={{ textAlign: "center" }}>
@@ -686,7 +686,7 @@ class MatARP extends React.Component {
                                   </td>
                                   <td style={{ textAlign: "center" }}>
                                     {e.Note}
-                                  </td>
+                                  </td> */}
                                   <td>
                                     <Button
                                       size="sm"
