@@ -1690,7 +1690,7 @@ class MYASGDetail extends Component {
                   {" "}
                   LMR Detail{" "}
                 </span>
-                <div
+                {/* <div
                   className="card-header-actions"
                   style={{ display: "inline-flex" }}
                 >
@@ -1738,7 +1738,7 @@ class MYASGDetail extends Component {
                       </i>
                     </Button>
                   </Link>
-                </div>
+                </div> */}
               </CardHeader>
               <Collapse isOpen={this.state.collapse_add_child}>
                 <Card style={{ margin: "10px 10px 5px 10px" }}>
