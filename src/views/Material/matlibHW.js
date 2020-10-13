@@ -693,19 +693,19 @@ class MatHW extends React.Component {
                         // className="fixed-matlib"
                         >
                           <tr align="center">
-                          <th>Info_Rec</th>
+                          {/* <th>Info_Rec</th> */}
                             <th>Vendor_ID</th>
                             <th>Vendor_Name</th>
                             <th>MM_Code</th>
                             <th>MM_Description</th>
-                            <th>UoM</th>
+                            {/* <th>UoM</th> */}
                             <th>Unit_Price</th>
                             <th>Currency</th>                            
                             <th>Valid_To</th>
                             <th>Created_On</th>
-                            <th>Created_By</th>
+                            {/* <th>Created_By</th>
                             <th>Status_Price_in_SAP</th>
-                            <th>Note</th>
+                            <th>Note</th> */}
                             <th colspan="2"></th>
                           </tr>
                         </thead>
@@ -719,9 +719,9 @@ class MatHW extends React.Component {
                                   // className="fixbody"
                                   key={e._id}
                                 >
-                                    <td style={{ textAlign: "center" }}>
+                                    {/* <td style={{ textAlign: "center" }}>
                                     {e.Info_Rec}
-                                  </td>
+                                  </td> */}
                                   <td style={{ textAlign: "center" }}>
                                     {e.Vendor_ID}
                                   </td>
@@ -734,9 +734,9 @@ class MatHW extends React.Component {
                                   <td style={{ textAlign: "center" }}>
                                     {e.MM_Description}
                                   </td>                                 
-                                  <td style={{ textAlign: "center" }}>
+                                  {/* <td style={{ textAlign: "center" }}>
                                     {e.UoM}
-                                  </td>
+                                  </td> */}
                                   <td style={{ textAlign: "center" }}>
                                     {e.Unit_Price}
                                   </td>
@@ -750,7 +750,7 @@ class MatHW extends React.Component {
                                   <td style={{ textAlign: "center" }}>
                                     {e.Created_On}
                                   </td>
-                                  <td style={{ textAlign: "center" }}>
+                                  {/* <td style={{ textAlign: "center" }}>
                                     {e.created_by}
                                   </td>
                                   <td style={{ textAlign: "center" }}>
@@ -758,7 +758,7 @@ class MatHW extends React.Component {
                                   </td>
                                   <td style={{ textAlign: "center" }}>
                                     {e.Note}
-                                  </td>
+                                  </td> */}
                                   <td>
                                     <Button
                                       size="sm"

@@ -699,7 +699,7 @@ class MatNDO extends React.Component {
                                     {this.findVendorName(e.Vendor_ID)}
                                   </td>
                                   <td style={{ textAlign: "center" }}>
-                                    {e.Note}
+                                    {e.Remarks}
                                   </td>
                                   <td>
                                     <Button
