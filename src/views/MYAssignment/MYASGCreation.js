@@ -543,6 +543,19 @@ class MYASGCreation extends Component {
           </>
         );
       }
+      if (role.includes("BAM-GR-PA") === true) {
+        return (
+          <>
+            <option value="" selected></option>
+            <option value="NRO service - 402603">NRO service - 402603</option>
+            <option value="NRO local material - 402201">
+              NRO local material - 402201
+            </option>{" "}
+            <option value="Transport - 402102">Transport - 402102</option>
+
+          </>
+        );
+      }
     }
   };
 
