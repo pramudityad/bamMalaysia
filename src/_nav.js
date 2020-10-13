@@ -3,13 +3,13 @@ export default {
     {
       name: 'Assignment LMR',
       icon: 'icon-folder-alt',
-      roles : ["BAM-CPM", "BAM-IM", "BAM-IE Lead", "BAM-MP", "BAM-PA", "BAM-Sourcing"],
+      roles : ["BAM-CPM", "BAM-IM", "BAM-IE Lead", "BAM-MP", "BAM-PA", "BAM-Sourcing", "BAM-GR-PA"],
       children: [
         {
           name: 'LMR',
           url: '/lmr-list',
           icon: 'icon-folder',
-          roles : ["BAM-CPM", "BAM-IM", "BAM-IE Lead", "BAM-MP", "BAM-PA", "BAM-Sourcing"],
+          roles : ["BAM-CPM", "BAM-IM", "BAM-IE Lead", "BAM-MP", "BAM-PA", "BAM-Sourcing", "BAM-GR-PA"],
         },        
       ]
     },
