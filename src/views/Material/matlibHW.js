@@ -174,17 +174,18 @@ class MatHW extends React.Component {
 
     let header = [
       "Material_Type",
-      "Info_Rec",
+      // "Info_Rec",
+      "Vendor_Name",
       "Vendor_ID",
       "MM_Code",
       "MM_Description",
       "Unit_Price",
       "Currency",
-      "created_by",
+      // "created_by",
       "Created_On",
       "Valid_To",
-      "Status_Price_in_SAP",
-      "Note",
+      // "Status_Price_in_SAP",
+      // "Note",
     ];
 
     ws.addRow(header);
