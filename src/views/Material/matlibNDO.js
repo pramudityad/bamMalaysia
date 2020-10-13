@@ -104,18 +104,19 @@ class MatNDO extends React.Component {
     }));
     let whereAnd =
       '{ "Material_Type":{"$regex" : "' + modul_name + '", "$options" : "i"}}';
-    getDatafromAPIMY(
-      "/mm_code_data?srt=_id:-1&where=" +
+      getDatafromAPINODE(
+      "/mmCode/getMm?q=" +
         whereAnd +
         "&max_results=" +
         this.state.perPage +
         "&page=" +
-        this.state.activePage
+        this.state.activePage,
+        this.state.tokenUser
     ).then((res) => {
       if (res.data !== undefined) {
-        const items = res.data._items;
-        const totalData = res.data._meta.total;
-        this.setState({ material_list: items, totalData: totalData, modal_loading: !this.state.modal_loading}, ()=>console.log(items.map(e=>e._id))
+        const items = res.data.data;
+        const totalData = res.data.totalResults;
+        this.setState({ material_list: items, totalData: totalData, modal_loading: !this.state.modal_loading}, ()=>console.log(items.map(e=>e.SLA))
         );
       }
     });
