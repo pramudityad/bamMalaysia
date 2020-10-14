@@ -109,7 +109,7 @@ class MYASGDetail extends Component {
       this.setState({
         ChildForm: this.state.ChildForm.concat([
           {
-            Plant: "MY",
+            Plant: "2172",
             Request_Type: "Add GR",
             PO_Number: this.state.list_pr_po.PO_Number,
             PO_Item: this.state.list_pr_po.PO_Item,
@@ -117,7 +117,8 @@ class MYASGDetail extends Component {
             PO_Qty: this.state.list_pr_po.PO_Qty,
             Required_GR_Qty: "",
             DN_No: "",
-            WCN_Link: "",
+            WCN_Link: "https://mas.pdb.e-dpm.com/grmenu/list/",
+            created_by_gr: this.props.dataLogin.userName,
             // Item_Status: "Waiting for GR",
             // Work_Status: "Submit",
           },
@@ -127,7 +128,7 @@ class MYASGDetail extends Component {
       this.setState({
         ChildForm: this.state.ChildForm.concat([
           {
-            Plant: "MY",
+            Plant: "2172",
             Request_Type: "Add GR",
             PO_Number: "",
             PO_Item: "",
@@ -135,7 +136,8 @@ class MYASGDetail extends Component {
             PO_Qty: "",
             Required_GR_Qty: "",
             DN_No: "",
-            WCN_Link: "",
+            WCN_Link: "https://mas.pdb.e-dpm.com/grmenu/list/",
+            created_by_gr: this.props.dataLogin.userName,
             // Item_Status: "Waiting for GR",
             // Work_Status: "Submit",
           },
@@ -1050,6 +1052,7 @@ class MYASGDetail extends Component {
                         <th></th>
                         <th>Plant</th>
                         <th style={{ width: "12%" }}>Request Type</th>
+                        <th>Created by</th>
                         <th>PO Number</th>
                         <th>PO Item</th>
                         <th>PO Price</th>
@@ -1153,6 +1156,27 @@ class MYASGDetail extends Component {
                           </td>
                           <td>
                             <Input
+                              type="text"
+                              name="created_by_gr"
+                              id="created_by_gr"
+                              value={child_data.created_by_gr}
+                              onChange={this.handleInputchild(idx)}
+                              // style={{ width: "200" }}
+                              readOnly
+                            />
+                            {/* <option value="" disabled selected hidden>
+                                Select Request Type
+                              </option>
+                              <option value="Add GR" >
+                                Add GR
+                              </option>
+                              <option value="Delete GR" >
+                                Delete GR
+                              </option>
+                            </Input> */}
+                          </td>
+                          <td>
+                            <Input
                               // key={prpo._id}
                               type="text"
                               name="PO_Number"
@@ -1215,6 +1239,7 @@ class MYASGDetail extends Component {
                           </td>
                           <td>
                             <Input
+                            readOnly
                               type="text"
                               name="WCN_Link"
                               id="WCN_Link"

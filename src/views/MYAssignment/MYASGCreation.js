@@ -144,7 +144,7 @@ class MYASGCreation extends Component {
       roleUser: this.props.dataLogin.role,
       tokenUser: this.props.dataLogin.token,
       lmr_form: {
-        pgr: "MP2",
+        // pgr: "MP2",
         gl_account: "",
         lmr_issued_by: this.props.dataLogin.userName,
         // lmr_issued_by: "EHAYZUX",
@@ -612,7 +612,8 @@ class MYASGCreation extends Component {
     this.getDatafromAPIMY("/vendor_data").then((res) => {
       if (res.data !== undefined) {
         const items = res.data._items;
-        this.setState({ vendor_list: items });
+        const vendor_sort = items.sort((a,b) => a.Name > b.Name ? 1: -1).filter(e => e.Name !== "")
+        this.setState({ vendor_list: vendor_sort });
       }
     });
     // this.setState({vendor_list : vendorList});

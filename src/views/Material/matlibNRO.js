@@ -153,6 +153,7 @@ class TabelNRO extends React.Component {
     }
   }
 
+
   render() {
     let MatIdcol = [];
     MatIdcol.push(this.props.DataMaterial.map((a) => a._id));
@@ -876,6 +877,11 @@ class MatNRO extends React.Component {
     }
   };
 
+  sortVendor(vendorlist){
+    return vendorlist.sort((a,b) => a.Name > b.Name ? 1: -1).filter(e => e.Name !== "")
+  }
+
+
   render() {
     return (
       <div className="animated fadeIn">
@@ -960,7 +966,7 @@ class MatNRO extends React.Component {
                       <TabelNRO
                         CheckVendor={this.state.vendor_check}
                         handleCheckVendor={this.handleCheckVendor}
-                        Vendor_header={this.state.vendor_list}
+                        Vendor_header={this.sortVendor(this.state.vendor_list)}
                         DataMaterial={this.state.material_list}
                         vendorChecked={this.state.vendorChecked}
                         handleCheckVendorAll={this.handleCheckVendorAll}
