@@ -1272,7 +1272,9 @@ class MYASGDetail extends Component {
                   (<Button color="primary" size="sm" onClick={this.addGR}>
                   <i className="fa fa-plus">&nbsp;</i> GR Child
                 </Button>) : ("")} */}
-                  <Button color="primary" size="sm" onClick={this.addGR} disabled={this.state.list_pr_po !== undefined && this.state.list_pr_po.length !== 0}>
+                  <Button color="primary" size="sm" onClick={this.addGR} 
+                  // disabled={this.state.list_pr_po !== undefined && this.state.list_pr_po.length !== 0}
+                  >
                     <i className="fa fa-plus">&nbsp;</i> GR Child
                   </Button>
                 </div>
