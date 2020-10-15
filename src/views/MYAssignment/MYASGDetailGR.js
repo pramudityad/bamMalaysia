@@ -122,7 +122,7 @@ class MYASGDetail extends Component {
             Required_GR_Qty: "",
             DN_No: "",
             WCN_Link: "https://mas.pdb.e-dpm.com/grmenu/list/",
-            // created_by_gr: this.props.dataLogin.userName,
+            created_by_gr: this.props.dataLogin.userName,
             // Item_Status: "Waiting for GR",
             // Work_Status: "Submit",
           },
@@ -141,7 +141,7 @@ class MYASGDetail extends Component {
             Required_GR_Qty: "",
             DN_No: "",
             WCN_Link: "https://mas.pdb.e-dpm.com/grmenu/list/",
-            // created_by_gr: this.props.dataLogin.userName,
+            created_by_gr: this.props.dataLogin.userName,
             // Item_Status: "Waiting for GR",
             // Work_Status: "Submit",
           },
@@ -542,19 +542,6 @@ class MYASGDetail extends Component {
 
   async postGRChild() {
     const dataChild = this.state.ChildForm;
-    // const dataChild = {
-    //   Plant: dataForm.Plant,
-    //   Request_Type: dataForm.Request_Type,
-    //   PO_Number: dataForm.PO_Number,
-    //   PO_Item: dataForm.PO_Item,
-    //   PO_Price: dataForm.PO_Price,
-    //   PO_Qty: dataForm.PO_Qty,
-    //   Required_GR_Qty: dataForm.Required_GR_Qty,
-    //   DN_No: dataForm.DN_No,
-    //   WCN_Link: dataForm.WCN_Link,
-    //   Item_Status: dataForm.Item_Status,
-    //   Work_Status: dataForm.Work_Status,
-    // };
     console.log("dataChild", dataChild);
     const respondSaveLMRChild = await this.postDatatoAPINODE(
       "/aspassignment/createGrForm/" + this.props.match.params.lmr,
@@ -1179,7 +1166,7 @@ class MYASGDetail extends Component {
                               type="text"
                               name="created_by_gr"
                               id="created_by_gr"
-                              value={this.props.dataLogin.userName}
+                              value={child_data.created_by_gr}
                               onChange={this.handleInputchild(idx)}
                               // style={{ width: "200" }}
                               readOnly
