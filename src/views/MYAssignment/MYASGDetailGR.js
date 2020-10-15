@@ -77,6 +77,10 @@ class MYASGDetail extends Component {
       ChildForm: [],
       filter_list: "",
       change_gr: false,
+      editPO_num: false,
+      editPO_item: false,
+      editPO_price: false,
+      editPO_qty: false,
     };
     this.toggleAddNew = this.toggleAddNew.bind(this);
     this.handleInput = this.handleInput.bind(this);
@@ -118,7 +122,7 @@ class MYASGDetail extends Component {
             Required_GR_Qty: "",
             DN_No: "",
             WCN_Link: "https://mas.pdb.e-dpm.com/grmenu/list/",
-            created_by_gr: this.props.dataLogin.userName,
+            // created_by_gr: this.props.dataLogin.userName,
             // Item_Status: "Waiting for GR",
             // Work_Status: "Submit",
           },
@@ -137,7 +141,7 @@ class MYASGDetail extends Component {
             Required_GR_Qty: "",
             DN_No: "",
             WCN_Link: "https://mas.pdb.e-dpm.com/grmenu/list/",
-            created_by_gr: this.props.dataLogin.userName,
+            // created_by_gr: this.props.dataLogin.userName,
             // Item_Status: "Waiting for GR",
             // Work_Status: "Submit",
           },
@@ -817,6 +821,22 @@ class MYASGDetail extends Component {
     console.log("dummryRow", JSON.stringify(dummryRow));
   }
 
+  editPO_num = () => {
+    this.setState({editPO_num: true})
+  }
+
+  editPO_item= () => {
+    this.setState({editPO_item: true})
+  }
+
+  editPO_price= () => {
+    this.setState({editPO_price: true})
+  }
+
+  editPO_qty= () => {
+    this.setState({editPO_qty: true})
+  }
+
   render() {
     const Dataform = this.state.Dataform;
     // const prpo = this.state.list_pr_po[0];
@@ -1053,10 +1073,10 @@ class MYASGDetail extends Component {
                         <th>Plant</th>
                         <th style={{ width: "12%" }}>Request Type</th>
                         <th>Created by</th>
-                        <th>PO Number</th>
-                        <th>PO Item</th>
-                        <th>PO Price</th>
-                        <th>PO Qty</th>
+                        <th>PO Number<Button size="sm" onClick={this.editPO_num}><i className="fa fa-edit" aria-hidden="true"></i></Button></th>
+                        <th>PO Item<Button size="sm" onClick={this.editPO_item}><i className="fa fa-edit" aria-hidden="true"></i></Button></th>
+                        <th>PO Price<Button size="sm" onClick={this.editPO_price}><i className="fa fa-edit" aria-hidden="true"></i></Button></th>
+                        <th>PO Qty<Button size="sm" onClick={this.editPO_qty}><i className="fa fa-edit" aria-hidden="true"></i></Button></th>
                         <th>Required GR Qty</th>
                         <th>DN No</th>
                         <th>WCN_Link</th>
@@ -1159,7 +1179,7 @@ class MYASGDetail extends Component {
                               type="text"
                               name="created_by_gr"
                               id="created_by_gr"
-                              value={child_data.created_by_gr}
+                              value={this.props.dataLogin.userName}
                               onChange={this.handleInputchild(idx)}
                               // style={{ width: "200" }}
                               readOnly
@@ -1175,7 +1195,7 @@ class MYASGDetail extends Component {
                               </option>
                             </Input> */}
                           </td>
-                          <td>
+                          {this.state.editPO_num === false ? (  <td>
                             <Input
                               // key={prpo._id}
                               type="text"
@@ -1185,8 +1205,17 @@ class MYASGDetail extends Component {
                               onChange={this.handleInputchild(idx)}
                               readOnly
                             />
-                          </td>
-                          <td>
+                          </td>):(<td>
+                            <Input
+                              // key={prpo._id}
+                              type="text"
+                              name="PO_Number"
+                              id={"PO_Number"}
+                              defaultValue={child_data.PO_Number}
+                              onChange={this.handleInputchild(idx)}                              
+                            />
+                          </td>)}
+                         {this.state.editPO_item === false? ( <td>
                             <Input
                               // key={prpo._id}
                               type="text"
@@ -1196,8 +1225,19 @@ class MYASGDetail extends Component {
                               onChange={this.handleInputchild(idx)}
                               readOnly
                             />
-                          </td>
-                          <td>
+                          </td>):( <td>
+                            <Input
+                              // key={prpo._id}
+                              type="text"
+                              name="PO_Item"
+                              id={"PO_Item"}
+                              defaultValue={child_data.PO_Item}
+                              onChange={this.handleInputchild(idx)}
+                              
+                            />
+                          </td>)}
+                         {this.state.editPO_price === false ? (
+                            <td>
                             <Input
                               type="text"
                               name="PO_Price"
@@ -1207,7 +1247,17 @@ class MYASGDetail extends Component {
                               readOnly
                             />
                           </td>
-                          <td>
+                         ):( <td>
+                          <Input
+                            type="text"
+                            name="PO_Price"
+                            id="PO_Price"
+                            onChange={this.handleInputchild(idx)}
+                            defaultValue={child_data.PO_Price}
+                            
+                          />
+                        </td>)}
+                        {this.state.editPO_qty === false ? (<td>
                             <Input
                               // key={prpo._id}
                               type="text"
@@ -1218,7 +1268,18 @@ class MYASGDetail extends Component {
                               onChange={this.handleInputchild(idx)}
                               readOnly
                             />
-                          </td>
+                          </td>): (<td>
+                            <Input
+                              // key={prpo._id}
+                              type="text"
+                              name="PO_Qty"
+                              id={"PO_Qty"}
+                              value={child_data.PO_Qty}
+                              defaultValue={child_data.PO_Qty}
+                              onChange={this.handleInputchild(idx)}
+                              
+                            />
+                          </td>)}
                           <td>
                             <Input
                               type="number"
