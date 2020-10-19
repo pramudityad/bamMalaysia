@@ -901,6 +901,31 @@ class MYASGDetail extends Component {
     this.setState({ editPO_qty: true });
   };
 
+  getGRFile = async (e) => {
+    e.preventDefault();
+    e.persist();
+    const i = e.target.name;
+    const id = e.target.value;
+    console.log(i, id);
+    const data_gr = this.state.lmr_detail;
+    console.log(data_gr[i]);
+    if (data_gr[i] !== undefined) {
+      const resFile = await this.getDatafromAPINODE(
+        "/sidFile/getDocument/" + id,
+        this.props.dataLogin.token,
+        data_gr[i].file_document.mime_type
+      );
+      if (resFile !== undefined) {
+        saveAs(
+          new Blob([resFile.data], {
+            type: data_gr[i].file_document.mime_type,
+          }),
+          data_gr[i].file_document.system_name
+        );
+      }
+    }
+  };
+
   render() {
     const Dataform = this.state.Dataform;
     // const prpo = this.state.list_pr_po[0];
@@ -1177,7 +1202,7 @@ class MYASGDetail extends Component {
                     </thead>
                     <tbody>
                       {this.state.lmr_detail !== undefined ? (
-                        this.state.lmr_detail.map((e) => (
+                        this.state.lmr_detail.map((e, i) => (
                           <tr>
                             <td>
                               {this.state.change_gr !== false ? (
@@ -1206,7 +1231,16 @@ class MYASGDetail extends Component {
                             <td>{e.Required_GR_Qty}</td>
                             <td>{e.DN_No}</td>
                             <td>{e.WCN_Link}</td>
-                            <td>{}</td>
+                            <td>
+                              <Button
+                                size="sm"
+                                value={e._id}
+                                name={i}
+                                onClick={this.getGRFile}
+                              >
+                                <i className="fa fa-download"></i>
+                              </Button>
+                            </td>
                             <td>{e.Item_Status}</td>
                             <td>{e.Work_Status}</td>
                           </tr>
