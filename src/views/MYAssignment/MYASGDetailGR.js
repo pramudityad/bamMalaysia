@@ -25,12 +25,11 @@ import Excel from "exceljs";
 import { Modal, ModalBody, ModalHeader, ModalFooter } from "reactstrap";
 import * as XLSX from "xlsx";
 import { getDatafromAPIMY } from "../../helper/asyncFunction";
-import { connect } from 'react-redux';
+import { connect } from "react-redux";
 
 const DefaultNotif = React.lazy(() =>
   import("../../views/DefaultView/DefaultNotif")
 );
-
 
 // const BearerToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjYXNfaWQiOiI1MmVhNTZhMS0zNDMxLTRlMmQtYWExZS1hNTc3ODQzMTMxYzEiLCJyb2xlcyI6WyJCQU0tU3VwZXJBZG1pbiJdLCJhY2NvdW50IjoiMSIsImlhdCI6MTU5MTY5MTE4MH0.FpbzlssSQyaAbJOzNf3KLqHPnYo_ccBtBWu6n87h1RQ';
 const BearerToken =
@@ -81,6 +80,7 @@ class MYASGDetail extends Component {
       editPO_item: false,
       editPO_price: false,
       editPO_qty: false,
+      inputFile: [],
     };
     this.toggleAddNew = this.toggleAddNew.bind(this);
     this.handleInput = this.handleInput.bind(this);
@@ -109,7 +109,7 @@ class MYASGDetail extends Component {
   }
 
   addGR() {
-    if(this.state.list_pr_po !== undefined){
+    if (this.state.list_pr_po !== undefined && this.state.list_pr_po !== null) {
       this.setState({
         ChildForm: this.state.ChildForm.concat([
           {
@@ -123,12 +123,13 @@ class MYASGDetail extends Component {
             DN_No: "",
             WCN_Link: "https://mas.pdb.e-dpm.com/grmenu/list/",
             created_by_gr: this.props.dataLogin.userName,
+            fileDocument: "",
             // Item_Status: "Waiting for GR",
             // Work_Status: "Submit",
           },
         ]),
       });
-    } else{
+    } else {
       this.setState({
         ChildForm: this.state.ChildForm.concat([
           {
@@ -142,6 +143,7 @@ class MYASGDetail extends Component {
             DN_No: "",
             WCN_Link: "https://mas.pdb.e-dpm.com/grmenu/list/",
             created_by_gr: this.props.dataLogin.userName,
+            fileDocument: "",
             // Item_Status: "Waiting for GR",
             // Work_Status: "Submit",
           },
@@ -210,12 +212,16 @@ class MYASGDetail extends Component {
 
   async postDatatoAPINODE(url, data) {
     try {
-      let respond = await axios.post(process.env.REACT_APP_API_URL_NODE + url, data, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + this.state.tokenUser,
-        },
-      });
+      let respond = await axios.post(
+        process.env.REACT_APP_API_URL_NODE + url,
+        data,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + this.state.tokenUser,
+          },
+        }
+      );
       if (respond.status >= 200 && respond.status < 300) {
         // console.log("respond Post Data", respond);
       }
@@ -229,12 +235,16 @@ class MYASGDetail extends Component {
 
   async patchDatatoAPINODE(url, data) {
     try {
-      let respond = await axios.patch(process.env.REACT_APP_API_URL_NODE + url, data, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + this.state.tokenUser,
-        },
-      });
+      let respond = await axios.patch(
+        process.env.REACT_APP_API_URL_NODE + url,
+        data,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + this.state.tokenUser,
+          },
+        }
+      );
       if (respond.status >= 200 && respond.status < 300) {
         console.log("respond Post Data", respond);
       }
@@ -248,12 +258,15 @@ class MYASGDetail extends Component {
 
   async deleteDatafromAPINODE(url) {
     try {
-      let respond = await axios.delete(process.env.REACT_APP_API_URL_NODE + url, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + this.state.tokenUser,
-        },
-      });
+      let respond = await axios.delete(
+        process.env.REACT_APP_API_URL_NODE + url,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + this.state.tokenUser,
+          },
+        }
+      );
       if (respond.status >= 200 && respond.status < 300) {
         console.log("respond Post Data", respond);
       }
@@ -351,7 +364,9 @@ class MYASGDetail extends Component {
     ).then((res) => {
       if (res.data !== undefined) {
         const dataLMRDetailPRPO = res.data._items[0];
-        this.setState({ list_pr_po: dataLMRDetailPRPO }, () => console.log('prpo ',this.state.list_pr_po));
+        this.setState({ list_pr_po: dataLMRDetailPRPO }, () =>
+          console.log("prpo ", this.state.list_pr_po)
+        );
       }
     });
   }
@@ -541,11 +556,52 @@ class MYASGDetail extends Component {
   };
 
   async postGRChild() {
+    this.toggleLoading();
+    let grContainer = [];
+    let fileDocument = new FormData();
     const dataChild = this.state.ChildForm;
-    console.log("dataChild", dataChild);
+    dataChild.map((e) =>
+      grContainer.push({
+        Plant: e.Plant,
+        Request_Type: e.Request_Type,
+        PO_Number: e.PO_Number,
+        PO_Item: e.PO_Item,
+        PO_Price: e.PO_Price,
+        PO_Qty: e.PO_Qty,
+        Required_GR_Qty: e.Required_GR_Qty,
+        DN_No: e.DN_No,
+        WCN_Link: "https://mas.pdb.e-dpm.com/grmenu/list/",
+        created_by_gr: this.props.dataLogin.userName,
+      })
+    );
+    for (let i = 0; i < dataChild.length; i++) {
+      // await fileDocument.append('Plant', JSON.stringify(dataChild[i]['Plant']))
+      // await fileDocument.append('Request_Type', JSON.stringify(dataChild[i]['Request_Type']))
+      // await fileDocument.append('created_by_gr', JSON.stringify(dataChild[i]['created_by_gr']))
+      // await fileDocument.append('PO_Number', JSON.stringify(dataChild[i]['PO_Number']))
+      // await fileDocument.append('PO_Item', JSON.stringify(dataChild[i]['PO_Item']))
+      // await fileDocument.append('PO_Price', JSON.stringify(dataChild[i]['PO_Price']))
+      // await fileDocument.append('PO_Qty', JSON.stringify(dataChild[i]['PO_Qty']))
+      // await fileDocument.append('WCN_Link', JSON.stringify(dataChild[i]['WCN_Link']))
+      await fileDocument.append("fileDocument", dataChild[i]["fileDocument"]);
+      await fileDocument.append("gr_data", JSON.stringify(grContainer));
+    }
+
+    for (var pair of fileDocument.entries()) {
+      console.log(pair[0] + ", " + pair[1]);
+    }
+
+    // console.log(grContainer);
+    // grContainer = grContainer.concat(fileDocument)
+
+    // Item_Status: "Waiting for GR",
+    // Work_Status: "Submit",}))
+
+    // console.log('file arr', fileDocument)
+    // console.log("dataChild", dataChild);
     const respondSaveLMRChild = await this.postDatatoAPINODE(
       "/aspassignment/createGrForm/" + this.props.match.params.lmr,
-      { gr_data: dataChild }
+      fileDocument
     );
     if (
       respondSaveLMRChild.data !== undefined &&
@@ -578,6 +634,7 @@ class MYASGDetail extends Component {
         this.setState({ action_status: "failed" });
       }
     }
+    this.toggleLoading();
   }
 
   downloadFormatNewChild = async () => {
@@ -634,17 +691,37 @@ class MYASGDetail extends Component {
   handleInputchild = (idx) => (e) => {
     const value = e.target.value;
     const name = e.target.name;
-    const newChild = this.state.ChildForm.map((child_data, sidx) => {
-      if (idx !== sidx) return child_data;
-      return { ...child_data, [name]: value, [name]: value, [name]: value };
-    });
-
-    this.setState(
-      {
-        ChildForm: newChild,
-      },
-      () => console.log(this.state.ChildForm)
-    );
+    if (name === "fileDocument") {
+      let fileUpload = null;
+      if (
+        e !== undefined &&
+        e.target !== undefined &&
+        e.target.files !== undefined
+      ) {
+        fileUpload = e.target.files[0];
+        const newChild2 = this.state.ChildForm.map((child_data, sidx) => {
+          if (idx !== sidx) return child_data;
+          return { ...child_data, [name]: fileUpload };
+        });
+        this.setState(
+          {
+            ChildForm: newChild2,
+          },
+          () => console.log(this.state.ChildForm)
+        );
+      }
+    } else {
+      const newChild = this.state.ChildForm.map((child_data, sidx) => {
+        if (idx !== sidx) return child_data;
+        return { ...child_data, [name]: value };
+      });
+      this.setState(
+        {
+          ChildForm: newChild,
+        },
+        () => console.log(this.state.ChildForm)
+      );
+    }
   };
 
   async deleteGR(e) {
@@ -665,7 +742,7 @@ class MYASGDetail extends Component {
       DN_No: Data.DN_No,
       WCN_Link: Data.WCN_Link,
       Item_Status: "Stand By",
-      Work_Status: "Stand By",      
+      Work_Status: "Stand By",
     };
     const respondDelLMRChild = await this.patchDatatoAPINODE(
       "/aspassignment/UpdateGr",
@@ -809,20 +886,45 @@ class MYASGDetail extends Component {
   }
 
   editPO_num = () => {
-    this.setState({editPO_num: true})
-  }
+    this.setState({ editPO_num: true });
+  };
 
-  editPO_item= () => {
-    this.setState({editPO_item: true})
-  }
+  editPO_item = () => {
+    this.setState({ editPO_item: true });
+  };
 
-  editPO_price= () => {
-    this.setState({editPO_price: true})
-  }
+  editPO_price = () => {
+    this.setState({ editPO_price: true });
+  };
 
-  editPO_qty= () => {
-    this.setState({editPO_qty: true})
-  }
+  editPO_qty = () => {
+    this.setState({ editPO_qty: true });
+  };
+
+  getGRFile = async (e) => {
+    e.preventDefault();
+    e.persist();
+    const i = e.target.name;
+    const id = e.target.value;
+    console.log(i, id);
+    const data_gr = this.state.lmr_detail;
+    console.log(data_gr[i]);
+    if (data_gr[i] !== undefined) {
+      const resFile = await this.getDatafromAPINODE(
+        "/aspassignment/getGrByLmrChild/getDocument/" + id,
+        this.props.dataLogin.token,
+        data_gr[i].file_document.mime_type
+      );
+      if (resFile !== undefined) {
+        saveAs(
+          new Blob([resFile.data], {
+            type: data_gr[i].file_document.mime_type,
+          }),
+          data_gr[i].file_document.file_name
+        );
+      }
+    }
+  };
 
   render() {
     const Dataform = this.state.Dataform;
@@ -1057,16 +1159,37 @@ class MYASGDetail extends Component {
                     <thead class="table-commercial__header">
                       <tr>
                         <th></th>
-                        <th>Plant</th>
+                        <th style={{ width: "12%" }}>Plant</th>
                         <th style={{ width: "12%" }}>Request Type</th>
-                        <th>Created by</th>
-                        <th>PO Number<Button size="sm" onClick={this.editPO_num}><i className="fa fa-edit" aria-hidden="true"></i></Button></th>
-                        <th>PO Item<Button size="sm" onClick={this.editPO_item}><i className="fa fa-edit" aria-hidden="true"></i></Button></th>
-                        <th>PO Price<Button size="sm" onClick={this.editPO_price}><i className="fa fa-edit" aria-hidden="true"></i></Button></th>
-                        <th>PO Qty<Button size="sm" onClick={this.editPO_qty}><i className="fa fa-edit" aria-hidden="true"></i></Button></th>
+                        <th style={{ width: "12%" }}>Created by</th>
+                        <th>
+                          PO Number
+                          <Button size="sm" onClick={this.editPO_num}>
+                            <i className="fa fa-edit" aria-hidden="true"></i>
+                          </Button>
+                        </th>
+                        <th>
+                          PO Item
+                          <Button size="sm" onClick={this.editPO_item}>
+                            <i className="fa fa-edit" aria-hidden="true"></i>
+                          </Button>
+                        </th>
+                        <th>
+                          PO Price
+                          <Button size="sm" onClick={this.editPO_price}>
+                            <i className="fa fa-edit" aria-hidden="true"></i>
+                          </Button>
+                        </th>
+                        <th>
+                          PO Qty
+                          <Button size="sm" onClick={this.editPO_qty}>
+                            <i className="fa fa-edit" aria-hidden="true"></i>
+                          </Button>
+                        </th>
                         <th>Required GR Qty</th>
                         <th>DN No</th>
                         <th>WCN_Link</th>
+                        <th>File</th>
                         <th style={{ width: "12%" }}>Item_Status</th>
                         <th>Work_Status</th>
                         {/* <th>Error_Message</th>
@@ -1079,7 +1202,7 @@ class MYASGDetail extends Component {
                     </thead>
                     <tbody>
                       {this.state.lmr_detail !== undefined ? (
-                        this.state.lmr_detail.map((e) => (
+                        this.state.lmr_detail.map((e, i) => (
                           <tr>
                             <td>
                               {this.state.change_gr !== false ? (
@@ -1099,6 +1222,8 @@ class MYASGDetail extends Component {
                             <td>{e.Plant}</td>
                             {/* {this.state.change_gr !== false ? <td>Edit GR</td>: <td>{e.Request_Type}</td>} */}
                             <td>{e.Request_Type}</td>
+                            <td>{e.created_by_gr}</td>
+
                             <td>{e.PO_Number}</td>
                             <td>{e.PO_Item}</td>
                             <td>{e.PO_Price}</td>
@@ -1106,6 +1231,18 @@ class MYASGDetail extends Component {
                             <td>{e.Required_GR_Qty}</td>
                             <td>{e.DN_No}</td>
                             <td>{e.WCN_Link}</td>
+                            <td>
+                              <Button
+                                size="sm"
+                                value={e._id}
+                                name={i}
+                                onClick={this.getGRFile}
+                              >
+                                <i className="fa fa-download"></i>
+                              </Button>
+                              {e.file_document !== null &&
+                                e.file_document.file_name}
+                            </td>
                             <td>{e.Item_Status}</td>
                             <td>{e.Work_Status}</td>
                           </tr>
@@ -1136,6 +1273,7 @@ class MYASGDetail extends Component {
                               name="Plant"
                               id="Plant"
                               value={child_data.Plant}
+                              style={{ width: "200" }}
                               onChange={this.handleInputchild(idx)}
                               readOnly
                             />
@@ -1147,7 +1285,7 @@ class MYASGDetail extends Component {
                               id="Request_Type"
                               value={child_data.Request_Type}
                               onChange={this.handleInputchild(idx)}
-                              // style={{ width: "200" }}
+                              style={{ width: "200" }}
                               readOnly
                             />
                             {/* <option value="" disabled selected hidden>
@@ -1168,7 +1306,7 @@ class MYASGDetail extends Component {
                               id="created_by_gr"
                               value={child_data.created_by_gr}
                               onChange={this.handleInputchild(idx)}
-                              // style={{ width: "200" }}
+                              style={{ width: "200" }}
                               readOnly
                             />
                             {/* <option value="" disabled selected hidden>
@@ -1182,91 +1320,102 @@ class MYASGDetail extends Component {
                               </option>
                             </Input> */}
                           </td>
-                          {this.state.editPO_num === false ? (  <td>
-                            <Input
-                              // key={prpo._id}
-                              type="text"
-                              name="PO_Number"
-                              id={"PO_Number"}
-                              defaultValue={child_data.PO_Number}
-                              onChange={this.handleInputchild(idx)}
-                              readOnly
-                            />
-                          </td>):(<td>
-                            <Input
-                              // key={prpo._id}
-                              type="text"
-                              name="PO_Number"
-                              id={"PO_Number"}
-                              defaultValue={child_data.PO_Number}
-                              onChange={this.handleInputchild(idx)}                              
-                            />
-                          </td>)}
-                         {this.state.editPO_item === false? ( <td>
-                            <Input
-                              // key={prpo._id}
-                              type="text"
-                              name="PO_Item"
-                              id={"PO_Item"}
-                              defaultValue={child_data.PO_Item}
-                              onChange={this.handleInputchild(idx)}
-                              readOnly
-                            />
-                          </td>):( <td>
-                            <Input
-                              // key={prpo._id}
-                              type="text"
-                              name="PO_Item"
-                              id={"PO_Item"}
-                              defaultValue={child_data.PO_Item}
-                              onChange={this.handleInputchild(idx)}
-                              
-                            />
-                          </td>)}
-                         {this.state.editPO_price === false ? (
+                          {this.state.editPO_num === false ? (
                             <td>
-                            <Input
-                              type="text"
-                              name="PO_Price"
-                              id="PO_Price"
-                              onChange={this.handleInputchild(idx)}
-                              defaultValue={child_data.PO_Price}
-                              readOnly
-                            />
-                          </td>
-                         ):( <td>
-                          <Input
-                            type="text"
-                            name="PO_Price"
-                            id="PO_Price"
-                            onChange={this.handleInputchild(idx)}
-                            defaultValue={child_data.PO_Price}
-                            
-                          />
-                        </td>)}
-                        {this.state.editPO_qty === false ? (<td>
-                            <Input
-                              // key={prpo._id}
-                              type="text"
-                              name="PO_Qty"
-                              id={"PO_Qty"}
-                              value={child_data.PO_Qty}
-                              defaultValue={child_data.PO_Qty}
-                              onChange={this.handleInputchild(idx)}
-                              readOnly
-                            />
-                          </td>): (<td>
-                            <Input
-                              // key={prpo._id}
-                              type="text"
-                              name="PO_Qty"
-                              id={"PO_Qty"}
-                              value={child_data.PO_Qty}
-                              defaultValue={child_data.PO_Qty}
-                              onChange={this.handleInputchild(idx)}
-                              
-                            />
-                          </td>)}
+                              <Input
+                                // key={prpo._id}
+                                type="text"
+                                name="PO_Number"
+                                id={"PO_Number"}
+                                defaultValue={child_data.PO_Number}
+                                onChange={this.handleInputchild(idx)}
+                                readOnly
+                              />
+                            </td>
+                          ) : (
+                            <td>
+                              <Input
+                                // key={prpo._id}
+                                type="text"
+                                name="PO_Number"
+                                id={"PO_Number"}
+                                defaultValue={child_data.PO_Number}
+                                onChange={this.handleInputchild(idx)}
+                              />
+                            </td>
+                          )}
+                          {this.state.editPO_item === false ? (
+                            <td>
+                              <Input
+                                // key={prpo._id}
+                                type="text"
+                                name="PO_Item"
+                                id={"PO_Item"}
+                                defaultValue={child_data.PO_Item}
+                                onChange={this.handleInputchild(idx)}
+                                readOnly
+                              />
+                            </td>
+                          ) : (
+                            <td>
+                              <Input
+                                // key={prpo._id}
+                                type="text"
+                                name="PO_Item"
+                                id={"PO_Item"}
+                                defaultValue={child_data.PO_Item}
+                                onChange={this.handleInputchild(idx)}
+                              />
+                            </td>
+                          )}
+                          {this.state.editPO_price === false ? (
+                            <td>
+                              <Input
+                                type="text"
+                                name="PO_Price"
+                                id="PO_Price"
+                                onChange={this.handleInputchild(idx)}
+                                defaultValue={child_data.PO_Price}
+                                readOnly
+                              />
+                            </td>
+                          ) : (
+                            <td>
+                              <Input
+                                type="text"
+                                name="PO_Price"
+                                id="PO_Price"
+                                onChange={this.handleInputchild(idx)}
+                                defaultValue={child_data.PO_Price}
+                              />
+                            </td>
+                          )}
+                          {this.state.editPO_qty === false ? (
+                            <td>
+                              <Input
+                                // key={prpo._id}
+                                type="text"
+                                name="PO_Qty"
+                                id={"PO_Qty"}
+                                value={child_data.PO_Qty}
+                                defaultValue={child_data.PO_Qty}
+                                onChange={this.handleInputchild(idx)}
+                                readOnly
+                              />
+                            </td>
+                          ) : (
+                            <td>
+                              <Input
+                                // key={prpo._id}
+                                type="text"
+                                name="PO_Qty"
+                                id={"PO_Qty"}
+                                value={child_data.PO_Qty}
+                                defaultValue={child_data.PO_Qty}
+                                onChange={this.handleInputchild(idx)}
+                              />
+                            </td>
+                          )}
                           <td>
                             <Input
                               type="number"
@@ -1287,7 +1436,7 @@ class MYASGDetail extends Component {
                           </td>
                           <td>
                             <Input
-                            readOnly
+                              readOnly
                               type="text"
                               name="WCN_Link"
                               id="WCN_Link"
@@ -1295,9 +1444,18 @@ class MYASGDetail extends Component {
                               onChange={this.handleInputchild(idx)}
                             />
                           </td>
+                          <td>
+                            <input
+                              type="file"
+                              name="fileDocument"
+                              // id="fileDocument"
+                              // value={child_data.fileDocument}
+                              onChange={this.handleInputchild(idx)}
+                            />
+                          </td>
                           <td></td>
                           <td></td>
-                          
+
                           {/* <td>
                             <Input
                               type="text"
@@ -1345,8 +1503,11 @@ class MYASGDetail extends Component {
                   (<Button color="primary" size="sm" onClick={this.addGR}>
                   <i className="fa fa-plus">&nbsp;</i> GR Child
                 </Button>) : ("")} */}
-                  <Button color="primary" size="sm" onClick={this.addGR} 
-                  // disabled={this.state.list_pr_po !== undefined && this.state.list_pr_po.length !== 0}
+                  <Button
+                    color="primary"
+                    size="sm"
+                    onClick={this.addGR}
+                    // disabled={this.state.list_pr_po !== undefined && this.state.list_pr_po.length !== 0}
                   >
                     <i className="fa fa-plus">&nbsp;</i> GR Child
                   </Button>

@@ -1136,10 +1136,10 @@ class MYASGCreation extends Component {
       value = value.toString();
     }
     if (name === "Item_Category" && value === "3PP") {
-      lmr_form["pgr"] = "MP1";
+      lmr_form["pgr"] = "MY1";
     }
     if (name === "Item_Category" && value === "Service") {
-      lmr_form["pgr"] = "MP3";
+      lmr_form["pgr"] = "MY3";
     }
     if (name === "LMR_Type" && value !== "Per Site") {
       lmr_form["Plan_Cost_Reduction"] = "Yes";
