@@ -911,7 +911,7 @@ class MYASGDetail extends Component {
     console.log(data_gr[i]);
     if (data_gr[i] !== undefined) {
       const resFile = await this.getDatafromAPINODE(
-        "/sidFile/getDocument/" + id,
+        "/aspassignment/getGrByLmrChild/getDocument/" + id,
         this.props.dataLogin.token,
         data_gr[i].file_document.mime_type
       );
@@ -920,7 +920,7 @@ class MYASGDetail extends Component {
           new Blob([resFile.data], {
             type: data_gr[i].file_document.mime_type,
           }),
-          data_gr[i].file_document.system_name
+          data_gr[i].file_document.file_name
         );
       }
     }
@@ -1240,6 +1240,8 @@ class MYASGDetail extends Component {
                               >
                                 <i className="fa fa-download"></i>
                               </Button>
+                              {e.file_document !== null &&
+                                e.file_document.file_name}
                             </td>
                             <td>{e.Item_Status}</td>
                             <td>{e.Work_Status}</td>
