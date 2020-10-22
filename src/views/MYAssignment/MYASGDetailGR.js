@@ -124,8 +124,8 @@ class MYASGDetail extends Component {
             WCN_Link: "https://mas.pdb.e-dpm.com/grmenu/list/",
             created_by_gr: this.props.dataLogin.userName,
             fileDocument: [],
-            // Item_Status: "Waiting for GR",
-            // Work_Status: "Submit",
+            Work_Status: "Waiting for GR",
+            Item_Status: "Submit",
           },
         ]),
       });
@@ -144,8 +144,8 @@ class MYASGDetail extends Component {
             WCN_Link: "https://mas.pdb.e-dpm.com/grmenu/list/",
             created_by_gr: this.props.dataLogin.userName,
             fileDocument: [],
-            // Item_Status: "Waiting for GR",
-            // Work_Status: "Submit",
+            Work_Status: "Waiting for GR",
+            Item_Status: "Submit",
           },
         ]),
       });
@@ -559,6 +559,7 @@ class MYASGDetail extends Component {
     this.toggleLoading();
     let grContainer = [];
     let fileDocument = new FormData();
+    const datepost = new Date();
     const dataChild = this.state.ChildForm;
     dataChild.map((e) =>
       grContainer.push({
@@ -572,6 +573,20 @@ class MYASGDetail extends Component {
         DN_No: e.DN_No,
         WCN_Link: "https://mas.pdb.e-dpm.com/grmenu/list/",
         created_by_gr: this.props.dataLogin.userName,
+        Work_Status: "Waiting for GR",
+        Item_Status: "Submit",
+        created_on:
+          datepost.getFullYear() +
+          "-" +
+          (datepost.getMonth() + 1) +
+          "-" +
+          datepost.getDate() +
+          " " +
+          datepost.getHours() +
+          ":" +
+          ((datepost.getMinutes() < 10 ? "0" : "") + datepost.getMinutes()) +
+          ":" +
+          datepost.getSeconds(),
       })
     );
     for (let i = 0; i < dataChild.length; i++) {
@@ -881,8 +896,6 @@ class MYASGDetail extends Component {
   };
 
   getGRFile = async (e) => {
-    e.preventDefault();
-    e.persist();
     const i = e.target.name;
     const id = e.target.value;
     console.log(i, id);
@@ -906,6 +919,8 @@ class MYASGDetail extends Component {
         );
       }
     }
+    e.preventDefault();
+    e.persist();
   };
 
   render() {
@@ -1145,28 +1160,44 @@ class MYASGDetail extends Component {
                         <th>Request Type</th>
                         <th>Created by</th>
                         <th>
-                          PO Number
-                          <Button size="sm" onClick={this.editPO_num}>
-                            <i className="fa fa-edit" aria-hidden="true"></i>
-                          </Button>
+                          PO Number{" "}
+                          {this.state.ChildForm.length !== 0 ? (
+                            <Button size="sm" onClick={this.editPO_num}>
+                              <i className="fa fa-edit" aria-hidden="true"></i>
+                            </Button>
+                          ) : (
+                            ""
+                          )}
                         </th>
                         <th>
-                          PO Item
-                          <Button size="sm" onClick={this.editPO_item}>
-                            <i className="fa fa-edit" aria-hidden="true"></i>
-                          </Button>
+                          PO Item{" "}
+                          {this.state.ChildForm.length !== 0 ? (
+                            <Button size="sm" onClick={this.editPO_item}>
+                              <i className="fa fa-edit" aria-hidden="true"></i>
+                            </Button>
+                          ) : (
+                            ""
+                          )}
                         </th>
                         <th>
-                          PO Price
-                          <Button size="sm" onClick={this.editPO_price}>
-                            <i className="fa fa-edit" aria-hidden="true"></i>
-                          </Button>
+                          PO Price{" "}
+                          {this.state.ChildForm.length !== 0 ? (
+                            <Button size="sm" onClick={this.editPO_price}>
+                              <i className="fa fa-edit" aria-hidden="true"></i>
+                            </Button>
+                          ) : (
+                            ""
+                          )}
                         </th>
                         <th>
-                          PO Qty
-                          <Button size="sm" onClick={this.editPO_qty}>
-                            <i className="fa fa-edit" aria-hidden="true"></i>
-                          </Button>
+                          PO Qty{" "}
+                          {this.state.ChildForm.length !== 0 ? (
+                            <Button size="sm" onClick={this.editPO_qty}>
+                              <i className="fa fa-edit" aria-hidden="true"></i>
+                            </Button>
+                          ) : (
+                            ""
+                          )}
                         </th>
                         <th>Required GR Qty</th>
                         <th>DN No</th>
@@ -1174,12 +1205,6 @@ class MYASGDetail extends Component {
                         <th>WCN_Link</th>
                         <th>Item_Status</th>
                         <th>Work_Status</th>
-                        {/* <th>Error_Message</th>
-                        <th>Error_Type</th>
-                        <th>Total_GR_Qty</th>
-                        <th>GR_Document_No</th>
-                        <th>GR_Document_Date</th>
-                        <th>GR_Document_Qty</th> */}
                       </tr>
                     </thead>
                     <tbody>
@@ -1219,7 +1244,7 @@ class MYASGDetail extends Component {
                                 onClick={this.getGRFile}
                               >
                                 <i className="fa fa-download"></i>
-                              </Button>
+                              </Button>{" "}
                               {e.file_document !== null &&
                                 e.file_document !== undefined &&
                                 e.file_document[0].file_name}
@@ -1385,6 +1410,9 @@ class MYASGDetail extends Component {
                               <input
                                 // key={prpo._id}
                                 type="number"
+                                min="0"
+                                max="10"
+                                step="0.1"
                                 name="PO_Qty"
                                 id={"PO_Qty"}
                                 value={child_data.PO_Qty}
@@ -1397,6 +1425,9 @@ class MYASGDetail extends Component {
                           <td style={{ width: "10%" }}>
                             <input
                               type="number"
+                              min="0"
+                              max="10"
+                              step="0.1"
                               name="Required_GR_Qty"
                               id="Required_GR_Qty"
                               value={child_data.Required_GR_Qty}
@@ -1433,51 +1464,33 @@ class MYASGDetail extends Component {
                               name="WCN_Link"
                               id="WCN_Link"
                               value={child_data.WCN_Link}
-                              onChange={this.handleInputchild(idx)}
+                              // onChange={this.handleInputchild(idx)}
                             />
                           </td>
-                          <td></td>
-                          <td></td>
-
-                          {/* <td>
-                            <Input
+                          <td>
+                            <input
+                              disabled
+                              readonly
                               type="text"
                               name="Item_Status"
                               id="Item_Status"
                               value={child_data.Item_Status}
-                              onChange={this.handleInputchild(idx)}
-                              readOnly
+                              // onChange={this.handleInputchild(idx)}
                             />
                           </td>
                           <td>
-                            <Input
+                            <input
+                              disabled
+                              readonly
                               type="text"
                               name="Work_Status"
                               id="Work_Status"
                               value={child_data.Work_Status}
-                              onChange={this.handleInputchild(idx)}
-                              readOnly
+                              // onChange={this.handleInputchild(idx)}
                             />
-                          </td> */}
-                        </tr>
-                      ))}
-                      {this.state.ChildForm.length !== 0 && (
-                        <tr>
-                          <td colSpan="15" style={{ textAlign: "right" }}>
-                            <Button
-                              color="success"
-                              size="sm"
-                              onClick={this.postGRChild}
-                            >
-                              <i
-                                className="fa fa-plus-square"
-                                style={{ marginRight: "8px" }}
-                              ></i>
-                              Save GR Child
-                            </Button>
                           </td>
                         </tr>
-                      )}
+                      ))}
                     </tbody>
                   </Table>
                 </div>
@@ -1486,14 +1499,19 @@ class MYASGDetail extends Component {
                   (<Button color="primary" size="sm" onClick={this.addGR}>
                   <i className="fa fa-plus">&nbsp;</i> GR Child
                 </Button>) : ("")} */}
-                  <Button
-                    color="primary"
-                    size="sm"
-                    onClick={this.addGR}
-                    // disabled={this.state.list_pr_po !== undefined && this.state.list_pr_po.length !== 0}
-                  >
+                  <Button color="primary" size="sm" onClick={this.addGR}>
                     <i className="fa fa-plus">&nbsp;</i> GR Child
                   </Button>
+                  {this.state.ChildForm.length !== 0 && (
+                    <Button
+                      color="success"
+                      size="sm"
+                      onClick={this.postGRChild}
+                      style={{ float: "right", marginLeft: "10px" }}
+                    >
+                      <i className="fa fa-plus-square"></i> Save GR Child
+                    </Button>
+                  )}
                 </div>
               </CardBody>
               <CardFooter>
