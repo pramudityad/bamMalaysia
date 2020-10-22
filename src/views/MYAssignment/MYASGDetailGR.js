@@ -575,18 +575,6 @@ class MYASGDetail extends Component {
         created_by_gr: this.props.dataLogin.userName,
         Work_Status: "Waiting for GR",
         Item_Status: "Submit",
-        created_on:
-          datepost.getFullYear() +
-          "-" +
-          (datepost.getMonth() + 1) +
-          "-" +
-          datepost.getDate() +
-          " " +
-          datepost.getHours() +
-          ":" +
-          ((datepost.getMinutes() < 10 ? "0" : "") + datepost.getMinutes()) +
-          ":" +
-          datepost.getSeconds(),
       })
     );
     for (let i = 0; i < dataChild.length; i++) {
