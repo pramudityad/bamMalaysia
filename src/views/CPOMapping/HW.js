@@ -1,4 +1,27 @@
 import React from "react";
+import {
+  Col,
+  FormGroup,
+  Label,
+  Row,
+  Table,
+  Input,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Card,
+  CardBody,
+  CardHeader,
+  CardFooter,
+  Button,
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownToggle,
+  Collapse,
+} from "reactstrap";
+import Excel from "exceljs";
 import Loading from "../Component/Loading";
 import { ExcelRenderer } from "react-excel-renderer";
 import {
@@ -11,6 +34,8 @@ import {
 import ModalCreateNew from "../Component/ModalCreateNew";
 import Pagination from "react-js-pagination";
 import { saveAs } from "file-saver";
+import { numToSSColumn } from "../../helper/basicFunction";
+import { connect } from "react-redux";
 
 const DefaultNotif = React.lazy(() =>
   import("../../views/DefaultView/DefaultNotif")
