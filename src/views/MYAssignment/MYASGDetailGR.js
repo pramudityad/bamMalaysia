@@ -109,16 +109,20 @@ class MYASGDetail extends Component {
   }
 
   addGR() {
-    if (this.state.list_pr_po !== undefined && this.state.list_pr_po !== null) {
+    if (this.state.lmr_detail.length !== 0) {
       this.setState({
         ChildForm: this.state.ChildForm.concat([
           {
             Plant: "2172",
             Request_Type: "Add GR",
-            PO_Number: this.state.list_pr_po.PO_Number,
-            PO_Item: this.state.list_pr_po.PO_Item,
-            PO_Price: this.state.list_pr_po.PO_Price,
-            PO_Qty: this.state.list_pr_po.PO_Qty,
+            PO_Number: this.state.lmr_detail[this.state.lmr_detail.length - 1]
+              .PO_Number,
+            PO_Item: this.state.lmr_detail[this.state.lmr_detail.length - 1]
+              .PO_Item,
+            PO_Price: this.state.lmr_detail[this.state.lmr_detail.length - 1]
+              .PO_Price,
+            PO_Qty: this.state.lmr_detail[this.state.lmr_detail.length - 1]
+              .PO_Qty,
             Required_GR_Qty: "",
             DN_No: "",
             WCN_Link: "https://mas.pdb.e-dpm.com/grmenu/list/",
