@@ -573,8 +573,13 @@ class MYASGDetail extends Component {
         DN_No: e.DN_No,
         WCN_Link: "https://mas.pdb.e-dpm.com/grmenu/list/",
         created_by_gr: this.props.dataLogin.userName,
+        // created_by_gr: "EHAYZUX",
         Work_Status: "Waiting for GR",
         Item_Status: "Submit",
+        Error_Message: "",
+        Error_Type: "",
+        Total_GR_Qty: null,
+        GR_Document_Qty: null,
       })
     );
     for (let i = 0; i < dataChild.length; i++) {
