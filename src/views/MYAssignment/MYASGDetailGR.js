@@ -626,6 +626,9 @@ class MYASGDetail extends Component {
       }
     }
     this.toggleLoading();
+    setTimeout(function () {
+      window.location.reload();
+    }, 1500);
   }
 
   downloadFormatNewChild = async () => {
