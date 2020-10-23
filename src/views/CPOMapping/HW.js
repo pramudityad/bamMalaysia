@@ -122,6 +122,8 @@ class MappingHW extends React.Component {
       roleUser: this.props.dataLogin.role,
       dropdownOpen: new Array(3).fill(false),
       all_data: [],
+      createModal: false,
+      rowsXLS: [],
     };
   }
 
@@ -142,6 +144,43 @@ class MappingHW extends React.Component {
     }
     const PPFormat = await wb.xlsx.writeBuffer();
     saveAs(new Blob([PPFormat]), modul_name + " Template.xlsx");
+  };
+
+  togglecreateModal = () => {
+    this.setState({
+      createModal: !this.state.createModal,
+    });
+  };
+
+  resettogglecreateModal = () => {
+    this.setState({
+      rowsXLS: [],
+    });
+  };
+
+  fileHandlerMaterial = (event) => {
+    let fileObj = event.target.files[0];
+    if (fileObj !== undefined) {
+      ExcelRenderer(fileObj, (err, rest) => {
+        if (err) {
+          console.log(err);
+        } else {
+          // console.log("rest.rows", JSON.stringify(rest.rows));
+          this.setState({
+            rowsXLS: rest.rows,
+          });
+        }
+      });
+    }
+  };
+
+  toggle = (i) => {
+    const newArray = this.state.dropdownOpen.map((element, index) => {
+      return index === i ? !element : false;
+    });
+    this.setState({
+      dropdownOpen: newArray,
+    });
   };
 
   render() {
@@ -196,7 +235,7 @@ class MappingHW extends React.Component {
                       </DropdownToggle>
                       <DropdownMenu>
                         <DropdownItem header>Uploader Template</DropdownItem>
-                        <DropdownItem onClick={this.exportMatStatus}>
+                        <DropdownItem onClick={this.exportTemplate}>
                           {" "}
                           Mapping Template
                         </DropdownItem>
@@ -266,7 +305,16 @@ class MappingHW extends React.Component {
                             ))}
                           </tr>
                         </thead>
-                        <tbody></tbody>
+                        <tbody>
+                          {this.state.all_data !== undefined &&
+                            this.state.all_data.map((e, i) => (
+                              <React.Fragment key={e._id + "frag"}>
+                                <tr key={e._id}>
+                                  <td></td>
+                                </tr>
+                              </React.Fragment>
+                            ))}
+                        </tbody>
                       </Table>
                     </div>
                   </Col>
@@ -291,6 +339,46 @@ class MappingHW extends React.Component {
             </Card>
           </Col>
         </Row>
+
+        {/* Modal create New */}
+        <ModalCreateNew
+          isOpen={this.state.createModal}
+          toggle={this.togglecreateModal}
+          className={this.props.className}
+          onClosed={this.resettogglecreateModal}
+          title={"Create " + modul_name}
+        >
+          <div>
+            <table>
+              <tbody>
+                <tr>
+                  <td>Upload File</td>
+                  <td>:</td>
+                  <td>
+                    <input
+                      type="file"
+                      onChange={this.fileHandlerMaterial.bind(this)}
+                      style={{ padding: "10px", visiblity: "hidden" }}
+                    />
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <ModalFooter>
+            <Button
+              size="sm"
+              block
+              color="success"
+              className="btn-pill"
+              disabled={this.state.rowsXLS.length === 0}
+              onClick={this.saveMatStockWHBulk}
+              style={{ height: "30px", width: "100px" }}
+            >
+              Save
+            </Button>{" "}
+          </ModalFooter>
+        </ModalCreateNew>
       </div>
     );
   }
