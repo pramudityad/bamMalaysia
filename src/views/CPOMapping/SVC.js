@@ -98,6 +98,120 @@ const header = [
   "NI COA SUBMISSION STATUS",
 ];
 
+const header_model = [
+  "Link",
+  "Lookup_Reference",
+  "Region",
+  "Reference_Loc_Id",
+  "New_Loc_Id",
+  "New_Site_Name",
+  "Config",
+  "Po",
+  "Line",
+  "Description",
+  "Qty",
+  "CNI_Date",
+  "Mapping_Date",
+  "Remarks",
+  "Celcom_User",
+  "Pcode",
+  "Unit_Price",
+  "Total_Price",
+  "Discounted_Unit_Price",
+  "Discounted_Po_Price",
+  "Type",
+  "So_Line_Item_Description",
+  "So_No",
+  "Wbs_No",
+  "Billing_100",
+  "Atp_Coa_Received_Date_80",
+  "Billing_Upon_Atp_Coa_80",
+  "Invoicing_No_Atp_Coa_80",
+  "Invoicing_Date_Atp_Coa_80",
+  "Cancelled_Atp_Coa_80",
+  "Ni_Coa_Date_20",
+  "Billing_Upon_Ni_20",
+  "Invoicing_No_Ni_20",
+  "Invoicing_Date_Ni_20",
+  "Sso_Coa_Date_80",
+  "Billing_Upon_Sso_80",
+  "Invoicing_No_Sso_80",
+  "Invoicing_Date_Sso_80",
+  "Coa_Psp_Received_Date_20",
+  "Billing_Upon_Coa_Psp_20",
+  "Invoicing_No_Coa_Psp_20",
+  "Invoicing_Date_Coa_Psp_20",
+  "Sso_Coa_Date_100",
+  "Billing_Upon_Sso_Coa_100",
+  "Invoicing_No_Sso_Coa_100",
+  "Invoicing_Date_Sso_Coa_100",
+  "Coa_Ni_Date_100",
+  "Billing_Upon_Coa_Ni_100",
+  "Invoicing_No_Coa_Ni_100",
+  "Invoicing_Date_Coa_Ni_100",
+  "Ses_No",
+  "Ses_Status",
+  "Link_1",
+  "Ni_Coa_Submission_Status",
+];
+
+const td_value = [
+  "e.Link",
+  "e.Lookup_Reference",
+  "e.Region",
+  "e.Reference_Loc_Id",
+  "e.New_Loc_Id",
+  "e.New_Site_Name",
+  "e.Config",
+  "e.Po",
+  "e.Line",
+  "e.Description",
+  "e.Qty",
+  "e.CNI_Date",
+  "e.Mapping_Date",
+  "e.Remarks",
+  "e.Celcom_User",
+  "e.Pcode",
+  "e.Unit_Price",
+  "e.Total_Price",
+  "e.Discounted_Unit_Price",
+  "e.Discounted_Po_Price",
+  "e.Type",
+  "e.So_Line_Item_Description",
+  "e.So_No",
+  "e.Wbs_No",
+  "e.Billing_100",
+  "e.Atp_Coa_Received_Date_80",
+  "e.Billing_Upon_Atp_Coa_80",
+  "e.Invoicing_No_Atp_Coa_80",
+  "e.Invoicing_Date_Atp_Coa_80",
+  "e.Cancelled_Atp_Coa_80",
+  "e.Ni_Coa_Date_20",
+  "e.Billing_Upon_Ni_20",
+  "e.Invoicing_No_Ni_20",
+  "e.Invoicing_Date_Ni_20",
+  "e.Sso_Coa_Date_80",
+  "e.Billing_Upon_Sso_80",
+  "e.Invoicing_No_Sso_80",
+  "e.Invoicing_Date_Sso_80",
+  "e.Coa_Psp_Received_Date_20",
+  "e.Billing_Upon_Coa_Psp_20",
+  "e.Invoicing_No_Coa_Psp_20",
+  "e.Invoicing_Date_Coa_Psp_20",
+  "e.Sso_Coa_Date_100",
+  "e.Billing_Upon_Sso_Coa_100",
+  "e.Invoicing_No_Sso_Coa_100",
+  "e.Invoicing_Date_Sso_Coa_100",
+  "e.Coa_Ni_Date_100",
+  "e.Billing_Upon_Coa_Ni_100",
+  "e.Invoicing_No_Coa_Ni_100",
+  "e.Invoicing_Date_Coa_Ni_100",
+  "e.Ses_No",
+  "e.Ses_Status",
+  "e.Link_1",
+  "e.Ni_Coa_Submission_Status",
+];
+
 class MappingSVC extends React.Component {
   constructor(props) {
     super(props);
@@ -108,17 +222,43 @@ class MappingSVC extends React.Component {
       all_data: [],
       createModal: false,
       rowsXLS: [],
+      modal_loading: false,
+      prevPage: 0,
+      activePage: 1,
+      totalData: 0,
+      perPage: 10,
     };
   }
 
-  componentDidMount() {}
+  componentDidMount() {
+    // console.log("header", header.length);
+    // console.log("model_header", header_model.length);
+    this.getList();
+  }
+
+  getList() {
+    getDatafromAPINODE(
+      "/cpoMapping/getCpo/svc?" +
+        "&lmt=" +
+        this.state.perPage +
+        "&pg=" +
+        this.state.activePage,
+      this.state.tokenUser
+    ).then((res) => {
+      if (res.data !== undefined) {
+        const items = res.data.data;
+        const totalData = res.data.totalResults;
+        this.setState({ all_data: items, totalData: totalData });
+      }
+    });
+  }
 
   exportTemplate = async () => {
     const wb = new Excel.Workbook();
     const ws = wb.addWorksheet();
 
-    ws.addRow(header);
-    for (let i = 1; i < header.length + 1; i++) {
+    ws.addRow(header_model);
+    for (let i = 1; i < header_model.length + 1; i++) {
       ws.getCell(numToSSColumn(i) + "1").fill = {
         type: "pattern",
         pattern: "solid",
@@ -165,6 +305,54 @@ class MappingSVC extends React.Component {
     this.setState({
       dropdownOpen: newArray,
     });
+  };
+
+  saveBulk = async () => {
+    this.toggleLoading();
+    this.togglecreateModal();
+    const BulkXLSX = this.state.rowsXLS;
+    const res = await postDatatoAPINODE(
+      "/cpoMapping/createCpo",
+      {
+        cpo_type: "svc",
+        cpo_data: this.state.rowsXLS,
+      },
+      this.state.tokenUser
+    );
+    if (res.data !== undefined) {
+      this.setState({ action_status: "success" });
+      this.toggleLoading();
+      setTimeout(function () {
+        window.location.reload();
+      }, 1500);
+    } else {
+      if (
+        res.response !== undefined &&
+        res.response.data !== undefined &&
+        res.response.data.error !== undefined
+      ) {
+        if (res.response.data.error.message !== undefined) {
+          this.setState({
+            action_status: "failed",
+            action_message: res.response.data.error.message,
+          });
+        } else {
+          this.setState({
+            action_status: "failed",
+            action_message: res.response.data.error,
+          });
+        }
+      } else {
+        this.setState({ action_status: "failed" });
+      }
+      this.toggleLoading();
+    }
+  };
+
+  toggleLoading = () => {
+    this.setState((prevState) => ({
+      modal_loading: !prevState.modal_loading,
+    }));
   };
 
   render() {
@@ -294,7 +482,9 @@ class MappingSVC extends React.Component {
                             this.state.all_data.map((e, i) => (
                               <React.Fragment key={e._id + "frag"}>
                                 <tr key={e._id}>
-                                  <td></td>
+                                  {td_value.map((name, ndex) => (
+                                    <td>{eval(name)}</td>
+                                  ))}
                                 </tr>
                               </React.Fragment>
                             ))}
@@ -356,13 +546,21 @@ class MappingSVC extends React.Component {
               color="success"
               className="btn-pill"
               disabled={this.state.rowsXLS.length === 0}
-              onClick={this.saveMatStockWHBulk}
+              onClick={this.saveBulk}
               style={{ height: "30px", width: "100px" }}
             >
               Save
             </Button>{" "}
           </ModalFooter>
         </ModalCreateNew>
+
+        {/* Modal Loading */}
+        <Loading
+          isOpen={this.state.modal_loading}
+          toggle={this.toggleLoading}
+          className={"modal-sm modal--loading "}
+        ></Loading>
+        {/* end Modal Loading */}
       </div>
     );
   }

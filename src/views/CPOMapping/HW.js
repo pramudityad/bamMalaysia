@@ -113,6 +113,151 @@ const header = [
   "SSO",
   "REF NI",
 ];
+const header_model = [
+  "Lookup_Reference",
+  "Region",
+  "Reference_Loc_Id",
+  "New_Loc_Id",
+  "Site_Name",
+  "New_Site_Name",
+  "Config",
+  "Po",
+  "Line",
+  "Description",
+  "Qty",
+  "NW",
+  "CN_Date",
+  "Mapping_Date",
+  "Remarks",
+  "Premr_No",
+  "Proceed_Billing_100",
+  "Celcom_User",
+  "Pcode",
+  "Unit_Price",
+  "Total_Price",
+  "Discounted_Unit_Price",
+  "Discounted_Po_Price",
+  "So_Line_Item_Description",
+  "Sitepcode",
+  "VlookupWbs",
+  "So_No",
+  "Wbs_No",
+  "For_Checking_Purpose_Only_Rashidah",
+  "Hw_Coa_Received_Date_80",
+  "Billing_Upon_Hw_Coa_80",
+  "Invoicing_No_Hw_Coa_80",
+  "Invoicing_Date_Hw_Coa_80",
+  "Ni_Coa_Date_20",
+  "Billing_Upon_Ni_20",
+  "Invoicing_No_Ni_20",
+  "Invoicing_Date_Ni_20",
+  "Sso_Coa_Date_20",
+  "Billing_Upon_Sso_20",
+  "Invoicing_No_Sso_20",
+  "Invoicing_Date_Sso_20",
+  "Gr_Number",
+  "Hw_Coa_Received_Date_40",
+  "Billing_Upon_Hw_Coa_40",
+  "Invoicing_No_Hw_Coa_40",
+  "Invoicing_Date_Hw_Coa_40",
+  "Cancelled_Hw_Coa_40",
+  "Ni_Coa_Date_40",
+  "Billing_Upon_Ni_40",
+  "Invoicing_No_Ni_40",
+  "Invoicing_Date_Ni_40",
+  "Cancelled_Ni_40",
+  "Sso_Coa_Date_20_1",
+  "Billing_Upon_Sso_20_1",
+  "Invoicing_No_Sso_20_1",
+  "Invoicing_Date_Sso_20_1",
+  "Cancelled_Sso_20",
+  "Vlookup_SSO_100_In_Service",
+  "Hw_Coa_100",
+  "Billing_Upon_Hw_Coa_100",
+  "Invoicing_No_Hw_Coa_100",
+  "Invoicing_Date_Hw_Coa_100",
+  "Reference_Loc_Id_1",
+  "Po_1",
+  "Reff_1",
+  "Site_List",
+  "Reff_2",
+  "Ni",
+  "Sso",
+  "Ref_Ni",
+];
+
+const td_value = [
+  "e.Lookup_Reference",
+  "e.Region",
+  "e.Reference_Loc_Id",
+  "e.New_Loc_Id",
+  "e.Site_Name",
+  "e.New_Site_Name",
+  "e.Config",
+  "e.Po",
+  "e.Line",
+  "e.Description",
+  "e.Qty",
+  "e.NW",
+  "e.CN_Date",
+  "e.Mapping_Date",
+  "e.Remarks",
+  "e.Premr_No",
+  "e.Proceed_Billing_100",
+  "e.Celcom_User",
+  "e.Pcode",
+  "e.Unit_Price",
+  "e.Total_Price",
+  "e.Discounted_Unit_Price",
+  "e.Discounted_Po_Price",
+  "e.So_Line_Item_Description",
+  "e.Sitepcode",
+  "e.VlookupWbs",
+  "e.So_No",
+  "e.Wbs_No",
+  "e.For_Checking_Purpose_Only_Rashidah",
+  "e.Hw_Coa_Received_Date_80",
+  "e.Billing_Upon_Hw_Coa_80",
+  "e.Invoicing_No_Hw_Coa_80",
+  "e.Invoicing_Date_Hw_Coa_80",
+  "e.Ni_Coa_Date_20",
+  "e.Billing_Upon_Ni_20",
+  "e.Invoicing_No_Ni_20",
+  "e.Invoicing_Date_Ni_20",
+  "e.Sso_Coa_Date_20",
+  "e.Billing_Upon_Sso_20",
+  "e.Invoicing_No_Sso_20",
+  "e.Invoicing_Date_Sso_20",
+  "e.Gr_Number",
+  "e.Hw_Coa_Received_Date_40",
+  "e.Billing_Upon_Hw_Coa_40",
+  "e.Invoicing_No_Hw_Coa_40",
+  "e.Invoicing_Date_Hw_Coa_40",
+  "e.Cancelled_Hw_Coa_40",
+  "e.Ni_Coa_Date_40",
+  "e.Billing_Upon_Ni_40",
+  "e.Invoicing_No_Ni_40",
+  "e.Invoicing_Date_Ni_40",
+  "e.Cancelled_Ni_40",
+  "e.Sso_Coa_Date_20_1",
+  "e.Billing_Upon_Sso_20_1",
+  "e.Invoicing_No_Sso_20_1",
+  "e.Invoicing_Date_Sso_20_1",
+  "e.Cancelled_Sso_20",
+  "e.Vlookup_SSO_100_In_Service",
+  "e.Hw_Coa_100",
+  "e.Billing_Upon_Hw_Coa_100",
+  "e.Invoicing_No_Hw_Coa_100",
+  "e.Invoicing_Date_Hw_Coa_100",
+  "e.Reference_Loc_Id_1",
+  "e.Po_1",
+  "e.Reff_1",
+  "e.Site_List",
+  "e.Reff_2",
+  "e.Ni",
+  "e.Sso",
+  "e.Ref_Ni",
+];
 
 class MappingHW extends React.Component {
   constructor(props) {
@@ -124,17 +269,43 @@ class MappingHW extends React.Component {
       all_data: [],
       createModal: false,
       rowsXLS: [],
+      modal_loading: false,
+      prevPage: 0,
+      activePage: 1,
+      totalData: 0,
+      perPage: 10,
     };
   }
 
-  componentDidMount() {}
+  componentDidMount() {
+    // console.log("header", header.length);
+    // console.log("model_header", header_model.length);
+    this.getList();
+  }
+
+  getList() {
+    getDatafromAPINODE(
+      "/cpoMapping/getCpo/hw?" +
+        "&lmt=" +
+        this.state.perPage +
+        "&pg=" +
+        this.state.activePage,
+      this.state.tokenUser
+    ).then((res) => {
+      if (res.data !== undefined) {
+        const items = res.data.data;
+        const totalData = res.data.totalResults;
+        this.setState({ all_data: items, totalData: totalData });
+      }
+    });
+  }
 
   exportTemplate = async () => {
     const wb = new Excel.Workbook();
     const ws = wb.addWorksheet();
 
-    ws.addRow(header);
-    for (let i = 1; i < header.length + 1; i++) {
+    ws.addRow(header_model);
+    for (let i = 1; i < header_model.length + 1; i++) {
       ws.getCell(numToSSColumn(i) + "1").fill = {
         type: "pattern",
         pattern: "solid",
@@ -180,6 +351,60 @@ class MappingHW extends React.Component {
     });
     this.setState({
       dropdownOpen: newArray,
+    });
+  };
+
+  saveBulk = async () => {
+    this.toggleLoading();
+    this.togglecreateModal();
+    const BulkXLSX = this.state.rowsXLS;
+    const res = await postDatatoAPINODE(
+      "/cpoMapping/createCpo",
+      {
+        cpo_type: "hw",
+        cpo_data: this.state.rowsXLS,
+      },
+      this.state.tokenUser
+    );
+    if (res.data !== undefined) {
+      this.setState({ action_status: "success" });
+      this.toggleLoading();
+      setTimeout(function () {
+        window.location.reload();
+      }, 1500);
+    } else {
+      if (
+        res.response !== undefined &&
+        res.response.data !== undefined &&
+        res.response.data.error !== undefined
+      ) {
+        if (res.response.data.error.message !== undefined) {
+          this.setState({
+            action_status: "failed",
+            action_message: res.response.data.error.message,
+          });
+        } else {
+          this.setState({
+            action_status: "failed",
+            action_message: res.response.data.error,
+          });
+        }
+      } else {
+        this.setState({ action_status: "failed" });
+      }
+      this.toggleLoading();
+    }
+  };
+
+  toggleLoading = () => {
+    this.setState((prevState) => ({
+      modal_loading: !prevState.modal_loading,
+    }));
+  };
+
+  handlePageChange = (pageNumber) => {
+    this.setState({ activePage: pageNumber }, () => {
+      this.getList();
     });
   };
 
@@ -310,7 +535,9 @@ class MappingHW extends React.Component {
                             this.state.all_data.map((e, i) => (
                               <React.Fragment key={e._id + "frag"}>
                                 <tr key={e._id}>
-                                  <td></td>
+                                  {td_value.map((name, ndex) => (
+                                    <td>{eval(name)}</td>
+                                  ))}
                                 </tr>
                               </React.Fragment>
                             ))}
@@ -372,13 +599,21 @@ class MappingHW extends React.Component {
               color="success"
               className="btn-pill"
               disabled={this.state.rowsXLS.length === 0}
-              onClick={this.saveMatStockWHBulk}
+              onClick={this.saveBulk}
               style={{ height: "30px", width: "100px" }}
             >
               Save
             </Button>{" "}
           </ModalFooter>
         </ModalCreateNew>
+
+        {/* Modal Loading */}
+        <Loading
+          isOpen={this.state.modal_loading}
+          toggle={this.toggleLoading}
+          className={"modal-sm modal--loading "}
+        ></Loading>
+        {/* end Modal Loading */}
       </div>
     );
   }
