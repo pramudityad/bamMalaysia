@@ -212,7 +212,7 @@ class MYASGCreation extends Component {
       list_fas: [],
       options: [],
       formvalidate: {},
-      count_form_vavlidate: [],
+      count_form_validate: [],
     };
     this.handleChangeCD = this.handleChangeCD.bind(this);
     this.loadOptionsCDID = this.loadOptionsCDID.bind(this);
@@ -222,7 +222,6 @@ class MYASGCreation extends Component {
     this.toggleLoading = this.toggleLoading.bind(this);
     this.createLMR = this.createLMR.bind(this);
     this.handleChangeVendor = this.handleChangeVendor.bind(this);
-    this.addLMR = this.addLMR.bind(this);
     this.handleChangeFormLMRChild = this.handleChangeFormLMRChild.bind(this);
     this.toggleMaterial = this.toggleMaterial.bind(this);
     this.handleChangeMaterial = this.handleChangeMaterial.bind(this);
@@ -1176,9 +1175,12 @@ class MYASGCreation extends Component {
     }
   }
 
-  addLMR() {
+  addLMR = () => {
     this.handleCheckForm();
-    if (this.state.count_form_vavlidate.length !== 0) {
+  };
+
+  addChildLMR = () => {
+    if (this.state.count_form_validate.length === 0) {
       let dataLMR = this.state.creation_lmr_child_form;
       dataLMR.push({
         tax_code: "I0",
@@ -1193,7 +1195,7 @@ class MYASGCreation extends Component {
     } else {
       return;
     }
-  }
+  };
 
   deleteLMR(e) {
     let index = e.currentTarget.value;
@@ -1507,20 +1509,32 @@ class MYASGCreation extends Component {
       "gl_account",
       "fas_id",
       "vendor_name",
+      "header_text",
     ];
 
     for (let i = 0; i < form_to_validate.length; i++) {
-      if (lmr_header[i] === undefined || lmr_header[i] === null) {
+      // console.log(lmr_header[form_to_validate[i]]);
+      if (
+        lmr_header[form_to_validate[i]] === undefined ||
+        lmr_header[form_to_validate[i]] === null ||
+        lmr_header[form_to_validate[i]] === ""
+      ) {
         dataValidate[form_to_validate[i]] = false;
         error.push(false);
+      } else {
+        // dataValidate[form_to_validate[i]] = true;
+        error.slice(0, this.state.count_form_validate.length - 1);
       }
     }
-    this.setState({ formvalidate: dataValidate, count_form_vavlidate: error });
-    if (error.length !== 0) {
-      return true;
-    } else {
-      return false;
-    }
+    this.setState(
+      { formvalidate: dataValidate, count_form_validate: error },
+      () => this.addChildLMR()
+    );
+    // if (error.length !== 0) {
+    //   return true;
+    // } else {
+    //   return false;
+    // }
   };
 
   render() {
@@ -1728,6 +1742,11 @@ class MYASGCreation extends Component {
                           id="header_text"
                           value={this.state.lmr_form.header_text}
                           onChange={this.handleChangeFormLMR}
+                          style={
+                            this.state.formvalidate.header_text === false
+                              ? { borderColor: "red" }
+                              : {}
+                          }
                         />
                       </FormGroup>
                     </Col>
