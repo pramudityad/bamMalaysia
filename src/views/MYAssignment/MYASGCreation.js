@@ -85,7 +85,7 @@ const data_raw = {
   },
 };
 
-const data_raw_prod = {
+const all_reqbody_raw = {
   query_param: {
     table: "p_celc_apim1_m_site_data",
     columns: [
@@ -132,6 +132,20 @@ const data_raw_prod = {
       'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."2461aac5-07a9-11eb-8887-000d3aa2f57d"."value"\')) as nw_nro',
       'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."2462836e-07a9-11eb-8887-000d3aa2f57d"."value"\')) as nw_ndo',
       'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."3e55d901-172d-11eb-99f8-000d3aa2f57d"."value"\')) as cd_id',
+    ],
+    join: {},
+    condition: {},
+    pagination: "all",
+    page_target: 1,
+    length_per_page: 10,
+  },
+};
+
+const fas_reqbody = {
+  query_param: {
+    table: "p_celc_apim1_m_site_data",
+    columns: [
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6dfb6b35-d14e-11ea-b481-000d3aa2f57d"."value"\')) as fas_id',
     ],
     join: {},
     condition: {},
@@ -195,7 +209,10 @@ class MYASGCreation extends Component {
       so_nw_updated: "",
       getrole: "",
       list_cd_id_act: [],
+      list_fas: [],
       options: [],
+      formvalidate: {},
+      count_form_vavlidate: [],
     };
     this.handleChangeCD = this.handleChangeCD.bind(this);
     this.loadOptionsCDID = this.loadOptionsCDID.bind(this);
@@ -340,9 +357,28 @@ class MYASGCreation extends Component {
     }
   }
 
+  async getFASfromACT(proxyurl, url) {
+    try {
+      let respond = await axios.post(proxyurl + url, fas_reqbody, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Basic dXNlcml4dDpYUXJuMzJuNWtxb00=",
+        },
+      });
+      if (respond.status >= 200 && respond.status < 300) {
+        console.log("respond Get Data", respond);
+      }
+      return respond;
+    } catch (err) {
+      let respond = err;
+      console.log("respond Get Data", err);
+      return respond;
+    }
+  }
+
   async getCDfromACT(proxyurl, url) {
     try {
-      let respond = await axios.post(proxyurl + url, data_raw_prod, {
+      let respond = await axios.post(proxyurl + url, all_reqbody_raw, {
         headers: {
           "Content-Type": "application/json",
           Authorization: "Basic dXNlcml4dDpYUXJuMzJuNWtxb00=",
@@ -387,15 +423,19 @@ class MYASGCreation extends Component {
   }
 
   getDataCDACT() {
-    this.toggleLoading();
     this.getCDfromACT(
       "https://cors-anywhere.herokuapp.com/",
       "https://act.e-dpm.com/index.php/android/get_data_new"
     ).then((resCD) => {
+      this.toggleLoading();
       if (resCD.data !== undefined) {
         if (resCD.data.result !== undefined) {
           const list_cd_act = resCD.data.result.raw_data;
-          this.setState({ list_cd_id_act: list_cd_act }, () =>
+          const filter_cd_id = list_cd_act.filter(
+            (cd) => cd.cd_id !== null && cd.cd_id !== "null"
+          );
+          // console.log("lenght", filter_cd_id.length);
+          this.setState({ list_cd_id_act: filter_cd_id }, () =>
             this.UniqueProject(list_cd_act)
           );
         }
@@ -410,10 +450,35 @@ class MYASGCreation extends Component {
     this.toggleLoading();
   }
 
+  getDataCDACT_Fas() {
+    this.toggleLoading();
+    this.getFASfromACT(
+      "https://cors-anywhere.herokuapp.com/",
+      "https://act.e-dpm.com/index.php/android/get_data_new"
+    ).then((resCD) => {
+      if (resCD.data !== undefined) {
+        if (resCD.data.result !== undefined) {
+          const list_fas = resCD.data.result.raw_data;
+          const Unique_fas = [...new Set(list_fas.map((item) => item.fas_id))];
+          this.setState({ list_fas: Unique_fas });
+        }
+      }
+      if (resCD === 500) {
+        this.setState({
+          action_status: "failed",
+          action_message: "Error getting CD Data, please reload the page",
+        });
+      }
+    });
+    this.toggleLoading();
+  }
+
   UniqueProject = (listvalue) => {
     const UniqueProject = [...new Set(listvalue.map((item) => item.project))];
-    this.setState({ list_project: UniqueProject }, () =>
-      console.log("uniq ", this.state.list_project)
+    const UniqueFas = [...new Set(listvalue.map((item) => item.fas_id))];
+
+    this.setState({ list_project: UniqueProject, list_fas: UniqueFas }, () =>
+      console.log("uniq proj", this.state.list_project)
     );
   };
 
@@ -582,6 +647,7 @@ class MYASGCreation extends Component {
     // this.getProjectList();
     // this.getMaterialList();
     this.getDataCDACT();
+    // this.getDataCDACT_Fas();
     // this.getDataCD();
     // this.toggleLoading();
 
@@ -961,7 +1027,7 @@ class MYASGCreation extends Component {
     lmr_form["payment_term"] = dataVendor.PayT;
     this.setState(
       { lmr_form: lmr_form, vendor_selected: lmr_form["vendor_name"] },
-      () => console.log(dataVendor.Vendor_Code)
+      () => console.log(this.state.lmr_form)
     );
     // console.log(this.state.lmr_form)
   }
@@ -1031,6 +1097,7 @@ class MYASGCreation extends Component {
       l3_approver: this.state.lmr_form.l3_approver,
       l4_approver: this.state.lmr_form.l4_approver,
       l5_approver: this.state.lmr_form.l5_approver,
+      fas_id: this.state.lmr_form.fas_id,
     };
     let dataLMRCHild = [];
     for (let i = 0; i < dataChildForm.length; i++) {
@@ -1110,17 +1177,22 @@ class MYASGCreation extends Component {
   }
 
   addLMR() {
-    let dataLMR = this.state.creation_lmr_child_form;
-    dataLMR.push({
-      tax_code: "I0",
-      currency: "MYR",
-      item_status: "Submit",
-      work_status: "Waiting for PR-PO creation",
-      site_id: "",
-      so_or_nw: "",
-      activity: "",
-    });
-    this.setState({ creation_lmr_child_form: dataLMR });
+    this.handleCheckForm();
+    if (this.state.count_form_vavlidate.length !== 0) {
+      let dataLMR = this.state.creation_lmr_child_form;
+      dataLMR.push({
+        tax_code: "I0",
+        currency: "MYR",
+        item_status: "Submit",
+        work_status: "Waiting for PR-PO creation",
+        site_id: "",
+        so_or_nw: "",
+        activity: "",
+      });
+      this.setState({ creation_lmr_child_form: dataLMR });
+    } else {
+      return;
+    }
   }
 
   deleteLMR(e) {
@@ -1400,21 +1472,59 @@ class MYASGCreation extends Component {
   onMenuOpen = () => {
     let cd_id_list = [];
     this.state.list_cd_id_act
-      .filter((not_null) => not_null.cd_id !== null)
+      // .filter((data) => data.cd_id !== "null" && data.cd_id !== null)
       .map((e) => cd_id_list.push({ label: e.cd_id, value: e.cd_id }));
     setTimeout(() => {
-      this.setState(
-        {
-          options: cd_id_list,
-        },
-        () => console.log("not null cdid", this.state.options.length)
-      );
+      this.setState({
+        options: cd_id_list,
+      });
     }, 1000);
+  };
+
+  seachCDList = async (inputValue) => {
+    if (!inputValue) {
+      return [];
+    } else {
+      let cd_id_list = [];
+      await this.state.list_cd_id_act
+        .filter((data) => data.cd_id.includes(inputValue.toString()))
+        .map((e) => cd_id_list.push({ label: e.cd_id, value: e.cd_id }));
+      // console.log(cd_id_list);
+      // this.setState({
+      //   options: cd_id_list,
+      // });
+      return cd_id_list;
+    }
+  };
+
+  handleCheckForm = () => {
+    const lmr_header = this.state.lmr_form;
+    let error = [];
+    let dataValidate = {};
+
+    const form_to_validate = [
+      "LMR_Type",
+      "gl_account",
+      "fas_id",
+      "vendor_name",
+    ];
+
+    for (let i = 0; i < form_to_validate.length; i++) {
+      if (lmr_header[i] === undefined || lmr_header[i] === null) {
+        dataValidate[form_to_validate[i]] = false;
+        error.push(false);
+      }
+    }
+    this.setState({ formvalidate: dataValidate, count_form_vavlidate: error });
+    if (error.length !== 0) {
+      return true;
+    } else {
+      return false;
+    }
   };
 
   render() {
     const matfilter = this.state.matfilter;
-    console.log("cdid", this.state.list_cd_id_act.length);
     // console.log("this.props.dataUser", this.props.dataUser);
     // if (this.state.redirectSign !== false) {
     //   return <Redirect to={"/mr-detail/" + this.state.redirectSign} />;
@@ -1495,7 +1605,9 @@ class MYASGCreation extends Component {
                           value={this.state.lmr_form.Item_Category}
                           onChange={this.handleChangeFormLMR}
                         >
-                          <option value={null} selected></option>
+                          <option value="" disabled selected hidden>
+                            Select Item Category
+                          </option>
                           <option value="Service">Service</option>
                           <option value="3PP">3PP</option>
                         </Input>
@@ -1510,8 +1622,15 @@ class MYASGCreation extends Component {
                           id="LMR_Type"
                           value={this.state.lmr_form.LMR_Type}
                           onChange={this.handleChangeFormLMR}
+                          style={
+                            this.state.formvalidate.LMR_Type === false
+                              ? { borderColor: "red" }
+                              : {}
+                          }
                         >
-                          <option value={null} selected></option>
+                          <option value="" disabled selected hidden>
+                            Select LMR Type
+                          </option>
                           <option value="Cost Collector">Cost Collector</option>
                           <option value="Per Site">Per Site</option>
                         </Input>
@@ -1572,6 +1691,11 @@ class MYASGCreation extends Component {
                             id="gl_account"
                             value={this.state.custom_gl_display}
                             onChange={this.handleChangeFormLMR}
+                            style={
+                              this.state.formvalidate.gl_account === false
+                                ? { borderColor: "red" }
+                                : {}
+                            }
                           >
                             {this.getOptionbyRole3(this.state.roleUser)}
                           </Input>
@@ -1582,6 +1706,11 @@ class MYASGCreation extends Component {
                             id="gl_account"
                             value={this.state.custom_gl_display}
                             onChange={this.handleChangeFormLMR}
+                            style={
+                              this.state.formvalidate.gl_account === false
+                                ? { borderColor: "red" }
+                                : {}
+                            }
                           >
                             {this.getOptionbyRole1(this.state.roleUser)}
                           </Input>
@@ -1614,6 +1743,30 @@ class MYASGCreation extends Component {
                         />
                       </FormGroup>
                     </Col>
+                    <Col md={4}>
+                      <FormGroup>
+                        <Label>Fas ID</Label>
+                        <Input
+                          type="select"
+                          name="fas_id"
+                          id="fas_id"
+                          value={this.state.lmr_form.fas_id}
+                          onChange={this.handleChangeFormLMR}
+                          style={
+                            this.state.formvalidate.fas_id === false
+                              ? { borderColor: "red" }
+                              : {}
+                          }
+                        >
+                          <option value="" disabled selected hidden>
+                            Select Fas
+                          </option>
+                          {this.state.list_fas.map((fas) => (
+                            <option value={fas}>{fas}</option>
+                          ))}
+                        </Input>
+                      </FormGroup>
+                    </Col>
                   </Row>
                   <Row form>
                     <Col md={4}>
@@ -1625,6 +1778,11 @@ class MYASGCreation extends Component {
                           id="vendor_name"
                           value={this.state.lmr_form.vendor_code}
                           onChange={this.handleChangeVendor}
+                          style={
+                            this.state.formvalidate.vendor_name === false
+                              ? { borderColor: "red" }
+                              : {}
+                          }
                         >
                           <option value="" disabled selected hidden>
                             Select Vendor Name
@@ -1768,16 +1926,43 @@ class MYASGCreation extends Component {
                           </Input>
                         </FormGroup>
                       </Col> */}
+                      {/* <Col md={2}>
+                        <FormGroup>
+                          <Label>Fas ID</Label>
+                          
+                            <Input
+                              type="select"
+                              name={i + " /// project_name"}
+                              id={i + " /// project_name"}
+                              value={lmr.project_name}
+                              onChange={this.handleChangeFormLMRChild}
+                              isDisabled={
+                              this.state.lmr_form.LMR_Type === "Cost Collector"
+                            }
+                            >
+                              <option value="" disabled selected hidden>
+                                Select Project Name
+                              </option>
+                              {this.state.list_project.map((e) => (
+                                <option value={e}>{e}</option>
+                              ))}
+                            </Input>
+                          
+                      
+                        </FormGroup>
+                      </Col> */}
                       <Col md={3}>
                         <FormGroup>
                           <Label>CD ID</Label>
-                          <Select
+                          <AsyncSelect
                             cacheOptions
+                            defaultOptions
                             name={i + " /// cd_id"}
                             id={i + " /// cd_id"}
                             value={lmr.cd_id}
-                            options={this.state.options}
-                            onMenuOpen={this.onMenuOpen}
+                            // options={this.state.options}
+                            // onMenuOpen={this.onMenuOpen}
+                            loadOptions={this.seachCDList}
                             onChange={this.handleChangeCDFormLMRChild}
                             isDisabled={
                               this.state.lmr_form.LMR_Type === "Cost Collector"
