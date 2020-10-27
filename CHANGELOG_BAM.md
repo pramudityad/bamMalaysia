@@ -13,3 +13,13 @@ All notable changes to BAM https://bam-my.e-dpm.com will be documented in this f
 - Site ID / Text ID field now freetext
 
 ### Fixed
+
+## [1.1.0] - 2020-10-27
+
+### Added
+
+- lMR Per Site
+
+### Changed
+
+### Fixed
