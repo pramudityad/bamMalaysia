@@ -34,45 +34,48 @@ const data_raw = {
     table: "p_celc_tes2_m_site_data",
     columns: [
       "m_id",
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."c02767d3-adf8-11e9-bb77-000d3aa3db8c"."value"\')) as workplan_id',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."9ec14232-c1a5-11ea-af53-000d3aa3db8c"."value"\')) as workplan_name',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."9ec4bff5-c1a5-11ea-af53-000d3aa3db8c"."value"\')) as network_element_name',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."c0292f27-adf8-11e9-bb77-000d3aa3db8c"."value"\')) as program',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."c02b9c03-adf8-11e9-bb77-000d3aa3db8c"."value"\')) as project',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."fdee0f72-e056-11e9-acbc-000d3aa3db8c"."value"\')) as sub_project',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."fdf0f5cf-e056-11e9-acbc-000d3aa3db8c"."value"\')) as po',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."c02d5c22-adf8-11e9-bb77-000d3aa3db8c"."value"\')) as cluster',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."c031052c-adf8-11e9-bb77-000d3aa3db8c"."value"\')) as pc_sc_npc',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."c03262d4-adf8-11e9-bb77-000d3aa3db8c"."value"\')) as region',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."c02ebba1-adf8-11e9-bb77-000d3aa3db8c"."value"\')) as site_category',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."c02767d3-adf8-11e9-bb77-000d3aa3db8c"."value"\')) as ref_no',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."c03aa61a-adf8-11e9-bb77-000d3aa3db8c"."value"\')) as loc_id',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."c036b531-adf8-11e9-bb77-000d3aa3db8c"."value"\')) as site_name',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."fdf28189-e056-11e9-acbc-000d3aa3db8c"."value"\')) as technology',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."9ec58ad8-c1a5-11ea-af53-000d3aa3db8c"."value"\')) as final_planned_tech',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."9ec672d3-c1a5-11ea-af53-000d3aa3db8c"."value"\')) as material_purchase',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."9ec7dd57-c1a5-11ea-af53-000d3aa3db8c"."value"\')) as scope_status',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."9ec90098-c1a5-11ea-af53-000d3aa3db8c"."value"\')) as wbs_hw',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."9ec9e722-c1a5-11ea-af53-000d3aa3db8c"."value"\')) as wbs_nro',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."9ecbfa81-c1a5-11ea-af53-000d3aa3db8c"."value"\')) as asp_assigned',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."c03e0897-adf8-11e9-bb77-000d3aa3db8c"."value"\')) as fas_id',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."e8801de2-07a5-11eb-8826-000d3aa3db8c"."value"\')) as asp_assigned_survey',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."e881c18e-07a5-11eb-8826-000d3aa3db8c"."value"\')) as committed_cost_cleared_hw',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."e8831879-07a5-11eb-8826-000d3aa3db8c"."value"\')) as committed_cost_cleared_nro',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."e8840804-07a5-11eb-8826-000d3aa3db8c"."value"\')) as committed_cost_cleared_ndo',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."e884f4df-07a5-11eb-8826-000d3aa3db8c"."value"\')) as wbs_closure_hw',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."e8860421-07a5-11eb-8826-000d3aa3db8c"."value"\')) as wbs_closure_nro',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."e886c79f-07a5-11eb-8826-000d3aa3db8c"."value"\')) as wbs_closure_ndo',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."e8875848-07a5-11eb-8826-000d3aa3db8c"."value"\')) as wbs_lm',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."e888465a-07a5-11eb-8826-000d3aa3db8c"."value"\')) as wbs_hwac',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."e889200f-07a5-11eb-8826-000d3aa3db8c"."value"\')) as nw_lm',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."e889fec8-07a5-11eb-8826-000d3aa3db8c"."value"\')) as nw_hwac',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."e88aea2a-07a5-11eb-8826-000d3aa3db8c"."value"\')) as nro_service',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."e88bce5e-07a5-11eb-8826-000d3aa3db8c"."value"\')) as ndo_service',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."e88cb734-07a5-11eb-8826-000d3aa3db8c"."value"\')) as nro_local_material',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."2d394e53-07a1-11eb-8826-000d3aa3db8c"."value"\')) as wbs_ndo',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."2d3b0660-07a1-11eb-8826-000d3aa3db8c"."value"\')) as nw_nro',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."2d3c1bde-07a1-11eb-8826-000d3aa3db8c"."value"\')) as nw_ndo',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6dd97a9d-d14e-11ea-b481-000d3aa2f57d"."value"\')) as workplan_id',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6ddc5ad9-d14e-11ea-b481-000d3aa2f57d"."value"\')) as workplan_name',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6ddd5695-d14e-11ea-b481-000d3aa2f57d"."value"\')) as network_element_name',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6ddf06e9-d14e-11ea-b481-000d3aa2f57d"."value"\')) as program',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6de2185d-d14e-11ea-b481-000d3aa2f57d"."value"\')) as project',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6de3e9c6-d14e-11ea-b481-000d3aa2f57d"."value"\')) as sub_project',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6de50a63-d14e-11ea-b481-000d3aa2f57d"."value"\')) as po',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6de61b94-d14e-11ea-b481-000d3aa2f57d"."value"\')) as cluster',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6de7236f-d14e-11ea-b481-000d3aa2f57d"."value"\')) as pc_sc_npc',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6de80a3a-d14e-11ea-b481-000d3aa2f57d"."value"\')) as region',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6de9936c-d14e-11ea-b481-000d3aa2f57d"."value"\')) as site_category',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6deb0872-d14e-11ea-b481-000d3aa2f57d"."value"\')) as ref_no',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6dec7a1c-d14e-11ea-b481-000d3aa2f57d"."value"\')) as loc_id',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6deda4c0-d14e-11ea-b481-000d3aa2f57d"."value"\')) as site_name',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6dee8ffe-d14e-11ea-b481-000d3aa2f57d"."value"\')) as technology',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6def62c1-d14e-11ea-b481-000d3aa2f57d"."value"\')) as final_planned_tech',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6df05af4-d14e-11ea-b481-000d3aa2f57d"."value"\')) as material_purchase',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6df162c1-d14e-11ea-b481-000d3aa2f57d"."value"\')) as scope_status',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6df24065-d14e-11ea-b481-000d3aa2f57d"."value"\')) as wbs_hw',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6df35010-d14e-11ea-b481-000d3aa2f57d"."value"\')) as wbs_nro',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6df51f22-d14e-11ea-b481-000d3aa2f57d"."value"\')) as asp_assigned',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6dfb6b35-d14e-11ea-b481-000d3aa2f57d"."value"\')) as fas_id',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."24637634-07a9-11eb-8887-000d3aa2f57d"."value"\')) as asp_assigned_survey',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."246461b2-07a9-11eb-8887-000d3aa2f57d"."value"\')) as committed_cost_cleared_hw',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."24652856-07a9-11eb-8887-000d3aa2f57d"."value"\')) as committed_cost_cleared_nro',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."24660220-07a9-11eb-8887-000d3aa2f57d"."value"\')) as committed_cost_cleared_ndo',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."2466d3dc-07a9-11eb-8887-000d3aa2f57d"."value"\')) as wbs_closure_hw',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."2467c011-07a9-11eb-8887-000d3aa2f57d"."value"\')) as wbs_closure_nro',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."24688eea-07a9-11eb-8887-000d3aa2f57d"."value"\')) as wbs_closure_ndo',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."24695f14-07a9-11eb-8887-000d3aa2f57d"."value"\')) as wbs_lm',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."246a2819-07a9-11eb-8887-000d3aa2f57d"."value"\')) as wbs_hwac',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."858ddfa1-1291-11eb-a1c8-000d3aa2f57d"."value"\')) as wbs_eab',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."246aed1a-07a9-11eb-8887-000d3aa2f57d"."value"\')) as nw_lm',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."246bc7e7-07a9-11eb-8887-000d3aa2f57d"."value"\')) as nw_hwac',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."246aed1a-07a9-11eb-8887-000d3aa2f57d"."value"\')) as nw_eab',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."246ca447-07a9-11eb-8887-000d3aa2f57d"."value"\')) as nro_service',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."246d7d56-07a9-11eb-8887-000d3aa2f57d"."value"\')) as ndo_service',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."246e7ca2-07a9-11eb-8887-000d3aa2f57d"."value"\')) as nro_local_material',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."2460b228-07a9-11eb-8887-000d3aa2f57d"."value"\')) as wbs_ndo',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."2461aac5-07a9-11eb-8887-000d3aa2f57d"."value"\')) as nw_nro',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."2462836e-07a9-11eb-8887-000d3aa2f57d"."value"\')) as nw_ndo',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."3e55d901-172d-11eb-99f8-000d3aa2f57d"."value"\')) as cd_id',
     ],
     join: {},
     condition: {},
@@ -82,7 +85,7 @@ const data_raw = {
   },
 };
 
-const data_raw_prod = {
+const all_reqbody_raw = {
   query_param: {
     table: "p_celc_apim1_m_site_data",
     columns: [
@@ -118,14 +121,31 @@ const data_raw_prod = {
       'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."24688eea-07a9-11eb-8887-000d3aa2f57d"."value"\')) as wbs_closure_ndo',
       'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."24695f14-07a9-11eb-8887-000d3aa2f57d"."value"\')) as wbs_lm',
       'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."246a2819-07a9-11eb-8887-000d3aa2f57d"."value"\')) as wbs_hwac',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."858ddfa1-1291-11eb-a1c8-000d3aa2f57d"."value"\')) as wbs_eab',
       'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."246aed1a-07a9-11eb-8887-000d3aa2f57d"."value"\')) as nw_lm',
       'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."246bc7e7-07a9-11eb-8887-000d3aa2f57d"."value"\')) as nw_hwac',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."246aed1a-07a9-11eb-8887-000d3aa2f57d"."value"\')) as nw_eab',
       'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."246ca447-07a9-11eb-8887-000d3aa2f57d"."value"\')) as nro_service',
       'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."246d7d56-07a9-11eb-8887-000d3aa2f57d"."value"\')) as ndo_service',
       'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."246e7ca2-07a9-11eb-8887-000d3aa2f57d"."value"\')) as nro_local_material',
       'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."2460b228-07a9-11eb-8887-000d3aa2f57d"."value"\')) as wbs_ndo',
       'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."2461aac5-07a9-11eb-8887-000d3aa2f57d"."value"\')) as nw_nro',
       'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."2462836e-07a9-11eb-8887-000d3aa2f57d"."value"\')) as nw_ndo',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."3e55d901-172d-11eb-99f8-000d3aa2f57d"."value"\')) as cd_id',
+    ],
+    join: {},
+    condition: {},
+    pagination: "all",
+    page_target: 1,
+    length_per_page: 10,
+  },
+};
+
+const fas_reqbody = {
+  query_param: {
+    table: "p_celc_apim1_m_site_data",
+    columns: [
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6dfb6b35-d14e-11ea-b481-000d3aa2f57d"."value"\')) as fas_id',
     ],
     join: {},
     condition: {},
@@ -189,7 +209,10 @@ class MYASGCreation extends Component {
       so_nw_updated: "",
       getrole: "",
       list_cd_id_act: [],
+      list_fas: [],
       options: [],
+      formvalidate: {},
+      count_form_vavlidate: [],
     };
     this.handleChangeCD = this.handleChangeCD.bind(this);
     this.loadOptionsCDID = this.loadOptionsCDID.bind(this);
@@ -334,9 +357,28 @@ class MYASGCreation extends Component {
     }
   }
 
+  async getFASfromACT(proxyurl, url) {
+    try {
+      let respond = await axios.post(proxyurl + url, fas_reqbody, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Basic dXNlcml4dDpYUXJuMzJuNWtxb00=",
+        },
+      });
+      if (respond.status >= 200 && respond.status < 300) {
+        console.log("respond Get Data", respond);
+      }
+      return respond;
+    } catch (err) {
+      let respond = err;
+      console.log("respond Get Data", err);
+      return respond;
+    }
+  }
+
   async getCDfromACT(proxyurl, url) {
     try {
-      let respond = await axios.post(proxyurl + url, data_raw_prod, {
+      let respond = await axios.post(proxyurl + url, all_reqbody_raw, {
         headers: {
           "Content-Type": "application/json",
           Authorization: "Basic dXNlcml4dDpYUXJuMzJuNWtxb00=",
@@ -381,15 +423,19 @@ class MYASGCreation extends Component {
   }
 
   getDataCDACT() {
-    this.toggleLoading();
     this.getCDfromACT(
       "https://cors-anywhere.herokuapp.com/",
       "https://act.e-dpm.com/index.php/android/get_data_new"
     ).then((resCD) => {
+      this.toggleLoading();
       if (resCD.data !== undefined) {
         if (resCD.data.result !== undefined) {
           const list_cd_act = resCD.data.result.raw_data;
-          this.setState({ list_cd_id_act: list_cd_act }, () =>
+          const filter_cd_id = list_cd_act.filter(
+            (cd) => cd.cd_id !== null && cd.cd_id !== "null"
+          );
+          // console.log("lenght", filter_cd_id.length);
+          this.setState({ list_cd_id_act: filter_cd_id }, () =>
             this.UniqueProject(list_cd_act)
           );
         }
@@ -404,10 +450,35 @@ class MYASGCreation extends Component {
     this.toggleLoading();
   }
 
+  getDataCDACT_Fas() {
+    this.toggleLoading();
+    this.getFASfromACT(
+      "https://cors-anywhere.herokuapp.com/",
+      "https://act.e-dpm.com/index.php/android/get_data_new"
+    ).then((resCD) => {
+      if (resCD.data !== undefined) {
+        if (resCD.data.result !== undefined) {
+          const list_fas = resCD.data.result.raw_data;
+          const Unique_fas = [...new Set(list_fas.map((item) => item.fas_id))];
+          this.setState({ list_fas: Unique_fas });
+        }
+      }
+      if (resCD === 500) {
+        this.setState({
+          action_status: "failed",
+          action_message: "Error getting CD Data, please reload the page",
+        });
+      }
+    });
+    this.toggleLoading();
+  }
+
   UniqueProject = (listvalue) => {
     const UniqueProject = [...new Set(listvalue.map((item) => item.project))];
-    this.setState({ list_project: UniqueProject }, () =>
-      console.log("uniq ", this.state.list_project)
+    const UniqueFas = [...new Set(listvalue.map((item) => item.fas_id))];
+
+    this.setState({ list_project: UniqueProject, list_fas: UniqueFas }, () =>
+      console.log("uniq proj", this.state.list_project)
     );
   };
 
@@ -576,6 +647,7 @@ class MYASGCreation extends Component {
     // this.getProjectList();
     // this.getMaterialList();
     this.getDataCDACT();
+    // this.getDataCDACT_Fas();
     // this.getDataCD();
     // this.toggleLoading();
 
@@ -955,7 +1027,7 @@ class MYASGCreation extends Component {
     lmr_form["payment_term"] = dataVendor.PayT;
     this.setState(
       { lmr_form: lmr_form, vendor_selected: lmr_form["vendor_name"] },
-      () => console.log(dataVendor.Vendor_Code)
+      () => console.log(this.state.lmr_form)
     );
     // console.log(this.state.lmr_form)
   }
@@ -1025,6 +1097,7 @@ class MYASGCreation extends Component {
       l3_approver: this.state.lmr_form.l3_approver,
       l4_approver: this.state.lmr_form.l4_approver,
       l5_approver: this.state.lmr_form.l5_approver,
+      fas_id: this.state.lmr_form.fas_id,
     };
     let dataLMRCHild = [];
     for (let i = 0; i < dataChildForm.length; i++) {
@@ -1104,17 +1177,22 @@ class MYASGCreation extends Component {
   }
 
   addLMR() {
-    let dataLMR = this.state.creation_lmr_child_form;
-    dataLMR.push({
-      tax_code: "I0",
-      currency: "MYR",
-      item_status: "Submit",
-      work_status: "Waiting for PR-PO creation",
-      site_id: "",
-      so_or_nw: "",
-      activity: "",
-    });
-    this.setState({ creation_lmr_child_form: dataLMR });
+    this.handleCheckForm();
+    if (this.state.count_form_vavlidate.length !== 0) {
+      let dataLMR = this.state.creation_lmr_child_form;
+      dataLMR.push({
+        tax_code: "I0",
+        currency: "MYR",
+        item_status: "Submit",
+        work_status: "Waiting for PR-PO creation",
+        site_id: "",
+        so_or_nw: "",
+        activity: "",
+      });
+      this.setState({ creation_lmr_child_form: dataLMR });
+    } else {
+      return;
+    }
   }
 
   deleteLMR(e) {
@@ -1243,9 +1321,7 @@ class MYASGCreation extends Component {
     let idx = idxField[0];
     let field = idxField[1];
     if (field === "cd_id" && this.state.lmr_form.LMR_Type === "Per Site") {
-      let cdData = this.state.list_cd_id_act.find(
-        (e) => e.workplan_id === value
-      );
+      let cdData = this.state.list_cd_id_act.find((e) => e.cd_id === value);
       let custom_site_display = cdData.loc_id + "_" + cdData.site_name;
       dataLMR[parseInt(idx)]["custom_site_display"] = custom_site_display;
       dataLMR[parseInt(idx)]["site_id"] = cdData.site_name;
@@ -1395,14 +1471,56 @@ class MYASGCreation extends Component {
 
   onMenuOpen = () => {
     let cd_id_list = [];
-    this.state.list_cd_id_act.map((e) =>
-      cd_id_list.push({ label: e.workplan_id, value: e.workplan_id })
-    );
+    this.state.list_cd_id_act
+      // .filter((data) => data.cd_id !== "null" && data.cd_id !== null)
+      .map((e) => cd_id_list.push({ label: e.cd_id, value: e.cd_id }));
     setTimeout(() => {
       this.setState({
         options: cd_id_list,
       });
     }, 1000);
+  };
+
+  seachCDList = async (inputValue) => {
+    if (!inputValue) {
+      return [];
+    } else {
+      let cd_id_list = [];
+      await this.state.list_cd_id_act
+        .filter((data) => data.cd_id.includes(inputValue.toString()))
+        .map((e) => cd_id_list.push({ label: e.cd_id, value: e.cd_id }));
+      // console.log(cd_id_list);
+      // this.setState({
+      //   options: cd_id_list,
+      // });
+      return cd_id_list;
+    }
+  };
+
+  handleCheckForm = () => {
+    const lmr_header = this.state.lmr_form;
+    let error = [];
+    let dataValidate = {};
+
+    const form_to_validate = [
+      "LMR_Type",
+      "gl_account",
+      "fas_id",
+      "vendor_name",
+    ];
+
+    for (let i = 0; i < form_to_validate.length; i++) {
+      if (lmr_header[i] === undefined || lmr_header[i] === null) {
+        dataValidate[form_to_validate[i]] = false;
+        error.push(false);
+      }
+    }
+    this.setState({ formvalidate: dataValidate, count_form_vavlidate: error });
+    if (error.length !== 0) {
+      return true;
+    } else {
+      return false;
+    }
   };
 
   render() {
@@ -1487,7 +1605,9 @@ class MYASGCreation extends Component {
                           value={this.state.lmr_form.Item_Category}
                           onChange={this.handleChangeFormLMR}
                         >
-                          <option value={null} selected></option>
+                          <option value="" disabled selected hidden>
+                            Select Item Category
+                          </option>
                           <option value="Service">Service</option>
                           <option value="3PP">3PP</option>
                         </Input>
@@ -1502,8 +1622,15 @@ class MYASGCreation extends Component {
                           id="LMR_Type"
                           value={this.state.lmr_form.LMR_Type}
                           onChange={this.handleChangeFormLMR}
+                          style={
+                            this.state.formvalidate.LMR_Type === false
+                              ? { borderColor: "red" }
+                              : {}
+                          }
                         >
-                          <option value={null} selected></option>
+                          <option value="" disabled selected hidden>
+                            Select LMR Type
+                          </option>
                           <option value="Cost Collector">Cost Collector</option>
                           <option value="Per Site">Per Site</option>
                         </Input>
@@ -1564,6 +1691,11 @@ class MYASGCreation extends Component {
                             id="gl_account"
                             value={this.state.custom_gl_display}
                             onChange={this.handleChangeFormLMR}
+                            style={
+                              this.state.formvalidate.gl_account === false
+                                ? { borderColor: "red" }
+                                : {}
+                            }
                           >
                             {this.getOptionbyRole3(this.state.roleUser)}
                           </Input>
@@ -1574,6 +1706,11 @@ class MYASGCreation extends Component {
                             id="gl_account"
                             value={this.state.custom_gl_display}
                             onChange={this.handleChangeFormLMR}
+                            style={
+                              this.state.formvalidate.gl_account === false
+                                ? { borderColor: "red" }
+                                : {}
+                            }
                           >
                             {this.getOptionbyRole1(this.state.roleUser)}
                           </Input>
@@ -1606,6 +1743,30 @@ class MYASGCreation extends Component {
                         />
                       </FormGroup>
                     </Col>
+                    <Col md={4}>
+                      <FormGroup>
+                        <Label>Fas ID</Label>
+                        <Input
+                          type="select"
+                          name="fas_id"
+                          id="fas_id"
+                          value={this.state.lmr_form.fas_id}
+                          onChange={this.handleChangeFormLMR}
+                          style={
+                            this.state.formvalidate.fas_id === false
+                              ? { borderColor: "red" }
+                              : {}
+                          }
+                        >
+                          <option value="" disabled selected hidden>
+                            Select Fas
+                          </option>
+                          {this.state.list_fas.map((fas) => (
+                            <option value={fas}>{fas}</option>
+                          ))}
+                        </Input>
+                      </FormGroup>
+                    </Col>
                   </Row>
                   <Row form>
                     <Col md={4}>
@@ -1617,6 +1778,11 @@ class MYASGCreation extends Component {
                           id="vendor_name"
                           value={this.state.lmr_form.vendor_code}
                           onChange={this.handleChangeVendor}
+                          style={
+                            this.state.formvalidate.vendor_name === false
+                              ? { borderColor: "red" }
+                              : {}
+                          }
                         >
                           <option value="" disabled selected hidden>
                             Select Vendor Name
@@ -1760,16 +1926,43 @@ class MYASGCreation extends Component {
                           </Input>
                         </FormGroup>
                       </Col> */}
+                      {/* <Col md={2}>
+                        <FormGroup>
+                          <Label>Fas ID</Label>
+                          
+                            <Input
+                              type="select"
+                              name={i + " /// project_name"}
+                              id={i + " /// project_name"}
+                              value={lmr.project_name}
+                              onChange={this.handleChangeFormLMRChild}
+                              isDisabled={
+                              this.state.lmr_form.LMR_Type === "Cost Collector"
+                            }
+                            >
+                              <option value="" disabled selected hidden>
+                                Select Project Name
+                              </option>
+                              {this.state.list_project.map((e) => (
+                                <option value={e}>{e}</option>
+                              ))}
+                            </Input>
+                          
+                      
+                        </FormGroup>
+                      </Col> */}
                       <Col md={3}>
                         <FormGroup>
                           <Label>CD ID</Label>
-                          <Select
+                          <AsyncSelect
                             cacheOptions
+                            defaultOptions
                             name={i + " /// cd_id"}
                             id={i + " /// cd_id"}
                             value={lmr.cd_id}
-                            options={this.state.options}
-                            onMenuOpen={this.onMenuOpen}
+                            // options={this.state.options}
+                            // onMenuOpen={this.onMenuOpen}
+                            loadOptions={this.seachCDList}
                             onChange={this.handleChangeCDFormLMRChild}
                             isDisabled={
                               this.state.lmr_form.LMR_Type === "Cost Collector"
