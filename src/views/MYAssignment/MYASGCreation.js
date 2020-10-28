@@ -500,7 +500,7 @@ class MYASGCreation extends Component {
             <option value="NRO local material - 402201">
               NRO local material - 402201
             </option>
-            <option value="3PP Hardware - 402201">3PP Hardware - 402201</option>
+            {/* <option value="3PP Hardware - 402201">3PP Hardware - 402201</option> */}
           </>
         );
       }
