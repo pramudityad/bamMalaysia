@@ -27,7 +27,7 @@ All notable changes to BAM https://bam-my.e-dpm.com will be documented in this f
 
 ### Fixed
 
-## [1.1.1] - 2020-10-28
+## [1.1.2] - 2020-10-28
 
 ### Added
 
