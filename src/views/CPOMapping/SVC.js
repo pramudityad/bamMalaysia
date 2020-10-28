@@ -407,7 +407,7 @@ class MappingSVC extends React.Component {
                       </DropdownToggle>
                       <DropdownMenu>
                         <DropdownItem header>Uploader Template</DropdownItem>
-                        <DropdownItem onClick={this.exportMatStatus}>
+                        <DropdownItem onClick={this.exportTemplate}>
                           {" "}
                           Mapping Template
                         </DropdownItem>
