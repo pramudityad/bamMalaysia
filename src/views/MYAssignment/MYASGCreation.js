@@ -433,9 +433,12 @@ class MYASGCreation extends Component {
           const filter_cd_id = list_cd_act.filter(
             (cd) => cd.cd_id !== null && cd.cd_id !== "null"
           );
+          const filter_project = list_cd_act.filter(
+            (proj) => proj.cd_id !== null
+          );
           // console.log("lenght", filter_cd_id.length);
           this.setState({ list_cd_id_act: filter_cd_id }, () =>
-            this.UniqueProject(list_cd_act)
+            this.UniqueProject(filter_project)
           );
         }
       }
@@ -475,8 +478,10 @@ class MYASGCreation extends Component {
   UniqueProject = (listvalue) => {
     const UniqueProject = [...new Set(listvalue.map((item) => item.project))];
     const UniqueFas = [...new Set(listvalue.map((item) => item.fas_id))];
-
-    this.setState({ list_project: UniqueProject, list_fas: UniqueFas }, () =>
+    const addSubProject = UniqueProject.concat([
+      ...new Set(listvalue.map((item) => item.sub_project)),
+    ]);
+    this.setState({ list_project: addSubProject, list_fas: UniqueFas }, () =>
       console.log("uniq proj", this.state.list_project)
     );
   };
@@ -518,14 +523,6 @@ class MYASGCreation extends Component {
             <option value="NRO local material - 402201">
               NRO local material - 402201
             </option>
-          </>
-        );
-      }
-      if (role.includes("BAM-MP") === true) {
-        return (
-          <>
-            <option value="" selected></option>
-            <option value="3PP Hardware - 402201">3PP Hardware - 402201</option>
           </>
         );
       }
@@ -606,6 +603,7 @@ class MYASGCreation extends Component {
             <option value="" selected></option>
             <option value="Transport - 402102">Transport - 402102</option>
             <option value="ARP - 402693">ARP - 402693</option>
+            <option value="3PP Hardware - 402201">3PP Hardware - 402201</option>
           </>
         );
       }
@@ -622,6 +620,14 @@ class MYASGCreation extends Component {
           <>
             <option value="" selected></option>
             <option value="ARP - 402693">ARP - 402693</option>
+          </>
+        );
+      }
+      if (role.includes("BAM-MP") === true) {
+        return (
+          <>
+            <option value="" selected></option>
+            <option value="3PP Hardware - 402201">3PP Hardware - 402201</option>
           </>
         );
       }
@@ -678,15 +684,6 @@ class MYASGCreation extends Component {
     let dataLMR = this.state.creation_lmr_child_form;
     let type_material = this.state.mm_data_type;
     this.decideFilter(type_material);
-  }
-
-  getProjectList() {
-    this.getDatafromAPIMY("/project_data").then((res) => {
-      if (res.data !== undefined) {
-        const items = res.data._items;
-        this.setState({ list_project: items });
-      }
-    });
   }
 
   getVendorList() {
