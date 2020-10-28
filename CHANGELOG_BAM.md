@@ -38,3 +38,5 @@ All notable changes to BAM https://bam-my.e-dpm.com will be documented in this f
 - move 3pp to Cost collector
 
 ### Fixed
+
+- fixed 3pp apear on perSite
