@@ -26,3 +26,15 @@ All notable changes to BAM https://bam-my.e-dpm.com will be documented in this f
 - project name persite selectable
 
 ### Fixed
+
+## [1.1.1] - 2020-10-28
+
+### Added
+
+- sub project selector options
+
+### Changed
+
+- move 3pp to Cost collector
+
+### Fixed
