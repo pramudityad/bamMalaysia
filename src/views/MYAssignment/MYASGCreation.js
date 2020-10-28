@@ -1222,6 +1222,10 @@ class MYASGCreation extends Component {
       lmr_form["Plan_Cost_Reduction"] = "Yes";
       this.setState({ lmr_edit: false });
     }
+    if (name === "LMR_Type" && value !== "Cost Collector") {
+      lmr_form["Plan_Cost_Reduction"] = "No";
+      // this.setState({ lmr_edit: false });
+    }
     if (name === "gl_account") {
       let selected_options = e.target.options[e.target.selectedIndex].text;
       let mm_data_type = "";
