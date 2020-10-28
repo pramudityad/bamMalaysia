@@ -1225,17 +1225,6 @@ class MYASGCreation extends Component {
       lmr_form["Plan_Cost_Reduction"] = "Yes";
       this.setState({ lmr_edit: false });
     }
-    // if (name === "LMR_Type" && value !== "Cost Collector") {
-    //   lmr_form["Plan_Cost_Reduction"] = "No";
-    //   if (name === "project_name") {
-    //     let dataProject = this.state.list_project.find(
-    //       (e) => e.Project === value
-    //     );
-    //     if (dataProject !== undefined) {
-    //       lmr_form["id_project_doc"] = dataProject._id;
-    //     }
-    //   }
-    // }
     if (name === "gl_account") {
       let selected_options = e.target.options[e.target.selectedIndex].text;
       let mm_data_type = "";
@@ -1992,13 +1981,29 @@ class MYASGCreation extends Component {
                       <Col md={2}>
                         <FormGroup>
                           <Label>Project Name</Label>
-                          {this.state.lmr_form.LMR_Type === "Cost Collector" ? (
+                          {/* {this.state.lmr_form.LMR_Type === "Cost Collector" ? ( */}
+                          <Input
+                            type="select"
+                            name={i + " /// project_name"}
+                            id={i + " /// project_name"}
+                            value={lmr.project_name}
+                            onChange={this.handleChangeFormLMRChild}
+                          >
+                            <option value="" disabled selected hidden>
+                              Select Project Name
+                            </option>
+                            {this.state.list_project.map((e) => (
+                              <option value={e}>{e}</option>
+                            ))}
+                          </Input>
+                          {/* ) : (
                             <Input
                               type="select"
                               name={i + " /// project_name"}
                               id={i + " /// project_name"}
                               value={lmr.project_name}
-                              onChange={this.handleChangeFormLMRChild}
+                              // onChange={this.handleChangeFormLMRChild}
+                              // readOnly
                             >
                               <option value="" disabled selected hidden>
                                 Select Project Name
@@ -2007,16 +2012,7 @@ class MYASGCreation extends Component {
                                 <option value={e}>{e}</option>
                               ))}
                             </Input>
-                          ) : (
-                            <Input
-                              type="text"
-                              name={i + " /// project_name"}
-                              id={i + " /// project_name"}
-                              value={lmr.project_name}
-                              // onChange={this.handleChangeFormLMRChild}
-                              readOnly
-                            />
-                          )}
+                          )} */}
                         </FormGroup>
                       </Col>
 
@@ -2196,32 +2192,6 @@ class MYASGCreation extends Component {
                           <span className="fa fa-times"></span>
                         </Button>
                       </Col>
-                      {/* <Col md={3}>
-                        <FormGroup>
-                          <Label>Item Status</Label>
-                          <Input
-                            type="text"
-                            name={i + " /// item_status"}
-                            id={i + " /// item_status"}
-                            value={lmr.item_status}
-                            onChange={this.handleChangeFormLMRChild}
-                            disabled
-                          />
-                        </FormGroup>
-                      </Col>
-                      <Col md={3}>
-                        <FormGroup>
-                          <Label>Work Status</Label>
-                          <Input
-                            type="text"
-                            name={i + " /// work_status"}
-                            id={i + " /// work_status"}
-                            value={lmr.work_status}
-                            onChange={this.handleChangeFormLMRChild}
-                            disabled
-                          />
-                        </FormGroup>
-                      </Col> */}
                     </Row>
                     <hr className="upload-line--lmr"></hr>
                   </Form>

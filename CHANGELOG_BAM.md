@@ -14,12 +14,15 @@ All notable changes to BAM https://bam-my.e-dpm.com will be documented in this f
 
 ### Fixed
 
-## [1.1.0] - 2020-10-27
+## [1.1.1] - 2020-10-27
 
 ### Added
 
 - lMR Per Site
+- add field fas_id
 
 ### Changed
+
+- project name persite selectable
 
 ### Fixed
