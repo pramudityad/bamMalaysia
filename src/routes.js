@@ -10,6 +10,8 @@ const MatARP = React.lazy(() => import("./views/Material/matlibARP"));
 const HWMapping = React.lazy(() => import("./views/CPOMapping/HW"));
 const SVCMapping = React.lazy(() => import("./views/CPOMapping/SVC"));
 
+const HWDashboard = React.lazy(() => import("./views/CPOMapping/DashboardHW"));
+
 const LMRCreation = React.lazy(() =>
   import("./views/MYAssignment/MYASGCreation")
 );
@@ -55,6 +57,12 @@ const routes = [
     exact: true,
     name: "HW CPO Mapping",
     component: HWMapping,
+  },
+  {
+    path: "/hw-dashboard",
+    exact: true,
+    name: "HW Dashboard",
+    component: HWDashboard,
   },
   {
     path: "/svc-cpo",
