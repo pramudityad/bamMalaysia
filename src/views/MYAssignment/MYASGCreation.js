@@ -1845,7 +1845,7 @@ class MYASGCreation extends Component {
                     </Col>
                     <Col md={4}>
                       <FormGroup>
-                        <Label>Total Price</Label>
+                        <Label>Grand Total Amount</Label>
                         <Input
                           type="number"
                           name="total_price"

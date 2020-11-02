@@ -1893,7 +1893,7 @@ class MYASGDetail extends Component {
                             <td>{this.state.lmr_detail.header_text}</td>
                           </tr>
                           <tr style={{ fontWeight: "425", fontSize: "15px" }}>
-                            <td>Total Price</td>
+                            <td>Grand Total Amount</td>
                             <td>:</td>
                             <td>{this.state.lmr_detail.total_price}</td>
                           </tr>
