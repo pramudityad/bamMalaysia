@@ -127,8 +127,7 @@ class MYASGDetail extends Component {
       hide_region: false,
       vendor_code: "",
       list_cd_id: [],
-      cd_id_selected: ""
-
+      cd_id_selected: "",
     };
     this.toggleAddNew = this.toggleAddNew.bind(this);
     this.handleFilterList = this.handleFilterList.bind(this);
@@ -229,7 +228,6 @@ class MYASGDetail extends Component {
       modal_material_ARP: !prevState.modal_material_ARP,
     }));
   };
-
 
   toggleAddNew() {
     this.setState({ collapse: !this.state.collapse });
@@ -556,10 +554,8 @@ class MYASGDetail extends Component {
   getMaterialList(number_child_form) {
     let filter_array = [];
     // vendor
-    this.state.vendor_code !== "" && 
-    filter_array.push(
-      '"Vendor_ID":"' + this.state.vendor_code + '"'
-    );
+    this.state.vendor_code !== "" &&
+      filter_array.push('"Vendor_ID":"' + this.state.vendor_code + '"');
     this.state.matfilter.mat_type !== "" &&
       filter_array.push(
         '"Material_Type":{"$regex" : "' +
@@ -640,10 +636,8 @@ class MYASGDetail extends Component {
   getMaterialListHW(number_child_form) {
     let filter_array = [];
     // vendor
-    this.state.vendor_code !== "" && 
-    filter_array.push(
-      '"Vendor_ID":"' + this.state.vendor_code + '"'
-    );
+    this.state.vendor_code !== "" &&
+      filter_array.push('"Vendor_ID":"' + this.state.vendor_code + '"');
     this.state.matfilter.mat_type !== "" &&
       filter_array.push(
         '"Material_Type":{"$regex" : "' +
@@ -716,10 +710,8 @@ class MYASGDetail extends Component {
   getMaterialListARP(number_child_form) {
     let filter_array = [];
     // vendor
-    this.state.vendor_code !== "" && 
-    filter_array.push(
-      '"Vendor_ID":"' + this.state.vendor_code + '"'
-    );
+    this.state.vendor_code !== "" &&
+      filter_array.push('"Vendor_ID":"' + this.state.vendor_code + '"');
     this.state.matfilter.mat_type !== "" &&
       filter_array.push(
         '"Material_Type":{"$regex" : "' +
@@ -762,7 +754,7 @@ class MYASGDetail extends Component {
         '"Remarks_or_Acceptance":{"$regex" : "' +
           this.state.filter_list[5] +
           '", "$options" : "i"}'
-      );    
+      );
     let whereAnd = "{" + filter_array.join(",") + "}";
     getDatafromAPINODE(
       "/mmCode/getMm?q=" +
@@ -906,11 +898,17 @@ class MYASGDetail extends Component {
       (res) => {
         if (res.data !== undefined) {
           const dataLMRDetail = res.data.data;
-          this.setState({ lmr_detail: dataLMRDetail, vendor_code: dataLMRDetail.vendor_code_actual }, () => {
-            // this.toggleLoading();
-            this.getDataPRPO(dataLMRDetail.lmr_id);
-            console.log(this.state.lmr_detail)
-          });
+          this.setState(
+            {
+              lmr_detail: dataLMRDetail,
+              vendor_code: dataLMRDetail.vendor_code_actual,
+            },
+            () => {
+              // this.toggleLoading();
+              this.getDataPRPO(dataLMRDetail.lmr_id);
+              console.log(this.state.lmr_detail);
+            }
+          );
         }
       }
     );
@@ -1381,9 +1379,6 @@ class MYASGDetail extends Component {
     }
   }
 
-
-
-
   async createLMRChild() {
     this.toggleLoading();
     const dataChild = this.state.lmr_detail.detail;
@@ -1524,7 +1519,10 @@ class MYASGDetail extends Component {
     let value = e.target.value;
     let name = e.target.name;
     let dataLMR = this.state.creation_lmr_child_form;
-    let type_material = dataLMR[parseInt(this.state.current_material_select)]["Per_Site_Material_Type"];
+    let type_material =
+      dataLMR[parseInt(this.state.current_material_select)][
+        "Per_Site_Material_Type"
+      ];
     // console.log()
     this.setState(
       (prevState) => ({
@@ -1539,7 +1537,6 @@ class MYASGDetail extends Component {
       }
     );
   }
-
 
   hideRegion() {
     if (
@@ -1581,7 +1578,7 @@ class MYASGDetail extends Component {
     let dataparentLMR_GL = this.state.lmr_detail.gl_account;
     let idxField = action.name.split(" /// ");
     let value = e.value;
-    console.log('cd ',value)
+    console.log("cd ", value);
     let idx = idxField[0];
     let field = idxField[1];
     // if (field === "cd_id" && this.state.lmr_detail.LMR_Type === "Per Site") {
@@ -1615,13 +1612,17 @@ class MYASGDetail extends Component {
     //     cd_id_selected: value,
     //   }, ()=> console.log(this.state.cd_id_selected));
     // }
-    this.setState({cd_id_selected: value }, ()=> console.log(this.state.cd_id_selected)
+    this.setState({ cd_id_selected: value }, () =>
+      console.log(this.state.cd_id_selected)
     );
   };
 
   getOptionbyRole2 = (role) => {
     if (role !== undefined) {
-      if (role.includes("BAM-CPM") === true || role.includes("BAM-Sourcing") === true) {
+      if (
+        role.includes("BAM-CPM") === true ||
+        role.includes("BAM-Sourcing") === true
+      ) {
         return (
           <>
             <option value="" selected></option>
@@ -1891,6 +1892,11 @@ class MYASGDetail extends Component {
                             <td>:</td>
                             <td>{this.state.lmr_detail.header_text}</td>
                           </tr>
+                          <tr style={{ fontWeight: "425", fontSize: "15px" }}>
+                            <td>Total Price</td>
+                            <td>:</td>
+                            <td>{this.state.lmr_detail.total_price}</td>
+                          </tr>
                         </tbody>
                       </table>
                     </Col>
@@ -1964,28 +1970,37 @@ class MYASGDetail extends Component {
                       {this.state.lmr_detail.detail !== undefined ? (
                         this.state.lmr_detail.detail.map((e) => (
                           <tr>
-                            {this.state.roleUser.includes("BAM-CPM") === true || this.state.roleUser.includes("BAM-GR-PA") === true && (this.state.lmr_detail.mm_data_type === "NDO" || this.state.lmr_detail.mm_data_type === "NRO") || this.state.roleUser.includes("BAM-PA") === true && this.state.lmr_detail.mm_data_type === "ARP" ? (
+                            {this.state.roleUser.includes("BAM-CPM") === true ||
+                            (this.state.roleUser.includes("BAM-GR-PA") ===
+                              true &&
+                              (this.state.lmr_detail.mm_data_type === "NDO" ||
+                                this.state.lmr_detail.mm_data_type ===
+                                  "NRO")) ||
+                            (this.state.roleUser.includes("BAM-PA") === true &&
+                              this.state.lmr_detail.mm_data_type === "ARP") ? (
                               <td>
-                              <Link
-                                to={
-                                  "/lmr-detail/" +
-                                  this.props.match.params.id +
-                                  "/gr-detail/" +
-                                  e._id
-                                }
-                              >
-                                <Button color="info" size="sm">
-                                  <i
-                                    className="fa fa-info-circle"
-                                    aria-hidden="true"
-                                  >
-                                    &nbsp;
-                                  </i>
-                                  &nbsp;GR
-                                </Button>
-                              </Link>
-                            </td>
-                            ):(<td></td>)}                            
+                                <Link
+                                  to={
+                                    "/lmr-detail/" +
+                                    this.props.match.params.id +
+                                    "/gr-detail/" +
+                                    e._id
+                                  }
+                                >
+                                  <Button color="info" size="sm">
+                                    <i
+                                      className="fa fa-info-circle"
+                                      aria-hidden="true"
+                                    >
+                                      &nbsp;
+                                    </i>
+                                    &nbsp;GR
+                                  </Button>
+                                </Link>
+                              </td>
+                            ) : (
+                              <td></td>
+                            )}
                             <td>{e.request_type}</td>
                             <td>{e.project_name}</td>
                             <td>{e.cdid}</td>
@@ -2127,7 +2142,7 @@ class MYASGDetail extends Component {
                               onChange={this.handleChangeFormLMRChildMultiple}
                               readOnly
                               // style={{ width: "100%" }}
-                            />       
+                            />
 
                             <Input
                               type="select"
@@ -2137,8 +2152,8 @@ class MYASGDetail extends Component {
                               onChange={this.handleChangeFormLMRChildMultiple}
                               // style={{ width: "100%" }}
                             >
-                            {this.getOptionbyRole2(this.state.roleUser)}
-                            </Input>          
+                              {this.getOptionbyRole2(this.state.roleUser)}
+                            </Input>
                           </td>
                           {/* <td>
                             <Input
@@ -2160,8 +2175,8 @@ class MYASGDetail extends Component {
                           </td> */}
 
                           <td>
-                          {this.state.lmr_detail.LMR_Type === "Cost Collector" ? 
-                            (
+                            {this.state.lmr_detail.LMR_Type ===
+                            "Cost Collector" ? (
                               <Input
                                 type="select"
                                 name={i + " /// project_name"}
@@ -2184,8 +2199,7 @@ class MYASGDetail extends Component {
                                 value={lmr.project_name}
                                 readOnly
                               />
-                            )
-                          }
+                            )}
                             {/* <Input
                               type="select"
                               name={i + " /// project_name"}
@@ -2203,17 +2217,18 @@ class MYASGDetail extends Component {
                             </Input> */}
                           </td>
                           <td>
-                          <Select
-                            cacheOptions
-                            name={i + " /// cd_id"}
-                            id={i + " /// cd_id"}
-                            value={lmr.cd_id}
-                            options={cd_id_list}
-                            onChange={this.handleChangeCDFormLMRChild}
-                            isDisabled={
-                              this.state.lmr_detail.LMR_Type === "Cost Collector"
-                            }
-                          />
+                            <Select
+                              cacheOptions
+                              name={i + " /// cd_id"}
+                              id={i + " /// cd_id"}
+                              value={lmr.cd_id}
+                              options={cd_id_list}
+                              onChange={this.handleChangeCDFormLMRChild}
+                              isDisabled={
+                                this.state.lmr_detail.LMR_Type ===
+                                "Cost Collector"
+                              }
+                            />
                             {/* <Input
                               type="select"
                               name={i + " /// cd_id"}
@@ -2239,7 +2254,8 @@ class MYASGDetail extends Component {
                               placeholder="Site ID / Text ID"
                               onChange={this.handleChangeFormLMRChildMultiple}
                               disabled={
-                                this.state.lmr_detail.LMR_Type === "Cost Collector"
+                                this.state.lmr_detail.LMR_Type ===
+                                "Cost Collector"
                               }
                               // style={{ width: "100%" }}
                             />
@@ -2291,7 +2307,7 @@ class MYASGDetail extends Component {
                           </td>
                           <td>
                             <Input
-                            readOnly
+                              readOnly
                               type="textarea"
                               name={i + " /// description"}
                               id={i + " /// description"}
@@ -2303,7 +2319,7 @@ class MYASGDetail extends Component {
                           </td>
                           <td>
                             <Input
-                            readOnly
+                              readOnly
                               type="text"
                               name={i + " /// price"}
                               id={i + " /// price"}
@@ -2362,7 +2378,7 @@ class MYASGDetail extends Component {
                               onChange={this.handleChangeFormLMRChildMultiple}
                               style={{ width: "100%" }}
                             />
-                          </td>                   
+                          </td>
                           <td></td>
                           <td></td>
                           <td></td>
@@ -2373,7 +2389,7 @@ class MYASGDetail extends Component {
                         </tr>
                       ))}
                       {this.state.creation_lmr_child_form.length !== 0 && (
-                        <Fragment>              
+                        <Fragment>
                           <tr>
                             <td colSpan="22" style={{ textAlign: "right" }}>
                               <Button
@@ -2779,7 +2795,7 @@ class MYASGDetail extends Component {
                   <th>Unit_Price</th>
                 </thead>
                 <tbody>
-                  <tr>   
+                  <tr>
                     <td></td>
                     {this.loopSearchBar()}
                   </tr>
@@ -2841,9 +2857,7 @@ class MYASGDetail extends Component {
             }}
           >
             <div style={{ marginLeft: "10px" }}>
-              <Row md={1}>
-                &nbsp;&nbsp;&nbsp;
-              </Row>
+              <Row md={1}>&nbsp;&nbsp;&nbsp;</Row>
             </div>
             <div class="table-container">
               <Table responsive striped bordered size="sm">
@@ -2923,9 +2937,7 @@ class MYASGDetail extends Component {
             }}
           >
             <div style={{ marginLeft: "10px" }}>
-              <Row md={1}>
-                &nbsp;&nbsp;&nbsp;               
-              </Row>
+              <Row md={1}>&nbsp;&nbsp;&nbsp;</Row>
             </div>
             <div class="table-container">
               <Table responsive striped bordered size="sm">
@@ -2960,14 +2972,14 @@ class MYASGDetail extends Component {
                         <td>{e.MM_Code}</td>
                         <td>{e.MM_Description}</td>
                         <td>{e.UoM}</td>
-                    <td>{e.UoM}</td>                    
                         <td>{e.UoM}</td>
-                    <td>{e.UoM}</td>                    
+                        <td>{e.UoM}</td>
+                        <td>{e.UoM}</td>
                         <td>{e.UoM}</td>
                         <td>{e.Unit_Price}</td>
-                    <td>{e.Unit_Price}</td>                    
                         <td>{e.Unit_Price}</td>
-                    <td>{e.Unit_Price}</td>                    
+                        <td>{e.Unit_Price}</td>
+                        <td>{e.Unit_Price}</td>
                         <td>{e.Unit_Price}</td>
                         <td>{e.Currency}</td>
                         <td>{e.Remarks_or_Acceptance}</td>
@@ -2993,8 +3005,6 @@ class MYASGDetail extends Component {
           </ModalFooter>
         </Modal>
         {/* end Modal Loading */}
-
-        
       </div>
     );
   }

@@ -40,3 +40,18 @@ All notable changes to BAM https://bam-my.e-dpm.com will be documented in this f
 ### Fixed
 
 - fixed 3pp apear on perSite
+
+## [1.1.3] - 2020-11-2
+
+### Added
+
+- Field total Price in LMR Form header
+- Field total Price in LMR Detail
+
+### Changed
+
+- re-arange field in LMR Form
+
+### Fixed
+
+- fixed price per-unit in PDB
