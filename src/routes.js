@@ -11,6 +11,9 @@ const HWMapping = React.lazy(() => import("./views/CPOMapping/HW"));
 const SVCMapping = React.lazy(() => import("./views/CPOMapping/SVC"));
 
 const HWDashboard = React.lazy(() => import("./views/CPOMapping/DashboardHW"));
+const SVCDashboard = React.lazy(() =>
+  import("./views/CPOMapping/DashboardSVC")
+);
 
 const LMRCreation = React.lazy(() =>
   import("./views/MYAssignment/MYASGCreation")
@@ -63,6 +66,12 @@ const routes = [
     exact: true,
     name: "HW Dashboard",
     component: HWDashboard,
+  },
+  {
+    path: "/svc-dashboard",
+    exact: true,
+    name: "SVC Dashboard",
+    component: SVCDashboard,
   },
   {
     path: "/svc-cpo",
