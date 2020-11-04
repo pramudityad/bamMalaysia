@@ -36,7 +36,7 @@ import Pagination from "react-js-pagination";
 import { saveAs } from "file-saver";
 import { numToSSColumn } from "../../helper/basicFunction";
 import { connect } from "react-redux";
-
+import "./cpomapping.css";
 const DefaultNotif = React.lazy(() =>
   import("../../views/DefaultView/DefaultNotif")
 );
@@ -518,15 +518,28 @@ class MappingHW extends React.Component {
                 </Row>
                 <Row>
                   <Col>
-                    <div>
-                      <Table striped hover bordered responsive size="sm">
+                    <div
+                      style={{
+                        "max-height": "calc(100vh - 210px)",
+                        "overflow-y": "auto",
+                      }}
+                    >
+                      <Table
+                        striped
+                        hover
+                        bordered
+                        responsive
+                        size="sm"
+                        // id="hw_Table"
+                      >
                         <thead
                         // style={{ backgroundColor: "#73818f" }}
-                        // className="fixed-matlib"
                         >
                           <tr align="center">
                             {header.map((head) => (
-                              <th>{head}</th>
+                              <th style={{ position: "sticky", top: 0 }}>
+                                {head}
+                              </th>
                             ))}
                           </tr>
                         </thead>

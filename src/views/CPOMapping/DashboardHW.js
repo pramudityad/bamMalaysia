@@ -218,9 +218,10 @@ class ReportHW extends React.Component {
     billvalue_list.map((bill) =>
       billvalue_options.push({ label: bill, value: bill })
     );
-    billvalue_options.filter((val) => val.label !== null);
-    console.log(billvalue_options);
-    this.setState({ billvalue_list: billvalue_options });
+    const not_null = billvalue_options.filter(
+      (val) => val.label !== null && val.value !== null
+    );
+    this.setState({ billvalue_list: not_null });
   };
 
   hanldeChangeBillingValue = (e) => {
