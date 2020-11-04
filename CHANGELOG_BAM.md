@@ -55,3 +55,15 @@ All notable changes to BAM https://bam-my.e-dpm.com will be documented in this f
 ### Fixed
 
 - fixed price per-unit in PDB
+
+## [1.1.4] - 2020-11-4
+
+### Added
+
+### Changed
+
+- if creation LMR success page will be redirect to lmr detail
+
+### Fixed
+
+- specify several error message
