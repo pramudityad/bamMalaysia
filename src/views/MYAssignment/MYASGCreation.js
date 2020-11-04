@@ -214,6 +214,7 @@ class MYASGCreation extends Component {
       options: [],
       formvalidate: {},
       count_form_validate: [],
+      redirectSign: false,
     };
     this.handleChangeCD = this.handleChangeCD.bind(this);
     this.loadOptionsCDID = this.loadOptionsCDID.bind(this);
@@ -1145,8 +1146,15 @@ class MYASGCreation extends Component {
       respondSaveLMR.status >= 200 &&
       respondSaveLMR.status <= 300
     ) {
-      this.setState({ action_status: "success" });
+      this.setState({
+        action_status: "success",
+        redirectSign: respondSaveLMR.data.parent._id,
+      });
       this.toggleLoading();
+      // setTimeout(
+      //   <Redirect to={"/lmr-detail/" + this.state.redirectSign} />,
+      //   1000
+      // );
     } else {
       if (
         respondSaveLMR.response !== undefined &&
@@ -1545,9 +1553,10 @@ class MYASGCreation extends Component {
   render() {
     const matfilter = this.state.matfilter;
     // console.log("this.props.dataUser", this.props.dataUser);
-    // if (this.state.redirectSign !== false) {
-    //   return <Redirect to={"/mr-detail/" + this.state.redirectSign} />;
-    // }
+    if (this.state.redirectSign !== false) {
+      setTimeout(1500);
+      return <Redirect to={"/lmr-detail/" + this.state.redirectSign} />;
+    }
     return (
       <div>
         <Row className="row-alert-fixed">
