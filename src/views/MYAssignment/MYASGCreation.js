@@ -215,6 +215,7 @@ class MYASGCreation extends Component {
       formvalidate: {},
       count_form_validate: [],
       redirectSign: false,
+      key_child: 0,
     };
     this.handleChangeCD = this.handleChangeCD.bind(this);
     this.loadOptionsCDID = this.loadOptionsCDID.bind(this);
@@ -423,7 +424,7 @@ class MYASGCreation extends Component {
     });
   }
 
-  getDataCDACT() {
+  getDataCDACT = () => {
     this.getCDfromACT(
       "https://cors-anywhere.herokuapp.com/",
       "https://act.e-dpm.com/index.php/android/get_data_new"
@@ -452,7 +453,7 @@ class MYASGCreation extends Component {
       }
     });
     this.toggleLoading();
-  }
+  };
 
   getDataCDACT_Fas() {
     this.toggleLoading();
@@ -1121,7 +1122,7 @@ class MYASGCreation extends Component {
         item_category: this.state.lmr_form.Item_Category,
         lmr_type: this.state.lmr_form.LMR_Type,
         plan_cost_reduction: this.state.lmr_form.Plan_Cost_Reduction,
-        cdid: dataChildForm[i].cdid,
+        cdid: dataChildForm[i].cd_id,
         // per_site_material_type: dataChildForm[i].Per_Site_Material_Type,
         item_status: "Submit",
         work_status: "Waiting for PR-PO creation",
@@ -1186,10 +1187,11 @@ class MYASGCreation extends Component {
   };
 
   addChildLMR = () => {
+    const key = this.state.key_child + 1;
     if (this.state.count_form_validate.length === 0) {
       let dataLMR = this.state.creation_lmr_child_form;
-
       dataLMR.push({
+        key: key,
         tax_code: "I0",
         currency: "MYR",
         item_status: "Submit",
@@ -1198,7 +1200,7 @@ class MYASGCreation extends Component {
         so_or_nw: "",
         activity: "",
       });
-      this.setState({ creation_lmr_child_form: dataLMR });
+      this.setState({ creation_lmr_child_form: dataLMR, key_child: key });
     } else {
       return;
     }
@@ -1293,7 +1295,6 @@ class MYASGCreation extends Component {
     let lmr_form = this.state.lmr_form;
     let total_price = 0;
     for (let i = 0; i < dataLMR.length; i++) {
-      // console.log(dataLMR[i]["total_amount"]);
       total_price += dataLMR[i]["total_amount"];
     }
     lmr_form["total_price"] = total_price;
@@ -1341,26 +1342,26 @@ class MYASGCreation extends Component {
       dataLMR[parseInt(idx)]["custom_site_display"] = custom_site_display;
       dataLMR[parseInt(idx)]["site_id"] = cdData.site_name;
       dataLMR[parseInt(idx)]["project_name"] = cdData.project;
-      dataLMR[parseInt(idx)]["cdid"] = value;
+      dataLMR[parseInt(idx)]["cd_id"] = value;
       if (dataparentLMR_GL === "Transport - 402102") {
         dataLMR[parseInt(idx)]["so_or_nw"] = "";
         dataLMR[parseInt(idx)]["activity"] = "803X";
       }
       if (dataparentLMR_GL === "NRO service - 402603") {
-        dataLMR[parseInt(idx)]["so_or_nw"] = cdData.wbs_nro;
+        dataLMR[parseInt(idx)]["so_or_nw"] = cdData.nw_nro;
         dataLMR[parseInt(idx)]["activity"] = "5640";
       }
       if (dataparentLMR_GL === "NRO local material - 402201") {
-        dataLMR[parseInt(idx)]["so_or_nw"] = cdData.wbs_hw;
+        dataLMR[parseInt(idx)]["so_or_nw"] = cdData.nw_lm;
         dataLMR[parseInt(idx)]["activity"] = "2000";
       }
       if (dataparentLMR_GL === "NDO service - 402603") {
         // should be NDO
-        dataLMR[parseInt(idx)]["so_or_nw"] = cdData.wbs_ndo;
+        dataLMR[parseInt(idx)]["so_or_nw"] = cdData.nw_ndo;
         dataLMR[parseInt(idx)]["activity"] = "5200";
       }
       if (dataparentLMR_GL === "3PP Hardware - 402201") {
-        dataLMR[parseInt(idx)]["so_or_nw"] = cdData.wbs_hw;
+        dataLMR[parseInt(idx)]["so_or_nw"] = cdData.nw_hwac;
         dataLMR[parseInt(idx)]["activity"] = "2000";
       }
       this.setState({
@@ -1419,10 +1420,12 @@ class MYASGCreation extends Component {
     return searchBar;
   };
 
-  handleDeleteLMRChild(index) {
+  handleDeleteLMRChild(key) {
+    console.log(key);
     let LMRChild = this.state.creation_lmr_child_form;
-    LMRChild.splice(index, 1);
-    this.setState({ creation_lmr_child_form: LMRChild });
+    let after_delete = LMRChild.filter((i) => i.key !== key);
+    console.log(after_delete);
+    this.setState({ creation_lmr_child_form: after_delete });
   }
 
   handleMaterialFilter(e) {
@@ -1543,11 +1546,6 @@ class MYASGCreation extends Component {
       { formvalidate: dataValidate, count_form_validate: error },
       () => this.addChildLMR()
     );
-    // if (error.length !== 0) {
-    //   return true;
-    // } else {
-    //   return false;
-    // }
   };
 
   render() {
@@ -1963,7 +1961,7 @@ class MYASGCreation extends Component {
                             defaultOptions
                             name={i + " /// cd_id"}
                             id={i + " /// cd_id"}
-                            value={lmr.cd_id}
+                            value={{ label: lmr.cd_id, value: lmr.cd_id }}
                             // options={this.state.options}
                             // onMenuOpen={this.onMenuOpen}
                             loadOptions={this.seachCDList}
@@ -2128,6 +2126,7 @@ class MYASGCreation extends Component {
                         <FormGroup>
                           <Label>Quantity</Label>
                           <Input
+                            min="0"
                             type="number"
                             name={i + " /// quantity"}
                             id={i + " /// quantity"}
@@ -2182,7 +2181,7 @@ class MYASGCreation extends Component {
                         <Button
                           color="danger"
                           size="sm"
-                          onClick={(e) => this.handleDeleteLMRChild(i)}
+                          onClick={(e) => this.handleDeleteLMRChild(lmr.key)}
                           style={{ float: "right", marginTop: "30px" }}
                         >
                           <span className="fa fa-times"></span>
