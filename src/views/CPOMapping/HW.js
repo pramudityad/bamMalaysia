@@ -619,7 +619,7 @@ class MappingHW extends React.Component {
           {i !== 1 && i !== 3 && i !== 5 && i !== 7 && i !== 8 ? (
             ""
           ) : (
-            <div className="controls">
+            <div className="controls" style={{ width: "150px" }}>
               <InputGroup className="input-prepend">
                 <InputGroupAddon addonType="prepend">
                   <InputGroupText>
@@ -627,7 +627,7 @@ class MappingHW extends React.Component {
                   </InputGroupText>
                 </InputGroupAddon>
                 <Input
-                  className="w-25"
+                  // className="col-sm-3"
                   type="text"
                   placeholder="Search"
                   onChange={this.handleFilterList}
@@ -764,22 +764,11 @@ class MappingHW extends React.Component {
                         "overflow-y": "auto",
                       }}
                     >
-                      <Table
-                        striped
-                        hover
-                        bordered
-                        responsive
-                        size="sm"
-                        // id="hw_Table"
-                      >
-                        <thead
-                        // style={{ backgroundColor: "#73818f" }}
-                        >
+                      <table class="table table-hover">
+                        <thead class="thead-dark">
                           <tr align="center">
                             {header.map((head) => (
-                              <th style={{ position: "sticky", top: 0 }}>
-                                {head}
-                              </th>
+                              <th>{head}</th>
                             ))}
                           </tr>
                           <tr>
@@ -813,7 +802,7 @@ class MappingHW extends React.Component {
                               </React.Fragment>
                             ))}
                         </tbody>
-                      </Table>
+                      </table>
                     </div>
                   </Col>
                 </Row>

@@ -20,6 +20,7 @@ import {
   DropdownMenu,
   DropdownToggle,
   Collapse,
+  Container,
 } from "reactstrap";
 import {
   getDatafromAPIMY,
@@ -235,150 +236,154 @@ class ReportHW extends React.Component {
   render() {
     return (
       <div>
-        <Row>
-          <Col md={6}>
-            <FormGroup>
-              <Label>PO</Label>
-              <Select
-                options={this.state.po_list}
-                onChange={this.hanldeChangePO}
-              />
-            </FormGroup>
-          </Col>
-        </Row>
-        <Row>
-          <Col md={6}>
-            <FormGroup>
-              <Select
-                options={this.state.billing_list}
-                onChange={this.hanldeChangeBilling}
-              />{" "}
-              <Select
-                options={this.state.billvalue_list}
-                onChange={this.hanldeChangeBillingValue}
-              />
-            </FormGroup>
-          </Col>
-        </Row>
-        <Row>
-          <Col>
-            <div>
-              <Table hover bordered responsive size="sm">
-                <thead
-                // style={{ backgroundColor: "#73818f" }}
-                // className="fixed-matlib"
-                >
-                  <tr align="center">
-                    {header.map((head) => (
-                      <th>{head}</th>
-                    ))}
-                    <th>Sum of {this.state.multiply * 100}% of billable QTY</th>
-                    <th>{this.state.header_name}</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {this.state.pivot_data1 !== undefined &&
-                    this.state.pivot_data1.map((e, i) => (
-                      <React.Fragment key={e._id + "frag"}>
-                        <tr key={e._id}>
-                          {td_value.map((name, ndex) => (
-                            <td>{eval(name)}</td>
-                          ))}
-                          <td>{e.Qty * this.state.multiply}</td>
-                          <td>{e.Total_Price * this.state.multiply}</td>
-                        </tr>
-                      </React.Fragment>
-                    ))}
-                  <tr style={{ backgroundColor: "#c5f0ed" }}>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td>
-                      {" "}
-                      {this.state.pivot_data1 !== undefined &&
-                        this.state.pivot_data1.reduce(
-                          (a, { Qty }) => a + Qty,
-                          0
-                        )}
-                    </td>
-                    <td>
-                      {" "}
-                      {this.state.pivot_data1 !== undefined &&
-                        this.state.pivot_data1.reduce(
-                          (a, { Total_Price }) => a + Total_Price,
-                          0
-                        )}
-                    </td>
-                    <td>
-                      {" "}
-                      {this.state.pivot_data1 !== undefined &&
-                        this.state.pivot_data1.reduce(
-                          (a, { Qty }) => a + Qty * this.state.multiply,
-                          0
-                        )}
-                    </td>
-                    <td>
-                      {" "}
-                      {this.state.pivot_data1 !== undefined &&
-                        this.state.pivot_data1.reduce(
-                          (a, { Total_Price }) =>
-                            a + Total_Price * this.state.multiply,
-                          0
-                        )}
-                    </td>
-                  </tr>
-                </tbody>
-              </Table>
-            </div>
-          </Col>
-        </Row>
+        <Container>
+          <Row>
+            <Col md={6}>
+              <FormGroup>
+                <Label>PO</Label>
+                <Select
+                  options={this.state.po_list}
+                  onChange={this.hanldeChangePO}
+                />
+              </FormGroup>
+            </Col>
+          </Row>
+          <Row>
+            <Col md={6}>
+              <FormGroup>
+                <Select
+                  options={this.state.billing_list}
+                  onChange={this.hanldeChangeBilling}
+                />{" "}
+                <Select
+                  options={this.state.billvalue_list}
+                  onChange={this.hanldeChangeBillingValue}
+                />
+              </FormGroup>
+            </Col>
+          </Row>
+          <Row>
+            <Col>
+              <div>
+                <Table hover bordered responsive size="sm">
+                  <thead
+                  // style={{ backgroundColor: "#73818f" }}
+                  // className="fixed-matlib"
+                  >
+                    <tr align="center">
+                      {header.map((head) => (
+                        <th>{head}</th>
+                      ))}
+                      <th>
+                        Sum of {this.state.multiply * 100}% of billable QTY
+                      </th>
+                      <th>{this.state.header_name}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {this.state.pivot_data1 !== undefined &&
+                      this.state.pivot_data1.map((e, i) => (
+                        <React.Fragment key={e._id + "frag"}>
+                          <tr key={e._id}>
+                            {td_value.map((name, ndex) => (
+                              <td>{eval(name)}</td>
+                            ))}
+                            <td>{e.Qty * this.state.multiply}</td>
+                            <td>{e.Total_Price * this.state.multiply}</td>
+                          </tr>
+                        </React.Fragment>
+                      ))}
+                    <tr style={{ backgroundColor: "#c5f0ed" }}>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td>
+                        {" "}
+                        {this.state.pivot_data1 !== undefined &&
+                          this.state.pivot_data1.reduce(
+                            (a, { Qty }) => a + Qty,
+                            0
+                          )}
+                      </td>
+                      <td>
+                        {" "}
+                        {this.state.pivot_data1 !== undefined &&
+                          this.state.pivot_data1.reduce(
+                            (a, { Total_Price }) => a + Total_Price,
+                            0
+                          )}
+                      </td>
+                      <td>
+                        {" "}
+                        {this.state.pivot_data1 !== undefined &&
+                          this.state.pivot_data1.reduce(
+                            (a, { Qty }) => a + Qty * this.state.multiply,
+                            0
+                          )}
+                      </td>
+                      <td>
+                        {" "}
+                        {this.state.pivot_data1 !== undefined &&
+                          this.state.pivot_data1.reduce(
+                            (a, { Total_Price }) =>
+                              a + Total_Price * this.state.multiply,
+                            0
+                          )}
+                      </td>
+                    </tr>
+                  </tbody>
+                </Table>
+              </div>
+            </Col>
+          </Row>
 
-        <Row>
-          <Col>
-            <div>
-              <Table>
-                <thead>
-                  <tr>
-                    <th>Sum Region</th>
-                    <th>NEW LOC ID</th>
-                    <th>NEW SITE NAME</th>
-                    <th>Total</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {this.state.pivot_data2 !== undefined &&
-                    this.state.pivot_data2.map((u) => (
-                      <React.Fragment key={u._id + "frag"}>
-                        <tr key={u._id}>
-                          <td>{u.Region}</td>
-                          <td>{u.New_Loc_Id}</td>
-                          <td>{u.New_Site_Name}</td>
-                          <td>{u.Total_Price * this.state.multiply}</td>
-                        </tr>
-                      </React.Fragment>
-                    ))}
-                  <tr style={{ backgroundColor: "#c5f0ed" }}>
-                    <td>Grand Total</td>
-                    <td></td>
-                    <td></td>
-                    <td>
-                      {this.state.pivot_data2 !== undefined &&
-                        this.state.pivot_data2.reduce(
-                          (a, { Total_Price }) =>
-                            a + Total_Price * this.state.multiply,
-                          0
-                        )}
-                    </td>
-                  </tr>
-                </tbody>
-              </Table>
-            </div>
-          </Col>
-        </Row>
+          <Row>
+            <Col>
+              <div>
+                <Table>
+                  <thead>
+                    <tr>
+                      <th>Sum Region</th>
+                      <th>NEW LOC ID</th>
+                      <th>NEW SITE NAME</th>
+                      <th>Total</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {this.state.pivot_data2 !== undefined &&
+                      this.state.pivot_data2.map((u) => (
+                        <React.Fragment key={u._id + "frag"}>
+                          <tr key={u._id}>
+                            <td>{u.Region}</td>
+                            <td>{u.New_Loc_Id}</td>
+                            <td>{u.New_Site_Name}</td>
+                            <td>{u.Total_Price * this.state.multiply}</td>
+                          </tr>
+                        </React.Fragment>
+                      ))}
+                    <tr style={{ backgroundColor: "#c5f0ed" }}>
+                      <td>Grand Total</td>
+                      <td></td>
+                      <td></td>
+                      <td>
+                        {this.state.pivot_data2 !== undefined &&
+                          this.state.pivot_data2.reduce(
+                            (a, { Total_Price }) =>
+                              a + Total_Price * this.state.multiply,
+                            0
+                          )}
+                      </td>
+                    </tr>
+                  </tbody>
+                </Table>
+              </div>
+            </Col>
+          </Row>
+        </Container>
       </div>
     );
   }

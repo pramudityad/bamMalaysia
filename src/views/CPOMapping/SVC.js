@@ -574,7 +574,7 @@ class MappingSVC extends React.Component {
           {i !== 2 && i !== 4 && i !== 6 && i !== 8 && i !== 9 ? (
             ""
           ) : (
-            <div className="controls">
+            <div className="controls" style={{ width: "150px" }}>
               <InputGroup className="input-prepend">
                 <InputGroupAddon addonType="prepend">
                   <InputGroupText>
@@ -582,7 +582,7 @@ class MappingSVC extends React.Component {
                   </InputGroupText>
                 </InputGroupAddon>
                 <Input
-                  className="w-25"
+                  // className="w-25"
                   type="text"
                   placeholder="Search"
                   onChange={this.handleFilterList}
@@ -719,11 +719,8 @@ class MappingSVC extends React.Component {
                         "overflow-y": "auto",
                       }}
                     >
-                      <Table striped hover bordered responsive size="sm">
-                        <thead
-                        // style={{ backgroundColor: "#73818f" }}
-                        // className="fixed-matlib"
-                        >
+                      <table class="table table-hover">
+                        <thead class="thead-dark">
                           <tr align="center">
                             {header.map((head) => (
                               <th>{head}</th>
@@ -760,7 +757,7 @@ class MappingSVC extends React.Component {
                               </React.Fragment>
                             ))}
                         </tbody>
-                      </Table>
+                      </table>
                     </div>
                   </Col>
                 </Row>
