@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React from "react";
 import {
   Col,
@@ -20,6 +21,9 @@ import {
   DropdownMenu,
   DropdownToggle,
   Collapse,
+  InputGroup,
+  InputGroupAddon,
+  InputGroupText,
 } from "reactstrap";
 import Excel from "exceljs";
 import Loading from "../Component/Loading";
@@ -42,6 +46,7 @@ const DefaultNotif = React.lazy(() =>
 );
 const modul_name = "HW Mapping";
 const header = [
+  "",
   "LOOKUP REFERENCE",
   "REGION",
   "REFERENCE LOC ID",
@@ -274,6 +279,12 @@ class MappingHW extends React.Component {
       activePage: 1,
       totalData: 0,
       perPage: 10,
+      CPOForm: {},
+      modalEdit: false,
+      modal_loading: false,
+      action_status: null,
+      action_message: null,
+      filter_list: {},
     };
   }
 
@@ -284,8 +295,46 @@ class MappingHW extends React.Component {
   }
 
   getList() {
+    let filter_array = [];
+    this.state.filter_list["Region"] !== null &&
+      this.state.filter_list["Region"] !== undefined &&
+      filter_array.push(
+        '"Region":{"$regex" : "' +
+          this.state.filter_list["Region"] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list["New_Loc_Id"] !== null &&
+      this.state.filter_list["New_Loc_Id"] !== undefined &&
+      filter_array.push(
+        '"New_Loc_Id":{"$regex" : "' +
+          this.state.filter_list["New_Loc_Id"] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list["New_Site_Name"] !== null &&
+      this.state.filter_list["New_Site_Name"] !== undefined &&
+      filter_array.push(
+        '"site_info.site_id":{"$regex" : "' +
+          this.state.filter_list["New_Site_Name"] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list["Po"] !== null &&
+      this.state.filter_list["Po"] !== undefined &&
+      filter_array.push(
+        '"site_info.Po":{"$regex" : "' +
+          this.state.filter_list["Po"] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list["Line"] !== null &&
+      this.state.filter_list["Line"] !== undefined &&
+      filter_array.push(
+        '"Line":{"$regex" : "' +
+          this.state.filter_list["Line"] +
+          '", "$options" : "i"}'
+      );
+    let whereAnd = "{" + filter_array.join(",") + "}";
     getDatafromAPINODE(
-      "/cpoMapping/getCpo/hw?" +
+      "/cpoMapping/getCpo/hw?q=" +
+        whereAnd +
         "&lmt=" +
         this.state.perPage +
         "&pg=" +
@@ -408,7 +457,195 @@ class MappingHW extends React.Component {
     });
   };
 
+  toggleEdit = (e) => {
+    const modalEdit = this.state.modalEdit;
+    if (modalEdit === false) {
+      const value = e.currentTarget.value;
+      const aEdit = this.state.all_data.find((e) => e._id === value);
+      this.setState({ CPOForm: aEdit, selected_id: value });
+    } else {
+      this.setState({ CPOForm: {} });
+    }
+    this.setState((prevState) => ({
+      modalEdit: !prevState.modalEdit,
+    }));
+  };
+
+  handleChangeForm = (e) => {
+    const value = e.target.value;
+    const name = e.target.name;
+    this.setState(
+      (prevState) => ({
+        CPOForm: {
+          ...prevState.CPOForm,
+          [name]: value,
+        },
+      }),
+      () => console.log(this.state.CPOForm)
+    );
+  };
+
+  saveUpdate = async () => {
+    this.toggleEdit();
+    this.toggleLoading();
+    const res = await patchDatatoAPINODE(
+      "/cpoMapping/updateCpo",
+      {
+        cpo_type: "hw",
+        data: [this.state.CPOForm],
+      },
+      this.state.tokenUser
+    );
+    if (res.data !== undefined) {
+      this.setState({ action_status: "success" });
+      this.toggleLoading();
+      setTimeout(function () {
+        window.location.reload();
+      }, 1500);
+    } else {
+      if (
+        res.response !== undefined &&
+        res.response.data !== undefined &&
+        res.response.data.error !== undefined
+      ) {
+        if (res.response.data.error.message !== undefined) {
+          this.setState({
+            action_status: "failed",
+            action_message: res.response.data.error.message,
+          });
+        } else {
+          this.setState({
+            action_status: "failed",
+            action_message: res.response.data.error,
+          });
+        }
+      } else {
+        this.setState({ action_status: "failed" });
+      }
+      this.toggleLoading();
+    }
+  };
+
+  downloadAll_A = async () => {
+    this.toggleLoading();
+    const download_all_A = await getDatafromAPINODE(
+      "/cpoMapping/getCpo/hw?noPg=1",
+      this.state.tokenUser
+    );
+
+    const wb = new Excel.Workbook();
+    const ws = wb.addWorksheet();
+
+    let header = ["Line", "Po", "New_Loc_Id", "Config"];
+
+    ws.addRow(header);
+    for (let i = 1; i < header.length + 1; i++) {
+      ws.getCell(numToSSColumn(i) + "1").fill = {
+        type: "pattern",
+        pattern: "solid",
+        fgColor: { argb: "FFFFFF00" },
+        bgColor: { argb: "A9A9A9" },
+      };
+    }
+
+    if (download_all_A.data !== undefined) {
+      for (let i = 0; i < download_all_A.data.data.length; i++) {
+        let e = download_all_A.data.data[i];
+        ws.addRow([e.Line, e.Po, e.New_Loc_Id, e.Config]);
+      }
+    }
+
+    const allocexport = await wb.xlsx.writeBuffer();
+    saveAs(new Blob([allocexport]), "Template " + modul_name + " Role A.xlsx");
+    this.toggleLoading();
+  };
+
+  downloadAll_B = async () => {
+    this.toggleLoading();
+    const download_all_A = await getDatafromAPINODE(
+      "/cpoMapping/getCpo/hw?noPg=1",
+      this.state.tokenUser
+    );
+
+    const wb = new Excel.Workbook();
+    const ws = wb.addWorksheet();
+
+    let header = ["Line", "Po", "New_Loc_Id", "Qty"];
+
+    ws.addRow(header);
+    for (let i = 1; i < header.length + 1; i++) {
+      ws.getCell(numToSSColumn(i) + "1").fill = {
+        type: "pattern",
+        pattern: "solid",
+        fgColor: { argb: "FFFFFF00" },
+        bgColor: { argb: "A9A9A9" },
+      };
+    }
+
+    if (download_all_A.data !== undefined) {
+      for (let i = 0; i < download_all_A.data.data.length; i++) {
+        let e = download_all_A.data.data[i];
+        ws.addRow([e.Line, e.Po, e.New_Loc_Id, e.Qty]);
+      }
+    }
+
+    const allocexport = await wb.xlsx.writeBuffer();
+    saveAs(new Blob([allocexport]), "Template " + modul_name + " Role B.xlsx");
+    this.toggleLoading();
+  };
+
+  onChangeDebounced = () => {
+    this.getList();
+  };
+
+  handleFilterList = (e) => {
+    const index = e.target.name;
+    let value = e.target.value;
+    if (value.length === 0) {
+      value = null;
+    }
+    let dataFilter = this.state.filter_list;
+    dataFilter[index] = value;
+    this.setState({ filter_list: dataFilter, activePage: 1 }, () => {
+      this.onChangeDebounced(e);
+    });
+  };
+
+  loopSearchBar = () => {
+    let searchBar = [];
+    for (let i = 0; i < header_model.length; i++) {
+      searchBar.push(
+        <td>
+          {i !== 1 && i !== 3 && i !== 5 && i !== 7 && i !== 8 ? (
+            ""
+          ) : (
+            <div className="controls">
+              <InputGroup className="input-prepend">
+                <InputGroupAddon addonType="prepend">
+                  <InputGroupText>
+                    <i className="fa fa-search"></i>
+                  </InputGroupText>
+                </InputGroupAddon>
+                <Input
+                  className="w-25"
+                  type="text"
+                  placeholder="Search"
+                  onChange={this.handleFilterList}
+                  value={this.state.filter_list[header_model[i]]}
+                  name={header_model[i]}
+                  size="sm"
+                />
+              </InputGroup>
+            </div>
+          )}
+        </td>
+      );
+    }
+    return searchBar;
+  };
+
   render() {
+    const CPOForm = this.state.CPOForm;
     return (
       <div className="animated fadeIn">
         <DefaultNotif
@@ -464,8 +701,11 @@ class MappingHW extends React.Component {
                           {" "}
                           Mapping Template
                         </DropdownItem>
-                        <DropdownItem onClick={this.downloadAll}>
-                          Download All{" "}
+                        <DropdownItem onClick={this.downloadAll_A}>
+                          Template A{" "}
+                        </DropdownItem>
+                        <DropdownItem onClick={this.downloadAll_B}>
+                          Template B{" "}
                         </DropdownItem>
                       </DropdownMenu>
                     </Dropdown>
@@ -542,12 +782,30 @@ class MappingHW extends React.Component {
                               </th>
                             ))}
                           </tr>
+                          <tr>
+                            <td></td>
+                            {this.loopSearchBar()}
+                          </tr>
                         </thead>
                         <tbody>
                           {this.state.all_data !== undefined &&
                             this.state.all_data.map((e, i) => (
                               <React.Fragment key={e._id + "frag"}>
                                 <tr key={e._id}>
+                                  <td>
+                                    <Button
+                                      size="sm"
+                                      color="secondary"
+                                      value={e._id}
+                                      onClick={this.toggleEdit}
+                                      title="Edit"
+                                    >
+                                      <i
+                                        className="fa fa-edit"
+                                        aria-hidden="true"
+                                      ></i>
+                                    </Button>
+                                  </td>
                                   {td_value.map((name, ndex) => (
                                     <td>{eval(name)}</td>
                                   ))}
@@ -579,6 +837,91 @@ class MappingHW extends React.Component {
             </Card>
           </Col>
         </Row>
+
+        {/* Modal Update */}
+        <Modal
+          isOpen={this.state.modalEdit}
+          toggle={this.toggleEdit}
+          className="modal--form"
+        >
+          <ModalHeader>Form Update</ModalHeader>
+          <ModalBody>
+            <Row>
+              <Col sm="12">
+                <FormGroup row>
+                  <Col xs="4">
+                    <FormGroup>
+                      <Label>Line</Label>
+                      <Input
+                        readOnly
+                        type="text"
+                        name="Line"
+                        placeholder=""
+                        value={CPOForm.Line}
+                        onChange={this.handleChangeForm}
+                      />
+                    </FormGroup>
+                  </Col>
+                  <Col xs="4">
+                    <FormGroup>
+                      <Label>PO</Label>
+                      <Input
+                        readOnly
+                        type="text"
+                        name="Po"
+                        placeholder=""
+                        value={CPOForm.Po}
+                        onChange={this.handleChangeForm}
+                      />
+                    </FormGroup>
+                  </Col>
+                  <Col xs="4">
+                    <FormGroup>
+                      <Label>NEW LOC ID</Label>
+                      <Input
+                        readOnly
+                        type="text"
+                        name="New_Loc_Id"
+                        placeholder=""
+                        value={CPOForm.New_Loc_Id}
+                        onChange={this.handleChangeForm}
+                      />
+                    </FormGroup>
+                  </Col>
+                  <Col xs="12">
+                    <FormGroup>
+                      <Label>Config</Label>
+                      <Input
+                        type="text"
+                        name="Config"
+                        placeholder=""
+                        value={CPOForm.Config}
+                        onChange={this.handleChangeForm}
+                      />
+                    </FormGroup>
+                  </Col>
+                  <Col xs="12">
+                    <FormGroup>
+                      <Label>QTY</Label>
+                      <Input
+                        type="number"
+                        name="Qty"
+                        placeholder=""
+                        value={CPOForm.Qty}
+                        onChange={this.handleChangeForm}
+                      />
+                    </FormGroup>
+                  </Col>
+                </FormGroup>
+              </Col>
+            </Row>
+          </ModalBody>
+          <ModalFooter>
+            <Button color="success" onClick={this.saveUpdate}>
+              Update
+            </Button>
+          </ModalFooter>
+        </Modal>
 
         {/* Modal create New */}
         <ModalCreateNew
