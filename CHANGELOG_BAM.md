@@ -67,3 +67,17 @@ All notable changes to BAM https://bam-my.e-dpm.com will be documented in this f
 ### Fixed
 
 - specify several error message
+
+## [1.1.4] - 2020-11-5
+
+### Added
+
+- how to fill cd id field (in documentation)
+
+### Changed
+
+### Fixed
+
+- delete line item button
+- nw wrong mapping
+- qty min value
