@@ -646,6 +646,7 @@ class MappingHW extends React.Component {
 
   render() {
     const CPOForm = this.state.CPOForm;
+    const role = this.state.roleUser;
     return (
       <div className="animated fadeIn">
         <DefaultNotif
@@ -697,16 +698,28 @@ class MappingHW extends React.Component {
                       </DropdownToggle>
                       <DropdownMenu>
                         <DropdownItem header>Uploader Template</DropdownItem>
-                        <DropdownItem onClick={this.exportTemplate}>
-                          {" "}
-                          Mapping Template
-                        </DropdownItem>
-                        <DropdownItem onClick={this.downloadAll_A}>
-                          Template A{" "}
-                        </DropdownItem>
-                        <DropdownItem onClick={this.downloadAll_B}>
-                          Template B{" "}
-                        </DropdownItem>
+                        {role.includes("BAM-Sourcing") === true ? (
+                          <DropdownItem onClick={this.exportTemplate}>
+                            {" "}
+                            Mapping Template
+                          </DropdownItem>
+                        ) : (
+                          ""
+                        )}
+                        {role.includes("BAM-IM") === true ? (
+                          <DropdownItem onClick={this.downloadAll_A}>
+                            Template A{" "}
+                          </DropdownItem>
+                        ) : (
+                          ""
+                        )}
+                        {role.includes("BAM-PA") === true ? (
+                          <DropdownItem onClick={this.downloadAll_B}>
+                            Template B{" "}
+                          </DropdownItem>
+                        ) : (
+                          ""
+                        )}
                       </DropdownMenu>
                     </Dropdown>
                   </div>
@@ -781,20 +794,25 @@ class MappingHW extends React.Component {
                             this.state.all_data.map((e, i) => (
                               <React.Fragment key={e._id + "frag"}>
                                 <tr key={e._id}>
-                                  <td>
-                                    <Button
-                                      size="sm"
-                                      color="secondary"
-                                      value={e._id}
-                                      onClick={this.toggleEdit}
-                                      title="Edit"
-                                    >
-                                      <i
-                                        className="fa fa-edit"
-                                        aria-hidden="true"
-                                      ></i>
-                                    </Button>
-                                  </td>
+                                  {role.includes("BAM-IM") === true ||
+                                  role.includes("BAM-PA") === true ? (
+                                    <td>
+                                      <Button
+                                        size="sm"
+                                        color="secondary"
+                                        value={e._id}
+                                        onClick={this.toggleEdit}
+                                        title="Edit"
+                                      >
+                                        <i
+                                          className="fa fa-edit"
+                                          aria-hidden="true"
+                                        ></i>
+                                      </Button>
+                                    </td>
+                                  ) : (
+                                    ""
+                                  )}
                                   {td_value.map((name, ndex) => (
                                     <td>{eval(name)}</td>
                                   ))}
@@ -880,25 +898,47 @@ class MappingHW extends React.Component {
                   <Col xs="12">
                     <FormGroup>
                       <Label>Config</Label>
-                      <Input
-                        type="text"
-                        name="Config"
-                        placeholder=""
-                        value={CPOForm.Config}
-                        onChange={this.handleChangeForm}
-                      />
+                      {role.includes("BAM-IM") === true ? (
+                        <Input
+                          type="text"
+                          name="Config"
+                          placeholder=""
+                          value={CPOForm.Config}
+                          onChange={this.handleChangeForm}
+                        />
+                      ) : (
+                        <Input
+                          readOnly
+                          type="text"
+                          name="Config"
+                          placeholder=""
+                          value={CPOForm.Config}
+                          onChange={this.handleChangeForm}
+                        />
+                      )}
                     </FormGroup>
                   </Col>
                   <Col xs="12">
                     <FormGroup>
                       <Label>QTY</Label>
-                      <Input
-                        type="number"
-                        name="Qty"
-                        placeholder=""
-                        value={CPOForm.Qty}
-                        onChange={this.handleChangeForm}
-                      />
+                      {role.includes("BAM-IM") === true ? (
+                        <Input
+                          readOnly
+                          type="number"
+                          name="Qty"
+                          placeholder=""
+                          value={CPOForm.Qty}
+                          onChange={this.handleChangeForm}
+                        />
+                      ) : (
+                        <Input
+                          type="number"
+                          name="Qty"
+                          placeholder=""
+                          value={CPOForm.Qty}
+                          onChange={this.handleChangeForm}
+                        />
+                      )}
                     </FormGroup>
                   </Col>
                 </FormGroup>
