@@ -90,48 +90,16 @@ const all_reqbody_raw = {
     table: "p_celc_apim1_m_site_data",
     columns: [
       "m_id",
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6dd97a9d-d14e-11ea-b481-000d3aa2f57d"."value"\')) as workplan_id',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6ddc5ad9-d14e-11ea-b481-000d3aa2f57d"."value"\')) as workplan_name',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6ddd5695-d14e-11ea-b481-000d3aa2f57d"."value"\')) as network_element_name',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6ddf06e9-d14e-11ea-b481-000d3aa2f57d"."value"\')) as program',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6de2185d-d14e-11ea-b481-000d3aa2f57d"."value"\')) as project',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6de3e9c6-d14e-11ea-b481-000d3aa2f57d"."value"\')) as sub_project',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6de50a63-d14e-11ea-b481-000d3aa2f57d"."value"\')) as po',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6de61b94-d14e-11ea-b481-000d3aa2f57d"."value"\')) as cluster',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6de7236f-d14e-11ea-b481-000d3aa2f57d"."value"\')) as pc_sc_npc',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6de80a3a-d14e-11ea-b481-000d3aa2f57d"."value"\')) as region',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6de9936c-d14e-11ea-b481-000d3aa2f57d"."value"\')) as site_category',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6deb0872-d14e-11ea-b481-000d3aa2f57d"."value"\')) as ref_no',
+
       'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6dec7a1c-d14e-11ea-b481-000d3aa2f57d"."value"\')) as loc_id',
       'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6deda4c0-d14e-11ea-b481-000d3aa2f57d"."value"\')) as site_name',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6dee8ffe-d14e-11ea-b481-000d3aa2f57d"."value"\')) as technology',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6def62c1-d14e-11ea-b481-000d3aa2f57d"."value"\')) as final_planned_tech',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6df05af4-d14e-11ea-b481-000d3aa2f57d"."value"\')) as material_purchase',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6df162c1-d14e-11ea-b481-000d3aa2f57d"."value"\')) as scope_status',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6df24065-d14e-11ea-b481-000d3aa2f57d"."value"\')) as wbs_hw',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6df35010-d14e-11ea-b481-000d3aa2f57d"."value"\')) as wbs_nro',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6df51f22-d14e-11ea-b481-000d3aa2f57d"."value"\')) as asp_assigned',
       'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6dfb6b35-d14e-11ea-b481-000d3aa2f57d"."value"\')) as fas_id',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."24637634-07a9-11eb-8887-000d3aa2f57d"."value"\')) as asp_assigned_survey',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."246461b2-07a9-11eb-8887-000d3aa2f57d"."value"\')) as committed_cost_cleared_hw',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."24652856-07a9-11eb-8887-000d3aa2f57d"."value"\')) as committed_cost_cleared_nro',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."24660220-07a9-11eb-8887-000d3aa2f57d"."value"\')) as committed_cost_cleared_ndo',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."2466d3dc-07a9-11eb-8887-000d3aa2f57d"."value"\')) as wbs_closure_hw',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."2467c011-07a9-11eb-8887-000d3aa2f57d"."value"\')) as wbs_closure_nro',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."24688eea-07a9-11eb-8887-000d3aa2f57d"."value"\')) as wbs_closure_ndo',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."24695f14-07a9-11eb-8887-000d3aa2f57d"."value"\')) as wbs_lm',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."246a2819-07a9-11eb-8887-000d3aa2f57d"."value"\')) as wbs_hwac',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."858ddfa1-1291-11eb-a1c8-000d3aa2f57d"."value"\')) as wbs_eab',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."246aed1a-07a9-11eb-8887-000d3aa2f57d"."value"\')) as nw_lm',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."246bc7e7-07a9-11eb-8887-000d3aa2f57d"."value"\')) as nw_hwac',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."246aed1a-07a9-11eb-8887-000d3aa2f57d"."value"\')) as nw_eab',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."246ca447-07a9-11eb-8887-000d3aa2f57d"."value"\')) as nro_service',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."246d7d56-07a9-11eb-8887-000d3aa2f57d"."value"\')) as ndo_service',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."246e7ca2-07a9-11eb-8887-000d3aa2f57d"."value"\')) as nro_local_material',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."2460b228-07a9-11eb-8887-000d3aa2f57d"."value"\')) as wbs_ndo',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."ce9e1915-127e-11eb-a1c8-000d3aa2f57d"."value"\')) as nw_hw',
       'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."2461aac5-07a9-11eb-8887-000d3aa2f57d"."value"\')) as nw_nro',
       'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."2462836e-07a9-11eb-8887-000d3aa2f57d"."value"\')) as nw_ndo',
       'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."3e55d901-172d-11eb-99f8-000d3aa2f57d"."value"\')) as cd_id',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6de2185d-d14e-11ea-b481-000d3aa2f57d"."value"\')) as project',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6de3e9c6-d14e-11ea-b481-000d3aa2f57d"."value"\')) as sub_project',
     ],
     join: {},
     condition: {},
@@ -1352,7 +1320,7 @@ class MYASGCreation extends Component {
         dataLMR[parseInt(idx)]["activity"] = "5640";
       }
       if (dataparentLMR_GL === "NRO local material - 402201") {
-        dataLMR[parseInt(idx)]["so_or_nw"] = cdData.nw_lm;
+        dataLMR[parseInt(idx)]["so_or_nw"] = cdData.nw_hw;
         dataLMR[parseInt(idx)]["activity"] = "2000";
       }
       if (dataparentLMR_GL === "NDO service - 402603") {
@@ -1360,10 +1328,10 @@ class MYASGCreation extends Component {
         dataLMR[parseInt(idx)]["so_or_nw"] = cdData.nw_ndo;
         dataLMR[parseInt(idx)]["activity"] = "5200";
       }
-      if (dataparentLMR_GL === "3PP Hardware - 402201") {
-        dataLMR[parseInt(idx)]["so_or_nw"] = cdData.nw_hwac;
-        dataLMR[parseInt(idx)]["activity"] = "2000";
-      }
+      // if (dataparentLMR_GL === "3PP Hardware - 402201") {
+      //   dataLMR[parseInt(idx)]["so_or_nw"] = cdData.nw_hw;
+      //   dataLMR[parseInt(idx)]["activity"] = "2000";
+      // }
       this.setState({
         cd_id_selected: value,
       });
