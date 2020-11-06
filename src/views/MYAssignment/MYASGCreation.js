@@ -677,10 +677,10 @@ class MYASGCreation extends Component {
       filter_array.push(
         '"Vendor_ID":"' + this.state.lmr_form.vendor_code + '"'
       );
-    this.state.matfilter.mat_type !== "" &&
+    this.state.mm_data_type !== "" &&
       filter_array.push(
         '"Material_Type":{"$regex" : "' +
-          this.state.matfilter.mat_type +
+          this.state.mm_data_type +
           '", "$options" : "i"}'
       );
     this.state.filter_list[0] !== "" &&
@@ -761,10 +761,10 @@ class MYASGCreation extends Component {
       filter_array.push(
         '"Vendor_ID":"' + this.state.lmr_form.vendor_code + '"'
       );
-    this.state.matfilter.mat_type !== "" &&
+    this.state.mm_data_type !== "" &&
       filter_array.push(
         '"Material_Type":{"$regex" : "' +
-          this.state.matfilter.mat_type +
+          this.state.mm_data_type +
           '", "$options" : "i"}'
       );
 
@@ -837,10 +837,10 @@ class MYASGCreation extends Component {
       filter_array.push(
         '"Vendor_ID":"' + this.state.lmr_form.vendor_code + '"'
       );
-    this.state.matfilter.mat_type !== "" &&
+    this.state.mm_data_type !== "" &&
       filter_array.push(
         '"Material_Type":{"$regex" : "' +
-          this.state.matfilter.mat_type +
+          this.state.mm_data_type +
           '", "$options" : "i"}'
       );
 
@@ -876,7 +876,7 @@ class MYASGCreation extends Component {
       );
     this.state.filter_list[5] !== "" &&
       filter_array.push(
-        '"Remarks_or_Acceptance":{"$regex" : "' +
+        '"Remarks":{"$regex" : "' +
           this.state.filter_list[5] +
           '", "$options" : "i"}'
       );
@@ -907,10 +907,10 @@ class MYASGCreation extends Component {
       filter_array.push(
         '"Vendor_List.Vendor_Code":"' + this.state.lmr_form.vendor_code + '"'
       );
-    this.state.matfilter.mat_type !== "" &&
+    this.state.mm_data_type !== "" &&
       filter_array.push(
         '"Material_Type":{"$regex" : "' +
-          this.state.matfilter.mat_type +
+          this.state.mm_data_type +
           '", "$options" : "i"}'
       );
     this.state.filter_list[0] !== "" &&
@@ -933,13 +933,13 @@ class MYASGCreation extends Component {
       );
     this.state.filter_list[3] !== "" &&
       filter_array.push(
-        '"Material_Type":{"$regex" : "' +
+        '"MM_Code":{"$regex" : "' +
           this.state.filter_list[3] +
           '", "$options" : "i"}'
       );
     this.state.filter_list[4] !== "" &&
       filter_array.push(
-        '"SoW_Description":{"$regex" : "' +
+        '"MM_Description":{"$regex" : "' +
           this.state.filter_list[4] +
           '", "$options" : "i"}'
       );
@@ -960,7 +960,7 @@ class MYASGCreation extends Component {
       );
     this.state.filter_list[5] !== "" &&
       filter_array.push(
-        '"Region":{"$regex" : "' +
+        '"SoW_Description_or_Site_Type":{"$regex" : "' +
           this.state.filter_list[5] +
           '", "$options" : "i"}'
       );
@@ -1388,6 +1388,66 @@ class MYASGCreation extends Component {
     return searchBar;
   };
 
+  loopSearchBarHW = () => {
+    let searchBar = [];
+    for (let i = 0; i < 7; i++) {
+      searchBar.push(
+        <td>
+          {i !== 2 ? (
+            <div className="controls" style={{ width: "150px" }}>
+              <InputGroup className="input-prepend">
+                <InputGroupAddon addonType="prepend">
+                  <InputGroupText>
+                    <i className="fa fa-search"></i>
+                  </InputGroupText>
+                </InputGroupAddon>
+                <Input
+                  type="text"
+                  placeholder="Search"
+                  onChange={this.handleFilterList}
+                  value={this.state.filter_list[i]}
+                  name={i}
+                  size="sm"
+                />
+              </InputGroup>
+            </div>
+          ) : (
+            ""
+          )}
+        </td>
+      );
+    }
+    return searchBar;
+  };
+
+  loopSearchBarARP = () => {
+    let searchBar = [];
+    for (let i = 0; i < 6; i++) {
+      searchBar.push(
+        <td>
+          <div className="controls" style={{ width: "150px" }}>
+            <InputGroup className="input-prepend">
+              <InputGroupAddon addonType="prepend">
+                <InputGroupText>
+                  <i className="fa fa-search"></i>
+                </InputGroupText>
+              </InputGroupAddon>
+              <Input
+                type="text"
+                placeholder="Search"
+                onChange={this.handleFilterList}
+                value={this.state.filter_list[i]}
+                name={i}
+                size="sm"
+              />
+            </InputGroup>
+          </div>
+        </td>
+      );
+    }
+    return searchBar;
+  };
+
   handleDeleteLMRChild(key) {
     console.log(key);
     let LMRChild = this.state.creation_lmr_child_form;
@@ -1418,10 +1478,7 @@ class MYASGCreation extends Component {
   }
 
   hideRegion() {
-    if (
-      this.state.matfilter.mat_type === "HW" ||
-      this.state.matfilter.mat_type === "ARP"
-    ) {
+    if (this.state.mm_data_type === "HW" || this.state.mm_data_type === "ARP") {
       this.setState({ hide_region: true });
     } else {
       this.setState({ hide_region: false });
@@ -2418,7 +2475,7 @@ class MYASGCreation extends Component {
                 <tbody>
                   <tr>
                     <td></td>
-                    {this.loopSearchBar()}
+                    {this.loopSearchBarHW()}
                   </tr>
                   {this.state.material_list !== null &&
                     this.state.material_list !== undefined &&
@@ -2495,7 +2552,7 @@ class MYASGCreation extends Component {
                 <tbody>
                   <tr>
                     <td></td>
-                    {this.loopSearchBar()}
+                    {this.loopSearchBarARP()}
                   </tr>
                   {this.state.material_list !== null &&
                     this.state.material_list !== undefined &&
