@@ -811,7 +811,7 @@ class MappingHW extends React.Component {
                                       </Button>
                                     </td>
                                   ) : (
-                                    ""
+                                    <td></td>
                                   )}
                                   {td_value.map((name, ndex) => (
                                     <td>{eval(name)}</td>

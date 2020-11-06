@@ -148,9 +148,14 @@ class ReportHW extends React.Component {
   hanldeChangePO = (e) => {
     let dashboard_filter = this.state.dashboard_filter;
     dashboard_filter["po_select"] = e.value;
-    this.setState({ dashboard_filter: dashboard_filter }, () =>
-      this.loadBilling()
-    );
+    dashboard_filter["billing_select"] !== "" &&
+    dashboard_filter["billvalue_select"] !== ""
+      ? this.setState({ dashboard_filter: dashboard_filter }, () =>
+          this.PivotTable1(this.state.all_data)
+        )
+      : this.setState({ dashboard_filter: dashboard_filter }, () =>
+          this.loadBilling()
+        );
   };
 
   loadBilling = () => {
@@ -199,14 +204,25 @@ class ReportHW extends React.Component {
     let multiply = e.multiply;
     let header_name = e.label;
     dashboard_filter["billing_select"] = e.value;
-    this.setState(
-      {
-        dashboard_filter: dashboard_filter,
-        multiply: multiply,
-        header_name: header_name,
-      },
-      () => this.loadBillingValue(this.state.all_data)
-    );
+    dashboard_filter["po_select"] !== "" &&
+    dashboard_filter["billvalue_select"] !== ""
+      ? this.setState(
+          {
+            dashboard_filter: dashboard_filter,
+            multiply: multiply,
+            header_name: header_name,
+          },
+          () => this.loadBillingValue(this.state.all_data),
+          () => this.PivotTable1(this.state.all_data)
+        )
+      : this.setState(
+          {
+            dashboard_filter: dashboard_filter,
+            multiply: multiply,
+            header_name: header_name,
+          },
+          () => this.loadBillingValue(this.state.all_data)
+        );
   };
 
   loadBillingValue = (items) => {
@@ -228,9 +244,14 @@ class ReportHW extends React.Component {
   hanldeChangeBillingValue = (e) => {
     let dashboard_filter = this.state.dashboard_filter;
     dashboard_filter["billvalue_select"] = e.value;
-    this.setState({ dashboard_filter: dashboard_filter }, () =>
-      this.PivotTable1(this.state.all_data)
-    );
+    dashboard_filter["po_select"] !== "" &&
+    dashboard_filter["billing_select"] !== ""
+      ? this.setState({ dashboard_filter: dashboard_filter }, () =>
+          this.PivotTable1(this.state.all_data)
+        )
+      : this.setState({ dashboard_filter: dashboard_filter }, () =>
+          this.PivotTable1(this.state.all_data)
+        );
   };
 
   render() {
