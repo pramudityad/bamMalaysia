@@ -17,6 +17,7 @@ import axios from "axios";
 import Pagination from "react-js-pagination";
 import Excel from "exceljs";
 import { saveAs } from "file-saver";
+import { numToSSColumn } from "../../helper/basicFunction";
 import {
   convertDateFormatfull,
   convertDateFormat,
@@ -75,6 +76,58 @@ class MYASGList extends Component {
       return respond;
     }
   }
+
+  exportLMR = async () => {
+    const wb = new Excel.Workbook();
+    const ws = wb.addWorksheet();
+
+    const all_lmr = this.state.lmr_list_filter;
+
+    let headerRow = [
+      "LMR ID",
+      "Header Text",
+      "Payment Terms",
+      "GL Account",
+      "Vendor",
+      "Project",
+      "Grand Total Amount",
+      "Requisitioner",
+      "L1 Approver",
+      "L2 Approver",
+      "L3 Approver",
+      "Request Type",
+    ];
+    ws.addRow(headerRow);
+    for (let i = 1; i < headerRow.length + 1; i++) {
+      ws.getCell(numToSSColumn(i) + "1").fill = {
+        type: "pattern",
+        pattern: "solid",
+        fgColor: { argb: "FFFFFF00" },
+        bgColor: { argb: "A9A9A9" },
+      };
+    }
+
+    for (let i = 0; i < all_lmr.length; i++) {
+      let e = all_lmr[i];
+      ws.addRow([
+        e.lmr_id,
+        e.header_text,
+        e.payment_term,
+        e.gl_account,
+        e.vendor_name,
+        e.project_name,
+        e.total_price,
+        e.lmr_issued_by,
+        e.l1_approver,
+        e.l2_approver,
+        e.l3_approver,
+        e.request_type,
+      ]);
+    }
+
+    const allocexport = await wb.xlsx.writeBuffer();
+    saveAs(new Blob([allocexport]), "All LMR.xlsx");
+  };
 
   getMRList() {
     let filter_array = [];
@@ -347,7 +400,11 @@ class MYASGList extends Component {
                   LMR List
                 </span>
                 <Link to={"/lmr-creation"}>
-                  <Button color="success" style={{ float: "right" }} size="sm">
+                  <Button
+                    color="success"
+                    style={{ float: "right", marginLeft: "8px" }}
+                    size="sm"
+                  >
                     <i
                       className="fa fa-plus-square"
                       style={{ marginRight: "8px" }}
@@ -355,6 +412,19 @@ class MYASGList extends Component {
                     Create LMR
                   </Button>
                 </Link>
+                &nbsp;&nbsp;&nbsp;
+                <Button
+                  color="warning"
+                  style={{ float: "right", marginLeft: "8px" }}
+                  size="sm"
+                  onClick={this.exportLMR}
+                >
+                  <i
+                    className="fa fa-download"
+                    style={{ marginRight: "8px" }}
+                  ></i>
+                  Download LMR List
+                </Button>
               </CardHeader>
               <CardBody>
                 <Table responsive striped bordered size="sm">
