@@ -23,6 +23,14 @@ import {
 } from "../../helper/basicFunction";
 import { connect } from "react-redux";
 
+const header_model = [
+  "lmr_id",
+  "header_text",
+  "po",
+  "project_name",
+  "vendor_name",
+];
+
 // const BearerToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjYXNfaWQiOiI1MmVhNTZhMS0zNDMxLTRlMmQtYWExZS1hNTc3ODQzMTMxYzEiLCJyb2xlcyI6WyJCQU0tU3VwZXJBZG1pbiJdLCJhY2NvdW50IjoiMSIsImlhdCI6MTU5MTY5MTE4MH0.FpbzlssSQyaAbJOzNf3KLqHPnYo_ccBtBWu6n87h1RQ';
 class MYASGList extends Component {
   constructor(props) {
@@ -69,13 +77,45 @@ class MYASGList extends Component {
   }
 
   getMRList() {
-    const page = this.state.activePage;
-    const maxPage = this.state.perPage;
-
     let filter_array = [];
-    // this.getDataFromAPINODE('/aspassignment/getAspAssignment?srt=_id:-1&q={"lmr_role":"'+this.state.roleUser[1]+'"}&lmt=' + maxPage + '&pg=' + page).then(res => {
+    this.state.filter_list["lmr_id"] !== null &&
+      this.state.filter_list["lmr_id"] !== undefined &&
+      filter_array.push(
+        '"lmr_id":{"$regex" : "' +
+          this.state.filter_list["lmr_id"] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list["header_text"] !== null &&
+      this.state.filter_list["header_text"] !== undefined &&
+      filter_array.push(
+        '"header_text":{"$regex" : "' +
+          this.state.filter_list["header_text"] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list["po"] !== null &&
+      this.state.filter_list["po"] !== undefined &&
+      filter_array.push(
+        '"po":{"$regex" : "' +
+          this.state.filter_list["po"] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list["project_name"] !== null &&
+      this.state.filter_list["project_name"] !== undefined &&
+      filter_array.push(
+        '"project_name":{"$regex" : "' +
+          this.state.filter_list["project_name"] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list["vendor_name"] !== null &&
+      this.state.filter_list["vendor_name"] !== undefined &&
+      filter_array.push(
+        '"vendor_name":{"$regex" : "' +
+          this.state.filter_list["vendor_name"] +
+          '", "$options" : "i"}'
+      );
+    let whereAnd = "{" + filter_array.join(",") + "}";
     this.getDataFromAPINODE(
-      "/aspassignment/getAspAssignment?srt=_id:-1&noPg=1"
+      "/aspassignment/getAspAssignment?q=" + whereAnd + "&srt=_id:-1&noPg=1"
     ).then((res) => {
       console.log("MR List Sorted", res);
       if (res.data !== undefined) {
@@ -237,18 +277,18 @@ class MYASGList extends Component {
     });
   }
 
-  handleFilterList(e) {
+  handleFilterList = (e) => {
     const index = e.target.name;
     let value = e.target.value;
-    if (value !== "" && value.length === 0) {
-      value = "";
+    if (value.length === 0) {
+      value = null;
     }
     let dataFilter = this.state.filter_list;
-    dataFilter[parseInt(index)] = value;
+    dataFilter[index] = value;
     this.setState({ filter_list: dataFilter, activePage: 1 }, () => {
-      // this.onChangeDebounced(e);
+      this.onChangeDebounced(e);
     });
-  }
+  };
 
   onChangeDebounced(e) {
     this.getMRList();
@@ -256,7 +296,7 @@ class MYASGList extends Component {
 
   loopSearchBar = () => {
     let searchBar = [];
-    for (let i = 0; i < 6; i++) {
+    for (let i = 0; i < 5; i++) {
       searchBar.push(
         <td>
           <div className="controls" style={{ width: "150px" }}>
@@ -267,11 +307,12 @@ class MYASGList extends Component {
                 </InputGroupText>
               </InputGroupAddon>
               <Input
+                // className="col-sm-3"
                 type="text"
                 placeholder="Search"
                 onChange={this.handleFilterList}
-                value={this.state.filter_list[i]}
-                name={i}
+                value={this.state.filter_list[header_model[i]]}
+                name={header_model[i]}
                 size="sm"
               />
             </InputGroup>
@@ -328,6 +369,10 @@ class MYASGList extends Component {
                     </tr>
                   </thead>
                   <tbody>
+                    <tr>
+                      <td></td>
+                      {this.loopSearchBar()}
+                    </tr>
                     {this.state.lmr_list_pagination !== undefined &&
                       this.state.lmr_list_pagination.map((e) => (
                         <tr>
