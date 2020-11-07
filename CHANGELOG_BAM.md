@@ -81,3 +81,17 @@ All notable changes to BAM https://bam-my.e-dpm.com will be documented in this f
 - delete line item button
 - nw wrong mapping
 - qty min value
+
+## [1.1.5] - 2020-11-7
+
+### Added
+
+- search lmr list
+- export lmr list
+
+### Changed
+
+### Fixed
+
+- tagging material
+- search material
