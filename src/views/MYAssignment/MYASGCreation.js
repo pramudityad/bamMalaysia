@@ -497,12 +497,11 @@ class MYASGCreation extends Component {
           </>
         );
       }
-      if (role.includes("BAM-PA") === true) {
+      if (role.includes("BAM-NDO IM") === true) {
         return (
           <>
-            <option value="" disabled selected hidden>
-              Select
-            </option>
+            <option value="" selected></option>
+            <option value="NDO service - 402603">NDO service - 402603</option>
           </>
         );
       }
