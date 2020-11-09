@@ -71,6 +71,8 @@ export default {
         "BAM-PA",
         "BAM-Sourcing",
         "BAM-GR-PA",
+        "BAM-MAT PLANNER",
+        "BAM-PFM",
       ],
       children: [
         {
@@ -85,6 +87,8 @@ export default {
             "BAM-PA",
             "BAM-Sourcing",
             "BAM-GR-PA",
+            "BAM-MAT PLANNER",
+            "BAM-PFM",
           ],
         },
         {
@@ -99,6 +103,8 @@ export default {
             "BAM-PA",
             "BAM-Sourcing",
             "BAM-GR-PA",
+            "BAM-MAT PLANNER",
+            "BAM-PFM",
           ],
         },
         {
@@ -113,6 +119,8 @@ export default {
             "BAM-PA",
             "BAM-Sourcing",
             "BAM-GR-PA",
+            "BAM-MAT PLANNER",
+            "BAM-PFM",
           ],
         },
         {
@@ -127,6 +135,8 @@ export default {
             "BAM-PA",
             "BAM-Sourcing",
             "BAM-GR-PA",
+            "BAM-MAT PLANNER",
+            "BAM-PFM",
           ],
         },
       ],

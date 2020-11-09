@@ -40,6 +40,8 @@ import Pagination from "react-js-pagination";
 import { saveAs } from "file-saver";
 import { numToSSColumn } from "../../helper/basicFunction";
 import { connect } from "react-redux";
+import { Link } from "react-router-dom";
+
 import "./cpomapping.css";
 const DefaultNotif = React.lazy(() =>
   import("../../views/DefaultView/DefaultNotif")
@@ -677,7 +679,10 @@ class MappingHW extends React.Component {
                           {" "}
                           &nbsp;{" "}
                         </i>{" "}
-                        New
+                        {role.includes("BAM-IM") === true ||
+                        role.includes("BAM-PFM") === true
+                          ? "Update"
+                          : "New"}
                       </Button>
                     </div>
                   </div>
@@ -698,7 +703,7 @@ class MappingHW extends React.Component {
                       </DropdownToggle>
                       <DropdownMenu>
                         <DropdownItem header>Uploader Template</DropdownItem>
-                        {role.includes("BAM-Sourcing") === true ? (
+                        {role.includes("BAM-MAT PLANNER") === true ? (
                           <DropdownItem onClick={this.exportTemplate}>
                             {" "}
                             Mapping Template
@@ -713,7 +718,7 @@ class MappingHW extends React.Component {
                         ) : (
                           ""
                         )}
-                        {role.includes("BAM-PA") === true ? (
+                        {role.includes("BAM-PFM") === true ? (
                           <DropdownItem onClick={this.downloadAll_B}>
                             Template B{" "}
                           </DropdownItem>
@@ -795,20 +800,20 @@ class MappingHW extends React.Component {
                               <React.Fragment key={e._id + "frag"}>
                                 <tr key={e._id}>
                                   {role.includes("BAM-IM") === true ||
-                                  role.includes("BAM-PA") === true ? (
+                                  role.includes("BAM-PFM") === true ? (
                                     <td>
-                                      <Button
-                                        size="sm"
-                                        color="secondary"
-                                        value={e._id}
-                                        onClick={this.toggleEdit}
-                                        title="Edit"
-                                      >
-                                        <i
-                                          className="fa fa-edit"
-                                          aria-hidden="true"
-                                        ></i>
-                                      </Button>
+                                      <Link to={"/hw-cpo/" + e._id}>
+                                        <Button
+                                          size="sm"
+                                          color="secondary"
+                                          title="Edit"
+                                        >
+                                          <i
+                                            className="fa fa-edit"
+                                            aria-hidden="true"
+                                          ></i>
+                                        </Button>
+                                      </Link>
                                     </td>
                                   ) : (
                                     <td></td>
@@ -978,17 +983,32 @@ class MappingHW extends React.Component {
             </table>
           </div>
           <ModalFooter>
-            <Button
-              size="sm"
-              block
-              color="success"
-              className="btn-pill"
-              disabled={this.state.rowsXLS.length === 0}
-              onClick={this.saveBulk}
-              style={{ height: "30px", width: "100px" }}
-            >
-              Save
-            </Button>{" "}
+            {role.includes("BAM-IM") === true ||
+            role.includes("BAM-PFM") === true ? (
+              <Button
+                size="sm"
+                block
+                color="secondary"
+                className="btn-pill"
+                disabled={this.state.rowsXLS.length === 0}
+                onClick={this.saveUpdate}
+                style={{ height: "30px", width: "100px" }}
+              >
+                Update
+              </Button>
+            ) : (
+              <Button
+                size="sm"
+                block
+                color="success"
+                className="btn-pill"
+                disabled={this.state.rowsXLS.length === 0}
+                onClick={this.saveBulk}
+                style={{ height: "30px", width: "100px" }}
+              >
+                Save
+              </Button>
+            )}
           </ModalFooter>
         </ModalCreateNew>
 

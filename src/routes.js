@@ -9,6 +9,8 @@ const MatARP = React.lazy(() => import("./views/Material/matlibARP"));
 
 const HWMapping = React.lazy(() => import("./views/CPOMapping/HW"));
 const SVCMapping = React.lazy(() => import("./views/CPOMapping/SVC"));
+const SVCEdit = React.lazy(() => import("./views/CPOMapping/SVCedit"));
+const HWEdit = React.lazy(() => import("./views/CPOMapping/HWedit"));
 
 const HWDashboard = React.lazy(() => import("./views/CPOMapping/DashboardHW"));
 const SVCDashboard = React.lazy(() =>
@@ -79,7 +81,18 @@ const routes = [
     name: "SVC CPO Mapping",
     component: SVCMapping,
   },
-
+  {
+    path: "/svc-cpo/:id",
+    exact: true,
+    name: "SVC CPO Edit",
+    component: SVCEdit,
+  },
+  {
+    path: "/hw-cpo/:id",
+    exact: true,
+    name: "HW CPO Edit",
+    component: HWEdit,
+  },
   {
     path: "/lmr-list",
     exact: true,
