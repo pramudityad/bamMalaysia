@@ -2546,7 +2546,7 @@ class MYASGCreation extends Component {
                   <th>UoM</th>
                   <th>Unit_Price</th>
                   <th>Currency</th>
-                  <th>Remarks_or_Acceptance</th>
+                  <th>Remarks</th>
                 </thead>
                 <tbody>
                   <tr>
@@ -2572,7 +2572,7 @@ class MYASGCreation extends Component {
                         <td>{e.UoM}</td>
                         <td>{e.Unit_Price}</td>
                         <td>{e.Currency}</td>
-                        <td>{e.Remarks_or_Acceptance}</td>
+                        <td>{e.Remarks}</td>
                       </tr>
                     ))}
                 </tbody>
