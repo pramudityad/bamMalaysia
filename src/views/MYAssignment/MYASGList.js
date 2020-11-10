@@ -145,11 +145,11 @@ class MYASGList extends Component {
           this.state.filter_list["header_text"] +
           '", "$options" : "i"}'
       );
-    this.state.filter_list["po"] !== null &&
-      this.state.filter_list["po"] !== undefined &&
+    this.state.filter_list["lmr_issued_by"] !== null &&
+      this.state.filter_list["lmr_issued_by"] !== undefined &&
       filter_array.push(
-        '"po":{"$regex" : "' +
-          this.state.filter_list["po"] +
+        '"lmr_issued_by":{"$regex" : "' +
+          this.state.filter_list["lmr_issued_by"] +
           '", "$options" : "i"}'
       );
     this.state.filter_list["project_name"] !== null &&
