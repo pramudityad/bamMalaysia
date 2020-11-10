@@ -636,7 +636,10 @@ class MappingSVC extends React.Component {
                           {" "}
                           &nbsp;{" "}
                         </i>{" "}
-                        New
+                        {role.includes("BAM-IM") === true ||
+                        role.includes("BAM-PFM") === true
+                          ? "Update"
+                          : "New"}
                       </Button>
                     </div>
                   </div>
@@ -937,17 +940,32 @@ class MappingSVC extends React.Component {
             </table>
           </div>
           <ModalFooter>
-            <Button
-              size="sm"
-              block
-              color="success"
-              className="btn-pill"
-              disabled={this.state.rowsXLS.length === 0}
-              onClick={this.saveBulk}
-              style={{ height: "30px", width: "100px" }}
-            >
-              Save
-            </Button>{" "}
+            {role.includes("BAM-IM") === true ||
+            role.includes("BAM-PFM") === true ? (
+              <Button
+                size="sm"
+                block
+                color="secondary"
+                className="btn-pill"
+                disabled={this.state.rowsXLS.length === 0}
+                onClick={this.saveUpdate}
+                style={{ height: "30px", width: "100px" }}
+              >
+                Update
+              </Button>
+            ) : (
+              <Button
+                size="sm"
+                block
+                color="success"
+                className="btn-pill"
+                disabled={this.state.rowsXLS.length === 0}
+                onClick={this.saveBulk}
+                style={{ height: "30px", width: "100px" }}
+              >
+                Save
+              </Button>
+            )}
           </ModalFooter>
         </ModalCreateNew>
 
