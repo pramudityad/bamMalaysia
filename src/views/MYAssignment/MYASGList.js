@@ -352,24 +352,28 @@ class MYASGList extends Component {
     for (let i = 0; i < 5; i++) {
       searchBar.push(
         <td>
-          <div className="controls" style={{ width: "150px" }}>
-            <InputGroup className="input-prepend">
-              <InputGroupAddon addonType="prepend">
-                <InputGroupText>
-                  <i className="fa fa-search"></i>
-                </InputGroupText>
-              </InputGroupAddon>
-              <Input
-                // className="col-sm-3"
-                type="text"
-                placeholder="Search"
-                onChange={this.handleFilterList}
-                value={this.state.filter_list[header_model[i]]}
-                name={header_model[i]}
-                size="sm"
-              />
-            </InputGroup>
-          </div>
+          {i !== 2 ? (
+            <div className="controls" style={{ width: "150px" }}>
+              <InputGroup className="input-prepend">
+                <InputGroupAddon addonType="prepend">
+                  <InputGroupText>
+                    <i className="fa fa-search"></i>
+                  </InputGroupText>
+                </InputGroupAddon>
+                <Input
+                  // className="col-sm-3"
+                  type="text"
+                  placeholder="Search"
+                  onChange={this.handleFilterList}
+                  value={this.state.filter_list[header_model[i]]}
+                  name={header_model[i]}
+                  size="sm"
+                />
+              </InputGroup>
+            </div>
+          ) : (
+            ""
+          )}
         </td>
       );
     }
