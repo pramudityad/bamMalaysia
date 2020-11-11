@@ -1,4 +1,3 @@
-/* eslint-disable */
 import React from "react";
 import {
   Col,
@@ -266,7 +265,7 @@ const td_value = [
   "e.Ref_Ni",
 ];
 
-class MappingHW extends React.Component {
+class HWMaster extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -293,7 +292,7 @@ class MappingHW extends React.Component {
   componentDidMount() {
     // console.log("header", header.length);
     // console.log("model_header", header_model.length);
-    this.getList();
+    // this.getList();
   }
 
   getList() {
@@ -380,7 +379,7 @@ class MappingHW extends React.Component {
     });
   };
 
-  fileHandlerMaterial = (event) => {
+  fileHandlerHWMaster = (event) => {
     let fileObj = event.target.files[0];
     if (fileObj !== undefined) {
       ExcelRenderer(fileObj, (err, rest) => {
@@ -703,7 +702,7 @@ class MappingHW extends React.Component {
                       </DropdownToggle>
                       <DropdownMenu>
                         <DropdownItem header>Uploader Template</DropdownItem>
-                        {role.includes("BAM-MAT PLANNER") === true ? (
+                        {/* {role.includes("BAM-MAT PLANNER") === true ? (
                           <DropdownItem onClick={this.exportTemplate}>
                             {" "}
                             Mapping Template
@@ -724,7 +723,7 @@ class MappingHW extends React.Component {
                           </DropdownItem>
                         ) : (
                           ""
-                        )}
+                        )} */}
                       </DropdownMenu>
                     </Dropdown>
                   </div>
@@ -974,7 +973,7 @@ class MappingHW extends React.Component {
                   <td>
                     <input
                       type="file"
-                      onChange={this.fileHandlerMaterial.bind(this)}
+                      onChange={this.fileHandlerHWMaster.bind(this)}
                       style={{ padding: "10px", visiblity: "hidden" }}
                     />
                   </td>
@@ -1031,4 +1030,4 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps)(MappingHW);
+export default connect(mapStateToProps)(HWMaster);

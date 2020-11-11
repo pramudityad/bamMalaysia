@@ -335,7 +335,7 @@ class MappingSVC extends React.Component {
     });
   };
 
-  fileHandlerMaterial = (event) => {
+  fileHandlerSVCMaster = (event) => {
     let fileObj = event.target.files[0];
     if (fileObj !== undefined) {
       ExcelRenderer(fileObj, (err, rest) => {
@@ -931,7 +931,7 @@ class MappingSVC extends React.Component {
                   <td>
                     <input
                       type="file"
-                      onChange={this.fileHandlerMaterial.bind(this)}
+                      onChange={this.fileHandlerSVCMaster.bind(this)}
                       style={{ padding: "10px", visiblity: "hidden" }}
                     />
                   </td>
