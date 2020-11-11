@@ -27,7 +27,7 @@ import { connect } from "react-redux";
 const header_model = [
   "lmr_id",
   "header_text",
-  "po",
+  "lmr_issued_by",
   "project_name",
   "vendor_name",
 ];
