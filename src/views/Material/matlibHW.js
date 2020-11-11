@@ -441,12 +441,14 @@ class MatHW extends React.Component {
     saveAs(new Blob([allocexport]), "All " + modul_name + ".xlsx");
   };
 
-  findVendorName = (vendor_id) => {
+  findVendorName = (vendor_id, params_field, return_field) => {
+    let field = "element." + params_field;
+    let value = "vendordata." + return_field;
     let vendordata = this.state.vendor_list.find(
-      (element) => element.Vendor_Code === vendor_id
+      (element) => eval(field) === vendor_id
     );
     if (vendordata !== undefined) {
-      return vendordata.Name;
+      return eval(value);
     } else {
       return null;
     }
@@ -738,7 +740,11 @@ class MatHW extends React.Component {
                                     {e.Vendor_ID}
                                   </td>
                                   <td style={{ textAlign: "center" }}>
-                                    {this.findVendorName(e.Vendor_ID)}
+                                    {this.findVendorName(
+                                      e.Vendor_ID,
+                                      "Vendor_Code",
+                                      "Name"
+                                    )}
                                   </td>
                                   <td style={{ textAlign: "center" }}>
                                     {e.MM_Code}

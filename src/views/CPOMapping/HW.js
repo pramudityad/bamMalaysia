@@ -646,6 +646,19 @@ class MappingHW extends React.Component {
     return searchBar;
   };
 
+  // LookupField = (vendor_id, params_field, return_field) => {
+  //   let field = "element." + params_field;
+  //   let value = "vendordata." + return_field;
+  //   let objectData = this.state.vendor_list.find(
+  //     (element) => eval(field) === vendor_id
+  //   );
+  //   if (objectData !== undefined) {
+  //     return eval(value);
+  //   } else {
+  //     return null;
+  //   }
+  // };
+
   render() {
     const CPOForm = this.state.CPOForm;
     const role = this.state.roleUser;
