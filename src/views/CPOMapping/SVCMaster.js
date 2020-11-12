@@ -40,188 +40,51 @@ import { saveAs } from "file-saver";
 import { numToSSColumn } from "../../helper/basicFunction";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
-import "./cpomapping.css";
 
+import "./cpomapping.css";
 const DefaultNotif = React.lazy(() =>
   import("../../views/DefaultView/DefaultNotif")
 );
-const modul_name = "SVC Mapping";
+const modul_name = "SVC Master";
 const header = [
   "",
-  "Link",
-  "LOOKUP REFERENCE",
-  "REGION",
-  "REFERENCE LOC ID",
-  "NEW LOC ID",
-  "SITE NAME",
-  "NEW SITE NAME",
-  "CONFIG",
   "PO#",
-  "LINE",
+  "LINE ITEM",
   "DESCRIPTION",
   "QTY",
-  "CNI DATE",
-  "MAPPING DATE",
-  "REMARKS",
-  "CELCOM USER",
-  "PCODE",
+  "USED",
+  "BALANCE",
   "UNIT PRICE",
   "TOTAL PRICE",
-  "DISCOUNTED UNIT PRICE",
-  "DISCOUNTED PO PRICE",
+  "ASSIGNED PRICE",
+  "PCODE",
   "TYPE",
-  "SO LINE ITEM DESCRIPTION",
-  "SO NO.",
-  "WBS  NO.",
-  "100% BILLING",
-  "ATP COA DATE RECEIVED",
-  "80% BILLING UPON ATP",
-  "80% INVOICING NO.",
-  "80% INVOICING DATE",
-  "Cancelled",
-  "COA NI DATE RECEIVED",
-  "20% BILLING UPON NI",
-  "20% INVOICING NO.",
-  "20% INVOICING DATE",
-  "COA SSO RCVD DATE",
-  "80% BILLING UPON SSO",
-  "80% INVOICING NO.",
-  "80% INVOICING DATE",
-  "COA PSP RCVD DATE 20%",
-  "20% BILLING UPON PSP",
-  "20% INVOICING NO.",
-  "20% INVOICING DATE",
-  "COA SSO RCVD DATE 100%",
-  "100% BILLING UPON SSO",
-  "100% INVOICING NO.",
-  "100% INVOICING DATE",
-  "COA NI RCVD DATE 100%",
-  "100% BILLING UPON NI",
-  "100% INVOICING NO.",
-  "100% INVOICING DATE",
-  "SES NO.",
-  "SES STATUS",
-  "LINK",
-  "NI COA SUBMISSION STATUS",
+  "PSP REMARKS",
+  "WBS ",
+  "TOTAL PO AMOUNT",
+  "REMARKS",
 ];
-
 const header_model = [
-  "Link",
-  "Lookup_Reference",
-  "Region",
-  "Reference_Loc_Id",
-  "New_Loc_Id",
-  "Site_Name",
-  "New_Site_Name",
-  "Config",
   "Po",
-  "Line",
+  "Line_Item",
   "Description",
   "Qty",
-  "CNI_Date",
-  "Mapping_Date",
-  "Remarks",
-  "Celcom_User",
-  "Pcode",
+  "Used",
+  "Balance",
   "Unit_Price",
   "Total_Price",
-  "Discounted_Unit_Price",
-  "Discounted_Po_Price",
+  "Assigned_Price",
+  "Pcode",
   "Type",
-  "So_Line_Item_Description",
-  "So_No",
-  "Wbs_No",
-  "Billing_100",
-  "Atp_Coa_Received_Date_80",
-  "Billing_Upon_Atp_Coa_80",
-  "Invoicing_No_Atp_Coa_80",
-  "Invoicing_Date_Atp_Coa_80",
-  "Cancelled_Atp_Coa_80",
-  "Ni_Coa_Date_20",
-  "Billing_Upon_Ni_20",
-  "Invoicing_No_Ni_20",
-  "Invoicing_Date_Ni_20",
-  "Sso_Coa_Date_80",
-  "Billing_Upon_Sso_80",
-  "Invoicing_No_Sso_80",
-  "Invoicing_Date_Sso_80",
-  "Coa_Psp_Received_Date_20",
-  "Billing_Upon_Coa_Psp_20",
-  "Invoicing_No_Coa_Psp_20",
-  "Invoicing_Date_Coa_Psp_20",
-  "Sso_Coa_Date_100",
-  "Billing_Upon_Sso_Coa_100",
-  "Invoicing_No_Sso_Coa_100",
-  "Invoicing_Date_Sso_Coa_100",
-  "Coa_Ni_Date_100",
-  "Billing_Upon_Coa_Ni_100",
-  "Invoicing_No_Coa_Ni_100",
-  "Invoicing_Date_Coa_Ni_100",
-  "Ses_No",
-  "Ses_Status",
-  "Link_1",
-  "Ni_Coa_Submission_Status",
+  "Psp_Remarks",
+  "Wbs",
+  "Total_Po_Amount",
+  "Remarks",
 ];
 
-const td_value = [
-  "e.Link",
-  "e.Lookup_Reference",
-  "e.Region",
-  "e.Reference_Loc_Id",
-  "e.New_Loc_Id",
-  "e.Site_Name",
-  "e.New_Site_Name",
-  "e.Config",
-  "e.Po",
-  "e.Line",
-  "e.Description",
-  "e.Qty",
-  "e.CNI_Date",
-  "e.Mapping_Date",
-  "e.Remarks",
-  "e.Celcom_User",
-  "e.Pcode",
-  "e.Unit_Price",
-  "e.Total_Price",
-  "e.Discounted_Unit_Price",
-  "e.Discounted_Po_Price",
-  "e.Type",
-  "e.So_Line_Item_Description",
-  "e.So_No",
-  "e.Wbs_No",
-  "e.Billing_100",
-  "e.Atp_Coa_Received_Date_80",
-  "e.Billing_Upon_Atp_Coa_80",
-  "e.Invoicing_No_Atp_Coa_80",
-  "e.Invoicing_Date_Atp_Coa_80",
-  "e.Cancelled_Atp_Coa_80",
-  "e.Ni_Coa_Date_20",
-  "e.Billing_Upon_Ni_20",
-  "e.Invoicing_No_Ni_20",
-  "e.Invoicing_Date_Ni_20",
-  "e.Sso_Coa_Date_80",
-  "e.Billing_Upon_Sso_80",
-  "e.Invoicing_No_Sso_80",
-  "e.Invoicing_Date_Sso_80",
-  "e.Coa_Psp_Received_Date_20",
-  "e.Billing_Upon_Coa_Psp_20",
-  "e.Invoicing_No_Coa_Psp_20",
-  "e.Invoicing_Date_Coa_Psp_20",
-  "e.Sso_Coa_Date_100",
-  "e.Billing_Upon_Sso_Coa_100",
-  "e.Invoicing_No_Sso_Coa_100",
-  "e.Invoicing_Date_Sso_Coa_100",
-  "e.Coa_Ni_Date_100",
-  "e.Billing_Upon_Coa_Ni_100",
-  "e.Invoicing_No_Coa_Ni_100",
-  "e.Invoicing_Date_Coa_Ni_100",
-  "e.Ses_No",
-  "e.Ses_Status",
-  "e.Link_1",
-  "e.Ni_Coa_Submission_Status",
-];
+const td_value = [];
 
-class MappingSVC extends React.Component {
+class SVCMaster extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -242,6 +105,7 @@ class MappingSVC extends React.Component {
       action_status: null,
       action_message: null,
       filter_list: {},
+      all_data_mapping: [],
     };
   }
 
@@ -290,7 +154,7 @@ class MappingSVC extends React.Component {
       );
     let whereAnd = "{" + filter_array.join(",") + "}";
     getDatafromAPINODE(
-      "/cpoMapping/getCpo/svc?q=" +
+      "/lineItemMapping/getLineItem/svc?q=" +
         whereAnd +
         "&lmt=" +
         this.state.perPage +
@@ -301,7 +165,21 @@ class MappingSVC extends React.Component {
       if (res.data !== undefined) {
         const items = res.data.data;
         const totalData = res.data.totalResults;
-        this.setState({ all_data: items, totalData: totalData });
+        this.setState({ all_data: items, totalData: totalData }, () =>
+          this.getMapping()
+        );
+      }
+    });
+  }
+
+  getMapping() {
+    getDatafromAPINODE(
+      "/cpoMapping/getCpo/svc?noPg=1",
+      this.state.tokenUser
+    ).then((res) => {
+      if (res.data !== undefined) {
+        const items2 = res.data.data;
+        this.setState({ all_data_mapping: items2 });
       }
     });
   }
@@ -365,10 +243,10 @@ class MappingSVC extends React.Component {
     this.togglecreateModal();
     const BulkXLSX = this.state.rowsXLS;
     const res = await postDatatoAPINODE(
-      "/cpoMapping/createCpo",
+      "/lineItemMapping/createLineItem",
       {
-        cpo_type: "svc",
-        cpo_data: this.state.rowsXLS,
+        line_item_type: "svc",
+        line_item_data: this.state.rowsXLS,
       },
       this.state.tokenUser
     );
@@ -540,8 +418,6 @@ class MappingSVC extends React.Component {
     }
 
     if (download_all_A.data !== undefined) {
-      console.log(download_all_A.data.data.map((u) => u._id));
-
       for (let i = 0; i < download_all_A.data.data.length; i++) {
         let e = download_all_A.data.data[i];
         ws.addRow([e.Line, e.Po, e.New_Loc_Id, e.Qty]);
@@ -575,7 +451,7 @@ class MappingSVC extends React.Component {
     for (let i = 0; i < header_model.length; i++) {
       searchBar.push(
         <td>
-          {i !== 2 && i !== 4 && i !== 6 && i !== 8 && i !== 9 ? (
+          {i !== 1 && i !== 3 && i !== 5 && i !== 7 && i !== 8 ? (
             ""
           ) : (
             <div className="controls" style={{ width: "150px" }}>
@@ -586,7 +462,7 @@ class MappingSVC extends React.Component {
                   </InputGroupText>
                 </InputGroupAddon>
                 <Input
-                  // className="w-25"
+                  // className="col-sm-3"
                   type="text"
                   placeholder="Search"
                   onChange={this.handleFilterList}
@@ -601,6 +477,17 @@ class MappingSVC extends React.Component {
       );
     }
     return searchBar;
+  };
+
+  countBalance = (qty, used) => {
+    return qty - used;
+  };
+
+  countUsed = (po, line_item) => {
+    let sum_used = this.state.all_data_mapping
+      .filter((element) => element.Po === po && element.Line === line_item)
+      .reduce((a, { Qty }) => a + Qty, 0);
+    return sum_used;
   };
 
   render() {
@@ -660,28 +547,10 @@ class MappingSVC extends React.Component {
                       </DropdownToggle>
                       <DropdownMenu>
                         <DropdownItem header>Uploader Template</DropdownItem>
-                        {role.includes("BAM-MAT PLANNER") === true ? (
-                          <DropdownItem onClick={this.exportTemplate}>
-                            {" "}
-                            Mapping Template
-                          </DropdownItem>
-                        ) : (
-                          ""
-                        )}
-                        {role.includes("BAM-IM") === true ? (
-                          <DropdownItem onClick={this.downloadAll_A}>
-                            Template A{" "}
-                          </DropdownItem>
-                        ) : (
-                          ""
-                        )}
-                        {role.includes("BAM-PFM") === true ? (
-                          <DropdownItem onClick={this.downloadAll_B}>
-                            Template B{" "}
-                          </DropdownItem>
-                        ) : (
-                          ""
-                        )}
+                        <DropdownItem onClick={this.exportTemplate}>
+                          {" "}
+                          CPO Master Template
+                        </DropdownItem>
                       </DropdownMenu>
                     </Dropdown>
                   </div>
@@ -689,48 +558,7 @@ class MappingSVC extends React.Component {
               </CardHeader>
 
               <CardBody>
-                <Row>
-                  {/* <Col>
-                    <div style={{ marginBottom: "10px" }}>
-                      <div
-                        style={{
-                          float: "left",
-                          margin: "5px",
-                          display: "inline-flex",
-                        }}
-                      >
-                        <Input
-                          type="select"
-                          name="select"
-                          id="selectLimit"
-                          onChange={this.handleChangeLimit}
-                        >
-                          <option value={"10"}>10</option>
-                          <option value={"25"}>25</option>
-                          <option value={"50"}>50</option>
-                          <option value={"100"}>100</option>
-                          <option value={"noPg=1"}>All</option>
-                        </Input>
-                      </div>
-                      <div
-                        style={{
-                          float: "right",
-                          margin: "5px",
-                          display: "inline-flex",
-                        }}
-                      >
-                        <input
-                          className="search-box-material"
-                          type="text"
-                          name="filter"
-                          placeholder="Search Material"
-                          onChange={this.handleChangeFilter}
-                          value={this.state.filter_list}
-                        />
-                      </div>
-                    </div>
-                  </Col> */}
-                </Row>
+                <Row></Row>
                 <Row>
                   <Col>
                     <div
@@ -746,38 +574,52 @@ class MappingSVC extends React.Component {
                               <th>{head}</th>
                             ))}
                           </tr>
-                          <tr>
+                          {/* <tr>
                             <td></td>
                             {this.loopSearchBar()}
-                          </tr>
+                          </tr> */}
                         </thead>
                         <tbody>
                           {this.state.all_data !== undefined &&
                             this.state.all_data.map((e, i) => (
                               <React.Fragment key={e._id + "frag"}>
                                 <tr key={e._id}>
-                                  {role.includes("BAM-IM") === true ||
-                                  role.includes("BAM-PFM") === true ? (
-                                    <td>
-                                      <Link to={"/svc-cpo/" + e._id}>
-                                        <Button
-                                          size="sm"
-                                          color="secondary"
-                                          title="Edit"
-                                        >
-                                          <i
-                                            className="fa fa-edit"
-                                            aria-hidden="true"
-                                          ></i>
-                                        </Button>
-                                      </Link>
-                                    </td>
-                                  ) : (
-                                    <td></td>
-                                  )}
-                                  {td_value.map((name, ndex) => (
-                                    <td>{eval(name)}</td>
-                                  ))}
+                                  <td>
+                                    <Button
+                                      size="sm"
+                                      color="secondary"
+                                      title="Edit"
+                                      value={e._id}
+                                      onClick={this.toggleEdit}
+                                    >
+                                      <i
+                                        className="fa fa-edit"
+                                        aria-hidden="true"
+                                      ></i>
+                                    </Button>
+                                  </td>
+
+                                  <td>{e.Po}</td>
+                                  <td>{e.Line_Item}</td>
+                                  <td>{e.Description}</td>
+                                  <td>{e.Qty}</td>
+                                  <td>{this.countUsed(e.Po, e.Line_Item)}</td>
+                                  <td>
+                                    {e.Qty - this.countUsed(e.Po, e.Line_Item)}
+                                  </td>
+                                  <td>{e.Unit_Price}</td>
+                                  <td>{e.Qty * e.Unit_Price}</td>
+                                  <td>
+                                    {this.countUsed(e.Po, e.Line_Item) *
+                                      e.Unit_Price}
+                                  </td>
+
+                                  <td>{e.Pcode}</td>
+                                  <td>{e.Type}</td>
+                                  <td>{e.PSP_Remarks}</td>
+                                  <td>{e.Wbs}</td>
+                                  <td>{e.Qty * e.Unit_Price}</td>
+                                  <td>{e.Remarks}</td>
                                 </tr>
                               </React.Fragment>
                             ))}
@@ -812,28 +654,16 @@ class MappingSVC extends React.Component {
           isOpen={this.state.modalEdit}
           toggle={this.toggleEdit}
           className="modal--form"
+          size="lg"
         >
-          <ModalHeader>Form Update</ModalHeader>
+          <ModalHeader>Form Update {CPOForm.unique_code}</ModalHeader>
           <ModalBody>
             <Row>
               <Col sm="12">
                 <FormGroup row>
-                  <Col xs="4">
+                  <Col>
                     <FormGroup>
-                      <Label>Line</Label>
-                      <Input
-                        readOnly
-                        type="text"
-                        name="Line"
-                        placeholder=""
-                        value={CPOForm.Line}
-                        onChange={this.handleChangeForm}
-                      />
-                    </FormGroup>
-                  </Col>
-                  <Col xs="4">
-                    <FormGroup>
-                      <Label>PO</Label>
+                      <Label>Po</Label>
                       <Input
                         readOnly
                         type="text"
@@ -844,63 +674,134 @@ class MappingSVC extends React.Component {
                       />
                     </FormGroup>
                   </Col>
-                  <Col xs="4">
+                  <Col>
                     <FormGroup>
-                      <Label>NEW LOC ID</Label>
+                      <Label>Line_Item</Label>
                       <Input
                         readOnly
                         type="text"
-                        name="New_Loc_Id"
+                        name="Line_Item"
                         placeholder=""
-                        value={CPOForm.New_Loc_Id}
+                        value={CPOForm.Line_Item}
                         onChange={this.handleChangeForm}
                       />
                     </FormGroup>
                   </Col>
-                  <Col xs="12">
+                  <Col>
                     <FormGroup>
-                      <Label>Config</Label>
-                      {role.includes("BAM-IM") === true ? (
-                        <Input
-                          type="text"
-                          name="Config"
-                          placeholder=""
-                          value={CPOForm.Config}
-                          onChange={this.handleChangeForm}
-                        />
-                      ) : (
-                        <Input
-                          readOnly
-                          type="text"
-                          name="Config"
-                          placeholder=""
-                          value={CPOForm.Config}
-                          onChange={this.handleChangeForm}
-                        />
-                      )}
+                      <Label>Description</Label>
+                      <Input
+                        readOnly
+                        type="text"
+                        name="Description"
+                        placeholder=""
+                        value={CPOForm.Description}
+                        onChange={this.handleChangeForm}
+                      />
                     </FormGroup>
                   </Col>
-                  <Col xs="12">
+                  <Col>
                     <FormGroup>
-                      <Label>QTY</Label>
-                      {role.includes("BAM-IM") === true ? (
-                        <Input
-                          readOnly
-                          type="number"
-                          name="Qty"
-                          placeholder=""
-                          value={CPOForm.Qty}
-                          onChange={this.handleChangeForm}
-                        />
-                      ) : (
-                        <Input
-                          type="number"
-                          name="Qty"
-                          placeholder=""
-                          value={CPOForm.Qty}
-                          onChange={this.handleChangeForm}
-                        />
-                      )}
+                      <Label>Qty</Label>
+                      <Input
+                        type="number"
+                        name="Qty"
+                        placeholder=""
+                        value={CPOForm.Qty}
+                        onChange={this.handleChangeForm}
+                      />
+                    </FormGroup>
+                  </Col>
+                  <Col>
+                    <FormGroup>
+                      <Label>Unit_Price</Label>
+                      <Input
+                        type="number"
+                        name="Unit_Price"
+                        placeholder=""
+                        value={CPOForm.Unit_Price}
+                        onChange={this.handleChangeForm}
+                      />
+                    </FormGroup>
+                  </Col>
+                  <Col>
+                    <FormGroup>
+                      <Label>Assigned_Price</Label>
+                      <Input
+                        type="number"
+                        name="Assigned_Price"
+                        placeholder=""
+                        value={CPOForm.Assigned_Price}
+                        onChange={this.handleChangeForm}
+                      />
+                    </FormGroup>
+                  </Col>
+                </FormGroup>
+              </Col>
+            </Row>
+
+            <Row>
+              <Col sm="12">
+                <FormGroup row>
+                  <Col>
+                    <FormGroup>
+                      <Label>Pcode</Label>
+                      <Input
+                        type="text"
+                        name="Pcode"
+                        placeholder=""
+                        value={CPOForm.Pcode}
+                        onChange={this.handleChangeForm}
+                      />
+                    </FormGroup>
+                  </Col>
+                  <Col>
+                    <FormGroup>
+                      <Label>Type</Label>
+                      <Input
+                        type="text"
+                        name="Type"
+                        placeholder=""
+                        value={CPOForm.Type}
+                        onChange={this.handleChangeForm}
+                      />
+                    </FormGroup>
+                  </Col>
+                  <Col>
+                    <FormGroup>
+                      <Label>PSP_Remarks</Label>
+                      <Input
+                        type="text"
+                        name="PSP_Remarks"
+                        placeholder=""
+                        value={CPOForm.PSP_Remarks}
+                        onChange={this.handleChangeForm}
+                      />
+                    </FormGroup>
+                  </Col>
+
+                  <Col>
+                    <FormGroup>
+                      <Label>Wbs</Label>
+                      <Input
+                        type="text"
+                        name="Wbs"
+                        placeholder=""
+                        value={CPOForm.Wbs}
+                        onChange={this.handleChangeForm}
+                      />
+                    </FormGroup>
+                  </Col>
+                  <Col>
+                    <FormGroup>
+                      <Label>Remarks</Label>
+                      <Input
+                        type="text"
+                        name="Remarks"
+                        placeholder=""
+                        value={CPOForm.Remarks}
+                        onChange={this.handleChangeForm}
+                      />
                     </FormGroup>
                   </Col>
                 </FormGroup>
@@ -988,4 +889,4 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps)(MappingSVC);
+export default connect(mapStateToProps)(SVCMaster);

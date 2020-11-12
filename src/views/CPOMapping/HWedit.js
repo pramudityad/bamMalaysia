@@ -638,47 +638,27 @@ class HWEdit extends React.Component {
                       <Col>
                         <FormGroup>
                           <Label>Unit_Price</Label>
-                          {role.includes("BAM-IM") === true ? (
-                            <Input
-                              readOnly
-                              type="number"
-                              name="Unit_Price"
-                              placeholder=""
-                              value={CPOForm.Unit_Price}
-                              onChange={this.handleChangeForm}
-                            />
-                          ) : (
-                            <Input
-                              type="number"
-                              name="Unit_Price"
-                              placeholder=""
-                              value={CPOForm.Unit_Price}
-                              onChange={this.handleChangeForm}
-                            />
-                          )}
+                          <Input
+                            readOnly
+                            type="number"
+                            name="Unit_Price"
+                            placeholder=""
+                            value={CPOForm.Unit_Price}
+                            onChange={this.handleChangeForm}
+                          />
                         </FormGroup>
                       </Col>
                       <Col>
                         <FormGroup>
                           <Label>Total_Price</Label>
-                          {role.includes("BAM-IM") === true ? (
-                            <Input
-                              readOnly
-                              type="number"
-                              name="Total_Price"
-                              placeholder=""
-                              value={CPOForm.Total_Price}
-                              onChange={this.handleChangeForm}
-                            />
-                          ) : (
-                            <Input
-                              type="number"
-                              name="Total_Price"
-                              placeholder=""
-                              value={CPOForm.Total_Price}
-                              onChange={this.handleChangeForm}
-                            />
-                          )}
+                          <Input
+                            readOnly
+                            type="number"
+                            name="Total_Price"
+                            placeholder=""
+                            value={CPOForm.Total_Price}
+                            onChange={this.handleChangeForm}
+                          />
                         </FormGroup>
                       </Col>
                       <Col>
@@ -832,7 +812,7 @@ class HWEdit extends React.Component {
                           {role.includes("BAM-IM") === true ? (
                             <Input
                               readOnly
-                              type="number"
+                              type="text"
                               name="Wbs_No"
                               placeholder=""
                               value={CPOForm.Wbs_No}
@@ -840,7 +820,7 @@ class HWEdit extends React.Component {
                             />
                           ) : (
                             <Input
-                              type="number"
+                              type="text"
                               name="Wbs_No"
                               placeholder=""
                               value={CPOForm.Wbs_No}
@@ -855,7 +835,7 @@ class HWEdit extends React.Component {
                           {role.includes("BAM-IM") === true ? (
                             <Input
                               readOnly
-                              type="number"
+                              type="text"
                               name="For_Checking_Purpose_Only_Rashidah"
                               placeholder=""
                               value={CPOForm.For_Checking_Purpose_Only_Rashidah}
@@ -863,7 +843,7 @@ class HWEdit extends React.Component {
                             />
                           ) : (
                             <Input
-                              type="number"
+                              type="text"
                               name="For_Checking_Purpose_Only_Rashidah"
                               placeholder=""
                               value={CPOForm.For_Checking_Purpose_Only_Rashidah}
@@ -878,7 +858,7 @@ class HWEdit extends React.Component {
                           {role.includes("BAM-IM") === true ? (
                             <Input
                               readOnly
-                              type="number"
+                              type="text"
                               name="Hw_Coa_Received_Date_80"
                               placeholder=""
                               value={CPOForm.Hw_Coa_Received_Date_80}
@@ -886,7 +866,7 @@ class HWEdit extends React.Component {
                             />
                           ) : (
                             <Input
-                              type="number"
+                              type="text"
                               name="Hw_Coa_Received_Date_80"
                               placeholder=""
                               value={CPOForm.Hw_Coa_Received_Date_80}
@@ -901,7 +881,7 @@ class HWEdit extends React.Component {
                           {role.includes("BAM-IM") === true ? (
                             <Input
                               readOnly
-                              type="number"
+                              type="text"
                               name="Billing_Upon_Hw_Coa_80"
                               placeholder=""
                               value={CPOForm.Billing_Upon_Hw_Coa_80}
@@ -909,7 +889,7 @@ class HWEdit extends React.Component {
                             />
                           ) : (
                             <Input
-                              type="number"
+                              type="text"
                               name="Billing_Upon_Hw_Coa_80"
                               placeholder=""
                               value={CPOForm.Billing_Upon_Hw_Coa_80}

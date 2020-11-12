@@ -365,6 +365,32 @@ class SVCEdit extends React.Component {
                       </Col>
                       <Col>
                         <FormGroup>
+                          <Label>Po</Label>
+                          <Input
+                            readOnly
+                            type="text"
+                            name="Po"
+                            placeholder=""
+                            value={CPOForm.Po}
+                            onChange={this.handleChangeForm}
+                          />
+                        </FormGroup>
+                      </Col>
+                      <Col>
+                        <FormGroup>
+                          <Label>Line</Label>
+                          <Input
+                            readOnly
+                            type="text"
+                            name="Line"
+                            placeholder=""
+                            value={CPOForm.Line}
+                            onChange={this.handleChangeForm}
+                          />
+                        </FormGroup>
+                      </Col>
+                      <Col>
+                        <FormGroup>
                           <Label>Description</Label>
                           {role.includes("BAM-IM") === true ? (
                             <Input
@@ -587,47 +613,27 @@ class SVCEdit extends React.Component {
                       <Col>
                         <FormGroup>
                           <Label>Pcode</Label>
-                          {role.includes("BAM-IM") === true ? (
-                            <Input
-                              readOnly
-                              type="text"
-                              name="Pcode"
-                              placeholder=""
-                              value={CPOForm.Pcode}
-                              onChange={this.handleChangeForm}
-                            />
-                          ) : (
-                            <Input
-                              type="text"
-                              name="Pcode"
-                              placeholder=""
-                              value={CPOForm.Pcode}
-                              onChange={this.handleChangeForm}
-                            />
-                          )}
+                          <Input
+                            readOnly
+                            type="text"
+                            name="Pcode"
+                            placeholder=""
+                            value={CPOForm.Pcode}
+                            onChange={this.handleChangeForm}
+                          />
                         </FormGroup>
                       </Col>
                       <Col>
                         <FormGroup>
                           <Label>Unit_Price</Label>
-                          {role.includes("BAM-IM") === true ? (
-                            <Input
-                              readOnly
-                              type="number"
-                              name="Unit_Price"
-                              placeholder=""
-                              value={CPOForm.Unit_Price}
-                              onChange={this.handleChangeForm}
-                            />
-                          ) : (
-                            <Input
-                              type="number"
-                              name="Unit_Price"
-                              placeholder=""
-                              value={CPOForm.Unit_Price}
-                              onChange={this.handleChangeForm}
-                            />
-                          )}
+                          <Input
+                            readOnly
+                            type="number"
+                            name="Unit_Price"
+                            placeholder=""
+                            value={CPOForm.Unit_Price}
+                            onChange={this.handleChangeForm}
+                          />
                         </FormGroup>
                       </Col>
                     </FormGroup>
@@ -758,7 +764,7 @@ class SVCEdit extends React.Component {
                           {role.includes("BAM-IM") === true ? (
                             <Input
                               readOnly
-                              type="number"
+                              type="text"
                               name="Billing_100"
                               placeholder=""
                               value={CPOForm.Billing_100}
@@ -766,7 +772,7 @@ class SVCEdit extends React.Component {
                             />
                           ) : (
                             <Input
-                              type="number"
+                              type="text"
                               name="Billing_100"
                               placeholder=""
                               value={CPOForm.Billing_100}
@@ -781,7 +787,7 @@ class SVCEdit extends React.Component {
                           {role.includes("BAM-IM") === true ? (
                             <Input
                               readOnly
-                              type="number"
+                              type="text"
                               name="Atp_Coa_Received_Date_80"
                               placeholder=""
                               value={CPOForm.Atp_Coa_Received_Date_80}
@@ -789,7 +795,7 @@ class SVCEdit extends React.Component {
                             />
                           ) : (
                             <Input
-                              type="number"
+                              type="text"
                               name="Atp_Coa_Received_Date_80"
                               placeholder=""
                               value={CPOForm.Atp_Coa_Received_Date_80}
@@ -804,7 +810,7 @@ class SVCEdit extends React.Component {
                           {role.includes("BAM-IM") === true ? (
                             <Input
                               readOnly
-                              type="number"
+                              type="text"
                               name="Billing_Upon_Atp_Coa_80"
                               placeholder=""
                               value={CPOForm.Billing_Upon_Atp_Coa_80}
@@ -812,7 +818,7 @@ class SVCEdit extends React.Component {
                             />
                           ) : (
                             <Input
-                              type="number"
+                              type="text"
                               name="Billing_Upon_Atp_Coa_80"
                               placeholder=""
                               value={CPOForm.Billing_Upon_Atp_Coa_80}

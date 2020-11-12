@@ -242,6 +242,7 @@ class MappingSVC extends React.Component {
       action_status: null,
       action_message: null,
       filter_list: {},
+      all_data_master: [],
     };
   }
 
@@ -249,6 +250,19 @@ class MappingSVC extends React.Component {
     // console.log("header", header.length);
     // console.log("model_header", header_model.length);
     this.getList();
+    this.getMaster();
+  }
+
+  getMaster() {
+    getDatafromAPINODE(
+      "/lineItemMapping/getLineItem/svc?noPg=1",
+      this.state.tokenUser
+    ).then((res) => {
+      if (res.data !== undefined) {
+        const items2 = res.data.data;
+        this.setState({ all_data_master: items2 });
+      }
+    });
   }
 
   getList() {
@@ -603,18 +617,17 @@ class MappingSVC extends React.Component {
     return searchBar;
   };
 
-  // LookupField = (vendor_id, params_field, return_field) => {
-  //   let field = "element." + params_field;
-  //   let value = "vendordata." + return_field;
-  //   let objectData = this.state.vendor_list.find(
-  //     (element) => eval(field) === vendor_id
-  //   );
-  //   if (objectData !== undefined) {
-  //     return eval(value);
-  //   } else {
-  //     return null;
-  //   }
-  // };
+  LookupField = (unique_id_master, params_field) => {
+    let value = "objectData." + params_field;
+    let objectData = this.state.all_data_master.find(
+      (e) => e.unique_code === unique_id_master
+    );
+    if (objectData !== undefined) {
+      return eval(value);
+    } else {
+      return null;
+    }
+  };
 
   render() {
     const CPOForm = this.state.CPOForm;
@@ -702,48 +715,7 @@ class MappingSVC extends React.Component {
               </CardHeader>
 
               <CardBody>
-                <Row>
-                  {/* <Col>
-                    <div style={{ marginBottom: "10px" }}>
-                      <div
-                        style={{
-                          float: "left",
-                          margin: "5px",
-                          display: "inline-flex",
-                        }}
-                      >
-                        <Input
-                          type="select"
-                          name="select"
-                          id="selectLimit"
-                          onChange={this.handleChangeLimit}
-                        >
-                          <option value={"10"}>10</option>
-                          <option value={"25"}>25</option>
-                          <option value={"50"}>50</option>
-                          <option value={"100"}>100</option>
-                          <option value={"noPg=1"}>All</option>
-                        </Input>
-                      </div>
-                      <div
-                        style={{
-                          float: "right",
-                          margin: "5px",
-                          display: "inline-flex",
-                        }}
-                      >
-                        <input
-                          className="search-box-material"
-                          type="text"
-                          name="filter"
-                          placeholder="Search Material"
-                          onChange={this.handleChangeFilter}
-                          value={this.state.filter_list}
-                        />
-                      </div>
-                    </div>
-                  </Col> */}
-                </Row>
+                <Row></Row>
                 <Row>
                   <Col>
                     <div
@@ -788,9 +760,86 @@ class MappingSVC extends React.Component {
                                   ) : (
                                     <td></td>
                                   )}
-                                  {td_value.map((name, ndex) => (
-                                    <td>{eval(name)}</td>
-                                  ))}
+                                  <td>{e.Link}</td>
+                                  <td>{e.Lookup_Reference}</td>
+                                  <td>{e.Region}</td>
+                                  <td>{e.Reference_Loc_Id}</td>
+                                  <td>{e.New_Loc_Id}</td>
+                                  <td>{e.Site_Name}</td>
+                                  <td>{e.New_Site_Name}</td>
+                                  <td>{e.Config}</td>
+                                  <td>{e.Po}</td>
+                                  <td>{e.Line}</td>
+                                  <td>{e.Description}</td>
+                                  <td>{e.Qty}</td>
+                                  <td>{e.CNI_Date}</td>
+                                  <td>{e.Mapping_Date}</td>
+                                  <td>{e.Remarks}</td>
+                                  <td>{e.Celcom_User}</td>
+                                  <td>
+                                    {this.LookupField(
+                                      e.Po + "-" + e.Line,
+                                      "Pcode"
+                                    )}
+                                  </td>
+                                  <td>
+                                    {this.LookupField(
+                                      e.Po + "-" + e.Line,
+                                      "Unit_Price"
+                                    )}
+                                  </td>
+                                  <td>{e.Total_Price}</td>
+                                  <td>{e.Discounted_Unit_Price}</td>
+                                  <td>{e.Discounted_Po_Price}</td>
+                                  <td>{e.Type}</td>
+                                  <td>{e.So_Line_Item_Description}</td>
+                                  <td>{e.So_No}</td>
+                                  <td>{e.Wbs_No}</td>
+                                  <td>{e.Billing_100}</td>
+                                  <td>{e.Atp_Coa_Received_Date_80}</td>
+                                  <td>{e.Billing_Upon_Atp_Coa_80}</td>
+                                  <td>{e.Invoicing_No_Atp_Coa_80}</td>
+                                  <td>{e.Invoicing_Date_Atp_Coa_80}</td>
+                                  <td>{e.Cancelled_Atp_Coa_80}</td>
+                                  <td>{e.Ni_Coa_Date_20}</td>
+                                  <td>{e.Billing_Upon_Ni_20}</td>
+                                  <td>{e.Invoicing_No_Ni_20}</td>
+                                  <td>{e.Invoicing_Date_Ni_20}</td>
+                                  <td>{e.Sso_Coa_Date_80}</td>
+                                  <td>{e.Billing_Upon_Sso_80}</td>
+                                  <td>{e.Invoicing_No_Sso_80}</td>
+                                  <td>{e.Invoicing_Date_Sso_80}</td>
+                                  <td>{e.Coa_Psp_Received_Date_20}</td>
+                                  <td>{e.Billing_Upon_Coa_Psp_20}</td>
+                                  <td>{e.Invoicing_No_Coa_Psp_20}</td>
+                                  <td>{e.Invoicing_Date_Coa_Psp_20}</td>
+                                  <td>{e.Sso_Coa_Date_100}</td>
+                                  <td>{e.Billing_Upon_Sso_Coa_100}</td>
+                                  <td>{e.Invoicing_No_Sso_Coa_100}</td>
+                                  <td>{e.Invoicing_Date_Sso_Coa_100}</td>
+                                  <td>{e.Coa_Ni_Date_100}</td>
+                                  <td>{e.Billing_Upon_Coa_Ni_100}</td>
+                                  <td>{e.Invoicing_No_Coa_Ni_100}</td>
+                                  <td>{e.Invoicing_Date_Coa_Ni_100}</td>
+                                  <td>{e.Ses_No}</td>
+                                  <td>{e.Ses_Status}</td>
+                                  <td>{e.Link_1}</td>
+                                  <td>{e.Ni_Coa_Submission_Status}</td>
+                                  <td>{e.Invoicing_Date_Sso_20_1}</td>
+                                  <td>{e.Cancelled_Sso_20}</td>
+                                  <td>{e.Vlookup_SSO_100_In_Service}</td>
+                                  <td>{e.Hw_Coa_100}</td>
+                                  <td>{e.Billing_Upon_Hw_Coa_100}</td>
+                                  <td>{e.Invoicing_No_Hw_Coa_100}</td>
+                                  <td>{e.Invoicing_Date_Hw_Coa_100}</td>
+                                  <td>{e.Reference_Loc_Id_1}</td>
+                                  <td>{e.Po_1}</td>
+                                  <td>{e.Reff_1}</td>
+                                  <td>{e.Site_List}</td>
+                                  <td>{e.Reff_2}</td>
+                                  <td>{e.Ni}</td>
+                                  <td>{e.Sso}</td>
+                                  <td>{e.Ref_Ni}</td>
                                 </tr>
                               </React.Fragment>
                             ))}

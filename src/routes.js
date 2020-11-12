@@ -8,9 +8,9 @@ const MatHW = React.lazy(() => import("./views/Material/matlibHW"));
 const MatARP = React.lazy(() => import("./views/Material/matlibARP"));
 
 const HWMapping = React.lazy(() => import("./views/CPOMapping/HW"));
-const HWMaster = React.lazy(() => import("./views/CPOMapping/HWLine"));
+const HWMaster = React.lazy(() => import("./views/CPOMapping/HWMaster"));
 const SVCMapping = React.lazy(() => import("./views/CPOMapping/SVC"));
-const SVCMaster = React.lazy(() => import("./views/CPOMapping/SVCLine"));
+const SVCMaster = React.lazy(() => import("./views/CPOMapping/SVCMaster"));
 
 const SVCEdit = React.lazy(() => import("./views/CPOMapping/SVCedit"));
 const HWEdit = React.lazy(() => import("./views/CPOMapping/HWedit"));

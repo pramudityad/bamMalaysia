@@ -45,225 +45,52 @@ import "./cpomapping.css";
 const DefaultNotif = React.lazy(() =>
   import("../../views/DefaultView/DefaultNotif")
 );
-const modul_name = "HW Mapping";
+const modul_name = "HW Master";
 const header = [
   "",
-  "LOOKUP REFERENCE",
-  "REGION",
-  "REFERENCE LOC ID",
-  "NEW LOC ID",
-  "SITE NAME",
-  "NEW SITE NAME",
-  "CONFIG",
   "PO#",
-  "LINE",
+  "LINE ITEM",
   "DESCRIPTION",
   "QTY",
-  "NW#",
-  "CNI DATE",
-  "MAPPING DATE",
-  "REMARKS",
-  "PREMR NO.",
-  "PROCEED BILLING 100%",
-  "CELCOM USER",
-  "PCODE",
+  "USED",
+  "BALANCE",
   "UNIT PRICE",
   "TOTAL PRICE",
+  "ASSIGNED PRICE",
   "DISCOUNTED UNIT PRICE",
   "DISCOUNTED PO PRICE",
-  "SO LINE ITEM DESCRIPTION",
-  "sitePCode",
-  "VlookupWBS",
-  "SO NO.",
-  "WBS  NO.",
-  "FOR CHECKING PURPOSE ONLY-RASHIDAH",
-  "HW COA RECEIVED DATE",
-  "80% BILLING UPON HW COA",
-  "80% INVOICING NO.",
-  "80% INVOICING DATE",
-  "NI COA DATE (VLOOKUP FROM SERVICES MAPPING)",
-  "20% BILLING UPON NI",
-  "20% INVOICING NO.",
-  "20% INVOICING DATE",
-  "SSO COA DATE (VLOOKUP FROM SERVICES MAPPING)",
-  "20% BILLING UPON SSO",
-  "20% INVOICING NO.",
-  "20% INVOICING DATE",
-  "GR NUMBER",
-  "HW COA RECEIVED DATE",
-  "40% BILLING UPON COA HW",
-  "40% INVOICING NO.",
-  "40% INVOICING DATE",
-  "Cancelled",
-  "NI COA date (vlookup from SERVICES MAPPING)",
-  "40% BILLING UPON COA NI",
-  "40% INVOICING  Number",
-  "40% INVOICING DATE",
-  "Cancelled",
-  "SSO COA date (vlookup from SERVICES MAPPING)",
-  "20% BILLING UPON COA SSO",
-  "20% INVOICING NO.",
-  "20% INVOICING DATE",
-  "Cancelled",
-  "Vlookup: SSO 100% in Service (20% in HW)",
-  "100%  HW COA ",
-  "100% BILLING UPON HW COA",
-  "100% INVOICING NO.",
-  "100% INVOICING DATE",
-  "REFERENCE LOC ID",
-  "PO#",
-  "REFF",
-  "SITE LIST",
-  "REFF 2",
-  "NI",
-  "SSO",
-  "REF NI",
+  "DISCOUNTED ASSIGNED PRICE",
+  "PCODE",
+  "PCODE TO BE USED",
+  "TYPE",
+  "PSP REMARKS",
+  "WBS ",
+  "TOTAL PO AMOUNT",
+  "REMARKS",
 ];
 const header_model = [
-  "Lookup_Reference",
-  "Region",
-  "Reference_Loc_Id",
-  "New_Loc_Id",
-  "Site_Name",
-  "New_Site_Name",
-  "Config",
   "Po",
-  "Line",
+  "Line_Item",
   "Description",
   "Qty",
-  "NW",
-  "CN_Date",
-  "Mapping_Date",
-  "Remarks",
-  "Premr_No",
-  "Proceed_Billing_100",
-  "Celcom_User",
-  "Pcode",
+  "Used",
+  "Balance",
   "Unit_Price",
   "Total_Price",
+  "Assigned_Price",
   "Discounted_Unit_Price",
   "Discounted_Po_Price",
-  "So_Line_Item_Description",
-  "Sitepcode",
-  "VlookupWbs",
-  "So_No",
-  "Wbs_No",
-  "For_Checking_Purpose_Only_Rashidah",
-  "Hw_Coa_Received_Date_80",
-  "Billing_Upon_Hw_Coa_80",
-  "Invoicing_No_Hw_Coa_80",
-  "Invoicing_Date_Hw_Coa_80",
-  "Ni_Coa_Date_20",
-  "Billing_Upon_Ni_20",
-  "Invoicing_No_Ni_20",
-  "Invoicing_Date_Ni_20",
-  "Sso_Coa_Date_20",
-  "Billing_Upon_Sso_20",
-  "Invoicing_No_Sso_20",
-  "Invoicing_Date_Sso_20",
-  "Gr_Number",
-  "Hw_Coa_Received_Date_40",
-  "Billing_Upon_Hw_Coa_40",
-  "Invoicing_No_Hw_Coa_40",
-  "Invoicing_Date_Hw_Coa_40",
-  "Cancelled_Hw_Coa_40",
-  "Ni_Coa_Date_40",
-  "Billing_Upon_Ni_40",
-  "Invoicing_No_Ni_40",
-  "Invoicing_Date_Ni_40",
-  "Cancelled_Ni_40",
-  "Sso_Coa_Date_20_1",
-  "Billing_Upon_Sso_20_1",
-  "Invoicing_No_Sso_20_1",
-  "Invoicing_Date_Sso_20_1",
-  "Cancelled_Sso_20",
-  "Vlookup_SSO_100_In_Service",
-  "Hw_Coa_100",
-  "Billing_Upon_Hw_Coa_100",
-  "Invoicing_No_Hw_Coa_100",
-  "Invoicing_Date_Hw_Coa_100",
-  "Reference_Loc_Id_1",
-  "Po_1",
-  "Reff_1",
-  "Site_List",
-  "Reff_2",
-  "Ni",
-  "Sso",
-  "Ref_Ni",
+  "Discounted_Assigned_Price",
+  "Pcod",
+  "Pcod_To_Be_Used",
+  "Type",
+  "PSP_Remarks",
+  "Wbs ",
+  "Total_Po_Amount",
+  "Remarks",
 ];
 
-const td_value = [
-  "e.Lookup_Reference",
-  "e.Region",
-  "e.Reference_Loc_Id",
-  "e.New_Loc_Id",
-  "e.Site_Name",
-  "e.New_Site_Name",
-  "e.Config",
-  "e.Po",
-  "e.Line",
-  "e.Description",
-  "e.Qty",
-  "e.NW",
-  "e.CN_Date",
-  "e.Mapping_Date",
-  "e.Remarks",
-  "e.Premr_No",
-  "e.Proceed_Billing_100",
-  "e.Celcom_User",
-  "e.Pcode",
-  "e.Unit_Price",
-  "e.Total_Price",
-  "e.Discounted_Unit_Price",
-  "e.Discounted_Po_Price",
-  "e.So_Line_Item_Description",
-  "e.Sitepcode",
-  "e.VlookupWbs",
-  "e.So_No",
-  "e.Wbs_No",
-  "e.For_Checking_Purpose_Only_Rashidah",
-  "e.Hw_Coa_Received_Date_80",
-  "e.Billing_Upon_Hw_Coa_80",
-  "e.Invoicing_No_Hw_Coa_80",
-  "e.Invoicing_Date_Hw_Coa_80",
-  "e.Ni_Coa_Date_20",
-  "e.Billing_Upon_Ni_20",
-  "e.Invoicing_No_Ni_20",
-  "e.Invoicing_Date_Ni_20",
-  "e.Sso_Coa_Date_20",
-  "e.Billing_Upon_Sso_20",
-  "e.Invoicing_No_Sso_20",
-  "e.Invoicing_Date_Sso_20",
-  "e.Gr_Number",
-  "e.Hw_Coa_Received_Date_40",
-  "e.Billing_Upon_Hw_Coa_40",
-  "e.Invoicing_No_Hw_Coa_40",
-  "e.Invoicing_Date_Hw_Coa_40",
-  "e.Cancelled_Hw_Coa_40",
-  "e.Ni_Coa_Date_40",
-  "e.Billing_Upon_Ni_40",
-  "e.Invoicing_No_Ni_40",
-  "e.Invoicing_Date_Ni_40",
-  "e.Cancelled_Ni_40",
-  "e.Sso_Coa_Date_20_1",
-  "e.Billing_Upon_Sso_20_1",
-  "e.Invoicing_No_Sso_20_1",
-  "e.Invoicing_Date_Sso_20_1",
-  "e.Cancelled_Sso_20",
-  "e.Vlookup_SSO_100_In_Service",
-  "e.Hw_Coa_100",
-  "e.Billing_Upon_Hw_Coa_100",
-  "e.Invoicing_No_Hw_Coa_100",
-  "e.Invoicing_Date_Hw_Coa_100",
-  "e.Reference_Loc_Id_1",
-  "e.Po_1",
-  "e.Reff_1",
-  "e.Site_List",
-  "e.Reff_2",
-  "e.Ni",
-  "e.Sso",
-  "e.Ref_Ni",
-];
+const td_value = [];
 
 class HWMaster extends React.Component {
   constructor(props) {
@@ -286,13 +113,14 @@ class HWMaster extends React.Component {
       action_status: null,
       action_message: null,
       filter_list: {},
+      all_data_mapping: [],
     };
   }
 
   componentDidMount() {
     // console.log("header", header.length);
     // console.log("model_header", header_model.length);
-    // this.getList();
+    this.getList();
   }
 
   getList() {
@@ -334,7 +162,7 @@ class HWMaster extends React.Component {
       );
     let whereAnd = "{" + filter_array.join(",") + "}";
     getDatafromAPINODE(
-      "/cpoMapping/getCpo/hw?q=" +
+      "/lineItemMapping/getLineItem/hw?q=" +
         whereAnd +
         "&lmt=" +
         this.state.perPage +
@@ -345,7 +173,21 @@ class HWMaster extends React.Component {
       if (res.data !== undefined) {
         const items = res.data.data;
         const totalData = res.data.totalResults;
-        this.setState({ all_data: items, totalData: totalData });
+        this.setState({ all_data: items, totalData: totalData }, () =>
+          this.getMapping()
+        );
+      }
+    });
+  }
+
+  getMapping() {
+    getDatafromAPINODE(
+      "/cpoMapping/getCpo/hw?noPg=1",
+      this.state.tokenUser
+    ).then((res) => {
+      if (res.data !== undefined) {
+        const items2 = res.data.data;
+        this.setState({ all_data_mapping: items2 });
       }
     });
   }
@@ -409,10 +251,10 @@ class HWMaster extends React.Component {
     this.togglecreateModal();
     const BulkXLSX = this.state.rowsXLS;
     const res = await postDatatoAPINODE(
-      "/cpoMapping/createCpo",
+      "/lineItemMapping/createLineItem",
       {
-        cpo_type: "hw",
-        cpo_data: this.state.rowsXLS,
+        line_item_type: "hw",
+        line_item_data: this.state.rowsXLS,
       },
       this.state.tokenUser
     );
@@ -645,6 +487,17 @@ class HWMaster extends React.Component {
     return searchBar;
   };
 
+  countBalance = (qty, used) => {
+    return qty - used;
+  };
+
+  countUsed = (po, line_item) => {
+    let sum_used = this.state.all_data_mapping
+      .filter((element) => element.Po === po && element.Line === line_item)
+      .reduce((a, { Qty }) => a + Qty, 0);
+    return sum_used;
+  };
+
   render() {
     const CPOForm = this.state.CPOForm;
     const role = this.state.roleUser;
@@ -702,28 +555,10 @@ class HWMaster extends React.Component {
                       </DropdownToggle>
                       <DropdownMenu>
                         <DropdownItem header>Uploader Template</DropdownItem>
-                        {/* {role.includes("BAM-MAT PLANNER") === true ? (
-                          <DropdownItem onClick={this.exportTemplate}>
-                            {" "}
-                            Mapping Template
-                          </DropdownItem>
-                        ) : (
-                          ""
-                        )}
-                        {role.includes("BAM-IM") === true ? (
-                          <DropdownItem onClick={this.downloadAll_A}>
-                            Template A{" "}
-                          </DropdownItem>
-                        ) : (
-                          ""
-                        )}
-                        {role.includes("BAM-PFM") === true ? (
-                          <DropdownItem onClick={this.downloadAll_B}>
-                            Template B{" "}
-                          </DropdownItem>
-                        ) : (
-                          ""
-                        )} */}
+                        <DropdownItem onClick={this.exportTemplate}>
+                          {" "}
+                          CPO Master Template
+                        </DropdownItem>
                       </DropdownMenu>
                     </Dropdown>
                   </div>
@@ -731,48 +566,7 @@ class HWMaster extends React.Component {
               </CardHeader>
 
               <CardBody>
-                <Row>
-                  {/* <Col>
-                    <div style={{ marginBottom: "10px" }}>
-                      <div
-                        style={{
-                          float: "left",
-                          margin: "5px",
-                          display: "inline-flex",
-                        }}
-                      >
-                        <Input
-                          type="select"
-                          name="select"
-                          id="selectLimit"
-                          onChange={this.handleChangeLimit}
-                        >
-                          <option value={"10"}>10</option>
-                          <option value={"25"}>25</option>
-                          <option value={"50"}>50</option>
-                          <option value={"100"}>100</option>
-                          <option value={"noPg=1"}>All</option>
-                        </Input>
-                      </div>
-                      <div
-                        style={{
-                          float: "right",
-                          margin: "5px",
-                          display: "inline-flex",
-                        }}
-                      >
-                        <input
-                          className="search-box-material"
-                          type="text"
-                          name="filter"
-                          placeholder="Search Material"
-                          onChange={this.handleChangeFilter}
-                          value={this.state.filter_list}
-                        />
-                      </div>
-                    </div>
-                  </Col> */}
-                </Row>
+                <Row></Row>
                 <Row>
                   <Col>
                     <div
@@ -788,38 +582,58 @@ class HWMaster extends React.Component {
                               <th>{head}</th>
                             ))}
                           </tr>
-                          <tr>
+                          {/* <tr>
                             <td></td>
                             {this.loopSearchBar()}
-                          </tr>
+                          </tr> */}
                         </thead>
                         <tbody>
                           {this.state.all_data !== undefined &&
                             this.state.all_data.map((e, i) => (
                               <React.Fragment key={e._id + "frag"}>
                                 <tr key={e._id}>
-                                  {role.includes("BAM-IM") === true ||
-                                  role.includes("BAM-PFM") === true ? (
-                                    <td>
-                                      <Link to={"/hw-cpo/" + e._id}>
-                                        <Button
-                                          size="sm"
-                                          color="secondary"
-                                          title="Edit"
-                                        >
-                                          <i
-                                            className="fa fa-edit"
-                                            aria-hidden="true"
-                                          ></i>
-                                        </Button>
-                                      </Link>
-                                    </td>
-                                  ) : (
-                                    <td></td>
-                                  )}
-                                  {td_value.map((name, ndex) => (
-                                    <td>{eval(name)}</td>
-                                  ))}
+                                  <td>
+                                    <Button
+                                      size="sm"
+                                      color="secondary"
+                                      title="Edit"
+                                      value={e._id}
+                                      onClick={this.toggleEdit}
+                                    >
+                                      <i
+                                        className="fa fa-edit"
+                                        aria-hidden="true"
+                                      ></i>
+                                    </Button>
+                                  </td>
+
+                                  <td>{e.Po}</td>
+                                  <td>{e.Line_Item}</td>
+                                  <td>{e.Description}</td>
+                                  <td>{e.Qty}</td>
+                                  <td>{this.countUsed(e.Po, e.Line_Item)}</td>
+                                  <td>
+                                    {e.Qty - this.countUsed(e.Po, e.Line_Item)}
+                                  </td>
+                                  <td>{e.Unit_Price}</td>
+                                  <td>{e.Qty * e.Unit_Price}</td>
+                                  <td>
+                                    {this.countUsed(e.Po, e.Line_Item) *
+                                      e.Unit_Price}
+                                  </td>
+                                  <td>{e.Discounted_Unit_Price}</td>
+                                  <td>{e.Discounted_Unit_Price * e.Qty}</td>
+                                  <td>
+                                    {e.Discounted_Unit_Price *
+                                      this.countUsed(e.Po, e.Line_Item)}
+                                  </td>
+                                  <td>{e.Pcod}</td>
+                                  <td>{e.Pcod_To_Be_Used}</td>
+                                  <td>{e.Type}</td>
+                                  <td>{e.PSP_Remarks}</td>
+                                  <td>{e.Wbs}</td>
+                                  <td>{e.Qty * e.Unit_Price}</td>
+                                  <td>{e.Remarks}</td>
                                 </tr>
                               </React.Fragment>
                             ))}
@@ -854,28 +668,16 @@ class HWMaster extends React.Component {
           isOpen={this.state.modalEdit}
           toggle={this.toggleEdit}
           className="modal--form"
+          size="lg"
         >
-          <ModalHeader>Form Update</ModalHeader>
+          <ModalHeader>Form Update {CPOForm.unique_code}</ModalHeader>
           <ModalBody>
             <Row>
               <Col sm="12">
                 <FormGroup row>
-                  <Col xs="4">
+                  <Col>
                     <FormGroup>
-                      <Label>Line</Label>
-                      <Input
-                        readOnly
-                        type="text"
-                        name="Line"
-                        placeholder=""
-                        value={CPOForm.Line}
-                        onChange={this.handleChangeForm}
-                      />
-                    </FormGroup>
-                  </Col>
-                  <Col xs="4">
-                    <FormGroup>
-                      <Label>PO</Label>
+                      <Label>Po</Label>
                       <Input
                         readOnly
                         type="text"
@@ -886,63 +688,192 @@ class HWMaster extends React.Component {
                       />
                     </FormGroup>
                   </Col>
-                  <Col xs="4">
+                  <Col>
                     <FormGroup>
-                      <Label>NEW LOC ID</Label>
+                      <Label>Line_Item</Label>
                       <Input
                         readOnly
                         type="text"
-                        name="New_Loc_Id"
+                        name="Line_Item"
                         placeholder=""
-                        value={CPOForm.New_Loc_Id}
+                        value={CPOForm.Line_Item}
                         onChange={this.handleChangeForm}
                       />
                     </FormGroup>
                   </Col>
-                  <Col xs="12">
+                  <Col>
                     <FormGroup>
-                      <Label>Config</Label>
-                      {role.includes("BAM-IM") === true ? (
-                        <Input
-                          type="text"
-                          name="Config"
-                          placeholder=""
-                          value={CPOForm.Config}
-                          onChange={this.handleChangeForm}
-                        />
-                      ) : (
-                        <Input
-                          readOnly
-                          type="text"
-                          name="Config"
-                          placeholder=""
-                          value={CPOForm.Config}
-                          onChange={this.handleChangeForm}
-                        />
-                      )}
+                      <Label>Description</Label>
+                      <Input
+                        type="text"
+                        name="Description"
+                        placeholder=""
+                        value={CPOForm.Description}
+                        onChange={this.handleChangeForm}
+                      />
                     </FormGroup>
                   </Col>
-                  <Col xs="12">
+                  <Col>
                     <FormGroup>
-                      <Label>QTY</Label>
-                      {role.includes("BAM-IM") === true ? (
-                        <Input
-                          readOnly
-                          type="number"
-                          name="Qty"
-                          placeholder=""
-                          value={CPOForm.Qty}
-                          onChange={this.handleChangeForm}
-                        />
-                      ) : (
-                        <Input
-                          type="number"
-                          name="Qty"
-                          placeholder=""
-                          value={CPOForm.Qty}
-                          onChange={this.handleChangeForm}
-                        />
-                      )}
+                      <Label>Qty</Label>
+                      <Input
+                        type="text"
+                        name="Qty"
+                        placeholder=""
+                        value={CPOForm.Qty}
+                        onChange={this.handleChangeForm}
+                      />
+                    </FormGroup>
+                  </Col>
+                  <Col>
+                    <FormGroup>
+                      <Label>Unit_Price</Label>
+                      <Input
+                        type="number"
+                        name="Unit_Price"
+                        placeholder=""
+                        value={CPOForm.Unit_Price}
+                        onChange={this.handleChangeForm}
+                      />
+                    </FormGroup>
+                  </Col>
+                  <Col>
+                    <FormGroup>
+                      <Label>Assigned_Price</Label>
+                      <Input
+                        type="text"
+                        name="Assigned_Price"
+                        placeholder=""
+                        value={CPOForm.Assigned_Price}
+                        onChange={this.handleChangeForm}
+                      />
+                    </FormGroup>
+                  </Col>
+                </FormGroup>
+              </Col>
+            </Row>
+
+            <Row>
+              <Col sm="12">
+                <FormGroup row>
+                  <Col>
+                    <FormGroup>
+                      <Label>Discounted_Unit_Price</Label>
+                      <Input
+                        type="number"
+                        name="Discounted_Unit_Price"
+                        placeholder=""
+                        value={CPOForm.Discounted_Unit_Price}
+                        onChange={this.handleChangeForm}
+                      />
+                    </FormGroup>
+                  </Col>
+                  <Col>
+                    <FormGroup>
+                      <Label>Discounted_Po_Price</Label>
+                      <Input
+                        type="number"
+                        name="Discounted_Po_Price"
+                        placeholder=""
+                        value={CPOForm.Discounted_Po_Price}
+                        onChange={this.handleChangeForm}
+                      />
+                    </FormGroup>
+                  </Col>
+                  <Col>
+                    <FormGroup>
+                      <Label>Discounted_Assigned_Price</Label>
+                      <Input
+                        type="number"
+                        name="Discounted_Assigned_Price"
+                        placeholder=""
+                        value={CPOForm.Discounted_Assigned_Price}
+                        onChange={this.handleChangeForm}
+                      />
+                    </FormGroup>
+                  </Col>
+                  <Col>
+                    <FormGroup>
+                      <Label>Pcod</Label>
+                      <Input
+                        type="text"
+                        name="Pcod"
+                        placeholder=""
+                        value={CPOForm.Pcod}
+                        onChange={this.handleChangeForm}
+                      />
+                    </FormGroup>
+                  </Col>
+                  <Col>
+                    <FormGroup>
+                      <Label>Pcod_To_Be_Used</Label>
+                      <Input
+                        type="number"
+                        name="Pcod_To_Be_Used"
+                        placeholder=""
+                        value={CPOForm.Pcod_To_Be_Used}
+                        onChange={this.handleChangeForm}
+                      />
+                    </FormGroup>
+                  </Col>
+                  <Col>
+                    <FormGroup>
+                      <Label>PSP_Remarks</Label>
+                      <Input
+                        type="text"
+                        name="PSP_Remarks"
+                        placeholder=""
+                        value={CPOForm.PSP_Remarks}
+                        onChange={this.handleChangeForm}
+                      />
+                    </FormGroup>
+                  </Col>
+                  <Col>
+                    <FormGroup>
+                      <Label>Type</Label>
+                      <Input
+                        type="text"
+                        name="Type"
+                        placeholder=""
+                        value={CPOForm.Type}
+                        onChange={this.handleChangeForm}
+                      />
+                    </FormGroup>
+                  </Col>
+                  <Col>
+                    <FormGroup>
+                      <Label>Wbs</Label>
+                      <Input
+                        type="text"
+                        name="Wbs"
+                        placeholder=""
+                        value={CPOForm.Wbs}
+                        onChange={this.handleChangeForm}
+                      />
+                    </FormGroup>
+                  </Col>
+                  <Col>
+                    <FormGroup>
+                      <Label>Total_Po_Amount</Label>
+                      <Input
+                        type="number"
+                        name="Total_Po_Amount"
+                        placeholder=""
+                        value={CPOForm.Total_Po_Amount}
+                        onChange={this.handleChangeForm}
+                      />
+                    </FormGroup>
+                  </Col>
+                  <Col>
+                    <FormGroup>
+                      <Label>Remarks</Label>
+                      <Input
+                        type="text"
+                        name="Remarks"
+                        placeholder=""
+                        value={CPOForm.Remarks}
+                        onChange={this.handleChangeForm}
+                      />
                     </FormGroup>
                   </Col>
                 </FormGroup>
