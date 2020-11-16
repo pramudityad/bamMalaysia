@@ -114,7 +114,8 @@ class ReportSVC extends React.Component {
       .filter(
         (item) =>
           item.Po === dashboard_filter["po_select"] &&
-          eval(billing_select) === dashboard_filter["billvalue_select"]
+          eval(billing_select) === dashboard_filter["billvalue_select"] &&
+          item.Not_Required !== true
       )
       .sort((a, b) => a.Line - b.Line);
     this.setState({ pivot_data1: filter_items }, () =>
