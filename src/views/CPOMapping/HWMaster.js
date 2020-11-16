@@ -332,7 +332,7 @@ class HWMaster extends React.Component {
     this.toggleEdit();
     this.toggleLoading();
     const res = await patchDatatoAPINODE(
-      "/cpoMapping/updateCpo",
+      "/lineItemMapping/updateLineItem",
       {
         cpo_type: "hw",
         data: [this.state.CPOForm],
@@ -372,17 +372,15 @@ class HWMaster extends React.Component {
   downloadAll_A = async () => {
     this.toggleLoading();
     const download_all_A = await getDatafromAPINODE(
-      "/cpoMapping/getCpo/hw?noPg=1",
+      "/lineItemMapping/getLineItem/hw?noPg=1",
       this.state.tokenUser
     );
 
     const wb = new Excel.Workbook();
     const ws = wb.addWorksheet();
 
-    let header = ["Line", "Po", "New_Loc_Id", "Config"];
-
-    ws.addRow(header);
-    for (let i = 1; i < header.length + 1; i++) {
+    ws.addRow(header_model);
+    for (let i = 1; i < header_model.length + 1; i++) {
       ws.getCell(numToSSColumn(i) + "1").fill = {
         type: "pattern",
         pattern: "solid",
@@ -394,19 +392,39 @@ class HWMaster extends React.Component {
     if (download_all_A.data !== undefined) {
       for (let i = 0; i < download_all_A.data.data.length; i++) {
         let e = download_all_A.data.data[i];
-        ws.addRow([e.Line, e.Po, e.New_Loc_Id, e.Config]);
+        ws.addRow([
+          e.Po,
+          e.Line_Item,
+          e.Description,
+          e.Qty,
+          this.countUsed(e.Po, e.Line_Item),
+          e.Qty - this.countUsed(e.Po, e.Line_Item),
+          e.Unit_Price,
+          e.Qty * e.Unit_Price,
+          this.countUsed(e.Po, e.Line_Item) * e.Unit_Price,
+          e.Discounted_Unit_Price,
+          e.Discounted_Unit_Price * e.Qty,
+          e.Discounted_Unit_Price * this.countUsed(e.Po, e.Line_Item),
+          e.Pcod,
+          e.Pcod_To_Be_Used,
+          e.Type,
+          e.PSP_Remarks,
+          e.Wbs,
+          e.Qty * e.Unit_Price,
+          e.Remarks,
+        ]);
       }
     }
 
     const allocexport = await wb.xlsx.writeBuffer();
-    saveAs(new Blob([allocexport]), "Template " + modul_name + " Role A.xlsx");
+    saveAs(new Blob([allocexport]), "All Data " + modul_name + ".xlsx");
     this.toggleLoading();
   };
 
   downloadAll_B = async () => {
     this.toggleLoading();
     const download_all_A = await getDatafromAPINODE(
-      "/cpoMapping/getCpo/hw?noPg=1",
+      "/lineItemMapping/getLineItem/hw?noPg=1",
       this.state.tokenUser
     );
 
@@ -558,6 +576,10 @@ class HWMaster extends React.Component {
                         <DropdownItem onClick={this.exportTemplate}>
                           {" "}
                           CPO Master Template
+                        </DropdownItem>
+                        <DropdownItem onClick={this.downloadAll_A}>
+                          {" "}
+                          {modul_name} Data
                         </DropdownItem>
                       </DropdownMenu>
                     </Dropdown>

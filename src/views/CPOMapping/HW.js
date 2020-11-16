@@ -24,6 +24,9 @@ import {
   InputGroup,
   InputGroupAddon,
   InputGroupText,
+  Nav,
+  NavItem,
+  NavLink,
 } from "reactstrap";
 import Excel from "exceljs";
 import Loading from "../Component/Loading";
@@ -46,9 +49,52 @@ import "./cpomapping.css";
 const DefaultNotif = React.lazy(() =>
   import("../../views/DefaultView/DefaultNotif")
 );
+const Checkbox1 = ({
+  type = "checkbox",
+  name,
+  checked = false,
+  onChange,
+  value,
+  id,
+  matId,
+  key,
+}) => (
+  <input
+    key={key}
+    type={type}
+    name={name}
+    checked={checked}
+    onChange={onChange}
+    value={value}
+    id={id}
+    matId={matId}
+  />
+);
+const Checkbox2 = ({
+  type = "checkbox",
+  name,
+  checked = true,
+  onChange,
+  value,
+  id,
+  matId,
+  key,
+}) => (
+  <input
+    key={key}
+    type={type}
+    name={name}
+    checked={checked}
+    onChange={onChange}
+    value={value}
+    id={id}
+    matId={matId}
+  />
+);
 const modul_name = "HW Mapping";
 const header = [
   "",
+  "NOT REQUIRED",
   "LOOKUP REFERENCE",
   "REGION",
   "REFERENCE LOC ID",
@@ -214,6 +260,11 @@ class MappingHW extends React.Component {
       action_message: null,
       filter_list: {},
       all_data_master: [],
+      dataChecked: new Map(),
+      dataChecked_container: [],
+      dataChecked_container2: [],
+      tabs_submenu: [true, false],
+      all_data_true: [],
     };
   }
 
@@ -255,14 +306,14 @@ class MappingHW extends React.Component {
     this.state.filter_list["New_Site_Name"] !== null &&
       this.state.filter_list["New_Site_Name"] !== undefined &&
       filter_array.push(
-        '"site_info.site_id":{"$regex" : "' +
+        '"site_id":{"$regex" : "' +
           this.state.filter_list["New_Site_Name"] +
           '", "$options" : "i"}'
       );
     this.state.filter_list["Po"] !== null &&
       this.state.filter_list["Po"] !== undefined &&
       filter_array.push(
-        '"site_info.Po":{"$regex" : "' +
+        '"Po":{"$regex" : "' +
           this.state.filter_list["Po"] +
           '", "$options" : "i"}'
       );
@@ -273,6 +324,8 @@ class MappingHW extends React.Component {
           this.state.filter_list["Line"] +
           '", "$options" : "i"}'
       );
+
+    filter_array.push('"Not_Required":' + null);
     let whereAnd = "{" + filter_array.join(",") + "}";
     getDatafromAPINODE(
       "/cpoMapping/getCpo/hw?q=" +
@@ -287,6 +340,63 @@ class MappingHW extends React.Component {
         const items = res.data.data;
         const totalData = res.data.totalResults;
         this.setState({ all_data: items, totalData: totalData });
+      }
+    });
+  }
+
+  getList2() {
+    let filter_array = [];
+    this.state.filter_list["Region"] !== null &&
+      this.state.filter_list["Region"] !== undefined &&
+      filter_array.push(
+        '"Region":{"$regex" : "' +
+          this.state.filter_list["Region"] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list["New_Loc_Id"] !== null &&
+      this.state.filter_list["New_Loc_Id"] !== undefined &&
+      filter_array.push(
+        '"New_Loc_Id":{"$regex" : "' +
+          this.state.filter_list["New_Loc_Id"] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list["New_Site_Name"] !== null &&
+      this.state.filter_list["New_Site_Name"] !== undefined &&
+      filter_array.push(
+        '"site_id":{"$regex" : "' +
+          this.state.filter_list["New_Site_Name"] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list["Po"] !== null &&
+      this.state.filter_list["Po"] !== undefined &&
+      filter_array.push(
+        '"Po":{"$regex" : "' +
+          this.state.filter_list["Po"] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list["Line"] !== null &&
+      this.state.filter_list["Line"] !== undefined &&
+      filter_array.push(
+        '"Line":{"$regex" : "' +
+          this.state.filter_list["Line"] +
+          '", "$options" : "i"}'
+      );
+
+    filter_array.push('"Not_Required":' + true);
+    let whereAnd = "{" + filter_array.join(",") + "}";
+    getDatafromAPINODE(
+      "/cpoMapping/getCpo/hw?q=" +
+        whereAnd +
+        "&lmt=" +
+        this.state.perPage +
+        "&pg=" +
+        this.state.activePage,
+      this.state.tokenUser
+    ).then((res) => {
+      if (res.data !== undefined) {
+        const items = res.data.data;
+        const totalData = res.data.totalResults;
+        this.setState({ all_data_true: items, totalData: totalData });
       }
     });
   }
@@ -395,7 +505,7 @@ class MappingHW extends React.Component {
 
   handlePageChange = (pageNumber) => {
     this.setState({ activePage: pageNumber }, () => {
-      this.getList();
+      this.state.tabs_submenu[0] === true ? this.getList() : this.getList2();
     });
   };
 
@@ -428,43 +538,92 @@ class MappingHW extends React.Component {
   };
 
   saveUpdate = async () => {
-    this.toggleEdit();
+    // this.toggleEdit();
     this.toggleLoading();
-    const res = await patchDatatoAPINODE(
-      "/cpoMapping/updateCpo",
-      {
-        cpo_type: "hw",
-        data: [this.state.CPOForm],
-      },
-      this.state.tokenUser
-    );
-    if (res.data !== undefined) {
-      this.setState({ action_status: "success" });
-      this.toggleLoading();
-      setTimeout(function () {
-        window.location.reload();
-      }, 1500);
-    } else {
-      if (
-        res.response !== undefined &&
-        res.response.data !== undefined &&
-        res.response.data.error !== undefined
-      ) {
-        if (res.response.data.error.message !== undefined) {
-          this.setState({
-            action_status: "failed",
-            action_message: res.response.data.error.message,
-          });
-        } else {
-          this.setState({
-            action_status: "failed",
-            action_message: res.response.data.error,
-          });
-        }
+    if (this.state.tabs_submenu[0] === true) {
+      let checked_data = this.state.dataChecked_container;
+      const newForm = checked_data
+        .map(({ Not_Required, ...item }) => item)
+        .map((obj) => ({ ...obj, Not_Required: true }));
+      console.log("not req form", checked_data, newForm);
+
+      const res = await patchDatatoAPINODE(
+        "/cpoMapping/updateCpo",
+        {
+          cpo_type: "hw",
+          data: newForm,
+        },
+        this.state.tokenUser
+      );
+      if (res.data !== undefined) {
+        this.setState({ action_status: "success" });
+        this.toggleLoading();
+        setTimeout(function () {
+          window.location.reload();
+        }, 1500);
       } else {
-        this.setState({ action_status: "failed" });
+        if (
+          res.response !== undefined &&
+          res.response.data !== undefined &&
+          res.response.data.error !== undefined
+        ) {
+          if (res.response.data.error.message !== undefined) {
+            this.setState({
+              action_status: "failed",
+              action_message: res.response.data.error.message,
+            });
+          } else {
+            this.setState({
+              action_status: "failed",
+              action_message: res.response.data.error,
+            });
+          }
+        } else {
+          this.setState({ action_status: "failed" });
+        }
+        this.toggleLoading();
       }
-      this.toggleLoading();
+    } else {
+      let checked_data2 = this.state.dataChecked_container2;
+      const newForm2 = checked_data2
+        .map(({ Not_Required, ...item }) => item)
+        .map((obj) => ({ ...obj, Not_Required: null }));
+      const res = await patchDatatoAPINODE(
+        "/cpoMapping/updateCpo",
+        {
+          cpo_type: "hw",
+          data: newForm2,
+        },
+        this.state.tokenUser
+      );
+      if (res.data !== undefined) {
+        this.setState({ action_status: "success" });
+        this.toggleLoading();
+        setTimeout(function () {
+          window.location.reload();
+        }, 1500);
+      } else {
+        if (
+          res.response !== undefined &&
+          res.response.data !== undefined &&
+          res.response.data.error !== undefined
+        ) {
+          if (res.response.data.error.message !== undefined) {
+            this.setState({
+              action_status: "failed",
+              action_message: res.response.data.error.message,
+            });
+          } else {
+            this.setState({
+              action_status: "failed",
+              action_message: res.response.data.error,
+            });
+          }
+        } else {
+          this.setState({ action_status: "failed" });
+        }
+        this.toggleLoading();
+      }
     }
   };
 
@@ -478,7 +637,16 @@ class MappingHW extends React.Component {
     const wb = new Excel.Workbook();
     const ws = wb.addWorksheet();
 
-    let header = ["Line", "Po", "New_Loc_Id", "Config"];
+    let header = [
+      "New_Loc_Id",
+      "Site_Name",
+      "Config",
+      "Po",
+      "Line",
+      "Qty",
+      "Premr_No",
+      "So_Line_Item_Description",
+    ];
 
     ws.addRow(header);
     for (let i = 1; i < header.length + 1; i++) {
@@ -489,11 +657,20 @@ class MappingHW extends React.Component {
         bgColor: { argb: "A9A9A9" },
       };
     }
-
+    console.log(download_all_A.data.data.map((i) => i._id));
     if (download_all_A.data !== undefined) {
       for (let i = 0; i < download_all_A.data.data.length; i++) {
         let e = download_all_A.data.data[i];
-        ws.addRow([e.Line, e.Po, e.New_Loc_Id, e.Config]);
+        ws.addRow([
+          e.New_Loc_Id,
+          e.Site_Name,
+          e.Config,
+          e.Po,
+          e.Line,
+          e.Qty,
+          e.Premr_No,
+          e.So_Line_Item_Description,
+        ]);
       }
     }
 
@@ -512,8 +689,34 @@ class MappingHW extends React.Component {
     const wb = new Excel.Workbook();
     const ws = wb.addWorksheet();
 
-    let header = ["Line", "Po", "New_Loc_Id", "Qty"];
-
+    let header = [
+      "Lookup_Reference",
+      "Region",
+      "Reference_Loc_Id",
+      "New_Loc_Id",
+      "New_Site_Name",
+      "Po",
+      "Line",
+      "Description",
+      "NW",
+      "CN_Date",
+      "Mapping_Date",
+      "Remarks",
+      "Proceed_Billing_100",
+      "Celcom_User",
+      "Pcode",
+      "Unit_Price",
+      "Total_Price",
+      "Discounted_Unit_Price",
+      "Discounted_Po_Price",
+      "Sitepcode",
+      "VlookupWbs",
+      "So_No",
+      "Wbs_No",
+      "For_Checking_Purpose_Only_Rashidah",
+      "Hw_Coa_Received_Date_80",
+      "Billing_Upon_Hw_Coa_80",
+    ];
     ws.addRow(header);
     for (let i = 1; i < header.length + 1; i++) {
       ws.getCell(numToSSColumn(i) + "1").fill = {
@@ -527,7 +730,36 @@ class MappingHW extends React.Component {
     if (download_all_A.data !== undefined) {
       for (let i = 0; i < download_all_A.data.data.length; i++) {
         let e = download_all_A.data.data[i];
-        ws.addRow([e.Line, e.Po, e.New_Loc_Id, e.Qty]);
+        ws.addRow([
+          e.Lookup_Reference,
+          e.Region,
+          e.Reference_Loc_Id,
+          e.New_Loc_Id,
+          e.Site_Name,
+          e.New_Site_Name,
+          e.Config,
+          e.Po,
+          e.Line,
+          e.Description,
+          e.NW,
+          e.CN_Date,
+          e.Mapping_Date,
+          e.Remarks,
+          e.Proceed_Billing_100,
+          e.Celcom_User,
+          e.Pcode,
+          e.Unit_Price,
+          e.Total_Price,
+          e.Discounted_Unit_Price,
+          e.Discounted_Po_Price,
+          e.Sitepcode,
+          e.VlookupWbs,
+          e.So_No,
+          e.Wbs_No,
+          e.For_Checking_Purpose_Only_Rashidah,
+          e.Hw_Coa_Received_Date_80,
+          e.Billing_Upon_Hw_Coa_80,
+        ]);
       }
     }
 
@@ -537,7 +769,7 @@ class MappingHW extends React.Component {
   };
 
   onChangeDebounced = () => {
-    this.getList();
+    this.state.tabs_submenu[0] === true ? this.getList() : this.getList2();
   };
 
   handleFilterList = (e) => {
@@ -596,6 +828,56 @@ class MappingHW extends React.Component {
     } else {
       return null;
     }
+  };
+
+  handleChangeChecklist = (e) => {
+    const item = e.target.name;
+    const isChecked = e.target.checked;
+    const each_data = this.state.all_data;
+    let dataChecked_container = this.state.dataChecked_container;
+    if (isChecked === true) {
+      const getCPO = each_data.find((pp) => pp._id === item);
+      dataChecked_container.push(getCPO);
+    } else {
+      dataChecked_container = dataChecked_container.filter(function (pp) {
+        return pp._id !== item;
+      });
+    }
+    this.setState({ dataChecked_container: dataChecked_container }, () =>
+      console.log("make not req", this.state.dataChecked_container)
+    );
+    this.setState((prevState) => ({
+      dataChecked: prevState.dataChecked.set(item, isChecked),
+    }));
+  };
+
+  handleChangeChecklist2 = (e) => {
+    const item2 = e.target.name;
+    const isChecked2 = e.target.checked;
+    const each_data2 = this.state.all_data_true;
+    let dataChecked_container2 = this.state.dataChecked_container2;
+    if (isChecked2 === false) {
+      const getCPO2 = each_data2.find((pp) => pp._id === item2);
+      dataChecked_container2.push(getCPO2);
+    } else {
+      dataChecked_container2 = dataChecked_container2.filter(function (pp) {
+        return pp._id !== item2;
+      });
+    }
+    this.setState({ dataChecked_container2: dataChecked_container2 }, () =>
+      console.log(this.state.dataChecked_container2)
+    );
+    this.setState((prevState) => ({
+      dataChecked: prevState.dataChecked.set(item2, isChecked2),
+    }));
+  };
+
+  changeTabsSubmenu = (e) => {
+    e === 1 ? this.getList2() : this.getList();
+    // console.log("tabs_submenu", e);
+    let tab_submenu = new Array(2).fill(false);
+    tab_submenu[parseInt(e)] = true;
+    this.setState({ tabs_submenu: tab_submenu });
   };
 
   render() {
@@ -684,7 +966,30 @@ class MappingHW extends React.Component {
               </CardHeader>
 
               <CardBody>
-                <Row></Row>
+                <div>
+                  <Nav tabs>
+                    <NavItem>
+                      <NavLink
+                        onClick={this.changeTabsSubmenu.bind(this, 0)}
+                        value="0"
+                        active={this.state.tabs_submenu[0]}
+                        href="#"
+                      >
+                        <b>Required</b>
+                      </NavLink>
+                    </NavItem>
+                    <NavItem>
+                      <NavLink
+                        onClick={this.changeTabsSubmenu.bind(this, 1)}
+                        value="1"
+                        active={this.state.tabs_submenu[1]}
+                        href="#"
+                      >
+                        <b>Not Required</b>
+                      </NavLink>
+                    </NavItem>
+                  </Nav>
+                </div>{" "}
                 <Row>
                   <Col>
                     <div
@@ -702,14 +1007,16 @@ class MappingHW extends React.Component {
                           </tr>
                           <tr>
                             <td></td>
+                            <td></td>
                             {this.loopSearchBar()}
                           </tr>
                         </thead>
                         <tbody>
-                          {this.state.all_data !== undefined &&
+                          {this.state.tabs_submenu[0] === true &&
+                            this.state.all_data !== undefined &&
                             this.state.all_data.map((e, i) => (
                               <React.Fragment key={e._id + "frag"}>
-                                <tr key={e._id}>
+                                <tr align="center" key={e._id}>
                                   {role.includes("BAM-IM") === true ||
                                   role.includes("BAM-PFM") === true ? (
                                     <td>
@@ -729,6 +1036,137 @@ class MappingHW extends React.Component {
                                   ) : (
                                     <td></td>
                                   )}
+                                  <td>
+                                    <Checkbox1
+                                      checked={this.state.dataChecked.get(
+                                        e._id
+                                      )}
+                                      // checked={e.Not_Required}
+                                      onChange={this.handleChangeChecklist}
+                                      name={e._id}
+                                      value={e}
+                                    />
+                                  </td>
+                                  <td>{e.Lookup_Reference}</td>
+                                  <td>{e.Region}</td>
+                                  <td>{e.Reference_Loc_Id}</td>
+                                  <td>{e.New_Loc_Id}</td>
+                                  <td>{e.Site_Name}</td>
+                                  <td>{e.New_Site_Name}</td>
+                                  <td>{e.Config}</td>
+                                  <td>{e.Po}</td>
+                                  <td>{e.Line}</td>
+                                  <td>{e.Description}</td>
+                                  <td>{e.Qty}</td>
+                                  <td>{e.NW}</td>
+                                  <td>{e.CN_Date}</td>
+                                  <td>{e.Mapping_Date}</td>
+                                  <td>{e.Remarks}</td>
+                                  <td>{e.Premr_No}</td>
+                                  <td>{e.Proceed_Billing_100}</td>
+                                  <td>{e.Celcom_User}</td>
+                                  <td>
+                                    {this.LookupField(
+                                      e.Po + "-" + e.Line,
+                                      "Pcod"
+                                    )}
+                                  </td>
+                                  <td>
+                                    {this.LookupField(
+                                      e.Po + "-" + e.Line,
+                                      "Unit_Price"
+                                    )}
+                                  </td>
+                                  <td>{e.Total_Price}</td>
+                                  <td>{e.Discounted_Unit_Price}</td>
+                                  <td>{e.Discounted_Po_Price}</td>
+                                  <td>{e.So_Line_Item_Description}</td>
+                                  <td>{e.Sitepcode}</td>
+                                  <td>{e.VlookupWbs}</td>
+                                  <td>{e.So_No}</td>
+                                  <td>{e.Wbs_No}</td>
+                                  <td>
+                                    {e.For_Checking_Purpose_Only_Rashidah}
+                                  </td>
+                                  <td>{e.Hw_Coa_Received_Date_80}</td>
+                                  <td>{e.Billing_Upon_Hw_Coa_80}</td>
+                                  <td>{e.Invoicing_No_Hw_Coa_80}</td>
+                                  <td>{e.Invoicing_Date_Hw_Coa_80}</td>
+                                  <td>{e.Ni_Coa_Date_20}</td>
+                                  <td>{e.Billing_Upon_Ni_20}</td>
+                                  <td>{e.Invoicing_No_Ni_20}</td>
+                                  <td>{e.Invoicing_Date_Ni_20}</td>
+                                  <td>{e.Sso_Coa_Date_20}</td>
+                                  <td>{e.Billing_Upon_Sso_20}</td>
+                                  <td>{e.Invoicing_No_Sso_20}</td>
+                                  <td>{e.Invoicing_Date_Sso_20}</td>
+                                  <td>{e.Gr_Number}</td>
+                                  <td>{e.Hw_Coa_Received_Date_40}</td>
+                                  <td>{e.Billing_Upon_Hw_Coa_40}</td>
+                                  <td>{e.Invoicing_No_Hw_Coa_40}</td>
+                                  <td>{e.Invoicing_Date_Hw_Coa_40}</td>
+                                  <td>{e.Cancelled_Hw_Coa_40}</td>
+                                  <td>{e.Ni_Coa_Date_40}</td>
+                                  <td>{e.Billing_Upon_Ni_40}</td>
+                                  <td>{e.Invoicing_No_Ni_40}</td>
+                                  <td>{e.Invoicing_Date_Ni_40}</td>
+                                  <td>{e.Cancelled_Ni_40}</td>
+                                  <td>{e.Sso_Coa_Date_20_1}</td>
+                                  <td>{e.Billing_Upon_Sso_20_1}</td>
+                                  <td>{e.Invoicing_No_Sso_20_1}</td>
+                                  <td>{e.Invoicing_Date_Sso_20_1}</td>
+                                  <td>{e.Cancelled_Sso_20}</td>
+                                  <td>{e.Vlookup_SSO_100_In_Service}</td>
+                                  <td>{e.Hw_Coa_100}</td>
+                                  <td>{e.Billing_Upon_Hw_Coa_100}</td>
+                                  <td>{e.Invoicing_No_Hw_Coa_100}</td>
+                                  <td>{e.Invoicing_Date_Hw_Coa_100}</td>
+                                  <td>{e.Reference_Loc_Id_1}</td>
+                                  <td>{e.Po_1}</td>
+                                  <td>{e.Reff_1}</td>
+                                  <td>{e.Site_List}</td>
+                                  <td>{e.Reff_2}</td>
+                                  <td>{e.Ni}</td>
+                                  <td>{e.Sso}</td>
+                                  <td>{e.Ref_Ni}</td>
+                                </tr>
+                              </React.Fragment>
+                            ))}
+                          {this.state.tabs_submenu[1] === true &&
+                            this.state.all_data_true !== undefined &&
+                            this.state.all_data_true.map((e, i) => (
+                              <React.Fragment key={e._id + "frag"}>
+                                <tr align="center" key={e._id}>
+                                  {role.includes("BAM-IM") === true ||
+                                  role.includes("BAM-PFM") === true ? (
+                                    <td>
+                                      <Link to={"/hw-cpo/" + e._id}>
+                                        <Button
+                                          size="sm"
+                                          color="secondary"
+                                          title="Edit"
+                                        >
+                                          <i
+                                            className="fa fa-edit"
+                                            aria-hidden="true"
+                                          ></i>
+                                        </Button>
+                                      </Link>
+                                    </td>
+                                  ) : (
+                                    <td></td>
+                                  )}
+                                  <td>
+                                    <Checkbox2
+                                      checked={this.state.dataChecked.get(
+                                        e._id
+                                      )}
+                                      // checked={e.Not_Required}
+                                      onChange={this.handleChangeChecklist2}
+                                      name={e._id}
+                                      value={e}
+                                    />
+                                  </td>
                                   <td>{e.Lookup_Reference}</td>
                                   <td>{e.Region}</td>
                                   <td>{e.Reference_Loc_Id}</td>
@@ -836,6 +1274,18 @@ class MappingHW extends React.Component {
                   </Col>
                 </Row>
               </CardBody>
+              <ModalFooter>
+                <Button
+                  color="info"
+                  onClick={this.saveUpdate}
+                  disabled={
+                    this.state.dataChecked_container.length === 0 &&
+                    this.state.dataChecked_container2.length === 0
+                  }
+                >
+                  Update
+                </Button>
+              </ModalFooter>
             </Card>
           </Col>
         </Row>
