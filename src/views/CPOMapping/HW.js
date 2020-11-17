@@ -885,10 +885,14 @@ class MappingHW extends React.Component {
     const role = this.state.roleUser;
     return (
       <div className="animated fadeIn">
-        <DefaultNotif
-          actionMessage={this.state.action_message}
-          actionStatus={this.state.action_status}
-        />
+        <Row className="row-alert-fixed">
+          <Col xs="12" lg="12">
+            <DefaultNotif
+              actionMessage={this.state.action_message}
+              actionStatus={this.state.action_status}
+            />
+          </Col>
+        </Row>
         <Row>
           <Col xl="12">
             <Card style={{}}>
@@ -1017,25 +1021,21 @@ class MappingHW extends React.Component {
                             this.state.all_data.map((e, i) => (
                               <React.Fragment key={e._id + "frag"}>
                                 <tr align="center" key={e._id}>
-                                  {role.includes("BAM-IM") === true ||
-                                  role.includes("BAM-PFM") === true ? (
-                                    <td>
-                                      <Link to={"/hw-cpo/" + e._id}>
-                                        <Button
-                                          size="sm"
-                                          color="secondary"
-                                          title="Edit"
-                                        >
-                                          <i
-                                            className="fa fa-edit"
-                                            aria-hidden="true"
-                                          ></i>
-                                        </Button>
-                                      </Link>
-                                    </td>
-                                  ) : (
-                                    <td></td>
-                                  )}
+                                  <td>
+                                    <Link to={"/hw-cpo/" + e._id}>
+                                      <Button
+                                        size="sm"
+                                        color="secondary"
+                                        title="Edit"
+                                      >
+                                        <i
+                                          className="fa fa-edit"
+                                          aria-hidden="true"
+                                        ></i>
+                                      </Button>
+                                    </Link>
+                                  </td>
+
                                   <td>
                                     <Checkbox1
                                       checked={this.state.dataChecked.get(
