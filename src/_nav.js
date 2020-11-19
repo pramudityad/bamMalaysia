@@ -78,7 +78,7 @@ export default {
         {
           name: "HW Maping",
           url: "/hw-cpo",
-          icon: "icon-folder",
+          icon: "icon-list",
           roles: [
             "BAM-CPM",
             "BAM-IM",
@@ -110,7 +110,7 @@ export default {
         {
           name: "SVC Maping",
           url: "/svc-cpo",
-          icon: "icon-folder",
+          icon: "icon-list",
           roles: [
             "BAM-CPM",
             "BAM-IM",
@@ -139,8 +139,25 @@ export default {
             "BAM-PFM",
           ],
         },
+      ],
+    },
+    {
+      name: "Dashboard",
+      icon: "icon-speedometer",
+      roles: [
+        "BAM-CPM",
+        "BAM-IM",
+        "BAM-IE Lead",
+        "BAM-MP",
+        "BAM-PA",
+        "BAM-Sourcing",
+        "BAM-GR-PA",
+        "BAM-MAT PLANNER",
+        "BAM-PFM",
+      ],
+      children: [
         {
-          name: "HW Dashboard",
+          name: "HW",
           url: "/hw-dashboard",
           icon: "icon-folder",
           roles: [
@@ -156,7 +173,7 @@ export default {
           ],
         },
         {
-          name: "SVC Dashboard",
+          name: "SVC",
           url: "/svc-dashboard",
           icon: "icon-folder",
           roles: [

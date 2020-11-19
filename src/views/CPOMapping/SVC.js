@@ -95,6 +95,7 @@ const modul_name = "SVC Mapping";
 const header = [
   "",
   "NOT REQUIRED",
+  "Internal PO",
   "Link",
   "LOOKUP REFERENCE",
   "REGION",
@@ -153,6 +154,7 @@ const header = [
 ];
 
 const header_model = [
+  "Internal_Po",
   "Link",
   "Lookup_Reference",
   "Region",
@@ -261,6 +263,13 @@ class MappingSVC extends React.Component {
 
   getList() {
     let filter_array = [];
+    this.state.filter_list["Internal_Po"] !== null &&
+      this.state.filter_list["Internal_Po"] !== undefined &&
+      filter_array.push(
+        '"Internal_Po":{"$regex" : "' +
+          this.state.filter_list["Internal_Po"] +
+          '", "$options" : "i"}'
+      );
     this.state.filter_list["Region"] !== null &&
       this.state.filter_list["Region"] !== undefined &&
       filter_array.push(
@@ -318,6 +327,13 @@ class MappingSVC extends React.Component {
 
   getList2() {
     let filter_array = [];
+    this.state.filter_list["Internal_Po"] !== null &&
+      this.state.filter_list["Internal_Po"] !== undefined &&
+      filter_array.push(
+        '"Internal_Po":{"$regex" : "' +
+          this.state.filter_list["Internal_Po"] +
+          '", "$options" : "i"}'
+      );
     this.state.filter_list["Region"] !== null &&
       this.state.filter_list["Region"] !== undefined &&
       filter_array.push(
@@ -388,6 +404,109 @@ class MappingSVC extends React.Component {
     }
     const PPFormat = await wb.xlsx.writeBuffer();
     saveAs(new Blob([PPFormat]), modul_name + " Template.xlsx");
+  };
+
+  exportTemplate2 = async () => {
+    const wb = new Excel.Workbook();
+    const ws = wb.addWorksheet();
+
+    const download_all_template = await getDatafromAPINODE(
+      "/cpoMapping/getCpo/svc?noPg=1",
+      this.state.tokenUser
+    );
+
+    ws.addRow(header_model);
+    for (let i = 1; i < header_model.length + 1; i++) {
+      ws.getCell(numToSSColumn(i) + "1").fill = {
+        type: "pattern",
+        pattern: "solid",
+        fgColor: { argb: "FFFFFF00" },
+        bgColor: { argb: "A9A9A9" },
+      };
+    }
+
+    if (download_all_template.data !== undefined) {
+      console.log(download_all_template.data.data.map((u) => u._id));
+
+      for (let i = 0; i < download_all_template.data.data.length; i++) {
+        let e = download_all_template.data.data[i];
+        ws.addRow([
+          e.Internal_Po,
+          e.Link,
+          e.Lookup_Reference,
+          e.Region,
+          e.Reference_Loc_Id,
+          e.New_Loc_Id,
+          e.Site_Name,
+          e.New_Site_Name,
+          e.Config,
+          e.Po,
+          e.Line,
+          e.Description,
+          e.Qty,
+          e.CNI_Date,
+          e.Mapping_Date,
+          e.Remarks,
+          e.Celcom_User,
+          this.LookupField(e.Po + "-" + e.Line, "Pcode"),
+          this.LookupField(e.Po + "-" + e.Line, "Unit_Price"),
+          e.Total_Price,
+          e.Discounted_Unit_Price,
+          e.Discounted_Po_Price,
+          e.Type,
+          e.So_Line_Item_Description,
+          e.So_No,
+          e.Wbs_No,
+          e.Billing_100,
+          e.Atp_Coa_Received_Date_80,
+          e.Billing_Upon_Atp_Coa_80,
+          e.Invoicing_No_Atp_Coa_80,
+          e.Invoicing_Date_Atp_Coa_80,
+          e.Cancelled_Atp_Coa_80,
+          e.Ni_Coa_Date_20,
+          e.Billing_Upon_Ni_20,
+          e.Invoicing_No_Ni_20,
+          e.Invoicing_Date_Ni_20,
+          e.Sso_Coa_Date_80,
+          e.Billing_Upon_Sso_80,
+          e.Invoicing_No_Sso_80,
+          e.Invoicing_Date_Sso_80,
+          e.Coa_Psp_Received_Date_20,
+          e.Billing_Upon_Coa_Psp_20,
+          e.Invoicing_No_Coa_Psp_20,
+          e.Invoicing_Date_Coa_Psp_20,
+          e.Sso_Coa_Date_100,
+          e.Billing_Upon_Sso_Coa_100,
+          e.Invoicing_No_Sso_Coa_100,
+          e.Invoicing_Date_Sso_Coa_100,
+          e.Coa_Ni_Date_100,
+          e.Billing_Upon_Coa_Ni_100,
+          e.Invoicing_No_Coa_Ni_100,
+          e.Invoicing_Date_Coa_Ni_100,
+          e.Ses_No,
+          e.Ses_Status,
+          e.Link_1,
+          e.Ni_Coa_Submission_Status,
+          e.Invoicing_Date_Sso_20_1,
+          e.Cancelled_Sso_20,
+          e.Vlookup_SSO_100_In_Service,
+          e.Hw_Coa_100,
+          e.Billing_Upon_Hw_Coa_100,
+          e.Invoicing_No_Hw_Coa_100,
+          e.Invoicing_Date_Hw_Coa_100,
+          e.Reference_Loc_Id_1,
+          e.Po_1,
+          e.Reff_1,
+          e.Site_List,
+          e.Reff_2,
+          e.Ni,
+          e.Sso,
+          e.Ref_Ni,
+        ]);
+      }
+    }
+    const PPFormat = await wb.xlsx.writeBuffer();
+    saveAs(new Blob([PPFormat]), modul_name + " All.xlsx");
   };
 
   togglecreateModal = () => {
@@ -761,7 +880,7 @@ class MappingSVC extends React.Component {
     for (let i = 0; i < header_model.length; i++) {
       searchBar.push(
         <td>
-          {i !== 2 && i !== 4 && i !== 6 && i !== 8 && i !== 9 ? (
+          {i !== 0 && i !== 3 && i !== 5 && i !== 7 && i !== 9 && i !== 10 ? (
             ""
           ) : (
             <div className="controls" style={{ width: "150px" }}>
@@ -962,10 +1081,16 @@ class MappingSVC extends React.Component {
                       <DropdownMenu>
                         <DropdownItem header>Uploader Template</DropdownItem>
                         {role.includes("BAM-MAT PLANNER") === true ? (
-                          <DropdownItem onClick={this.exportTemplate}>
-                            {" "}
-                            Mapping Template
-                          </DropdownItem>
+                          <>
+                            <DropdownItem onClick={this.exportTemplate}>
+                              {" "}
+                              Mapping Template
+                            </DropdownItem>
+                            <DropdownItem onClick={this.exportTemplate2}>
+                              {" "}
+                              All Data Template
+                            </DropdownItem>
+                          </>
                         ) : (
                           ""
                         )}
@@ -1074,6 +1199,7 @@ class MappingSVC extends React.Component {
                                       value={e}
                                     />
                                   </td>
+                                  <td>{e.Internal_Po}</td>
                                   <td>{e.Link}</td>
                                   <td>{e.Lookup_Reference}</td>
                                   <td>{e.Region}</td>

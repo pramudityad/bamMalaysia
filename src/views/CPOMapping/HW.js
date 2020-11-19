@@ -95,6 +95,7 @@ const modul_name = "HW Mapping";
 const header = [
   "",
   "NOT REQUIRED",
+  "Internal PO",
   "LOOKUP REFERENCE",
   "REGION",
   "REFERENCE LOC ID",
@@ -167,6 +168,7 @@ const header = [
   "REF NI",
 ];
 const header_model = [
+  "Internal_Po",
   "Lookup_Reference",
   "Region",
   "Reference_Loc_Id",
@@ -416,6 +418,111 @@ class MappingHW extends React.Component {
     }
     const PPFormat = await wb.xlsx.writeBuffer();
     saveAs(new Blob([PPFormat]), modul_name + " Template.xlsx");
+  };
+
+  exportTemplate2 = async () => {
+    const wb = new Excel.Workbook();
+    const ws = wb.addWorksheet();
+
+    const download_all_template = await getDatafromAPINODE(
+      "/cpoMapping/getCpo/hw?noPg=1",
+      this.state.tokenUser
+    );
+
+    ws.addRow(header_model);
+    for (let i = 1; i < header_model.length + 1; i++) {
+      ws.getCell(numToSSColumn(i) + "1").fill = {
+        type: "pattern",
+        pattern: "solid",
+        fgColor: { argb: "FFFFFF00" },
+        bgColor: { argb: "A9A9A9" },
+      };
+    }
+
+    if (download_all_template.data !== undefined) {
+      console.log(download_all_template.data.data.map((u) => u._id));
+
+      for (let i = 0; i < download_all_template.data.data.length; i++) {
+        let e = download_all_template.data.data[i];
+        ws.addRow([
+          e.Internal_Po,
+          e.Lookup_Reference,
+          e.Region,
+          e.Reference_Loc_Id,
+          e.New_Loc_Id,
+          e.Site_Name,
+          e.New_Site_Name,
+          e.Config,
+          e.Po,
+          e.Line,
+          e.Description,
+          e.Qty,
+          e.NW,
+          e.CN_Date,
+          e.Mapping_Date,
+          e.Remarks,
+          e.Premr_No,
+          e.Proceed_Billing_100,
+          e.Celcom_User,
+          this.LookupField(e.Po + "-" + e.Line, "Pcode"),
+          this.LookupField(e.Po + "-" + e.Line, "Unit_Price"),
+          e.Total_Price,
+          e.Discounted_Unit_Price,
+          e.Discounted_Po_Price,
+          e.So_Line_Item_Description,
+          e.Sitepcode,
+          e.VlookupWbs,
+          e.So_No,
+          e.Wbs_No,
+
+          e.For_Checking_Purpose_Only_Rashidah,
+
+          e.Hw_Coa_Received_Date_80,
+          e.Billing_Upon_Hw_Coa_80,
+          e.Invoicing_No_Hw_Coa_80,
+          e.Invoicing_Date_Hw_Coa_80,
+          e.Ni_Coa_Date_20,
+          e.Billing_Upon_Ni_20,
+          e.Invoicing_No_Ni_20,
+          e.Invoicing_Date_Ni_20,
+          e.Sso_Coa_Date_20,
+          e.Billing_Upon_Sso_20,
+          e.Invoicing_No_Sso_20,
+          e.Invoicing_Date_Sso_20,
+          e.Gr_Number,
+          e.Hw_Coa_Received_Date_40,
+          e.Billing_Upon_Hw_Coa_40,
+          e.Invoicing_No_Hw_Coa_40,
+          e.Invoicing_Date_Hw_Coa_40,
+          e.Cancelled_Hw_Coa_40,
+          e.Ni_Coa_Date_40,
+          e.Billing_Upon_Ni_40,
+          e.Invoicing_No_Ni_40,
+          e.Invoicing_Date_Ni_40,
+          e.Cancelled_Ni_40,
+          e.Sso_Coa_Date_20_1,
+          e.Billing_Upon_Sso_20_1,
+          e.Invoicing_No_Sso_20_1,
+          e.Invoicing_Date_Sso_20_1,
+          e.Cancelled_Sso_20,
+          e.Vlookup_SSO_100_In_Service,
+          e.Hw_Coa_100,
+          e.Billing_Upon_Hw_Coa_100,
+          e.Invoicing_No_Hw_Coa_100,
+          e.Invoicing_Date_Hw_Coa_100,
+          e.Reference_Loc_Id_1,
+          e.Po_1,
+          e.Reff_1,
+          e.Site_List,
+          e.Reff_2,
+          e.Ni,
+          e.Sso,
+          e.Ref_Ni,
+        ]);
+      }
+    }
+    const PPFormat = await wb.xlsx.writeBuffer();
+    saveAs(new Blob([PPFormat]), modul_name + " All.xlsx");
   };
 
   togglecreateModal = () => {
@@ -790,7 +897,7 @@ class MappingHW extends React.Component {
     for (let i = 0; i < header_model.length; i++) {
       searchBar.push(
         <td>
-          {i !== 1 && i !== 3 && i !== 5 && i !== 7 && i !== 8 ? (
+          {i !== 0 && i !== 2 && i !== 4 && i !== 6 && i !== 8 && i !== 9 ? (
             ""
           ) : (
             <div className="controls" style={{ width: "150px" }}>
@@ -942,10 +1049,16 @@ class MappingHW extends React.Component {
                       <DropdownMenu>
                         <DropdownItem header>Uploader Template</DropdownItem>
                         {role.includes("BAM-MAT PLANNER") === true ? (
-                          <DropdownItem onClick={this.exportTemplate}>
-                            {" "}
-                            Mapping Template
-                          </DropdownItem>
+                          <>
+                            <DropdownItem onClick={this.exportTemplate}>
+                              {" "}
+                              Mapping Template
+                            </DropdownItem>
+                            <DropdownItem onClick={this.exportTemplate2}>
+                              {" "}
+                              All Data Template
+                            </DropdownItem>
+                          </>
                         ) : (
                           ""
                         )}
@@ -1047,6 +1160,7 @@ class MappingHW extends React.Component {
                                       value={e}
                                     />
                                   </td>
+                                  <td>{e.Internal_Po}</td>
                                   <td>{e.Lookup_Reference}</td>
                                   <td>{e.Region}</td>
                                   <td>{e.Reference_Loc_Id}</td>

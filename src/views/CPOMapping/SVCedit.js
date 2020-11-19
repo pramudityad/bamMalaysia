@@ -153,6 +153,18 @@ class SVCEdit extends React.Component {
                         <FormGroup row>
                           <Col>
                             <FormGroup>
+                              <Label>Internal_Po</Label>
+                              <Input
+                                type="text"
+                                name="Internal_Po"
+                                placeholder=""
+                                value={CPOForm.Internal_Po}
+                                onChange={this.handleChangeForm}
+                              />
+                            </FormGroup>
+                          </Col>
+                          <Col>
+                            <FormGroup>
                               <Label>Link</Label>
                               <Input
                                 type="text"
@@ -502,6 +514,7 @@ class SVCEdit extends React.Component {
                               <Label>Sitepcode</Label>
 
                               <Input
+                                readOnly
                                 type="text"
                                 name="Sitepcode"
                                 placeholder=""
@@ -515,6 +528,7 @@ class SVCEdit extends React.Component {
                               <Label>VlookupWbs</Label>
 
                               <Input
+                                readOnly
                                 type="text"
                                 name="VlookupWbs"
                                 placeholder=""
@@ -528,6 +542,7 @@ class SVCEdit extends React.Component {
                               <Label>So_No</Label>
 
                               <Input
+                                readOnly
                                 type="text"
                                 name="So_No"
                                 placeholder=""
@@ -541,6 +556,7 @@ class SVCEdit extends React.Component {
                               <Label>Wbs_No</Label>
 
                               <Input
+                                readOnly
                                 type="text"
                                 name="Wbs_No"
                                 placeholder=""
@@ -554,6 +570,7 @@ class SVCEdit extends React.Component {
                               <Label>Billing_100</Label>
 
                               <Input
+                                readOnly
                                 type="text"
                                 name="Billing_100"
                                 placeholder=""
@@ -567,6 +584,7 @@ class SVCEdit extends React.Component {
                               <Label>Atp_Coa_Received_Date_80</Label>
 
                               <Input
+                                readOnly
                                 type="text"
                                 name="Atp_Coa_Received_Date_80"
                                 placeholder=""
@@ -580,6 +598,7 @@ class SVCEdit extends React.Component {
                               <Label>Billing_Upon_Atp_Coa_80</Label>
 
                               <Input
+                                readOnly
                                 type="text"
                                 name="Billing_Upon_Atp_Coa_80"
                                 placeholder=""
@@ -989,7 +1008,7 @@ class SVCEdit extends React.Component {
                     <Row>
                       <Col sm="12">
                         <FormGroup row>
-                          <Col>
+                          {/* <Col>
                             <FormGroup>
                               <Label>Premr_No</Label>
                               {role.includes("BAM-IM") === true ? (
@@ -1011,7 +1030,7 @@ class SVCEdit extends React.Component {
                                 />
                               )}
                             </FormGroup>
-                          </Col>
+                          </Col> */}
                           <Col>
                             <FormGroup>
                               <Label>Proceed_Billing_100</Label>

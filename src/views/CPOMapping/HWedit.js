@@ -177,6 +177,18 @@ class HWEdit extends React.Component {
                       </Col> */}
                           <Col>
                             <FormGroup>
+                              <Label>Internal_Po</Label>
+                              <Input
+                                type="text"
+                                name="Internal_Po"
+                                placeholder=""
+                                value={CPOForm.Internal_Po}
+                                onChange={this.handleChangeForm}
+                              />
+                            </FormGroup>
+                          </Col>
+                          <Col>
+                            <FormGroup>
                               <Label>Lookup_Reference</Label>
 
                               <Input
@@ -531,6 +543,7 @@ class HWEdit extends React.Component {
                               <Label>So_Line_Item_Description</Label>
 
                               <Input
+                                readOnly
                                 type="text"
                                 name="So_Line_Item_Description"
                                 placeholder=""
@@ -544,6 +557,7 @@ class HWEdit extends React.Component {
                               <Label>Sitepcode</Label>
 
                               <Input
+                                readOnly
                                 type="text"
                                 name="Sitepcode"
                                 placeholder=""
@@ -557,6 +571,7 @@ class HWEdit extends React.Component {
                               <Label>VlookupWbs</Label>
 
                               <Input
+                                readOnly
                                 type="text"
                                 name="VlookupWbs"
                                 placeholder=""
@@ -570,6 +585,7 @@ class HWEdit extends React.Component {
                               <Label>So_No</Label>
 
                               <Input
+                                readOnly
                                 type="text"
                                 name="So_No"
                                 placeholder=""
@@ -583,6 +599,7 @@ class HWEdit extends React.Component {
                               <Label>Wbs_No</Label>
 
                               <Input
+                                readOnly
                                 type="text"
                                 name="Wbs_No"
                                 placeholder=""
@@ -596,6 +613,7 @@ class HWEdit extends React.Component {
                               <Label>For_Checking_Purpose_Only_Rashidah</Label>
 
                               <Input
+                                readOnly
                                 type="text"
                                 name="For_Checking_Purpose_Only_Rashidah"
                                 placeholder=""
@@ -611,6 +629,7 @@ class HWEdit extends React.Component {
                               <Label>Hw_Coa_Received_Date</Label>
 
                               <Input
+                                readOnly
                                 type="text"
                                 name="Hw_Coa_Received_Date_80"
                                 placeholder=""
@@ -624,6 +643,7 @@ class HWEdit extends React.Component {
                               <Label>Billing_Upon_Hw_Coa_80</Label>
 
                               <Input
+                                readOnly
                                 type="text"
                                 name="Billing_Upon_Hw_Coa_80"
                                 placeholder=""
