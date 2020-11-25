@@ -1286,8 +1286,8 @@ class MYASGDetail extends Component {
       this.getLMRDetailData(this.props.match.params.id);
     }
     // this.getMaterialList();
-    this.getDataCD();
-    this.getProjectList();
+    // this.getDataCD();
+    // this.getProjectList();
     document.title = "LMR Detail | BAM";
   }
 
@@ -1691,11 +1691,11 @@ class MYASGDetail extends Component {
                   {" "}
                   LMR Detail{" "}
                 </span>
-                {/* <div
+                <div
                   className="card-header-actions"
                   style={{ display: "inline-flex" }}
                 >
-                  <div style={{ marginRight: "10px" }}>
+                  {/* <div style={{ marginRight: "10px" }}>
                     <Dropdown
                       isOpen={this.state.dropdownOpen[0]}
                       toggle={() => {
@@ -1731,15 +1731,15 @@ class MYASGDetail extends Component {
                   >
                     <i className="fa fa-eraser">&nbsp; Delete</i>
                   </Button>
-                  &nbsp;&nbsp;&nbsp;
+                  &nbsp;&nbsp;&nbsp; */}
                   <Link to={"/lmr-edit/" + this.props.match.params.id}>
-                    <Button color="warning" size="sm">
+                    <Button color="warning">
                       <i className="fa fa-wpforms" aria-hidden="true">
-                        &nbsp; Change
+                        &nbsp; Duplicate
                       </i>
                     </Button>
                   </Link>
-                </div> */}
+                </div>
               </CardHeader>
               <Collapse isOpen={this.state.collapse_add_child}>
                 <Card style={{ margin: "10px 10px 5px 10px" }}>
@@ -1875,7 +1875,7 @@ class MYASGDetail extends Component {
                           <tr style={{ fontWeight: "425", fontSize: "15px" }}>
                             <td>GL Account</td>
                             <td>:</td>
-                            <td>{this.state.lmr_detail.gl_account}</td>
+                            <td>{this.state.lmr_detail.gl_account_actual}</td>
                           </tr>
                           <tr style={{ fontWeight: "425", fontSize: "15px" }}>
                             <td>Vendor</td>

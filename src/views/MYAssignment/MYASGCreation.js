@@ -384,14 +384,6 @@ class MYASGCreation extends Component {
     }
   }
 
-  getDataCD() {
-    this.getDatafromAPIMY("/cdid_data").then((resCD) => {
-      if (resCD.data !== undefined) {
-        this.setState({ list_cd_id: resCD.data._items });
-      }
-    });
-  }
-
   getDataCDACT = () => {
     this.getCDfromACT(
       "https://cors-anywhere.herokuapp.com/",
@@ -1049,6 +1041,7 @@ class MYASGCreation extends Component {
       lmr_issued_by: this.state.lmr_form.lmr_issued_by,
       pgr: this.state.lmr_form.pgr,
       gl_account: this.state.lmr_form.gl_account,
+      gl_account_actual: this.state.lmr_form.gl_account_actual,
       id_project_doc: this.state.lmr_form.id_project_doc,
       project_name: dataChildForm[0].project_name,
       header_text: this.state.lmr_form.header_text,
@@ -1209,31 +1202,37 @@ class MYASGCreation extends Component {
       let selected_options = e.target.options[e.target.selectedIndex].text;
       let mm_data_type = "";
       if (selected_options === "Transport - 402102") {
+        lmr_form["gl_account_actual"] = selected_options;
         mm_data_type = "NRO";
         lmr_form["gl_type"] = "Transport";
         lmr_form["mm_data_type"] = mm_data_type;
       }
       if (selected_options === "ARP - 402693") {
+        lmr_form["gl_account_actual"] = selected_options;
         mm_data_type = "ARP";
         lmr_form["gl_type"] = "T&M";
         lmr_form["mm_data_type"] = mm_data_type;
       }
       if (selected_options === "NRO service - 402603") {
+        lmr_form["gl_account_actual"] = selected_options;
         mm_data_type = "NRO";
         lmr_form["gl_type"] = "NRO Services";
         lmr_form["mm_data_type"] = mm_data_type;
       }
       if (selected_options === "NDO service - 402603") {
+        lmr_form["gl_account_actual"] = selected_options;
         mm_data_type = "NDO";
         lmr_form["gl_type"] = "NDO Services";
         lmr_form["mm_data_type"] = mm_data_type;
       }
       if (selected_options === "NRO local material - 402201") {
+        lmr_form["gl_account_actual"] = selected_options;
         mm_data_type = "NRO";
         lmr_form["gl_type"] = "LM";
         lmr_form["mm_data_type"] = mm_data_type;
       }
       if (selected_options === "3PP Hardware - 402201") {
+        lmr_form["gl_account_actual"] = selected_options;
         mm_data_type = "HW";
         lmr_form["gl_type"] = "Hardware";
         lmr_form["mm_data_type"] = mm_data_type;
