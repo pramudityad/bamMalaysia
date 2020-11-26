@@ -185,6 +185,7 @@ class MYASGEdit extends Component {
       redirectSign: false,
       key_child: 0,
       edit_count: 0,
+      total_price_parent: 0,
     };
     this.handleChangeCD = this.handleChangeCD.bind(this);
     this.loadOptionsCDID = this.loadOptionsCDID.bind(this);
@@ -212,7 +213,30 @@ class MYASGEdit extends Component {
   decideToggleMaterial = (number_child_form) => {
     // let Mat_type = this.state.creation_lmr_child_form[number_child_form]
     //   .material_type;
-    let Mat_type = this.state.mm_data_type;
+    let Mat_type = this.state.lmr_form;
+    console.log(Mat_type["mm_data_type"]);
+    switch (Mat_type["mm_data_type"]) {
+      case "NRO":
+        this.toggleMaterialNRO(number_child_form);
+        break;
+      case "NDO":
+        this.toggleMaterial(number_child_form);
+        break;
+      case "HW":
+        this.toggleMaterialHW(number_child_form);
+        break;
+      case "ARP":
+        this.toggleMaterialARP(number_child_form);
+        break;
+      default:
+        break;
+    }
+  };
+
+  decideToggleMaterialexist = (number_child_form) => {
+    // let Mat_type = this.state.creation_lmr_child_form[number_child_form]
+    //   .material_type;
+    let Mat_type = this.state.lmr_form.mm_data_type;
     console.log(Mat_type);
     switch (Mat_type) {
       case "NRO":
@@ -622,7 +646,7 @@ class MYASGEdit extends Component {
     }
     // this.getMaterialList();
     console.log("id ", this.props.match.params.id);
-    document.title = "LMR Creation | BAM";
+    document.title = "LMR Edit | BAM";
   }
 
   getLMRDetailData(_id) {
@@ -633,11 +657,12 @@ class MYASGEdit extends Component {
           this.setState(
             {
               lmr_form: dataLMRDetail,
-              creation_lmr_child_form: dataLMRDetail.detail,
+              // creation_lmr_child_form: dataLMRDetail.detail,
             },
             () => {
-              console.log("lmr_detail detail ", dataLMRDetail.detail);
-              this.getDataPRPO(dataLMRDetail.lmr_id);
+              // console.log("mm_data_type ", this.state.lmr_form.mm_data_type);
+              // this.getDataPRPO(dataLMRDetail.lmr_id);
+              this.getChildLMR();
             }
           );
         }
@@ -645,17 +670,22 @@ class MYASGEdit extends Component {
     );
   }
 
-  getDataPRPO(LMR_ID) {
-    this.getDatafromAPIMY(
-      '/prpo_data?where={"LMR_No" : "' + LMR_ID + '"}'
-    ).then((res) => {
-      if (res.data !== undefined) {
-        const dataLMRDetailPRPO = res.data._items;
-        this.setState({ list_pr_po: dataLMRDetailPRPO });
-        console.log("list_pr_po ", this.state.list_pr_po);
-      }
-    });
+  getChildLMR() {
+    const LMR_parent = this.state.lmr_form;
+    this.setState({ creation_lmr_child_form: LMR_parent.detail });
   }
+
+  // getDataPRPO(LMR_ID) {
+  //   this.getDatafromAPIMY(
+  //     '/prpo_data?where={"LMR_No" : "' + LMR_ID + '"}'
+  //   ).then((res) => {
+  //     if (res.data !== undefined) {
+  //       const dataLMRDetailPRPO = res.data._items;
+  //       this.setState({ list_pr_po: dataLMRDetailPRPO });
+  //       console.log("list_pr_po ", this.state.list_pr_po);
+  //     }
+  //   });
+  // }
 
   handlePageChange(pageNumber) {
     let dataLMR = this.state.creation_lmr_child_form;
@@ -700,9 +730,9 @@ class MYASGEdit extends Component {
   getMaterialList(number_child_form) {
     let filter_array = [];
     // vendor
-    this.state.lmr_form.vendor_code !== "" &&
+    this.state.lmr_form.vendor_code_actual !== "" &&
       filter_array.push(
-        '"Vendor_ID":"' + this.state.lmr_form.vendor_code + '"'
+        '"Vendor_ID":"' + this.state.lmr_form.vendor_code_actual + '"'
       );
     this.state.mm_data_type !== "" &&
       filter_array.push(
@@ -784,9 +814,9 @@ class MYASGEdit extends Component {
   getMaterialListHW(number_child_form) {
     let filter_array = [];
     // vendor
-    this.state.lmr_form.vendor_code !== "" &&
+    this.state.lmr_form.vendor_code_actual !== "" &&
       filter_array.push(
-        '"Vendor_ID":"' + this.state.lmr_form.vendor_code + '"'
+        '"Vendor_ID":"' + this.state.lmr_form.vendor_code_actual + '"'
       );
     this.state.mm_data_type !== "" &&
       filter_array.push(
@@ -860,9 +890,9 @@ class MYASGEdit extends Component {
   getMaterialListARP(number_child_form) {
     let filter_array = [];
     // vendor
-    this.state.lmr_form.vendor_code !== "" &&
+    this.state.lmr_form.vendor_code_actual !== "" &&
       filter_array.push(
-        '"Vendor_ID":"' + this.state.lmr_form.vendor_code + '"'
+        '"Vendor_ID":"' + this.state.lmr_form.vendor_code_actual + '"'
       );
     this.state.mm_data_type !== "" &&
       filter_array.push(
@@ -930,9 +960,11 @@ class MYASGEdit extends Component {
   getMaterialListNRO(number_child_form) {
     let filter_array = [];
     // vendor
-    this.state.lmr_form.vendor_code !== "" &&
+    this.state.lmr_form.vendor_code_actual !== "" &&
       filter_array.push(
-        '"Vendor_List.Vendor_Code":"' + this.state.lmr_form.vendor_code + '"'
+        '"Vendor_List.Vendor_Code":"' +
+          this.state.lmr_form.vendor_code_actual +
+          '"'
       );
     this.state.mm_data_type !== "" &&
       filter_array.push(
@@ -1062,7 +1094,7 @@ class MYASGEdit extends Component {
     }
   }
 
-  async createLMR() {
+  createLMR = async () => {
     this.toggleLoading();
     const dataForm = this.state.lmr_form;
     const dataChildForm = this.state.creation_lmr_child_form;
@@ -1110,7 +1142,7 @@ class MYASGEdit extends Component {
         unit_price: dataChildForm[i].unit_price,
         tax_code: dataChildForm[i].tax_code,
         delivery_date: dataChildForm[i].delivery_date,
-        total_value: dataChildForm[i].total_amount,
+        total_value: dataChildForm[i].total_value,
         currency: dataChildForm[i].currency,
         pr: "",
         item: 0,
@@ -1176,7 +1208,7 @@ class MYASGEdit extends Component {
         this.toggleLoading();
       }
     }
-  }
+  };
 
   addLMR = () => {
     this.handleCheckForm();
@@ -1185,19 +1217,20 @@ class MYASGEdit extends Component {
   addChildLMR = () => {
     const key = this.state.key_child + 1;
     if (this.state.count_form_validate.length === 0) {
-      let dataLMR = this.state.creation_lmr_child_form;
-      dataLMR.push({
+      let dataLMR = this.state.lmr_form;
+      dataLMR["detail"].push({
         key: key,
         tax_code: "I0",
         currency: "MYR",
         item_status: "Submit",
         work_status: "Waiting for PR-PO creation",
+        mm_data_type: dataLMR.mm_data_type,
         site_id: "",
         so_or_nw: "",
         activity: "",
       });
-      this.setState({ creation_lmr_child_form: dataLMR, key_child: key }, () =>
-        console.log(this.state.creation_lmr_child_form)
+      this.setState({ lmr_form: dataLMR, key_child: key }, () =>
+        console.log(this.state.lmr_form)
       );
     } else {
       return;
@@ -1219,6 +1252,8 @@ class MYASGEdit extends Component {
     const name = e.target.name;
     let value = e.target.value;
     let lmr_form = this.state.lmr_form;
+    const increase_edit = this.state.edit_count + 1;
+
     if (value !== (null && undefined)) {
       value = value.toString();
     }
@@ -1229,11 +1264,11 @@ class MYASGEdit extends Component {
       lmr_form["pgr"] = "MY3";
     }
     if (name === "lmr_type" && value !== "Per Site") {
-      lmr_form["Plan_Cost_Reduction"] = "Yes";
+      lmr_form["plan_cost_reduction"] = "Yes";
       this.setState({ lmr_edit: false });
     }
     if (name === "lmr_type" && value !== "Cost Collector") {
-      lmr_form["Plan_Cost_Reduction"] = "No";
+      lmr_form["plan_cost_reduction"] = "No";
       // this.setState({ lmr_edit: false });
     }
     if (name === "gl_account") {
@@ -1285,7 +1320,7 @@ class MYASGEdit extends Component {
     } else {
       lmr_form[name.toString()] = value;
     }
-    this.setState({ lmr_form: lmr_form }, () =>
+    this.setState({ lmr_form: lmr_form, edit_count: increase_edit }, () =>
       console.log(this.state.lmr_form)
     );
   }
@@ -1299,7 +1334,7 @@ class MYASGEdit extends Component {
     let lmr_form = this.state.lmr_form;
     let total_price = 0;
     for (let i = 0; i < dataLMR.length; i++) {
-      total_price += dataLMR[i]["total_amount"];
+      total_price += dataLMR[i]["total_value"];
     }
     lmr_form["total_price"] = total_price;
     this.setState({ lmr_form: lmr_form }, () =>
@@ -1309,7 +1344,7 @@ class MYASGEdit extends Component {
 
   handleChangeFormLMRChild(e) {
     const increase_edit = this.state.edit_count + 1;
-    let dataLMR = this.state.lmr_form.detail;
+    let dataLMR = this.state.creation_lmr_child_form;
     let dataparentLMR = this.state.lmr_form;
     let idxField = e.target.name.split(" /// ");
     let value = e.target.value;
@@ -1319,23 +1354,24 @@ class MYASGEdit extends Component {
     dataLMR[parseInt(idx)][field] = value;
 
     if (field === "qty" && isNaN(dataLMR[parseInt(idx)].unit_price) === false) {
-      dataLMR[parseInt(idx)]["total_amount"] =
+      dataLMR[parseInt(idx)]["total_value"] =
         value * dataLMR[parseInt(idx)].unit_price;
     }
     this.setState(
       {
         edit_count: increase_edit,
-        lmr_form: dataparentLMR,
+        // lmr_form: dataLMR,
         creation_lmr_child_form: dataLMR,
-        so_nw_updated: dataLMR[parseInt(idx)]["so_or_nw"],
+        // so_nw_updated: dataLMR[parseInt(idx)]["so_or_nw"],
       },
       () => this.sumTotalPrice()
     );
   }
 
   handleChangeCDFormLMRChild = (e, action) => {
+    const increase_edit = this.state.edit_count + 1;
     let dataLMR = this.state.lmr_form.detail;
-    let dataparentLMR_GL = this.state.custom_gl_display;
+    let dataparentLMR_GL = this.state.lmr_form;
     let idxField = action.name.split(" /// ");
     let value = e.value;
     let idx = idxField[0];
@@ -1348,21 +1384,23 @@ class MYASGEdit extends Component {
       dataLMR[parseInt(idx)]["site_id"] = cdData.site_name;
       dataLMR[parseInt(idx)]["project_name"] = cdData.project;
       dataLMR[parseInt(idx)]["cdid"] = value;
-      if (dataparentLMR_GL === "Transport - 402102") {
-        dataLMR[parseInt(idx)]["so_or_nw"] = "";
+      if (dataparentLMR_GL["gl_account_actual"] === "Transport - 402102") {
+        dataLMR[parseInt(idx)]["nw"] = "";
         dataLMR[parseInt(idx)]["activity"] = "803X";
       }
-      if (dataparentLMR_GL === "NRO service - 402603") {
-        dataLMR[parseInt(idx)]["so_or_nw"] = cdData.nw_nro;
+      if (dataparentLMR_GL["gl_account_actual"] === "NRO service - 402603") {
+        dataLMR[parseInt(idx)]["nw"] = cdData.nw_nro;
         dataLMR[parseInt(idx)]["activity"] = "5640";
       }
-      if (dataparentLMR_GL === "NRO local material - 402201") {
-        dataLMR[parseInt(idx)]["so_or_nw"] = cdData.nw_hw;
+      if (
+        dataparentLMR_GL["gl_account_actual"] === "NRO local material - 402201"
+      ) {
+        dataLMR[parseInt(idx)]["nw"] = cdData.nw_hw;
         dataLMR[parseInt(idx)]["activity"] = "2000";
       }
-      if (dataparentLMR_GL === "NDO service - 402603") {
+      if (dataparentLMR_GL["gl_account_actual"] === "NDO service - 402603") {
         // should be NDO
-        dataLMR[parseInt(idx)]["so_or_nw"] = cdData.nw_ndo;
+        dataLMR[parseInt(idx)]["nw"] = cdData.nw_ndo;
         dataLMR[parseInt(idx)]["activity"] = "5200";
       }
       // if (dataparentLMR_GL === "3PP Hardware - 402201") {
@@ -1373,8 +1411,9 @@ class MYASGEdit extends Component {
         cd_id_selected: value,
       });
     }
-    this.setState({ creation_lmr_child_form: dataLMR }, () =>
-      console.log(this.state.creation_lmr_child_form)
+    this.setState(
+      { creation_lmr_child_form: dataLMR, edit_count: increase_edit },
+      () => console.log(this.state.creation_lmr_child_form)
     );
   };
 
@@ -1390,9 +1429,9 @@ class MYASGEdit extends Component {
       data_material.MM_Code;
     dataLMR[parseInt(this.state.current_material_select)]["description"] =
       data_material.MM_Description;
-    dataLMR[parseInt(this.state.current_material_select)]["price"] =
+    dataLMR[parseInt(this.state.current_material_select)]["unit_price"] =
       data_material.Unit_Price;
-    dataLMR[parseInt(this.state.current_material_select)]["quantity"] = 0;
+    dataLMR[parseInt(this.state.current_material_select)]["qty"] = 0;
     this.setState({ creation_lmr_child_form: dataLMR });
     this.decideToggleMaterial();
   }
@@ -1487,19 +1526,33 @@ class MYASGEdit extends Component {
 
   handleDeleteLMRChild(key) {
     console.log(key);
-    let LMRChild = this.state.creation_lmr_child_form;
-    let after_delete = LMRChild.filter((i) => i.key !== key);
+    const increase_edit = this.state.edit_count + 1;
+    let dataLMR = this.state.lmr_form;
+    let after_delete = dataLMR["detail"].filter((i) => i.key !== key);
     console.log(after_delete);
-    this.setState({ creation_lmr_child_form: after_delete });
+    this.setState({
+      lmr_form: after_delete,
+      creation_lmr_child_form: after_delete,
+      edit_count: increase_edit,
+    });
   }
 
-  handleDeleteLMRChildexist(key) {
+  handleDeleteLMRChildexist = (key) => {
     console.log(key);
-    let LMRChild = this.state.creation_lmr_child_form;
-    let after_delete = LMRChild.filter((i) => i._id !== key);
-    console.log(after_delete);
-    this.setState({ creation_lmr_child_form: after_delete });
-  }
+    const increase_edit = this.state.edit_count + 1;
+    const dataLMR = this.state.lmr_form;
+    const after_delete = dataLMR.detail.filter((i) => i._id !== key);
+    dataLMR["detail"] = after_delete;
+    // console.log(after_delete);
+    this.setState(
+      {
+        lmr_form: dataLMR,
+        creation_lmr_child_form: after_delete,
+        edit_count: increase_edit,
+      },
+      () => console.log(this.state.lmr_form)
+    );
+  };
 
   handleMaterialFilter(e) {
     let value = e.target.value;
@@ -2033,7 +2086,7 @@ class MYASGEdit extends Component {
                               defaultOptions
                               name={i + " /// cdid"}
                               id={i + " /// cdid"}
-                              defaultValue={{
+                              value={{
                                 label: lmr.cdid,
                                 value: lmr.cdid,
                               }}
@@ -2129,17 +2182,17 @@ class MYASGEdit extends Component {
                         <Col md={2}>
                           <FormGroup>
                             <Label>MM Data Type</Label>
-                            {lmr._id !== null ? (
-                              <Input
-                                type="text"
-                                name={i + " /// material_type"}
-                                id={i + " /// material_type"}
-                                // value={lmr.material_type}
-                                value={this.state.lmr_form.mm_data_type}
-                                onChange={this.handleChangeFormLMRChild}
-                                readOnly
-                              />
-                            ) : (
+                            {/* {lmr._id !== undefined && lmr._id !== null ? ( */}
+                            <Input
+                              type="text"
+                              name={i + " /// material_type"}
+                              id={i + " /// material_type"}
+                              // value={lmr.material_type}
+                              value={this.state.lmr_form.mm_data_type}
+                              onChange={this.handleChangeFormLMRChild}
+                              readOnly
+                            />
+                            {/* ) : (
                               <Input
                                 type="text"
                                 name={i + " /// material_type"}
@@ -2149,23 +2202,33 @@ class MYASGEdit extends Component {
                                 onChange={this.handleChangeFormLMRChild}
                                 readOnly
                               />
-                            )}
-
-                            {/* {this.getOptionbyRole2(this.props.dataLogin.role)}
-                          </Input> */}
+                            )} */}
                           </FormGroup>
                         </Col>
                         <Col md={2}>
                           <FormGroup>
                             <Label>Material</Label>
-                            <Input
-                              type="text"
-                              name={i + " /// material"}
-                              id={i + " /// material"}
-                              value={lmr.material}
-                              onClick={() => this.decideToggleMaterial(i)}
-                              // onChange={this.handleChangeFormLMRChild}
-                            />
+                            {lmr._id !== undefined && lmr._id !== null ? (
+                              <Input
+                                type="text"
+                                name={i + " /// material"}
+                                id={i + " /// material"}
+                                value={lmr.material}
+                                onClick={() =>
+                                  this.decideToggleMaterialexist(i)
+                                }
+                                // onChange={this.handleChangeFormLMRChild}
+                              />
+                            ) : (
+                              <Input
+                                type="text"
+                                name={i + " /// material"}
+                                id={i + " /// material"}
+                                value={lmr.material}
+                                onClick={() => this.decideToggleMaterial(i)}
+                                // onChange={this.handleChangeFormLMRChild}
+                              />
+                            )}
                           </FormGroup>
                         </Col>
                         <Col md={3}>
@@ -2213,8 +2276,8 @@ class MYASGEdit extends Component {
                               <Label>Total Amount</Label>
                               <Input
                                 type="number"
-                                name={i + " /// total_amount"}
-                                id={i + " /// total_amount"}
+                                name={i + " /// total_value"}
+                                id={i + " /// total_value"}
                                 value={lmr.unit_price * lmr.qty}
                                 onChange={this.handleChangeFormLMRChild}
                               />
@@ -2224,9 +2287,9 @@ class MYASGEdit extends Component {
                               <Label>Total Amount</Label>
                               <Input
                                 type="number"
-                                name={i + " /// total_amount"}
-                                id={i + " /// total_amount"}
-                                value={lmr.total_amount}
+                                name={i + " /// total_value"}
+                                id={i + " /// total_value"}
+                                value={lmr.total_value}
                                 onChange={this.handleChangeFormLMRChild}
                               />
                             </FormGroup>
