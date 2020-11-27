@@ -558,7 +558,8 @@ class MYASGCreation extends Component {
     if (role !== undefined) {
       if (
         role.includes("BAM-CPM") === true ||
-        role.includes("BAM-Sourcing") === true
+        role.includes("BAM-Sourcing") === true ||
+        role.includes("BAM-EPC") === true
       ) {
         return (
           <>

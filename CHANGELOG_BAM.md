@@ -95,3 +95,14 @@ All notable changes to BAM https://bam-my.e-dpm.com will be documented in this f
 
 - tagging material
 - search material
+
+## [1.1.6] - 2020-11-27
+
+### Added
+
+- lmr replicate
+- add EPC role
+
+### Changed
+
+### Fixed
