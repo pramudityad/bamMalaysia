@@ -198,7 +198,8 @@ class MYASGList extends Component {
     const grpa = ["NRO Services", "LM", "Transport", "NDO Services"];
     if (
       role.includes("BAM-CPM") === true ||
-      role.includes("BAM-Sourcing") === true
+      role.includes("BAM-Sourcing") === true ||
+      role.includes("BAM-EPC") === true
     ) {
       lmr_list.filter((e) => cpm_sourcing.includes(e.gl_type));
       this.setState({ lmr_list_filter: lmr_list }, () =>
