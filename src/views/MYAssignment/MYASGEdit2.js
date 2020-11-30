@@ -1115,6 +1115,7 @@ class MYASGEdit extends Component {
       header_text: this.state.lmr_form.header_text,
       payment_term: this.state.lmr_form.payment_term,
       vendor_name: this.state.lmr_form.vendor_name,
+      vendor_code_actual: this.state.lmr_form.vendor_code_actual,
       vendor_address: this.state.lmr_form.vendor_address,
       lmr_role: this.state.roleUser[1],
       gl_type: this.state.lmr_form.gl_type,
