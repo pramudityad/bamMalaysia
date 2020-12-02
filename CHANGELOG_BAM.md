@@ -106,3 +106,13 @@ All notable changes to BAM https://bam-my.e-dpm.com will be documented in this f
 ### Changed
 
 ### Fixed
+
+## [1.1.7] - 2020-12-02
+
+### Added
+
+### Changed
+
+### Fixed
+
+- add min qty (0.1) for material line item

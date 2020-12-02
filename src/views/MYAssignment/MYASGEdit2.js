@@ -2261,7 +2261,7 @@ class MYASGEdit extends Component {
                           <FormGroup>
                             <Label>Quantity</Label>
                             <Input
-                              min="0"
+                              min="0.1"
                               type="number"
                               name={i + " /// qty"}
                               id={i + " /// qty"}

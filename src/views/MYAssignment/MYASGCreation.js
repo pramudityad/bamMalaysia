@@ -2150,7 +2150,7 @@ class MYASGCreation extends Component {
                         <FormGroup>
                           <Label>Quantity</Label>
                           <Input
-                            min="0"
+                            min="0.1"
                             type="number"
                             name={i + " /// quantity"}
                             id={i + " /// quantity"}
