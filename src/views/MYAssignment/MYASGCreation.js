@@ -90,7 +90,7 @@ const all_reqbody_raw = {
     table: "p_celc_apim1_m_site_data",
     columns: [
       "m_id",
-
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6dd97a9d-d14e-11ea-b481-000d3aa2f57d"."value"\')) as workplan_id',
       'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6dec7a1c-d14e-11ea-b481-000d3aa2f57d"."value"\')) as loc_id',
       'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6deda4c0-d14e-11ea-b481-000d3aa2f57d"."value"\')) as site_name',
       'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6dfb6b35-d14e-11ea-b481-000d3aa2f57d"."value"\')) as fas_id',
@@ -1085,6 +1085,9 @@ class MYASGCreation extends Component {
         plan_cost_reduction: this.state.lmr_form.Plan_Cost_Reduction,
         cdid: dataChildForm[i].cd_id,
         // per_site_material_type: dataChildForm[i].Per_Site_Material_Type,
+        wp_id: dataChildForm[i].wp_id,
+        lmr_type: this.state.lmr_form.LMR_Type,
+        gl_type: this.state.lmr_form.gl_type,
         item_status: "Submit",
         work_status: "Waiting for PR-PO creation",
         plant: this.state.lmr_form.plant,
@@ -1317,6 +1320,7 @@ class MYASGCreation extends Component {
       if (dataparentLMR_GL === "NRO service - 402603") {
         dataLMR[parseInt(idx)]["so_or_nw"] = cdData.nw_nro;
         dataLMR[parseInt(idx)]["activity"] = "5640";
+        dataLMR[parseInt(idx)]["wp_id"] = cdData.wp_id;
       }
       if (dataparentLMR_GL === "NRO local material - 402201") {
         dataLMR[parseInt(idx)]["so_or_nw"] = cdData.nw_hw;

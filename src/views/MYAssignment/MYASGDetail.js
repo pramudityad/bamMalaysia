@@ -1732,13 +1732,17 @@ class MYASGDetail extends Component {
                     <i className="fa fa-eraser">&nbsp; Delete</i>
                   </Button>
                   &nbsp;&nbsp;&nbsp; */}
-                  <Link to={"/lmr-edit/" + this.props.match.params.id}>
-                    <Button color="warning">
-                      <i className="fa fa-wpforms" aria-hidden="true">
-                        &nbsp; Duplicate
-                      </i>
-                    </Button>
-                  </Link>
+                  {this.state.roleUser !== "Public" ? (
+                    <Link to={"/lmr-edit/" + this.props.match.params.id}>
+                      <Button color="warning">
+                        <i className="fa fa-wpforms" aria-hidden="true">
+                          &nbsp; Duplicate
+                        </i>
+                      </Button>
+                    </Link>
+                  ) : (
+                    ""
+                  )}
                 </div>
               </CardHeader>
               <Collapse isOpen={this.state.collapse_add_child}>
