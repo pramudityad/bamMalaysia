@@ -29,52 +29,50 @@ const DefaultNotif = React.lazy(() =>
   import("../../views/DefaultView/DefaultNotif")
 );
 
-const data_raw = {
+const data_raw_dev = {
   query_param: {
     table: "p_celc_tes2_m_site_data",
     columns: [
       "m_id",
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6dd97a9d-d14e-11ea-b481-000d3aa2f57d"."value"\')) as workplan_id',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6ddc5ad9-d14e-11ea-b481-000d3aa2f57d"."value"\')) as workplan_name',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6ddd5695-d14e-11ea-b481-000d3aa2f57d"."value"\')) as network_element_name',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6ddf06e9-d14e-11ea-b481-000d3aa2f57d"."value"\')) as program',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6de2185d-d14e-11ea-b481-000d3aa2f57d"."value"\')) as project',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6de3e9c6-d14e-11ea-b481-000d3aa2f57d"."value"\')) as sub_project',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6de50a63-d14e-11ea-b481-000d3aa2f57d"."value"\')) as po',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6de61b94-d14e-11ea-b481-000d3aa2f57d"."value"\')) as cluster',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6de7236f-d14e-11ea-b481-000d3aa2f57d"."value"\')) as pc_sc_npc',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6de80a3a-d14e-11ea-b481-000d3aa2f57d"."value"\')) as region',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6de9936c-d14e-11ea-b481-000d3aa2f57d"."value"\')) as site_category',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6deb0872-d14e-11ea-b481-000d3aa2f57d"."value"\')) as ref_no',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6dec7a1c-d14e-11ea-b481-000d3aa2f57d"."value"\')) as loc_id',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6deda4c0-d14e-11ea-b481-000d3aa2f57d"."value"\')) as site_name',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6dee8ffe-d14e-11ea-b481-000d3aa2f57d"."value"\')) as technology',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6def62c1-d14e-11ea-b481-000d3aa2f57d"."value"\')) as final_planned_tech',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6df05af4-d14e-11ea-b481-000d3aa2f57d"."value"\')) as material_purchase',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6df162c1-d14e-11ea-b481-000d3aa2f57d"."value"\')) as scope_status',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6df24065-d14e-11ea-b481-000d3aa2f57d"."value"\')) as wbs_hw',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6df35010-d14e-11ea-b481-000d3aa2f57d"."value"\')) as wbs_nro',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6df51f22-d14e-11ea-b481-000d3aa2f57d"."value"\')) as asp_assigned',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6dfb6b35-d14e-11ea-b481-000d3aa2f57d"."value"\')) as fas_id',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."24637634-07a9-11eb-8887-000d3aa2f57d"."value"\')) as asp_assigned_survey',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."246461b2-07a9-11eb-8887-000d3aa2f57d"."value"\')) as committed_cost_cleared_hw',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."24652856-07a9-11eb-8887-000d3aa2f57d"."value"\')) as committed_cost_cleared_nro',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."24660220-07a9-11eb-8887-000d3aa2f57d"."value"\')) as committed_cost_cleared_ndo',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."2466d3dc-07a9-11eb-8887-000d3aa2f57d"."value"\')) as wbs_closure_hw',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."2467c011-07a9-11eb-8887-000d3aa2f57d"."value"\')) as wbs_closure_nro',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."24688eea-07a9-11eb-8887-000d3aa2f57d"."value"\')) as wbs_closure_ndo',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."24695f14-07a9-11eb-8887-000d3aa2f57d"."value"\')) as wbs_lm',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."246a2819-07a9-11eb-8887-000d3aa2f57d"."value"\')) as wbs_hwac',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."858ddfa1-1291-11eb-a1c8-000d3aa2f57d"."value"\')) as wbs_eab',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."246aed1a-07a9-11eb-8887-000d3aa2f57d"."value"\')) as nw_lm',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."246bc7e7-07a9-11eb-8887-000d3aa2f57d"."value"\')) as nw_hwac',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."246aed1a-07a9-11eb-8887-000d3aa2f57d"."value"\')) as nw_eab',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."246ca447-07a9-11eb-8887-000d3aa2f57d"."value"\')) as nro_service',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."246d7d56-07a9-11eb-8887-000d3aa2f57d"."value"\')) as ndo_service',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."246e7ca2-07a9-11eb-8887-000d3aa2f57d"."value"\')) as nro_local_material',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."2460b228-07a9-11eb-8887-000d3aa2f57d"."value"\')) as wbs_ndo',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."2461aac5-07a9-11eb-8887-000d3aa2f57d"."value"\')) as nw_nro',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."2462836e-07a9-11eb-8887-000d3aa2f57d"."value"\')) as nw_ndo',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."c02767d3-adf8-11e9-bb77-000d3aa3db8c"."value"\')) as workplan_id',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."9ec14232-c1a5-11ea-af53-000d3aa3db8c"."value"\')) as workplan_name',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."9ec4bff5-c1a5-11ea-af53-000d3aa3db8c"."value"\')) as network_element_name',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."c0292f27-adf8-11e9-bb77-000d3aa3db8c"."value"\')) as program',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."c02b9c03-adf8-11e9-bb77-000d3aa3db8c"."value"\')) as project',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."fdee0f72-e056-11e9-acbc-000d3aa3db8c"."value"\')) as sub_project',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."fdf0f5cf-e056-11e9-acbc-000d3aa3db8c"."value"\')) as po',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."c02d5c22-adf8-11e9-bb77-000d3aa3db8c"."value"\')) as cluster',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."c031052c-adf8-11e9-bb77-000d3aa3db8c"."value"\')) as pc_sc_npc',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."c03262d4-adf8-11e9-bb77-000d3aa3db8c"."value"\')) as region',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."c02ebba1-adf8-11e9-bb77-000d3aa3db8c"."value"\')) as site_category',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."c02767d3-adf8-11e9-bb77-000d3aa3db8c"."value"\')) as ref_no',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."c03aa61a-adf8-11e9-bb77-000d3aa3db8c"."value"\')) as loc_id',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."c036b531-adf8-11e9-bb77-000d3aa3db8c"."value"\')) as site_name',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."fdf28189-e056-11e9-acbc-000d3aa3db8c"."value"\')) as technology',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."9ec58ad8-c1a5-11ea-af53-000d3aa3db8c"."value"\')) as final_planned_tech',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."9ec672d3-c1a5-11ea-af53-000d3aa3db8c"."value"\')) as material_purchase',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."9ec7dd57-c1a5-11ea-af53-000d3aa3db8c"."value"\')) as scope_status',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."9ec90098-c1a5-11ea-af53-000d3aa3db8c"."value"\')) as wbs_hw',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."9ec9e722-c1a5-11ea-af53-000d3aa3db8c"."value"\')) as wbs_nro',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."9ecbfa81-c1a5-11ea-af53-000d3aa3db8c"."value"\')) as asp_assigned',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."c03e0897-adf8-11e9-bb77-000d3aa3db8c"."value"\')) as fas_id',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."e8801de2-07a5-11eb-8826-000d3aa3db8c"."value"\')) as asp_assigned_survey',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."e881c18e-07a5-11eb-8826-000d3aa3db8c"."value"\')) as committed_cost_cleared_hw',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."e8831879-07a5-11eb-8826-000d3aa3db8c"."value"\')) as committed_cost_cleared_nro',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."e8840804-07a5-11eb-8826-000d3aa3db8c"."value"\')) as committed_cost_cleared_ndo',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."e884f4df-07a5-11eb-8826-000d3aa3db8c"."value"\')) as wbs_closure_hw',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."e8860421-07a5-11eb-8826-000d3aa3db8c"."value"\')) as wbs_closure_nro',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."e886c79f-07a5-11eb-8826-000d3aa3db8c"."value"\')) as wbs_closure_ndo',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."e8875848-07a5-11eb-8826-000d3aa3db8c"."value"\')) as wbs_lm',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."e888465a-07a5-11eb-8826-000d3aa3db8c"."value"\')) as wbs_hwac',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."e889200f-07a5-11eb-8826-000d3aa3db8c"."value"\')) as nw_lm',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."e889fec8-07a5-11eb-8826-000d3aa3db8c"."value"\')) as nw_hwac',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."e88aea2a-07a5-11eb-8826-000d3aa3db8c"."value"\')) as nro_service',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."e88bce5e-07a5-11eb-8826-000d3aa3db8c"."value"\')) as ndo_service',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."e88cb734-07a5-11eb-8826-000d3aa3db8c"."value"\')) as nro_local_material',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."2d394e53-07a1-11eb-8826-000d3aa3db8c"."value"\')) as wbs_ndo',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."2d3b0660-07a1-11eb-8826-000d3aa3db8c"."value"\')) as nw_nro',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."2d3c1bde-07a1-11eb-8826-000d3aa3db8c"."value"\')) as nw_ndo',
       'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."3e55d901-172d-11eb-99f8-000d3aa2f57d"."value"\')) as cd_id',
     ],
     join: {},
@@ -365,6 +363,25 @@ class MYASGCreation extends Component {
     }
   }
 
+  async getCDfromACTdev(proxyurl, url) {
+    try {
+      let respond = await axios.post(proxyurl + url, data_raw_dev, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Basic dXNlcml4dDpYUXJuMzJuNWtxb00=",
+        },
+      });
+      if (respond.status >= 200 && respond.status < 300) {
+        console.log("respond Get Data", respond);
+      }
+      return respond;
+    } catch (err) {
+      let respond = err;
+      console.log("respond Get Data", err);
+      return respond;
+    }
+  }
+
   async getDataFromAPINODE(url) {
     try {
       let respond = await axios.get(process.env.REACT_APP_API_URL_NODE + url, {
@@ -388,6 +405,37 @@ class MYASGCreation extends Component {
     this.getCDfromACT(
       "https://cors-anywhere.herokuapp.com/",
       "https://act.e-dpm.com/index.php/android/get_data_new"
+    ).then((resCD) => {
+      this.toggleLoading();
+      if (resCD.data !== undefined) {
+        if (resCD.data.result !== undefined) {
+          const list_cd_act = resCD.data.result.raw_data;
+          const filter_cd_id = list_cd_act.filter(
+            (cd) => cd.cd_id !== null && cd.cd_id !== "null"
+          );
+          const filter_project = list_cd_act.filter(
+            (proj) => proj.cd_id !== null
+          );
+          // console.log("lenght", filter_cd_id.length);
+          this.setState({ list_cd_id_act: filter_cd_id }, () =>
+            this.UniqueProject(filter_project)
+          );
+        }
+      }
+      if (resCD === 500) {
+        this.setState({
+          action_status: "failed",
+          action_message: "Error getting CD Data, please reload the page",
+        });
+      }
+    });
+    this.toggleLoading();
+  };
+
+  getDataCDACTdev = () => {
+    this.getCDfromACTdev(
+      "https://cors-anywhere.herokuapp.com/",
+      "https://uat.act.e-dpm.com/index.php/android/get_data_new"
     ).then((resCD) => {
       this.toggleLoading();
       if (resCD.data !== undefined) {
@@ -1308,6 +1356,7 @@ class MYASGCreation extends Component {
     let field = idxField[1];
     if (field === "cd_id" && this.state.lmr_form.LMR_Type === "Per Site") {
       let cdData = this.state.list_cd_id_act.find((e) => e.cd_id === value);
+      console.log("cdData ", cdData);
       let custom_site_display = cdData.loc_id + "_" + cdData.site_name;
       dataLMR[parseInt(idx)]["custom_site_display"] = custom_site_display;
       dataLMR[parseInt(idx)]["site_id"] = cdData.site_name;
@@ -1320,7 +1369,7 @@ class MYASGCreation extends Component {
       if (dataparentLMR_GL === "NRO service - 402603") {
         dataLMR[parseInt(idx)]["so_or_nw"] = cdData.nw_nro;
         dataLMR[parseInt(idx)]["activity"] = "5640";
-        dataLMR[parseInt(idx)]["wp_id"] = cdData.wp_id;
+        dataLMR[parseInt(idx)]["wp_id"] = cdData.workplan_id;
       }
       if (dataparentLMR_GL === "NRO local material - 402201") {
         dataLMR[parseInt(idx)]["so_or_nw"] = cdData.nw_hw;

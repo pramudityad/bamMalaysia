@@ -39,10 +39,19 @@ class App extends Component {
     };
   }
 
-  componentDidMount() {}
+  // componentDidMount() {
+  //   const keycloak = Keycloak("/keycloakMY.json");
+  //   keycloak
+  //     .init({ onLoad: "login-required", checkLoginIframe: false })
+  //     .then((authenticated) => {
+  //       this.setState({ key: keycloak, authenticated: authenticated }, () =>
+  //         console.log(this.state.authenticated)
+  //       );
+  //     });
+  // }
 
   render() {
-    console.log("LOGIN SUKSES", this.props.authenticated);
+    console.log("LOGIN SUKSES", this.props);
     return (
       <BrowserRouter>
         <React.Suspense fallback={loading()}>
