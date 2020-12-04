@@ -118,3 +118,4 @@ All notable changes to BAM https://bam-my.e-dpm.com will be documented in this f
 ### Fixed
 
 - add validation min qty
+- export all mm HW

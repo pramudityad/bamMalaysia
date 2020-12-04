@@ -19,7 +19,7 @@ import Excel from "exceljs";
 import * as XLSX from "xlsx";
 import ModalCreateNew from "../Component/ModalCreateNew";
 import ModalDelete from "../Component/ModalDelete";
-import {convertDateFormat} from "../../helper/basicFunction"
+import { convertDateFormat } from "../../helper/basicFunction";
 import Loading from "../Component/Loading";
 import { ExcelRenderer } from "react-excel-renderer";
 import {
@@ -27,10 +27,10 @@ import {
   postDatatoAPINODE,
   patchDatatoAPINODE,
   deleteDataFromAPINODE2,
-  getDatafromAPINODE
+  getDatafromAPINODE,
 } from "../../helper/asyncFunction";
-import {numToSSColumn} from '../../helper/basicFunction'
-import { connect } from 'react-redux';
+import { numToSSColumn } from "../../helper/basicFunction";
+import { connect } from "react-redux";
 
 const DefaultNotif = React.lazy(() =>
   import("../../views/DefaultView/DefaultNotif")
@@ -117,7 +117,6 @@ class MatHW extends React.Component {
   }
 
   componentDidMount() {
-    
     this.getVendorList();
     this.getMaterialList();
     this.getMaterialListAll();
@@ -135,8 +134,7 @@ class MatHW extends React.Component {
 
   getMaterialListAll() {
     getDatafromAPINODE(
-      '/mmCode/getMm?q={"Material_Type": "'+modul_name+'"}' +
-        "&noPg=1",
+      '/mmCode/getMm?q={"Material_Type": "' + modul_name + '"}' + "&noPg=1",
       this.state.tokenUser
     ).then((res) => {
       if (res.data !== undefined) {
@@ -151,7 +149,9 @@ class MatHW extends React.Component {
       modal_loading: !prevState.modal_loading,
     }));
     getDatafromAPINODE(
-      '/mmCode/getMm?q={"Material_Type": "'+modul_name+'"}' +
+      '/mmCode/getMm?q={"Material_Type": "' +
+        modul_name +
+        '"}' +
         "&lmt=" +
         this.state.perPage +
         "&pg=" +
@@ -161,8 +161,13 @@ class MatHW extends React.Component {
       if (res.data !== undefined) {
         const items = res.data.data;
         const totalData = res.data.totalResults;
-        this.setState({ material_list: items, totalData: totalData, modal_loading: !this.state.modal_loading }, () =>
-          console.log(this.state.material_list)
+        this.setState(
+          {
+            material_list: items,
+            totalData: totalData,
+            modal_loading: !this.state.modal_loading,
+          },
+          () => console.log(this.state.material_list)
         );
       }
     });
@@ -190,15 +195,15 @@ class MatHW extends React.Component {
 
     ws.addRow(header);
     for (let i = 1; i < header.length + 1; i++) {
-      ws.getCell(numToSSColumn(i) + '1').fill = { type: 'pattern',
-      pattern:'solid',
-      fgColor:{argb:'FFFFFF00'},
-      bgColor:{argb:'A9A9A9'}};
+      ws.getCell(numToSSColumn(i) + "1").fill = {
+        type: "pattern",
+        pattern: "solid",
+        fgColor: { argb: "FFFFFF00" },
+        bgColor: { argb: "A9A9A9" },
+      };
     }
 
-    ws.addRow([
-      modul_name,
-    ]);
+    ws.addRow([modul_name]);
 
     const PPFormat = await wb.xlsx.writeBuffer();
     saveAs(new Blob([PPFormat]), "Material " + modul_name + " Template.xlsx");
@@ -261,7 +266,9 @@ class MatHW extends React.Component {
     if (res.data !== undefined) {
       this.setState({ action_status: "success" });
       this.toggleLoading();
-      setTimeout(function(){ window.location.reload(); }, 1500);
+      setTimeout(function () {
+        window.location.reload();
+      }, 1500);
     } else {
       if (
         res.response !== undefined &&
@@ -391,7 +398,7 @@ class MatHW extends React.Component {
       "MM_Code",
       "Vendor_ID",
       "Unit_Price",
-      "UoM",      
+      "UoM",
       "Currency",
       "Info_Rec",
       "created_by",
@@ -404,10 +411,12 @@ class MatHW extends React.Component {
 
     ws.addRow(header);
     for (let i = 1; i < header.length + 1; i++) {
-      ws.getCell(numToSSColumn(i) + '1').fill = { type: 'pattern',
-      pattern:'solid',
-      fgColor:{argb:'FFFFFF00'},
-      bgColor:{argb:'A9A9A9'}};
+      ws.getCell(numToSSColumn(i) + "1").fill = {
+        type: "pattern",
+        pattern: "solid",
+        fgColor: { argb: "FFFFFF00" },
+        bgColor: { argb: "A9A9A9" },
+      };
     }
 
     for (let i = 0; i < download_all.length; i++) {
@@ -420,8 +429,8 @@ class MatHW extends React.Component {
         e.Currency,
         e.Info_Rec,
         e.created_by,
-        convertDateFormat(e.Created_On),
-        convertDateFormat(e.Valid_To),
+        e.Created_On,
+        e.Valid_To,
         e.Status_Price_in_SAP,
         e.Note,
       ]);
@@ -432,25 +441,26 @@ class MatHW extends React.Component {
   };
 
   findVendorName = (vendor_id) => {
-    let vendordata = this.state.vendor_list.find(element => element.Vendor_Code === vendor_id);
-    if(vendordata !== undefined){
-      return vendordata.Name
-    }else{
-      return null
+    let vendordata = this.state.vendor_list.find(
+      (element) => element.Vendor_Code === vendor_id
+    );
+    if (vendordata !== undefined) {
+      return vendordata.Name;
+    } else {
+      return null;
     }
-    
-  }
+  };
 
-  toggleDelete=(e) => {
+  toggleDelete = (e) => {
     const modalDelete = this.state.danger;
     if (modalDelete === false) {
       const _id = e.currentTarget.value;
-      const name = this.state.material_list_all.find(e => e._id === _id)
+      const name = this.state.material_list_all.find((e) => e._id === _id);
       this.setState({
         danger: !this.state.danger,
         selected_id: _id,
         selected_name: name.MM_Code,
-        selected_vendor: name.Vendor_ID
+        selected_vendor: name.Vendor_ID,
       });
     } else {
       this.setState({
@@ -460,14 +470,16 @@ class MatHW extends React.Component {
     this.setState((prevState) => ({
       modalDelete: !prevState.modalDelete,
     }));
-  }
+  };
 
   DeleteData = async () => {
     const objData = this.state.selected_id;
     this.toggleLoading();
     this.toggleDelete();
     const DelData = deleteDataFromAPINODE2(
-      "/mmCode/deleteMmCode", this.state.tokenUser, {data:[objData]}
+      "/mmCode/deleteMmCode",
+      this.state.tokenUser,
+      { data: [objData] }
     ).then((res) => {
       if (res.data !== undefined) {
         this.setState({ action_status: "success" });
@@ -484,7 +496,7 @@ class MatHW extends React.Component {
     this.setState({ activePage: pageNumber }, () => {
       this.getMaterialList();
     });
-  }
+  };
 
   toggleEdit = (e) => {
     const modalEdit = this.state.modalEdit;
@@ -510,26 +522,25 @@ class MatHW extends React.Component {
     this.setState((prevState) => ({
       modalEdit: !prevState.modalEdit,
     }));
-  }
+  };
 
   saveUpdate = async () => {
     this.toggleEdit();
     this.toggleLoading();
-    let dataForm =      
-      {
-        _id: this.state.selected_id,
-        MM_Code: this.state.PPForm[2],
-        UoM: this.state.PPForm[3],
-        Unit_Price: this.state.PPForm[4],
-        Currency: this.state.PPForm[5],
-        Info_Rec: this.state.PPForm[6],
-        Vendor_ID: this.state.PPForm[7],
-        Vendor_Name: this.findVendorName(this.state.PPForm[7]),
-        Valid_To: this.state.PPForm[8],
-        Created_On: this.state.PPForm[9],
-        Status_Price_in_SAP: this.state.PPForm[10],
-        Note: this.state.PPForm[11],
-      }
+    let dataForm = {
+      _id: this.state.selected_id,
+      MM_Code: this.state.PPForm[2],
+      UoM: this.state.PPForm[3],
+      Unit_Price: this.state.PPForm[4],
+      Currency: this.state.PPForm[5],
+      Info_Rec: this.state.PPForm[6],
+      Vendor_ID: this.state.PPForm[7],
+      Vendor_Name: this.findVendorName(this.state.PPForm[7]),
+      Valid_To: this.state.PPForm[8],
+      Created_On: this.state.PPForm[9],
+      Status_Price_in_SAP: this.state.PPForm[10],
+      Note: this.state.PPForm[11],
+    };
     const res = await patchDatatoAPINODE(
       "/mmCode/updateMmCode",
       {
@@ -562,8 +573,7 @@ class MatHW extends React.Component {
       }
       this.toggleLoading();
     }
-  }
-
+  };
 
   render() {
     const NROForm = this.state.NROForm;
@@ -687,21 +697,21 @@ class MatHW extends React.Component {
                 </Row>
                 <Row>
                   <Col>
-                    <div >
+                    <div>
                       <Table striped hover bordered responsive size="sm">
                         <thead
                         // style={{ backgroundColor: "#73818f" }}
                         // className="fixed-matlib"
                         >
                           <tr align="center">
-                          {/* <th>Info_Rec</th> */}
+                            {/* <th>Info_Rec</th> */}
                             <th>Vendor_ID</th>
                             <th>Vendor_Name</th>
                             <th>MM_Code</th>
                             <th>MM_Description</th>
                             {/* <th>UoM</th> */}
                             <th>Unit_Price</th>
-                            <th>Currency</th>                            
+                            <th>Currency</th>
                             <th>Valid_To</th>
                             <th>Created_On</th>
                             {/* <th>Created_By</th>
@@ -720,7 +730,7 @@ class MatHW extends React.Component {
                                   // className="fixbody"
                                   key={e._id}
                                 >
-                                    {/* <td style={{ textAlign: "center" }}>
+                                  {/* <td style={{ textAlign: "center" }}>
                                     {e.Info_Rec}
                                   </td> */}
                                   <td style={{ textAlign: "center" }}>
@@ -731,10 +741,10 @@ class MatHW extends React.Component {
                                   </td>
                                   <td style={{ textAlign: "center" }}>
                                     {e.MM_Code}
-                                  </td>  
+                                  </td>
                                   <td style={{ textAlign: "center" }}>
                                     {e.MM_Description}
-                                  </td>                                 
+                                  </td>
                                   {/* <td style={{ textAlign: "center" }}>
                                     {e.UoM}
                                   </td> */}
@@ -744,7 +754,7 @@ class MatHW extends React.Component {
                                   <td style={{ textAlign: "center" }}>
                                     {e.Currency}
                                   </td>
-                                
+
                                   <td style={{ textAlign: "center" }}>
                                     {e.Valid_To}
                                   </td>
@@ -768,11 +778,14 @@ class MatHW extends React.Component {
                                       onClick={this.toggleEdit}
                                       title="Edit"
                                     >
-                                      <i className="fa fa-edit" aria-hidden="true"></i>
+                                      <i
+                                        className="fa fa-edit"
+                                        aria-hidden="true"
+                                      ></i>
                                     </Button>
                                   </td>
                                   <td>
-                                  <Button
+                                    <Button
                                       size="sm"
                                       color="danger"
                                       value={e._id}
@@ -824,7 +837,7 @@ class MatHW extends React.Component {
           <ModalHeader>Form {modul_name}</ModalHeader>
           <ModalBody>
             <Row>
-              <Col sm="12">                
+              <Col sm="12">
                 <FormGroup row>
                   <Col xs="12">
                     <FormGroup>
@@ -1022,13 +1035,13 @@ class MatHW extends React.Component {
           <ModalHeader>Form {modul_name}</ModalHeader>
           <ModalBody>
             <Row>
-            <Col sm="12">             
+              <Col sm="12">
                 <FormGroup row>
                   <Col xs="12">
                     <FormGroup>
                       <Label>MM_Code</Label>
                       <Input
-                      readOnly
+                        readOnly
                         type="text"
                         name="2"
                         placeholder=""
@@ -1099,7 +1112,9 @@ class MatHW extends React.Component {
                       Select Vendor
                     </option>
                     {this.state.vendor_list.map((asp) => (
-                      <option value={asp.Vendor_Code}>{asp.Vendor_Code}-{asp.Name}</option>
+                      <option value={asp.Vendor_Code}>
+                        {asp.Vendor_Code}-{asp.Name}
+                      </option>
                     ))}
                   </Input>
                 </FormGroup>
@@ -1169,7 +1184,12 @@ class MatHW extends React.Component {
           isOpen={this.state.danger}
           toggle={this.toggleDelete}
           className={"modal-danger " + this.props.className}
-          title={"Delete "+ this.state.selected_name+ " for " + this.findVendorName(this.state.selected_vendor)}
+          title={
+            "Delete " +
+            this.state.selected_name +
+            " for " +
+            this.findVendorName(this.state.selected_vendor)
+          }
           body={"Are you sure ?"}
         >
           <Button color="danger" onClick={this.DeleteData}>
@@ -1186,9 +1206,9 @@ class MatHW extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    dataLogin : state.loginData,
-    SidebarMinimize : state.minimizeSidebar
-  }
-}
+    dataLogin: state.loginData,
+    SidebarMinimize: state.minimizeSidebar,
+  };
+};
 
 export default connect(mapStateToProps)(MatHW);
