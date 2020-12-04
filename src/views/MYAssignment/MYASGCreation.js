@@ -1407,7 +1407,7 @@ class MYASGCreation extends Component {
       data_material.MM_Description;
     dataLMR[parseInt(this.state.current_material_select)]["price"] =
       data_material.Unit_Price;
-    dataLMR[parseInt(this.state.current_material_select)]["quantity"] = 0;
+    dataLMR[parseInt(this.state.current_material_select)]["quantity"] = 1;
     this.setState({ creation_lmr_child_form: dataLMR });
     this.decideToggleMaterial();
   }
@@ -2203,7 +2203,7 @@ class MYASGCreation extends Component {
                         <FormGroup>
                           <Label>Quantity</Label>
                           <Input
-                            min="0.1"
+                            min="0"
                             type="number"
                             name={i + " /// quantity"}
                             id={i + " /// quantity"}
