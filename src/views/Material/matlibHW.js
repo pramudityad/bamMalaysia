@@ -84,7 +84,7 @@ const MaterialDB = [
   },
 ];
 
-class MatHW extends React.Component {
+class MatHW extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {

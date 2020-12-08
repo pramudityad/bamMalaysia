@@ -93,8 +93,8 @@ const Checkbox2 = ({
 );
 const modul_name = "HW Mapping";
 const header = [
-  "",
-  "NOT REQUIRED",
+  // "",
+  // "NOT REQUIRED",
   "Internal PO",
   "LOOKUP REFERENCE",
   "REGION",
@@ -1118,6 +1118,14 @@ class MappingHW extends React.Component {
                       <table class="table table-hover">
                         <thead class="thead-dark">
                           <tr align="center">
+                            {this.state.tabs_submenu[0] === true ? (
+                              <>
+                                <th></th>
+                                <th>Not Required</th>
+                              </>
+                            ) : (
+                              ""
+                            )}
                             {header.map((head) => (
                               <th>{head}</th>
                             ))}
@@ -1148,7 +1156,6 @@ class MappingHW extends React.Component {
                                       </Button>
                                     </Link>
                                   </td>
-
                                   <td>
                                     <Checkbox1
                                       checked={this.state.dataChecked.get(
@@ -1270,17 +1277,6 @@ class MappingHW extends React.Component {
                                   ) : (
                                     <td></td>
                                   )}
-                                  <td>
-                                    <Checkbox2
-                                      checked={this.state.dataChecked.get(
-                                        e._id
-                                      )}
-                                      // checked={e.Not_Required}
-                                      onChange={this.handleChangeChecklist2}
-                                      name={e._id}
-                                      value={e}
-                                    />
-                                  </td>
                                   <td>{e.Lookup_Reference}</td>
                                   <td>{e.Region}</td>
                                   <td>{e.Reference_Loc_Id}</td>
@@ -1389,16 +1385,20 @@ class MappingHW extends React.Component {
                 </Row>
               </CardBody>
               <ModalFooter>
-                <Button
-                  color="info"
-                  onClick={this.saveUpdate}
-                  disabled={
-                    this.state.dataChecked_container.length === 0 &&
-                    this.state.dataChecked_container2.length === 0
-                  }
-                >
-                  Update
-                </Button>
+                {this.state.tabs_submenu[0] === true ? (
+                  <Button
+                    color="info"
+                    onClick={this.saveUpdate}
+                    disabled={
+                      this.state.dataChecked_container.length === 0 &&
+                      this.state.dataChecked_container2.length === 0
+                    }
+                  >
+                    Update
+                  </Button>
+                ) : (
+                  ""
+                )}
               </ModalFooter>
             </Card>
           </Col>

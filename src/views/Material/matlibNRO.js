@@ -19,7 +19,7 @@ import Excel from "exceljs";
 import * as XLSX from "xlsx";
 import ModalCreateNew from "../Component/ModalCreateNew";
 import ModalDelete from "../Component/ModalDelete";
-import { connect } from 'react-redux';
+import { connect } from "react-redux";
 
 import Loading from "../Component/Loading";
 import { ExcelRenderer } from "react-excel-renderer";
@@ -30,7 +30,7 @@ import {
   patchDatatoAPINODE,
   deleteDataFromAPINODE2,
 } from "../../helper/asyncFunction";
-import {numToSSColumn} from '../../helper/basicFunction'
+import { numToSSColumn } from "../../helper/basicFunction";
 
 const DefaultNotif = React.lazy(() => import("../DefaultView/DefaultNotif"));
 const Checkbox = ({
@@ -102,7 +102,7 @@ const MaterialDB = [
   },
 ];
 
-class TabelNRO extends React.Component {
+class TabelNRO extends React.PureComponent {
   getVendorRow(material_vendor_data, vendor, mat_id) {
     const Matdata = material_vendor_data.find(
       (e) => e.Vendor_Code === vendor.Vendor_Code
@@ -153,7 +153,6 @@ class TabelNRO extends React.Component {
     }
   }
 
-
   render() {
     let MatIdcol = [];
     MatIdcol.push(this.props.DataMaterial.map((a) => a._id));
@@ -162,10 +161,10 @@ class TabelNRO extends React.Component {
       <Table striped hover bordered responsive size="sm">
         <thead>
           <tr>
-          <th rowSpan="2">
+            <th rowSpan="2">
               <b>BB</b>
             </th>
-          <th rowSpan="2">
+            <th rowSpan="2">
               <b>BB_Sub</b>
             </th>
             <th rowSpan="2">
@@ -217,7 +216,9 @@ class TabelNRO extends React.Component {
             <tr>
               <td style={{ textAlign: "center" }}>{e.BB}</td>
               <td style={{ textAlign: "center" }}>{e.BB_Sub}</td>
-              <td style={{ textAlign: "center" }}>{e.SoW_Description_or_Site_Type}</td>
+              <td style={{ textAlign: "center" }}>
+                {e.SoW_Description_or_Site_Type}
+              </td>
               <td style={{ textAlign: "center" }}>{e.UoM}</td>
               <td style={{ textAlign: "center" }}>{e.Region}</td>
               <td style={{ textAlign: "center" }}>{e.Unit_Price}</td>
@@ -300,7 +301,7 @@ class MatNRO extends React.Component {
     this.saveUpdateNROVendorData = this.saveUpdateNROVendorData.bind(this);
   }
 
-  componentDidMount() {    
+  componentDidMount() {
     this.getVendorList();
     this.getMaterialList();
     this.getMaterialListAll();
@@ -321,7 +322,9 @@ class MatNRO extends React.Component {
       modal_loading: !prevState.modal_loading,
     }));
     getDatafromAPINODE(
-      '/mmCode/getMm?q={"Material_Type": "'+modul_name+'"}' +
+      '/mmCode/getMm?q={"Material_Type": "' +
+        modul_name +
+        '"}' +
         "&lmt=" +
         this.state.perPage +
         "&pg=" +
@@ -331,15 +334,21 @@ class MatNRO extends React.Component {
       if (res.data !== undefined) {
         const items = res.data.data;
         const totalData = res.data.totalResults;
-        this.setState({ material_list: items, totalData: totalData, modal_loading: !this.state.modal_loading }, ()=>console.log(items.map(e=>e._id)));
+        this.setState(
+          {
+            material_list: items,
+            totalData: totalData,
+            modal_loading: !this.state.modal_loading,
+          },
+          () => console.log(items.map((e) => e._id))
+        );
       }
     });
   }
 
   getMaterialListAll() {
     getDatafromAPINODE(
-      '/mmCode/getMm?q={"Material_Type": "'+modul_name+'"}' +
-        "&noPg=1",
+      '/mmCode/getMm?q={"Material_Type": "' + modul_name + '"}' + "&noPg=1",
       this.state.tokenUser
     ).then((res) => {
       if (res.data !== undefined) {
@@ -365,21 +374,21 @@ class MatNRO extends React.Component {
       "MM_Code",
       "MM_Description",
       "SLA",
-      "Remarks",      
+      "Remarks",
     ];
     // header = header.concat(vendorName);
 
     ws.addRow(header);
     for (let i = 1; i < header.length + 1; i++) {
-      ws.getCell(numToSSColumn(i) + '1').fill = { type: 'pattern',
-      pattern:'solid',
-      fgColor:{argb:'FFFFFF00'},
-      bgColor:{argb:'A9A9A9'}};
+      ws.getCell(numToSSColumn(i) + "1").fill = {
+        type: "pattern",
+        pattern: "solid",
+        fgColor: { argb: "FFFFFF00" },
+        bgColor: { argb: "A9A9A9" },
+      };
     }
 
-    ws.addRow([
-      modul_name,
-    ]);
+    ws.addRow([modul_name]);
 
     const PPFormat = await wb.xlsx.writeBuffer();
     saveAs(new Blob([PPFormat]), "Material " + modul_name + " Template.xlsx");
@@ -442,7 +451,9 @@ class MatNRO extends React.Component {
     if (res.data !== undefined) {
       this.setState({ action_status: "success" });
       this.toggleLoading();
-      setTimeout(function(){ window.location.reload(); }, 1500);
+      setTimeout(function () {
+        window.location.reload();
+      }, 1500);
     } else {
       if (
         res.response !== undefined &&
@@ -717,16 +728,18 @@ class MatNRO extends React.Component {
       "MM_Code",
       "MM_Description",
       "SLA",
-      "Remarks",      
+      "Remarks",
     ];
     // header = header.concat(vendorName);
 
     ws.addRow(header);
     for (let i = 1; i < header.length + 1; i++) {
-      ws.getCell(numToSSColumn(i) + '1').fill = { type: 'pattern',
-      pattern:'solid',
-      fgColor:{argb:'FFFFFF00'},
-      bgColor:{argb:'A9A9A9'}};
+      ws.getCell(numToSSColumn(i) + "1").fill = {
+        type: "pattern",
+        pattern: "solid",
+        fgColor: { argb: "FFFFFF00" },
+        bgColor: { argb: "A9A9A9" },
+      };
     }
 
     for (let i = 0; i < download_all.length; i++) {
@@ -877,10 +890,11 @@ class MatNRO extends React.Component {
     }
   };
 
-  sortVendor(vendorlist){
-    return vendorlist.sort((a,b) => a.Name > b.Name ? 1: -1).filter(e => e.Name !== "")
+  sortVendor(vendorlist) {
+    return vendorlist
+      .sort((a, b) => (a.Name > b.Name ? 1 : -1))
+      .filter((e) => e.Name !== "");
   }
-
 
   render() {
     return (
@@ -1016,7 +1030,7 @@ class MatNRO extends React.Component {
           <ModalBody>
             <Row>
               <Col sm="12">
-              <FormGroup>
+                <FormGroup>
                   <Label>MM_Code</Label>
                   <Input
                     type="text"
@@ -1251,17 +1265,17 @@ class MatNRO extends React.Component {
                 </FormGroup>
                 <FormGroup row>
                   <Col xs="12">
-                  <FormGroup>
-                  <Label>MM_Code</Label>
-                  <Input
-                  readOnly
-                    type="text"
-                    name="1"
-                    placeholder=""
-                    value={this.state.PPForm[1]}
-                    onChange={this.handleChangeForm}
-                  />
-                </FormGroup>
+                    <FormGroup>
+                      <Label>MM_Code</Label>
+                      <Input
+                        readOnly
+                        type="text"
+                        name="1"
+                        placeholder=""
+                        value={this.state.PPForm[1]}
+                        onChange={this.handleChangeForm}
+                      />
+                    </FormGroup>
                     <FormGroup>
                       <Label>MM_Description</Label>
                       <Input
@@ -1402,9 +1416,9 @@ class MatNRO extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    dataLogin : state.loginData,
-    SidebarMinimize : state.minimizeSidebar
-  }
-}
+    dataLogin: state.loginData,
+    SidebarMinimize: state.minimizeSidebar,
+  };
+};
 
 export default connect(mapStateToProps)(MatNRO);
