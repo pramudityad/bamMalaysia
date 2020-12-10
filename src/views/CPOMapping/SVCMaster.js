@@ -134,22 +134,92 @@ class SVCMaster extends React.Component {
     this.state.filter_list["New_Site_Name"] !== null &&
       this.state.filter_list["New_Site_Name"] !== undefined &&
       filter_array.push(
-        '"site_info.site_id":{"$regex" : "' +
+        '"New_Site_Name":{"$regex" : "' +
           this.state.filter_list["New_Site_Name"] +
           '", "$options" : "i"}'
       );
     this.state.filter_list["Po"] !== null &&
       this.state.filter_list["Po"] !== undefined &&
       filter_array.push(
-        '"site_info.Po":{"$regex" : "' +
+        '"Po":{"$regex" : "' +
           this.state.filter_list["Po"] +
           '", "$options" : "i"}'
       );
-    this.state.filter_list["Line"] !== null &&
-      this.state.filter_list["Line"] !== undefined &&
+    this.state.filter_list["Line_Item"] !== null &&
+      this.state.filter_list["Line_Item"] !== undefined &&
       filter_array.push(
-        '"Line":{"$regex" : "' +
-          this.state.filter_list["Line"] +
+        '"Line_Item":{"$regex" : "' +
+          this.state.filter_list["Line_Item"] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list["Description"] !== null &&
+      this.state.filter_list["Description"] !== undefined &&
+      filter_array.push(
+        '"Description":{"$regex" : "' +
+          this.state.filter_list["Description"] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list["Total_Po_Amount"] !== null &&
+      this.state.filter_list["Total_Po_Amount"] !== undefined &&
+      filter_array.push(
+        '"Total_Po_Amount":{"$regex" : "' +
+          this.state.filter_list["Total_Po_Amount"] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list["Remarks"] !== null &&
+      this.state.filter_list["Remarks"] !== undefined &&
+      filter_array.push(
+        '"Remarks":{"$regex" : "' +
+          this.state.filter_list["Remarks"] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list["Unit_Price"] !== null &&
+      this.state.filter_list["Unit_Price"] !== undefined &&
+      filter_array.push(
+        '"Unit_Price":{"$regex" : "' +
+          this.state.filter_list["Unit_Price"] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list["Total_Price"] !== null &&
+      this.state.filter_list["Total_Price"] !== undefined &&
+      filter_array.push(
+        '"Total_Price":{"$regex" : "' +
+          this.state.filter_list["Total_Price"] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list["Assigned_Price"] !== null &&
+      this.state.filter_list["Assigned_Price"] !== undefined &&
+      filter_array.push(
+        '"Assigned_Price":{"$regex" : "' +
+          this.state.filter_list["Assigned_Price"] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list["Pcode"] !== null &&
+      this.state.filter_list["Pcode"] !== undefined &&
+      filter_array.push(
+        '"Pcode":{"$regex" : "' +
+          this.state.filter_list["Pcode"] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list["Type"] !== null &&
+      this.state.filter_list["Type"] !== undefined &&
+      filter_array.push(
+        '"Type":{"$regex" : "' +
+          this.state.filter_list["Type"] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list["Wbs"] !== null &&
+      this.state.filter_list["Wbs"] !== undefined &&
+      filter_array.push(
+        '"Wbs":{"$regex" : "' +
+          this.state.filter_list["Wbs"] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list["Psp_Remarks"] !== null &&
+      this.state.filter_list["Psp_Remarks"] !== undefined &&
+      filter_array.push(
+        '"Psp_Remarks":{"$regex" : "' +
+          this.state.filter_list["Psp_Remarks"] +
           '", "$options" : "i"}'
       );
     let whereAnd = "{" + filter_array.join(",") + "}";
@@ -465,28 +535,28 @@ class SVCMaster extends React.Component {
     for (let i = 0; i < header_model.length; i++) {
       searchBar.push(
         <td>
-          {i !== 1 && i !== 3 && i !== 5 && i !== 7 && i !== 8 ? (
+          {/* {i !== 1 && i !== 3 && i !== 5 && i !== 7 && i !== 8 ? (
             ""
-          ) : (
-            <div className="controls" style={{ width: "150px" }}>
-              <InputGroup className="input-prepend">
-                <InputGroupAddon addonType="prepend">
-                  <InputGroupText>
-                    <i className="fa fa-search"></i>
-                  </InputGroupText>
-                </InputGroupAddon>
-                <Input
-                  // className="col-sm-3"
-                  type="text"
-                  placeholder="Search"
-                  onChange={this.handleFilterList}
-                  value={this.state.filter_list[header_model[i]]}
-                  name={header_model[i]}
-                  size="sm"
-                />
-              </InputGroup>
-            </div>
-          )}
+          ) : ( */}
+          <div className="controls" style={{ width: "150px" }}>
+            <InputGroup className="input-prepend">
+              <InputGroupAddon addonType="prepend">
+                <InputGroupText>
+                  <i className="fa fa-search"></i>
+                </InputGroupText>
+              </InputGroupAddon>
+              <Input
+                // className="col-sm-3"
+                type="text"
+                placeholder="Search"
+                onChange={this.handleFilterList}
+                value={this.state.filter_list[header_model[i]]}
+                name={header_model[i]}
+                size="sm"
+              />
+            </InputGroup>
+          </div>
+          {/* )} */}
         </td>
       );
     }
@@ -502,6 +572,11 @@ class SVCMaster extends React.Component {
       .filter((element) => element.Po === po && element.Line === line_item)
       .reduce((a, { Qty }) => a + Qty, 0);
     return sum_used;
+  };
+
+  handleChangeLimit = (e) => {
+    let limitpg = e.currentTarget.value;
+    this.setState({ perPage: limitpg }, () => this.getList());
   };
 
   render() {
@@ -576,8 +651,32 @@ class SVCMaster extends React.Component {
               </CardHeader>
 
               <CardBody>
-                <Row></Row>
+                {/* <Row></Row> */}
                 <Row>
+                  <Col>
+                    <div style={{ marginBottom: "10px" }}>
+                      <div
+                        style={{
+                          float: "left",
+                          margin: "5px",
+                          display: "inline-flex",
+                        }}
+                      >
+                        <Input
+                          type="select"
+                          name="select"
+                          id="selectLimit"
+                          onChange={this.handleChangeLimit}
+                        >
+                          <option value={"10"}>10</option>
+                          <option value={"25"}>25</option>
+                          <option value={"50"}>50</option>
+                          <option value={"100"}>100</option>
+                          <option value={"noPg=1"}>All</option>
+                        </Input>
+                      </div>
+                    </div>
+                  </Col>
                   <Col>
                     <div
                       style={{
@@ -592,10 +691,15 @@ class SVCMaster extends React.Component {
                               <th>{head}</th>
                             ))}
                           </tr>
-                          {/* <tr>
+                          <tr align="center">
+                            {header.map((head) => (
+                              <th>0</th>
+                            ))}
+                          </tr>
+                          <tr align="center">
                             <td></td>
                             {this.loopSearchBar()}
-                          </tr> */}
+                          </tr>
                         </thead>
                         <tbody>
                           {this.state.all_data !== undefined &&

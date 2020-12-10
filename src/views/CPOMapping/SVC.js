@@ -1019,6 +1019,13 @@ class MappingSVC extends React.Component {
     this.setState({ tabs_submenu: tab_submenu });
   };
 
+  countData = () => {};
+
+  handleChangeLimit = (e) => {
+    let limitpg = e.currentTarget.value;
+    this.setState({ perPage: limitpg }, () => this.getList());
+  };
+
   render() {
     const CPOForm = this.state.CPOForm;
     const role = this.state.roleUser;
@@ -1115,6 +1122,32 @@ class MappingSVC extends React.Component {
               </CardHeader>
 
               <CardBody>
+                <Row>
+                  <Col>
+                    <div style={{ marginBottom: "10px" }}>
+                      <div
+                        style={{
+                          float: "left",
+                          margin: "5px",
+                          display: "inline-flex",
+                        }}
+                      >
+                        <Input
+                          type="select"
+                          name="select"
+                          id="selectLimit"
+                          onChange={this.handleChangeLimit}
+                        >
+                          <option value={"10"}>10</option>
+                          <option value={"25"}>25</option>
+                          <option value={"50"}>50</option>
+                          <option value={"100"}>100</option>
+                          <option value={"noPg=1"}>All</option>
+                        </Input>
+                      </div>
+                    </div>
+                  </Col>
+                </Row>
                 <div>
                   <Nav tabs>
                     <NavItem>
@@ -1160,6 +1193,11 @@ class MappingSVC extends React.Component {
                             )}
                             {header.map((head) => (
                               <th>{head}</th>
+                            ))}
+                          </tr>
+                          <tr align="center">
+                            {header.map((head) => (
+                              <th>0</th>
                             ))}
                           </tr>
                           <tr align="center">
