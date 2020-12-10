@@ -117,5 +117,16 @@ All notable changes to BAM https://bam-my.e-dpm.com will be documented in this f
 
 ### Fixed
 
-- add validation min qty
 - export all mm HW
+
+## [1.3.7] - 2020-12-10
+
+### Added
+
+- draft feature
+
+### Changed
+
+### Fixed
+
+- validation material qty & delivery date
