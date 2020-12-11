@@ -2452,6 +2452,7 @@ class MYASGCreation extends Component {
                   style={{ float: "left" }}
                   onClick={this.saveLMR}
                 >
+                  <i className="fa-floppy-o" style={{ marginRight: "8px" }}></i>
                   Save
                 </Button>{" "}
                 <Button
