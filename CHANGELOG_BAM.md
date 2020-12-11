@@ -119,11 +119,11 @@ All notable changes to BAM https://bam-my.e-dpm.com will be documented in this f
 
 - export all mm HW
 
-## [1.3.7] - 2020-12-10
+## [1.3.8] - 2020-12-11
 
 ### Added
 
-- draft feature
+- draft feature and save lmr form button
 
 ### Changed
 

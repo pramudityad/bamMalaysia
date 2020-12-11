@@ -1241,6 +1241,81 @@ class MYASGCreation extends Component {
     this.handleCheckForm();
   };
 
+  saveLMR = () => {
+    const dataChildForm = this.state.creation_lmr_child_form;
+    console.log("lmr child ", this.state.creation_lmr_child_form);
+    const dataLMR = {
+      plant: this.state.lmr_form.plant,
+      customer: this.state.lmr_form.customer,
+      request_type: this.state.lmr_form.request_type,
+      item_category: this.state.lmr_form.item_category,
+      lmr_type: this.state.lmr_form.lmr_type,
+      plan_cost_reduction: this.state.lmr_form.plan_cost_reduction,
+      lmr_issued_by: this.state.lmr_form.lmr_issued_by,
+      pgr: this.state.lmr_form.pgr,
+      gl_account: this.state.lmr_form.gl_account,
+      gl_account_actual: this.state.lmr_form.gl_account_actual,
+      id_project_doc: this.state.lmr_form.id_project_doc,
+      project_name: dataChildForm[0].project_name,
+      header_text: this.state.lmr_form.header_text,
+      payment_term: this.state.lmr_form.payment_term,
+      vendor_name: this.state.lmr_form.vendor_name,
+      vendor_code_actual: this.state.lmr_form.vendor_code_actual,
+      vendor_address: this.state.lmr_form.vendor_address,
+      lmr_role: this.state.roleUser[1],
+      gl_type: this.state.lmr_form.gl_type,
+      mm_data_type: this.state.lmr_form.mm_data_type,
+      l1_approver: this.state.lmr_form.l1_approver,
+      l2_approver: this.state.lmr_form.l2_approver,
+      l3_approver: this.state.lmr_form.l3_approver,
+      l4_approver: this.state.lmr_form.l4_approver,
+      l5_approver: this.state.lmr_form.l5_approver,
+      fas_id: this.state.lmr_form.fas_id,
+      total_price: this.state.lmr_form.total_price,
+    };
+    let dataLMRCHild = [];
+    for (let i = 0; i < dataChildForm.length; i++) {
+      const dataChild = {
+        project_name: dataChildForm[i].project_name,
+        nw: dataChildForm[i].nw,
+        activity: dataChildForm[i].activity,
+        id_project_doc: this.state.lmr_form.id_project_doc,
+        material_code_doc: dataChildForm[i].material_code_doc,
+        material: dataChildForm[i].material,
+        description: dataChildForm[i].description,
+        site_id: dataChildForm[i].site_id,
+        qty: dataChildForm[i].qty,
+        unit_price: dataChildForm[i].unit_price,
+        tax_code: dataChildForm[i].tax_code,
+        delivery_date: dataChildForm[i].delivery_date,
+        total_value: dataChildForm[i].total_value,
+        currency: dataChildForm[i].currency,
+        pr: "",
+        item: 0,
+        request_type: this.state.lmr_form.request_type,
+        item_category: this.state.lmr_form.item_category,
+        lmr_type: this.state.lmr_form.lmr_type,
+        plan_cost_reduction: this.state.lmr_form.plan_cost_reduction,
+        cdid: dataChildForm[i].cdid,
+        // per_site_material_type: dataChildForm[i].Per_Site_Material_Type,
+        wp_id: dataChildForm[i].wp_id,
+        lmr_type: this.state.lmr_form.LMR_Type,
+        gl_type: this.state.lmr_form.gl_type,
+        item_status: "Submit",
+        work_status: "Waiting for PR-PO creation",
+        plant: this.state.lmr_form.plant,
+        customer: this.state.lmr_form.customer,
+      };
+      dataLMRCHild.push(dataChild);
+    }
+    localStorage.setItem("asp_data", JSON.stringify(dataLMR));
+    localStorage.setItem("asp_data_child", JSON.stringify(dataLMRCHild));
+    this.setState({
+      action_status: "success",
+      action_message: "Draft Saved",
+    });
+  };
+
   addChildLMR = () => {
     const key = this.state.key_child + 1;
     if (this.state.count_form_validate.length === 0) {
@@ -2371,6 +2446,14 @@ class MYASGCreation extends Component {
                 </div>
               </CardBody>
               <CardFooter>
+                <Button
+                  color="secondary"
+                  size="sm"
+                  style={{ float: "left" }}
+                  onClick={this.saveLMR}
+                >
+                  Save
+                </Button>{" "}
                 <Button
                   color="success"
                   size="sm"
