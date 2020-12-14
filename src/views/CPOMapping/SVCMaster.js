@@ -92,6 +92,7 @@ class SVCMaster extends React.Component {
       roleUser: this.props.dataLogin.role,
       dropdownOpen: new Array(3).fill(false),
       all_data: [],
+      all_data_line: [],
       createModal: false,
       rowsXLS: [],
       modal_loading: false,
@@ -113,6 +114,7 @@ class SVCMaster extends React.Component {
     // console.log("header", header.length);
     // console.log("model_header", header_model.length);
     this.getList();
+    this.getListAll();
   }
 
   getList() {
@@ -238,6 +240,18 @@ class SVCMaster extends React.Component {
         this.setState({ all_data: items, totalData: totalData }, () =>
           this.getMapping()
         );
+      }
+    });
+  }
+
+  getListAll() {
+    getDatafromAPINODE(
+      "/lineItemMapping/getLineItem/svc?noPg=1",
+      this.state.tokenUser
+    ).then((res) => {
+      if (res.data !== undefined) {
+        const items = res.data.data;
+        this.setState({ all_data_line: items });
       }
     });
   }
@@ -579,6 +593,15 @@ class SVCMaster extends React.Component {
     this.setState({ perPage: limitpg }, () => this.getList());
   };
 
+  countheader = (params_field) => {
+    let value = "element." + params_field;
+    let sumheader = this.state.all_data_line.filter(
+      (element) => eval(value) !== null && eval(value) !== ""
+    );
+    return sumheader.length;
+    // console.log(params_field, sumheader);
+  };
+
   render() {
     const CPOForm = this.state.CPOForm;
     const role = this.state.roleUser;
@@ -692,8 +715,9 @@ class SVCMaster extends React.Component {
                             ))}
                           </tr>
                           <tr align="center">
-                            {header.map((head) => (
-                              <th>0</th>
+                            <th></th>
+                            {header_model.map((head) => (
+                              <th>{this.countheader(head)}</th>
                             ))}
                           </tr>
                           <tr align="center">

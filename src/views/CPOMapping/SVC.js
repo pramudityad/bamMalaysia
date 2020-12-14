@@ -233,6 +233,7 @@ class MappingSVC extends React.Component {
       action_message: null,
       filter_list: {},
       all_data_master: [],
+      all_data_mapping: [],
       dataChecked: new Map(),
       dataChecked_container: [],
       dataChecked_container2: [],
@@ -246,6 +247,7 @@ class MappingSVC extends React.Component {
     // console.log("header", header.length);
     // console.log("model_header", header_model.length);
     this.getList();
+    this.getListAll();
     this.getMaster();
   }
 
@@ -321,6 +323,18 @@ class MappingSVC extends React.Component {
         const items = res.data.data;
         const totalData = res.data.totalResults;
         this.setState({ all_data: items, totalData: totalData });
+      }
+    });
+  }
+
+  getListAll() {
+    getDatafromAPINODE(
+      "/cpoMapping/getCpo/svc?noPg=1",
+      this.state.tokenUser
+    ).then((res) => {
+      if (res.data !== undefined) {
+        const items = res.data.data;
+        this.setState({ all_data_mapping: items });
       }
     });
   }
@@ -1026,6 +1040,15 @@ class MappingSVC extends React.Component {
     this.setState({ perPage: limitpg }, () => this.getList());
   };
 
+  countheader = (params_field) => {
+    let value = "element." + params_field;
+    let sumheader = this.state.all_data_mapping.filter(
+      (element) => eval(value) !== null && eval(value) !== ""
+    );
+    return sumheader.length;
+    // console.log(params_field, sumheader);
+  };
+
   render() {
     const CPOForm = this.state.CPOForm;
     const role = this.state.roleUser;
@@ -1196,8 +1219,9 @@ class MappingSVC extends React.Component {
                             ))}
                           </tr>
                           <tr align="center">
-                            {header.map((head) => (
-                              <th>0</th>
+                            <th></th>
+                            {header_model.map((head) => (
+                              <th>{this.countheader(head)}</th>
                             ))}
                           </tr>
                           <tr align="center">
