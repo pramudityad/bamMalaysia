@@ -1476,7 +1476,7 @@ class MYASGCreation extends Component {
       let cdData = this.state.list_cd_id_act.find((e) => e.cdid === value);
       let custom_site_display = cdData.loc_id + "_" + cdData.site_name;
       dataLMR[parseInt(idx)]["custom_site_display"] = custom_site_display;
-      dataLMR[parseInt(idx)]["site_id"] = cdData.site_name;
+      dataLMR[parseInt(idx)]["site_id"] = custom_site_display;
       dataLMR[parseInt(idx)]["project_name"] = cdData.project;
       dataLMR[parseInt(idx)]["cdid"] = value;
       if (dataparentLMR_GL.gl_account_actual === "Transport - 402102") {
