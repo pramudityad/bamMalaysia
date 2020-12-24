@@ -93,9 +93,8 @@ const Checkbox2 = ({
 );
 const modul_name = "HW Mapping";
 const header = [
-  // "",
-  // "NOT REQUIRED",
-  "Internal PO",
+  "PROJECT",
+  "PO NUMBER",
   "LOOKUP REFERENCE",
   "REGION",
   "REFERENCE LOC ID",
@@ -108,7 +107,7 @@ const header = [
   "DESCRIPTION",
   "QTY",
   "NW#",
-  "CNI DATE",
+  "ON AIR DATE",
   "MAPPING DATE",
   "REMARKS",
   "PREMR NO.",
@@ -129,15 +128,12 @@ const header = [
   "80% BILLING UPON HW COA",
   "80% INVOICING NO.",
   "80% INVOICING DATE",
+  "Cancel Invoice",
   "NI COA DATE (VLOOKUP FROM SERVICES MAPPING)",
   "20% BILLING UPON NI",
   "20% INVOICING NO.",
   "20% INVOICING DATE",
-  "SSO COA DATE (VLOOKUP FROM SERVICES MAPPING)",
-  "20% BILLING UPON SSO",
-  "20% INVOICING NO.",
-  "20% INVOICING DATE",
-  "GR NUMBER",
+  "Cancelled",
   "HW COA RECEIVED DATE",
   "40% BILLING UPON COA HW",
   "40% INVOICING NO.",
@@ -145,7 +141,7 @@ const header = [
   "Cancelled",
   "NI COA date (vlookup from SERVICES MAPPING)",
   "40% BILLING UPON COA NI",
-  "40% INVOICING  Number",
+  "40% INVOICING Number",
   "40% INVOICING DATE",
   "Cancelled",
   "SSO COA date (vlookup from SERVICES MAPPING)",
@@ -153,22 +149,20 @@ const header = [
   "20% INVOICING NO.",
   "20% INVOICING DATE",
   "Cancelled",
-  "Vlookup: SSO 100% in Service (20% in HW)",
   "100%  HW COA ",
   "100% BILLING UPON HW COA",
   "100% INVOICING NO.",
   "100% INVOICING DATE",
+  "Cancelled",
+  "Cancel column",
   "REFERENCE LOC ID",
-  "PO#",
   "REFF",
-  "SITE LIST",
-  "REFF 2",
-  "NI",
-  "SSO",
-  "REF NI",
+  "Vlookup for billing",
 ];
+
 const header_model = [
-  "Internal_Po",
+  "Project",
+  "Po_Number",
   "Lookup_Reference",
   "Region",
   "Reference_Loc_Id",
@@ -181,7 +175,7 @@ const header_model = [
   "Description",
   "Qty",
   "NW",
-  "CN_Date",
+  "On_Air_Date",
   "Mapping_Date",
   "Remarks",
   "Premr_No",
@@ -202,15 +196,17 @@ const header_model = [
   "Billing_Upon_Hw_Coa_80",
   "Invoicing_No_Hw_Coa_80",
   "Invoicing_Date_Hw_Coa_80",
+  "Cancelled_Invoice_Hw_Coa_80",
   "Ni_Coa_Date_20",
   "Billing_Upon_Ni_20",
   "Invoicing_No_Ni_20",
   "Invoicing_Date_Ni_20",
-  "Sso_Coa_Date_20",
-  "Billing_Upon_Sso_20",
-  "Invoicing_No_Sso_20",
-  "Invoicing_Date_Sso_20",
-  "Gr_Number",
+  "Cancelled_Invoicing_Ni_20",
+  // "Sso_Coa_Date_20",
+  // "Billing_Upon_Sso_20",
+  // "Invoicing_No_Sso_20",
+  // "Invoicing_Date_Sso_20",
+  // "Gr_Number",
   "Hw_Coa_Received_Date_40",
   "Billing_Upon_Hw_Coa_40",
   "Invoicing_No_Hw_Coa_40",
@@ -226,20 +222,102 @@ const header_model = [
   "Invoicing_No_Sso_20_1",
   "Invoicing_Date_Sso_20_1",
   "Cancelled_Sso_20",
-  "Vlookup_SSO_100_In_Service",
+  // "Vlookup_SSO_100_In_Service",
   "Hw_Coa_100",
   "Billing_Upon_Hw_Coa_100",
   "Invoicing_No_Hw_Coa_100",
   "Invoicing_Date_Hw_Coa_100",
+  "Cancelled_Invoicing_Hw_Coa_100",
+  "Cancel_Column",
   "Reference_Loc_Id_1",
-  "Po_1",
-  "Reff_1",
-  "Site_List",
-  "Reff_2",
-  "Ni",
-  "Sso",
-  "Ref_Ni",
+  "Reff",
+  "Vlookup_For_Billing",
+  "Deal_Name",
+  "Hammer",
+  "Project_Description",
 ];
+
+const header_materialmapping = [
+  "Project",
+  "Po_Number",
+  "Lookup_Reference",
+  "Region",
+  "Reference_Loc_Id",
+  "New_Loc_Id",
+  "Site_Name",
+  "New_Site_Name",
+  "Config",
+  "Po",
+  "Line",
+  "Description",
+  "Qty",
+  "NW",
+  "On_Air_Date",
+  "Mapping_Date",
+  "Remarks",
+  "Premr_No",
+  "Proceed_Billing_100",
+  "Celcom_User",
+  "Pcode",
+  "Unit_Price",
+  "Total_Price",
+  "Discounted_Unit_Price",
+  "Discounted_Po_Price",
+];
+
+const header_pfm = [
+  "So_Line_Item_Description",
+  "Sitepcode",
+  "VlookupWbs",
+  "So_No",
+  "Wbs_No",
+  "For_Checking_Purpose_Only_Rashidah",
+  // "Hw_Coa_Received_Date_80",
+  "Billing_Upon_Hw_Coa_80",
+  "Invoicing_No_Hw_Coa_80",
+  // "Invoicing_Date_Hw_Coa_80",
+  "Cancelled_Invoice_Hw_Coa_80",
+  // "Ni_Coa_Date_20",
+  "Billing_Upon_Ni_20",
+  "Invoicing_No_Ni_20",
+  // "Invoicing_Date_Ni_20",
+  "Cancelled_Invoicing_Ni_20",
+  // "Sso_Coa_Date_20",
+  // "Billing_Upon_Sso_20",
+  // "Invoicing_No_Sso_20",
+  // "Invoicing_Date_Sso_20",
+  // "Gr_Number",
+  // "Hw_Coa_Received_Date_40",
+  "Billing_Upon_Hw_Coa_40",
+  "Invoicing_No_Hw_Coa_40",
+  // "Invoicing_Date_Hw_Coa_40",
+  "Cancelled_Hw_Coa_40",
+  // "Ni_Coa_Date_40",
+  "Billing_Upon_Ni_40",
+  "Invoicing_No_Ni_40",
+  // "Invoicing_Date_Ni_40",
+  "Cancelled_Ni_40",
+  // "Sso_Coa_Date_20_1",
+  "Billing_Upon_Sso_20_1",
+  "Invoicing_No_Sso_20_1",
+  // "Invoicing_Date_Sso_20_1",
+  "Cancelled_Sso_20",
+  // "Vlookup_SSO_100_In_Service",
+  "Hw_Coa_100",
+  "Billing_Upon_Hw_Coa_100",
+  "Invoicing_No_Hw_Coa_100",
+  // "Invoicing_Date_Hw_Coa_100",
+  "Cancelled_Invoicing_Hw_Coa_100",
+];
+
+const header_admin = [
+  "For_Checking_Purpose_Only_Rashidah",
+  "Hw_Coa_Received_Date_80",
+  "Cancel_Column",
+  "Reference_Loc_Id_1",
+  "Reff",
+];
+
 class MappingHW extends React.Component {
   constructor(props) {
     super(props);
@@ -262,18 +340,21 @@ class MappingHW extends React.Component {
       action_message: null,
       filter_list: {},
       all_data_master: [],
+      all_data_mapping: [],
       dataChecked: new Map(),
       dataChecked_container: [],
       dataChecked_container2: [],
       tabs_submenu: [true, false],
       all_data_true: [],
+      dataChecked_all: false,
     };
   }
 
   componentDidMount() {
-    // console.log("header", header.length);
-    // console.log("model_header", header_model.length);
+    console.log("header", header.length);
+    console.log("model_header", header_model.length);
     this.getList();
+    this.getListAll();
     this.getMaster();
   }
 
@@ -291,6 +372,13 @@ class MappingHW extends React.Component {
 
   getList() {
     let filter_array = [];
+    this.state.filter_list["Internal_Po"] !== null &&
+      this.state.filter_list["Internal_Po"] !== undefined &&
+      filter_array.push(
+        '"Internal_Po":{"$regex" : "' +
+          this.state.filter_list["Internal_Po"] +
+          '", "$options" : "i"}'
+      );
     this.state.filter_list["Region"] !== null &&
       this.state.filter_list["Region"] !== undefined &&
       filter_array.push(
@@ -346,8 +434,27 @@ class MappingHW extends React.Component {
     });
   }
 
+  getListAll() {
+    getDatafromAPINODE(
+      "/cpoMapping/getCpo/hw?noPg=1",
+      this.state.tokenUser
+    ).then((res) => {
+      if (res.data !== undefined) {
+        const items = res.data.data;
+        this.setState({ all_data_mapping: items });
+      }
+    });
+  }
+
   getList2() {
     let filter_array = [];
+    this.state.filter_list["Internal_Po"] !== null &&
+      this.state.filter_list["Internal_Po"] !== undefined &&
+      filter_array.push(
+        '"Internal_Po":{"$regex" : "' +
+          this.state.filter_list["Internal_Po"] +
+          '", "$options" : "i"}'
+      );
     this.state.filter_list["Region"] !== null &&
       this.state.filter_list["Region"] !== undefined &&
       filter_array.push(
@@ -407,8 +514,8 @@ class MappingHW extends React.Component {
     const wb = new Excel.Workbook();
     const ws = wb.addWorksheet();
 
-    ws.addRow(header_model);
-    for (let i = 1; i < header_model.length + 1; i++) {
+    ws.addRow(header_materialmapping);
+    for (let i = 1; i < header_materialmapping.length + 1; i++) {
       ws.getCell(numToSSColumn(i) + "1").fill = {
         type: "pattern",
         pattern: "solid",
@@ -417,10 +524,120 @@ class MappingHW extends React.Component {
       };
     }
     const PPFormat = await wb.xlsx.writeBuffer();
-    saveAs(new Blob([PPFormat]), modul_name + " Template.xlsx");
+    saveAs(
+      new Blob([PPFormat]),
+      this.state.roleUser[1] + " " + modul_name + " Template.xlsx"
+    );
   };
 
   exportTemplate2 = async () => {
+    const wb = new Excel.Workbook();
+    const ws = wb.addWorksheet();
+
+    const download_all_template = await getDatafromAPINODE(
+      "/cpoMapping/getCpo/hw?noPg=1",
+      this.state.tokenUser
+    );
+
+    ws.addRow(header_materialmapping);
+    for (let i = 1; i < header_materialmapping.length + 1; i++) {
+      ws.getCell(numToSSColumn(i) + "1").fill = {
+        type: "pattern",
+        pattern: "solid",
+        fgColor: { argb: "FFFFFF00" },
+        bgColor: { argb: "A9A9A9" },
+      };
+    }
+
+    if (download_all_template.data !== undefined) {
+      console.log(download_all_template.data.data.map((u) => u._id));
+
+      for (let i = 0; i < download_all_template.data.data.length; i++) {
+        let e = download_all_template.data.data[i];
+        ws.addRow([
+          e.Project,
+          e.Internal_Po,
+          // e.Link,
+          e.Lookup_Reference,
+          e.Region,
+          e.Reference_Loc_Id,
+          e.New_Loc_Id,
+          e.Site_Name,
+          e.New_Site_Name,
+          e.Config,
+          e.Po,
+          e.Line,
+          this.LookupField(e.Po + "-" + e.Line, "Description"),
+          e.Qty,
+          e.CNI_Date,
+          e.Mapping_Date,
+          e.Remarks,
+          e.Celcom_User,
+          this.LookupField(e.Po + "-" + e.Line, "Pcode"),
+          this.LookupField(e.Po + "-" + e.Line, "Unit_Price"),
+          e.Total_Price,
+          e.Discounted_Unit_Price,
+          e.Discounted_Po_Price,
+          // e.Type,
+          // e.So_Line_Item_Description,
+          // e.So_No,
+          // e.Wbs_No,
+          // e.Billing_100,
+          // e.Atp_Coa_Received_Date_80,
+          // e.Billing_Upon_Atp_Coa_80,
+          // e.Invoicing_No_Atp_Coa_80,
+          // e.Invoicing_Date_Atp_Coa_80,
+          // e.Cancelled_Atp_Coa_80,
+          // e.Ni_Coa_Date_20,
+          // e.Billing_Upon_Ni_20,
+          // e.Invoicing_No_Ni_20,
+          // e.Invoicing_Date_Ni_20,
+          // e.Sso_Coa_Date_80,
+          // e.Billing_Upon_Sso_80,
+          // e.Invoicing_No_Sso_80,
+          // e.Invoicing_Date_Sso_80,
+          // e.Coa_Psp_Received_Date_20,
+          // e.Billing_Upon_Coa_Psp_20,
+          // e.Invoicing_No_Coa_Psp_20,
+          // e.Invoicing_Date_Coa_Psp_20,
+          // e.Sso_Coa_Date_100,
+          // e.Billing_Upon_Sso_Coa_100,
+          // e.Invoicing_No_Sso_Coa_100,
+          // e.Invoicing_Date_Sso_Coa_100,
+          // e.Coa_Ni_Date_100,
+          // e.Billing_Upon_Coa_Ni_100,
+          // e.Invoicing_No_Coa_Ni_100,
+          // e.Invoicing_Date_Coa_Ni_100,
+          // e.Ses_No,
+          // e.Ses_Status,
+          // e.Link_1,
+          // e.Ni_Coa_Submission_Status,
+          // e.Invoicing_Date_Sso_20_1,
+          // e.Cancelled_Sso_20,
+          // e.Vlookup_SSO_100_In_Service,
+          // e.Hw_Coa_100,
+          // e.Billing_Upon_Hw_Coa_100,
+          // e.Invoicing_No_Hw_Coa_100,
+          // e.Invoicing_Date_Hw_Coa_100,
+          // e.Reference_Loc_Id_1,
+          // e.Po_1,
+          // e.Reff_1,
+          // e.Site_List,
+          // e.Reff_2,
+          // e.Ni,
+          // e.Sso,
+          // e.Ref_Ni,
+        ]);
+      }
+    }
+    const PPFormat = await wb.xlsx.writeBuffer();
+    saveAs(
+      new Blob([PPFormat]),
+      this.state.roleUser[1] + " " + modul_name + " All Data.xlsx"
+    );
+  };
+
+  exportTemplateall = async () => {
     const wb = new Excel.Workbook();
     const ws = wb.addWorksheet();
 
@@ -445,7 +662,9 @@ class MappingHW extends React.Component {
       for (let i = 0; i < download_all_template.data.data.length; i++) {
         let e = download_all_template.data.data[i];
         ws.addRow([
+          e.Project,
           e.Internal_Po,
+          // e.Link,
           e.Lookup_Reference,
           e.Region,
           e.Reference_Loc_Id,
@@ -455,54 +674,51 @@ class MappingHW extends React.Component {
           e.Config,
           e.Po,
           e.Line,
-          e.Description,
+          this.LookupField(e.Po + "-" + e.Line, "Description"),
           e.Qty,
-          e.NW,
-          e.CN_Date,
+          e.CNI_Date,
           e.Mapping_Date,
           e.Remarks,
-          e.Premr_No,
-          e.Proceed_Billing_100,
           e.Celcom_User,
           this.LookupField(e.Po + "-" + e.Line, "Pcode"),
           this.LookupField(e.Po + "-" + e.Line, "Unit_Price"),
           e.Total_Price,
           e.Discounted_Unit_Price,
           e.Discounted_Po_Price,
+          e.Type,
           e.So_Line_Item_Description,
-          e.Sitepcode,
-          e.VlookupWbs,
           e.So_No,
           e.Wbs_No,
-
-          e.For_Checking_Purpose_Only_Rashidah,
-
-          e.Hw_Coa_Received_Date_80,
-          e.Billing_Upon_Hw_Coa_80,
-          e.Invoicing_No_Hw_Coa_80,
-          e.Invoicing_Date_Hw_Coa_80,
+          e.Billing_100,
+          e.Atp_Coa_Received_Date_80,
+          e.Billing_Upon_Atp_Coa_80,
+          e.Invoicing_No_Atp_Coa_80,
+          e.Invoicing_Date_Atp_Coa_80,
+          e.Cancelled_Atp_Coa_80,
           e.Ni_Coa_Date_20,
           e.Billing_Upon_Ni_20,
           e.Invoicing_No_Ni_20,
           e.Invoicing_Date_Ni_20,
-          e.Sso_Coa_Date_20,
-          e.Billing_Upon_Sso_20,
-          e.Invoicing_No_Sso_20,
-          e.Invoicing_Date_Sso_20,
-          e.Gr_Number,
-          e.Hw_Coa_Received_Date_40,
-          e.Billing_Upon_Hw_Coa_40,
-          e.Invoicing_No_Hw_Coa_40,
-          e.Invoicing_Date_Hw_Coa_40,
-          e.Cancelled_Hw_Coa_40,
-          e.Ni_Coa_Date_40,
-          e.Billing_Upon_Ni_40,
-          e.Invoicing_No_Ni_40,
-          e.Invoicing_Date_Ni_40,
-          e.Cancelled_Ni_40,
-          e.Sso_Coa_Date_20_1,
-          e.Billing_Upon_Sso_20_1,
-          e.Invoicing_No_Sso_20_1,
+          e.Sso_Coa_Date_80,
+          e.Billing_Upon_Sso_80,
+          e.Invoicing_No_Sso_80,
+          e.Invoicing_Date_Sso_80,
+          e.Coa_Psp_Received_Date_20,
+          e.Billing_Upon_Coa_Psp_20,
+          e.Invoicing_No_Coa_Psp_20,
+          e.Invoicing_Date_Coa_Psp_20,
+          e.Sso_Coa_Date_100,
+          e.Billing_Upon_Sso_Coa_100,
+          e.Invoicing_No_Sso_Coa_100,
+          e.Invoicing_Date_Sso_Coa_100,
+          e.Coa_Ni_Date_100,
+          e.Billing_Upon_Coa_Ni_100,
+          e.Invoicing_No_Coa_Ni_100,
+          e.Invoicing_Date_Coa_Ni_100,
+          e.Ses_No,
+          e.Ses_Status,
+          e.Link_1,
+          e.Ni_Coa_Submission_Status,
           e.Invoicing_Date_Sso_20_1,
           e.Cancelled_Sso_20,
           e.Vlookup_SSO_100_In_Service,
@@ -522,7 +738,10 @@ class MappingHW extends React.Component {
       }
     }
     const PPFormat = await wb.xlsx.writeBuffer();
-    saveAs(new Blob([PPFormat]), modul_name + " All.xlsx");
+    saveAs(
+      new Blob([PPFormat]),
+      this.state.roleUser[1] + " " + modul_name + " All Data.xlsx"
+    );
   };
 
   togglecreateModal = () => {
@@ -566,10 +785,18 @@ class MappingHW extends React.Component {
     this.toggleLoading();
     this.togglecreateModal();
     const BulkXLSX = this.state.rowsXLS;
+    const roles =
+      this.state.roleUser.includes("BAM-MAT PLANNER") === true
+        ? 1
+        : this.state.roleUser.includes("BAM-PFM") === true
+        ? 2
+        : 3;
     const res = await postDatatoAPINODE(
       "/cpoMapping/createCpo",
       {
         cpo_type: "hw",
+        required_check: true,
+        roles: roles,
         cpo_data: this.state.rowsXLS,
       },
       this.state.tokenUser
@@ -577,9 +804,9 @@ class MappingHW extends React.Component {
     if (res.data !== undefined) {
       this.setState({ action_status: "success" });
       this.toggleLoading();
-      setTimeout(function () {
-        window.location.reload();
-      }, 1500);
+      // setTimeout(function () {
+      //   window.location.reload();
+      // }, 1500);
     } else {
       if (
         res.response !== undefined &&
@@ -734,7 +961,7 @@ class MappingHW extends React.Component {
     }
   };
 
-  downloadAll_A = async () => {
+  download_Admin = async () => {
     this.toggleLoading();
     const download_all_A = await getDatafromAPINODE(
       "/cpoMapping/getCpo/hw?noPg=1",
@@ -744,19 +971,8 @@ class MappingHW extends React.Component {
     const wb = new Excel.Workbook();
     const ws = wb.addWorksheet();
 
-    let header = [
-      "New_Loc_Id",
-      "Site_Name",
-      "Config",
-      "Po",
-      "Line",
-      "Qty",
-      "Premr_No",
-      "So_Line_Item_Description",
-    ];
-
-    ws.addRow(header);
-    for (let i = 1; i < header.length + 1; i++) {
+    ws.addRow(header_admin);
+    for (let i = 1; i < header_admin.length + 1; i++) {
       ws.getCell(numToSSColumn(i) + "1").fill = {
         type: "pattern",
         pattern: "solid",
@@ -764,29 +980,33 @@ class MappingHW extends React.Component {
         bgColor: { argb: "A9A9A9" },
       };
     }
-    console.log(download_all_A.data.data.map((i) => i._id));
+
     if (download_all_A.data !== undefined) {
       for (let i = 0; i < download_all_A.data.data.length; i++) {
         let e = download_all_A.data.data[i];
         ws.addRow([
-          e.New_Loc_Id,
-          e.Site_Name,
-          e.Config,
-          e.Po,
-          e.Line,
-          e.Qty,
-          e.Premr_No,
-          e.So_Line_Item_Description,
+          e.Billing_100,
+          e.Atp_Coa_Received_Date_80,
+          e.Ni_Coa_Date_20,
+          e.Sso_Coa_Date_80,
+          e.Coa_Psp_Received_Date_20,
+          e.Sso_Coa_Date_100,
+          e.Ses_No,
+          e.Ses_Status,
+          e.Ni_Coa_Submission_Status,
         ]);
       }
     }
 
     const allocexport = await wb.xlsx.writeBuffer();
-    saveAs(new Blob([allocexport]), "Template " + modul_name + " Role A.xlsx");
+    saveAs(
+      new Blob([allocexport]),
+      "All Data " + this.state.roleUser[1] + " " + modul_name + ".xlsx"
+    );
     this.toggleLoading();
   };
 
-  downloadAll_B = async () => {
+  export_Admin = async () => {
     this.toggleLoading();
     const download_all_A = await getDatafromAPINODE(
       "/cpoMapping/getCpo/hw?noPg=1",
@@ -796,36 +1016,36 @@ class MappingHW extends React.Component {
     const wb = new Excel.Workbook();
     const ws = wb.addWorksheet();
 
-    let header = [
-      "Lookup_Reference",
-      "Region",
-      "Reference_Loc_Id",
-      "New_Loc_Id",
-      "New_Site_Name",
-      "Po",
-      "Line",
-      "Description",
-      "NW",
-      "CN_Date",
-      "Mapping_Date",
-      "Remarks",
-      "Proceed_Billing_100",
-      "Celcom_User",
-      "Pcode",
-      "Unit_Price",
-      "Total_Price",
-      "Discounted_Unit_Price",
-      "Discounted_Po_Price",
-      "Sitepcode",
-      "VlookupWbs",
-      "So_No",
-      "Wbs_No",
-      "For_Checking_Purpose_Only_Rashidah",
-      "Hw_Coa_Received_Date_80",
-      "Billing_Upon_Hw_Coa_80",
-    ];
-    ws.addRow(header);
-    for (let i = 1; i < header.length + 1; i++) {
+    ws.addRow(header_admin);
+    for (let i = 1; i < header_admin.length + 1; i++) {
+      ws.getCell(numToSSColumn(i) + "1").fill = {
+        type: "pattern",
+        pattern: "solid",
+        fgColor: { argb: "FFFFFF00" },
+        bgColor: { argb: "A9A9A9" },
+      };
+    }
+
+    const allocexport = await wb.xlsx.writeBuffer();
+    saveAs(
+      new Blob([allocexport]),
+      "Template " + this.state.roleUser[1] + " " + modul_name + ".xlsx"
+    );
+    this.toggleLoading();
+  };
+
+  download_PFM = async () => {
+    this.toggleLoading();
+    const download_all_A = await getDatafromAPINODE(
+      "/cpoMapping/getCpo/hw?noPg=1",
+      this.state.tokenUser
+    );
+
+    const wb = new Excel.Workbook();
+    const ws = wb.addWorksheet();
+
+    ws.addRow(header_pfm);
+    for (let i = 1; i < header_pfm.length + 1; i++) {
       ws.getCell(numToSSColumn(i) + "1").fill = {
         type: "pattern",
         pattern: "solid",
@@ -835,43 +1055,79 @@ class MappingHW extends React.Component {
     }
 
     if (download_all_A.data !== undefined) {
+      console.log(download_all_A.data.data.map((u) => u._id));
+
       for (let i = 0; i < download_all_A.data.data.length; i++) {
         let e = download_all_A.data.data[i];
         ws.addRow([
-          e.Lookup_Reference,
-          e.Region,
-          e.Reference_Loc_Id,
-          e.New_Loc_Id,
-          e.Site_Name,
-          e.New_Site_Name,
-          e.Config,
-          e.Po,
-          e.Line,
-          e.Description,
-          e.NW,
-          e.CN_Date,
-          e.Mapping_Date,
-          e.Remarks,
-          e.Proceed_Billing_100,
-          e.Celcom_User,
-          e.Pcode,
-          e.Unit_Price,
-          e.Total_Price,
-          e.Discounted_Unit_Price,
-          e.Discounted_Po_Price,
+          e.So_Line_Item_Description,
           e.Sitepcode,
           e.VlookupWbs,
           e.So_No,
           e.Wbs_No,
-          e.For_Checking_Purpose_Only_Rashidah,
-          e.Hw_Coa_Received_Date_80,
-          e.Billing_Upon_Hw_Coa_80,
+          e.Billing_100,
+          e.Billing_Upon_Atp_Coa_80,
+          e.Invoicing_No_Atp_Coa_80,
+          e.Invoicing_Date_Atp_Coa_80,
+          e.Cancelled_Atp_Coa_80,
+          e.Billing_Upon_Ni_20,
+          e.Invoicing_No_Ni_20,
+          e.Invoicing_Date_Ni_20,
+          e.Cancelled_Invoicing_Ni_20,
+          e.Billing_Upon_Sso_80,
+          e.Invoicing_No_Sso_80,
+          e.Invoicing_Date_Sso_80,
+          e.Cancelled_Sso_Coa_Date_80,
+          e.Billing_Upon_Coa_Psp_20,
+          e.Invoicing_No_Coa_Psp_20,
+          e.Invoicing_Date_Coa_Psp_20,
+          e.Cancelled_Coa_Psp_Received_Date_20,
+          e.Billing_Upon_Sso_Coa_100,
+          e.Invoicing_No_Sso_Coa_100,
+          e.Invoicing_Date_Sso_Coa_100,
+          e.Cancelled_Sso_Coa_Date_100,
+          e.Coa_Ni_Date_100,
+          e.Billing_Upon_Coa_Ni_100,
+          e.Invoicing_No_Coa_Ni_100,
+          e.Invoicing_Date_Coa_Ni_100,
+          e.Cancelled_Coa_Ni_Date_100,
         ]);
       }
     }
 
     const allocexport = await wb.xlsx.writeBuffer();
-    saveAs(new Blob([allocexport]), "Template " + modul_name + " Role B.xlsx");
+    saveAs(
+      new Blob([allocexport]),
+      "All Data " + this.state.roleUser[1] + " " + modul_name + ".xlsx"
+    );
+    this.toggleLoading();
+  };
+
+  export_PFM = async () => {
+    this.toggleLoading();
+    const download_all_A = await getDatafromAPINODE(
+      "/cpoMapping/getCpo/hw?noPg=1",
+      this.state.tokenUser
+    );
+
+    const wb = new Excel.Workbook();
+    const ws = wb.addWorksheet();
+
+    ws.addRow(header_pfm);
+    for (let i = 1; i < header_pfm.length + 1; i++) {
+      ws.getCell(numToSSColumn(i) + "1").fill = {
+        type: "pattern",
+        pattern: "solid",
+        fgColor: { argb: "FFFFFF00" },
+        bgColor: { argb: "A9A9A9" },
+      };
+    }
+
+    const allocexport = await wb.xlsx.writeBuffer();
+    saveAs(
+      new Blob([allocexport]),
+      "Template" + this.state.roleUser[1] + " " + modul_name + ".xlsx"
+    );
     this.toggleLoading();
   };
 
@@ -897,28 +1153,28 @@ class MappingHW extends React.Component {
     for (let i = 0; i < header_model.length; i++) {
       searchBar.push(
         <td>
-          {i !== 0 && i !== 2 && i !== 4 && i !== 6 && i !== 8 && i !== 9 ? (
+          {/* {i !== 0 && i !== 3 && i !== 5 && i !== 7 && i !== 9 && i !== 10 ? (
             ""
-          ) : (
-            <div className="controls" style={{ width: "150px" }}>
-              <InputGroup className="input-prepend">
-                <InputGroupAddon addonType="prepend">
-                  <InputGroupText>
-                    <i className="fa fa-search"></i>
-                  </InputGroupText>
-                </InputGroupAddon>
-                <Input
-                  // className="col-sm-3"
-                  type="text"
-                  placeholder="Search"
-                  onChange={this.handleFilterList}
-                  value={this.state.filter_list[header_model[i]]}
-                  name={header_model[i]}
-                  size="sm"
-                />
-              </InputGroup>
-            </div>
-          )}
+          ) : ( */}
+          <div className="controls" style={{ width: "150px" }}>
+            <InputGroup className="input-prepend">
+              <InputGroupAddon addonType="prepend">
+                <InputGroupText>
+                  <i className="fa fa-search"></i>
+                </InputGroupText>
+              </InputGroupAddon>
+              <Input
+                // className="col-sm-3"
+                type="text"
+                placeholder="Search"
+                onChange={this.handleFilterList}
+                value={this.state.filter_list[header_model[i]]}
+                name={header_model[i]}
+                size="sm"
+              />
+            </InputGroup>
+          </div>
+          {/* )} */}
         </td>
       );
     }
@@ -958,6 +1214,55 @@ class MappingHW extends React.Component {
     }));
   };
 
+  handleChangeChecklistAll = async (e) => {
+    const getall = await getDatafromAPINODE(
+      "/cpoMapping/getCpo/hw?noPg=1",
+      this.state.tokenUser
+    );
+    console.log(getall.data);
+
+    if (getall.data !== undefined) {
+      if (e.target !== null) {
+        const isChecked = e.target.checked;
+        let dataChecked_container = this.state.dataChecked_container;
+        let each_data = getall.data.data;
+        if (isChecked) {
+          each_data = each_data.filter(
+            (e) =>
+              dataChecked_container.map((m) => m._id).includes(e._id) !== true
+          );
+          for (let x = 0; x < each_data.length; x++) {
+            dataChecked_container.push(each_data[x]);
+            this.setState((prevState) => ({
+              dataChecked_container: prevState.dataChecked_container.set(
+                each_data[x]._id,
+                isChecked
+              ),
+            }));
+          }
+          this.setState({ dataChecked_container: dataChecked_container });
+        } else {
+          for (let x = 0; x < each_data.length; x++) {
+            this.setState(
+              (prevState) => ({
+                dataChecked_container: prevState.dataChecked_container.set(
+                  each_data[x]._id,
+                  isChecked
+                ),
+              }),
+              () => console.log(this.state.dataChecked_container)
+            );
+          }
+          dataChecked_container.length = 0;
+          this.setState({ dataChecked_container: dataChecked_container });
+        }
+        this.setState((prevState) => ({
+          dataChecked_all: !prevState.dataChecked_all,
+        }));
+      }
+    }
+  };
+
   handleChangeChecklist2 = (e) => {
     const item2 = e.target.name;
     const isChecked2 = e.target.checked;
@@ -985,6 +1290,22 @@ class MappingHW extends React.Component {
     let tab_submenu = new Array(2).fill(false);
     tab_submenu[parseInt(e)] = true;
     this.setState({ tabs_submenu: tab_submenu });
+  };
+
+  countData = () => {};
+
+  handleChangeLimit = (e) => {
+    let limitpg = e.currentTarget.value;
+    this.setState({ perPage: limitpg }, () => this.getList());
+  };
+
+  countheader = (params_field) => {
+    let value = "element." + params_field;
+    let sumheader = this.state.all_data_mapping.filter(
+      (element) => eval(value) !== null && eval(value) !== ""
+    );
+    return sumheader.length;
+    // console.log(params_field, sumheader);
   };
 
   render() {
@@ -1047,32 +1368,54 @@ class MappingHW extends React.Component {
                         Export
                       </DropdownToggle>
                       <DropdownMenu>
+                        <DropdownItem header>Export Data</DropdownItem>
+                        <DropdownItem onClick={this.exportTemplateall}>
+                          {" "}
+                          All Data HW Export
+                        </DropdownItem>
                         <DropdownItem header>Uploader Template</DropdownItem>
+
                         {role.includes("BAM-MAT PLANNER") === true ? (
                           <>
                             <DropdownItem onClick={this.exportTemplate}>
                               {" "}
-                              Mapping Template
+                              Mapping Template{" " +
+                                this.state.roleUser[1]}{" "}
                             </DropdownItem>
                             <DropdownItem onClick={this.exportTemplate2}>
                               {" "}
-                              All Data Template
+                              All Data Template{" " +
+                                this.state.roleUser[1]}{" "}
+                            </DropdownItem>
+                          </>
+                        ) : (
+                          ""
+                        )}
+                        {role.includes("BAM-PFM") === true ? (
+                          <>
+                            <DropdownItem onClick={this.export_PFM}>
+                              {" "}
+                              Mapping Template{" " +
+                                this.state.roleUser[1]}{" "}
+                            </DropdownItem>
+                            <DropdownItem onClick={this.download_PFM}>
+                              All Data Template{" " + this.state.roleUser[1]}{" "}
                             </DropdownItem>
                           </>
                         ) : (
                           ""
                         )}
                         {role.includes("BAM-IM") === true ? (
-                          <DropdownItem onClick={this.downloadAll_A}>
-                            Template A{" "}
-                          </DropdownItem>
-                        ) : (
-                          ""
-                        )}
-                        {role.includes("BAM-PFM") === true ? (
-                          <DropdownItem onClick={this.downloadAll_B}>
-                            Template B{" "}
-                          </DropdownItem>
+                          <>
+                            <DropdownItem onClick={this.export_Admin}>
+                              {" "}
+                              Mapping Template{" " +
+                                this.state.roleUser[1]}{" "}
+                            </DropdownItem>
+                            <DropdownItem onClick={this.download_Admin}>
+                              All Data Template{" " + this.state.roleUser[1]}{" "}
+                            </DropdownItem>
+                          </>
                         ) : (
                           ""
                         )}
@@ -1083,6 +1426,32 @@ class MappingHW extends React.Component {
               </CardHeader>
 
               <CardBody>
+                <Row>
+                  <Col>
+                    <div style={{ marginBottom: "10px" }}>
+                      <div
+                        style={{
+                          float: "left",
+                          margin: "5px",
+                          display: "inline-flex",
+                        }}
+                      >
+                        <Input
+                          type="select"
+                          name="select"
+                          id="selectLimit"
+                          onChange={this.handleChangeLimit}
+                        >
+                          <option value={"10"}>10</option>
+                          <option value={"25"}>25</option>
+                          <option value={"50"}>50</option>
+                          <option value={"100"}>100</option>
+                          <option value={"noPg=1"}>All</option>
+                        </Input>
+                      </div>
+                    </div>
+                  </Col>
+                </Row>
                 <div>
                   <Nav tabs>
                     <NavItem>
@@ -1130,9 +1499,35 @@ class MappingHW extends React.Component {
                               <th>{head}</th>
                             ))}
                           </tr>
-                          <tr>
+                          {this.state.tabs_submenu[0] === true ? (
+                            <>
+                              <tr align="center">
+                                <th></th>
+                                <th></th>
+                                {header_model.map((head) => (
+                                  <th>{this.countheader(head)}</th>
+                                ))}
+                              </tr>
+                            </>
+                          ) : (
+                            <>
+                              <tr align="center">
+                                {header_model.map((head) => (
+                                  <th>{this.countheader(head)}</th>
+                                ))}
+                              </tr>
+                            </>
+                          )}
+                          <tr align="center">
                             <td></td>
-                            <td></td>
+                            <td>
+                              {/* <Checkbox1
+                                name={"all"}
+                                checked={this.state.dataChecked_all}
+                                onChange={this.handleChangeChecklistAll}
+                                value={"all"}
+                              /> */}
+                            </td>{" "}
                             {this.loopSearchBar()}
                           </tr>
                         </thead>
@@ -1156,6 +1551,7 @@ class MappingHW extends React.Component {
                                       </Button>
                                     </Link>
                                   </td>
+
                                   <td>
                                     <Checkbox1
                                       checked={this.state.dataChecked.get(
@@ -1167,7 +1563,9 @@ class MappingHW extends React.Component {
                                       value={e}
                                     />
                                   </td>
+                                  <td>{e.Project}</td>
                                   <td>{e.Internal_Po}</td>
+                                  {/* <td>{e.Link}</td> */}
                                   <td>{e.Lookup_Reference}</td>
                                   <td>{e.Region}</td>
                                   <td>{e.Reference_Loc_Id}</td>
@@ -1179,17 +1577,14 @@ class MappingHW extends React.Component {
                                   <td>{e.Line}</td>
                                   <td>{e.Description}</td>
                                   <td>{e.Qty}</td>
-                                  <td>{e.NW}</td>
-                                  <td>{e.CN_Date}</td>
+                                  <td>{e.CNI_Date}</td>
                                   <td>{e.Mapping_Date}</td>
                                   <td>{e.Remarks}</td>
-                                  <td>{e.Premr_No}</td>
-                                  <td>{e.Proceed_Billing_100}</td>
                                   <td>{e.Celcom_User}</td>
                                   <td>
                                     {this.LookupField(
                                       e.Po + "-" + e.Line,
-                                      "Pcod"
+                                      "Pcode"
                                     )}
                                   </td>
                                   <td>
@@ -1201,40 +1596,40 @@ class MappingHW extends React.Component {
                                   <td>{e.Total_Price}</td>
                                   <td>{e.Discounted_Unit_Price}</td>
                                   <td>{e.Discounted_Po_Price}</td>
+                                  <td>{e.Type}</td>
                                   <td>{e.So_Line_Item_Description}</td>
-                                  <td>{e.Sitepcode}</td>
-                                  <td>{e.VlookupWbs}</td>
                                   <td>{e.So_No}</td>
                                   <td>{e.Wbs_No}</td>
-                                  <td>
-                                    {e.For_Checking_Purpose_Only_Rashidah}
-                                  </td>
-                                  <td>{e.Hw_Coa_Received_Date_80}</td>
-                                  <td>{e.Billing_Upon_Hw_Coa_80}</td>
-                                  <td>{e.Invoicing_No_Hw_Coa_80}</td>
-                                  <td>{e.Invoicing_Date_Hw_Coa_80}</td>
+                                  <td>{e.Billing_100}</td>
+                                  <td>{e.Atp_Coa_Received_Date_80}</td>
+                                  <td>{e.Billing_Upon_Atp_Coa_80}</td>
+                                  <td>{e.Invoicing_No_Atp_Coa_80}</td>
+                                  <td>{e.Invoicing_Date_Atp_Coa_80}</td>
+                                  <td>{e.Cancelled_Atp_Coa_80}</td>
                                   <td>{e.Ni_Coa_Date_20}</td>
                                   <td>{e.Billing_Upon_Ni_20}</td>
                                   <td>{e.Invoicing_No_Ni_20}</td>
                                   <td>{e.Invoicing_Date_Ni_20}</td>
-                                  <td>{e.Sso_Coa_Date_20}</td>
-                                  <td>{e.Billing_Upon_Sso_20}</td>
-                                  <td>{e.Invoicing_No_Sso_20}</td>
-                                  <td>{e.Invoicing_Date_Sso_20}</td>
-                                  <td>{e.Gr_Number}</td>
-                                  <td>{e.Hw_Coa_Received_Date_40}</td>
-                                  <td>{e.Billing_Upon_Hw_Coa_40}</td>
-                                  <td>{e.Invoicing_No_Hw_Coa_40}</td>
-                                  <td>{e.Invoicing_Date_Hw_Coa_40}</td>
-                                  <td>{e.Cancelled_Hw_Coa_40}</td>
-                                  <td>{e.Ni_Coa_Date_40}</td>
-                                  <td>{e.Billing_Upon_Ni_40}</td>
-                                  <td>{e.Invoicing_No_Ni_40}</td>
-                                  <td>{e.Invoicing_Date_Ni_40}</td>
-                                  <td>{e.Cancelled_Ni_40}</td>
-                                  <td>{e.Sso_Coa_Date_20_1}</td>
-                                  <td>{e.Billing_Upon_Sso_20_1}</td>
-                                  <td>{e.Invoicing_No_Sso_20_1}</td>
+                                  <td>{e.Sso_Coa_Date_80}</td>
+                                  <td>{e.Billing_Upon_Sso_80}</td>
+                                  <td>{e.Invoicing_No_Sso_80}</td>
+                                  <td>{e.Invoicing_Date_Sso_80}</td>
+                                  <td>{e.Coa_Psp_Received_Date_20}</td>
+                                  <td>{e.Billing_Upon_Coa_Psp_20}</td>
+                                  <td>{e.Invoicing_No_Coa_Psp_20}</td>
+                                  <td>{e.Invoicing_Date_Coa_Psp_20}</td>
+                                  <td>{e.Sso_Coa_Date_100}</td>
+                                  <td>{e.Billing_Upon_Sso_Coa_100}</td>
+                                  <td>{e.Invoicing_No_Sso_Coa_100}</td>
+                                  <td>{e.Invoicing_Date_Sso_Coa_100}</td>
+                                  <td>{e.Coa_Ni_Date_100}</td>
+                                  <td>{e.Billing_Upon_Coa_Ni_100}</td>
+                                  <td>{e.Invoicing_No_Coa_Ni_100}</td>
+                                  <td>{e.Invoicing_Date_Coa_Ni_100}</td>
+                                  <td>{e.Ses_No}</td>
+                                  <td>{e.Ses_Status}</td>
+                                  <td>{e.Link_1}</td>
+                                  <td>{e.Ni_Coa_Submission_Status}</td>
                                   <td>{e.Invoicing_Date_Sso_20_1}</td>
                                   <td>{e.Cancelled_Sso_20}</td>
                                   <td>{e.Vlookup_SSO_100_In_Service}</td>
@@ -1277,6 +1672,7 @@ class MappingHW extends React.Component {
                                   ) : (
                                     <td></td>
                                   )}
+                                  <td>{e.Link}</td>
                                   <td>{e.Lookup_Reference}</td>
                                   <td>{e.Region}</td>
                                   <td>{e.Reference_Loc_Id}</td>
@@ -1288,17 +1684,14 @@ class MappingHW extends React.Component {
                                   <td>{e.Line}</td>
                                   <td>{e.Description}</td>
                                   <td>{e.Qty}</td>
-                                  <td>{e.NW}</td>
-                                  <td>{e.CN_Date}</td>
+                                  <td>{e.CNI_Date}</td>
                                   <td>{e.Mapping_Date}</td>
                                   <td>{e.Remarks}</td>
-                                  <td>{e.Premr_No}</td>
-                                  <td>{e.Proceed_Billing_100}</td>
                                   <td>{e.Celcom_User}</td>
                                   <td>
                                     {this.LookupField(
                                       e.Po + "-" + e.Line,
-                                      "Pcod"
+                                      "Pcode"
                                     )}
                                   </td>
                                   <td>
@@ -1310,40 +1703,40 @@ class MappingHW extends React.Component {
                                   <td>{e.Total_Price}</td>
                                   <td>{e.Discounted_Unit_Price}</td>
                                   <td>{e.Discounted_Po_Price}</td>
+                                  <td>{e.Type}</td>
                                   <td>{e.So_Line_Item_Description}</td>
-                                  <td>{e.Sitepcode}</td>
-                                  <td>{e.VlookupWbs}</td>
                                   <td>{e.So_No}</td>
                                   <td>{e.Wbs_No}</td>
-                                  <td>
-                                    {e.For_Checking_Purpose_Only_Rashidah}
-                                  </td>
-                                  <td>{e.Hw_Coa_Received_Date_80}</td>
-                                  <td>{e.Billing_Upon_Hw_Coa_80}</td>
-                                  <td>{e.Invoicing_No_Hw_Coa_80}</td>
-                                  <td>{e.Invoicing_Date_Hw_Coa_80}</td>
+                                  <td>{e.Billing_100}</td>
+                                  <td>{e.Atp_Coa_Received_Date_80}</td>
+                                  <td>{e.Billing_Upon_Atp_Coa_80}</td>
+                                  <td>{e.Invoicing_No_Atp_Coa_80}</td>
+                                  <td>{e.Invoicing_Date_Atp_Coa_80}</td>
+                                  <td>{e.Cancelled_Atp_Coa_80}</td>
                                   <td>{e.Ni_Coa_Date_20}</td>
                                   <td>{e.Billing_Upon_Ni_20}</td>
                                   <td>{e.Invoicing_No_Ni_20}</td>
                                   <td>{e.Invoicing_Date_Ni_20}</td>
-                                  <td>{e.Sso_Coa_Date_20}</td>
-                                  <td>{e.Billing_Upon_Sso_20}</td>
-                                  <td>{e.Invoicing_No_Sso_20}</td>
-                                  <td>{e.Invoicing_Date_Sso_20}</td>
-                                  <td>{e.Gr_Number}</td>
-                                  <td>{e.Hw_Coa_Received_Date_40}</td>
-                                  <td>{e.Billing_Upon_Hw_Coa_40}</td>
-                                  <td>{e.Invoicing_No_Hw_Coa_40}</td>
-                                  <td>{e.Invoicing_Date_Hw_Coa_40}</td>
-                                  <td>{e.Cancelled_Hw_Coa_40}</td>
-                                  <td>{e.Ni_Coa_Date_40}</td>
-                                  <td>{e.Billing_Upon_Ni_40}</td>
-                                  <td>{e.Invoicing_No_Ni_40}</td>
-                                  <td>{e.Invoicing_Date_Ni_40}</td>
-                                  <td>{e.Cancelled_Ni_40}</td>
-                                  <td>{e.Sso_Coa_Date_20_1}</td>
-                                  <td>{e.Billing_Upon_Sso_20_1}</td>
-                                  <td>{e.Invoicing_No_Sso_20_1}</td>
+                                  <td>{e.Sso_Coa_Date_80}</td>
+                                  <td>{e.Billing_Upon_Sso_80}</td>
+                                  <td>{e.Invoicing_No_Sso_80}</td>
+                                  <td>{e.Invoicing_Date_Sso_80}</td>
+                                  <td>{e.Coa_Psp_Received_Date_20}</td>
+                                  <td>{e.Billing_Upon_Coa_Psp_20}</td>
+                                  <td>{e.Invoicing_No_Coa_Psp_20}</td>
+                                  <td>{e.Invoicing_Date_Coa_Psp_20}</td>
+                                  <td>{e.Sso_Coa_Date_100}</td>
+                                  <td>{e.Billing_Upon_Sso_Coa_100}</td>
+                                  <td>{e.Invoicing_No_Sso_Coa_100}</td>
+                                  <td>{e.Invoicing_Date_Sso_Coa_100}</td>
+                                  <td>{e.Coa_Ni_Date_100}</td>
+                                  <td>{e.Billing_Upon_Coa_Ni_100}</td>
+                                  <td>{e.Invoicing_No_Coa_Ni_100}</td>
+                                  <td>{e.Invoicing_Date_Coa_Ni_100}</td>
+                                  <td>{e.Ses_No}</td>
+                                  <td>{e.Ses_Status}</td>
+                                  <td>{e.Link_1}</td>
+                                  <td>{e.Ni_Coa_Submission_Status}</td>
                                   <td>{e.Invoicing_Date_Sso_20_1}</td>
                                   <td>{e.Cancelled_Sso_20}</td>
                                   <td>{e.Vlookup_SSO_100_In_Service}</td>
@@ -1517,7 +1910,7 @@ class MappingHW extends React.Component {
           toggle={this.togglecreateModal}
           className={this.props.className}
           onClosed={this.resettogglecreateModal}
-          title={"Create " + modul_name}
+          title={"Manage " + modul_name}
         >
           <div>
             <table>
@@ -1537,7 +1930,7 @@ class MappingHW extends React.Component {
             </table>
           </div>
           <ModalFooter>
-            {role.includes("BAM-IM") === true ||
+            {/* {role.includes("BAM-IM") === true ||
             role.includes("BAM-PFM") === true ? (
               <Button
                 size="sm"
@@ -1550,19 +1943,19 @@ class MappingHW extends React.Component {
               >
                 Update
               </Button>
-            ) : (
-              <Button
-                size="sm"
-                block
-                color="success"
-                className="btn-pill"
-                disabled={this.state.rowsXLS.length === 0}
-                onClick={this.saveBulk}
-                style={{ height: "30px", width: "100px" }}
-              >
-                Save
-              </Button>
-            )}
+            ) : ( */}
+            <Button
+              size="sm"
+              block
+              color="success"
+              className="btn-pill"
+              disabled={this.state.rowsXLS.length === 0}
+              onClick={this.saveBulk}
+              style={{ height: "30px", width: "100px" }}
+            >
+              Save
+            </Button>
+            {/* )} */}
           </ModalFooter>
         </ModalCreateNew>
 

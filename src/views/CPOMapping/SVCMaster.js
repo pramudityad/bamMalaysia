@@ -48,6 +48,7 @@ const DefaultNotif = React.lazy(() =>
 const modul_name = "SVC Master";
 const header = [
   "",
+  "Project",
   "PO#",
   "LINE ITEM",
   "DESCRIPTION",
@@ -65,6 +66,7 @@ const header = [
   "REMARKS",
 ];
 const header_model = [
+  "Project",
   "Po",
   "Line_Item",
   "Description",
@@ -80,6 +82,19 @@ const header_model = [
   "Wbs",
   "Total_Po_Amount",
   "Remarks",
+];
+
+const header_materialmapping = [
+  "Project",
+  "Po",
+  "Line_Item",
+  "Description",
+  "Qty",
+
+  "Unit_Price",
+
+  "Pcode",
+  "Type",
 ];
 
 const td_value = [];
@@ -272,8 +287,8 @@ class SVCMaster extends React.Component {
     const wb = new Excel.Workbook();
     const ws = wb.addWorksheet();
 
-    ws.addRow(header_model);
-    for (let i = 1; i < header_model.length + 1; i++) {
+    ws.addRow(header_materialmapping);
+    for (let i = 1; i < header_materialmapping.length + 1; i++) {
       ws.getCell(numToSSColumn(i) + "1").fill = {
         type: "pattern",
         pattern: "solid",
@@ -337,9 +352,9 @@ class SVCMaster extends React.Component {
     if (res.data !== undefined) {
       this.setState({ action_status: "success" });
       this.toggleLoading();
-      setTimeout(function () {
-        window.location.reload();
-      }, 1500);
+      // setTimeout(function () {
+      //   window.location.reload();
+      // }, 1500);
     } else {
       if (
         res.response !== undefined &&
@@ -661,11 +676,11 @@ class SVCMaster extends React.Component {
                         <DropdownItem header>Uploader Template</DropdownItem>
                         <DropdownItem onClick={this.exportTemplate}>
                           {" "}
-                          CPO Master Template
+                          {modul_name} Template
                         </DropdownItem>
                         <DropdownItem onClick={this.downloadAll_A}>
                           {" "}
-                          {modul_name} Data
+                          All {modul_name} Data
                         </DropdownItem>
                       </DropdownMenu>
                     </Dropdown>
@@ -744,22 +759,24 @@ class SVCMaster extends React.Component {
                                       ></i>
                                     </Button>
                                   </td>
-
+                                  <td>{e.Project}</td>
                                   <td>{e.Po}</td>
                                   <td>{e.Line_Item}</td>
                                   <td>{e.Description}</td>
                                   <td>{e.Qty}</td>
-                                  <td>{this.countUsed(e.Po, e.Line_Item)}</td>
-                                  <td>
+                                  {/* <td>{this.countUsed(e.Po, e.Line_Item)}</td> */}
+                                  <td>{e.Used}</td>
+                                  {/* <td>
                                     {e.Qty - this.countUsed(e.Po, e.Line_Item)}
-                                  </td>
+                                  </td> */}
+                                  <td>{e.Balance}</td>
                                   <td>{e.Unit_Price}</td>
                                   <td>{e.Qty * e.Unit_Price}</td>
-                                  <td>
+                                  {/* <td>
                                     {this.countUsed(e.Po, e.Line_Item) *
                                       e.Unit_Price}
-                                  </td>
-
+                                  </td> */}
+                                  <td>{e.Used * e.Unit_Price}</td>
                                   <td>{e.Pcode}</td>
                                   <td>{e.Type}</td>
                                   <td>{e.PSP_Remarks}</td>

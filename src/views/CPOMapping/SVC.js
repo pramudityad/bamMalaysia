@@ -93,10 +93,9 @@ const Checkbox2 = ({
 );
 const modul_name = "SVC Mapping";
 const header = [
-  // "",
-  // "NOT REQUIRED",
-  "Internal PO",
-  "Link",
+  "PROJECT",
+  "PO NUMBER",
+  // "1",
   "LOOKUP REFERENCE",
   "REGION",
   "REFERENCE LOC ID",
@@ -111,14 +110,18 @@ const header = [
   "CNI DATE",
   "MAPPING DATE",
   "REMARKS",
+  "PREMR NO.",
+  "PROCEED BILLING 100%",
   "CELCOM USER",
   "PCODE",
   "UNIT PRICE",
   "TOTAL PRICE",
+  "TYPE",
   "DISCOUNTED UNIT PRICE",
   "DISCOUNTED PO PRICE",
-  "TYPE",
   "SO LINE ITEM DESCRIPTION",
+  "sitePCode",
+  "VlookupWBS",
   "SO NO.",
   "WBS  NO.",
   "100% BILLING",
@@ -131,31 +134,40 @@ const header = [
   "20% BILLING UPON NI",
   "20% INVOICING NO.",
   "20% INVOICING DATE",
+  "Cancelled",
   "COA SSO RCVD DATE",
   "80% BILLING UPON SSO",
   "80% INVOICING NO.",
   "80% INVOICING DATE",
+  "Cancelled",
   "COA PSP RCVD DATE 20%",
   "20% BILLING UPON PSP",
   "20% INVOICING NO.",
   "20% INVOICING DATE",
+  "Cancelled",
   "COA SSO RCVD DATE 100%",
   "100% BILLING UPON SSO",
   "100% INVOICING NO.",
   "100% INVOICING DATE",
+  "Cancelled",
   "COA NI RCVD DATE 100%",
   "100% BILLING UPON NI",
   "100% INVOICING NO.",
   "100% INVOICING DATE",
+  "Cancelled",
   "SES NO.",
   "SES STATUS",
-  "LINK",
+  // "LINK",
   "NI COA SUBMISSION STATUS",
+  "DEAL NAME",
+  "HAMMER",
+  "PROJECT DESCRIPTION",
 ];
 
 const header_model = [
-  "Internal_Po",
-  "Link",
+  "Project",
+  "Po_Number",
+  // "Data_1",
   "Lookup_Reference",
   "Region",
   "Reference_Loc_Id",
@@ -170,14 +182,18 @@ const header_model = [
   "CNI_Date",
   "Mapping_Date",
   "Remarks",
+  "Premr_No",
+  "Proceed_Billing_100",
   "Celcom_User",
   "Pcode",
   "Unit_Price",
   "Total_Price",
+  "Type",
   "Discounted_Unit_Price",
   "Discounted_Po_Price",
-  "Type",
   "So_Line_Item_Description",
+  "Sitepcode",
+  "VlookupWbs",
   "So_No",
   "Wbs_No",
   "Billing_100",
@@ -190,27 +206,116 @@ const header_model = [
   "Billing_Upon_Ni_20",
   "Invoicing_No_Ni_20",
   "Invoicing_Date_Ni_20",
+  "Cancelled_Invoicing_Ni_20",
   "Sso_Coa_Date_80",
   "Billing_Upon_Sso_80",
   "Invoicing_No_Sso_80",
   "Invoicing_Date_Sso_80",
+  "Cancelled_Sso_Coa_Date_80",
   "Coa_Psp_Received_Date_20",
   "Billing_Upon_Coa_Psp_20",
   "Invoicing_No_Coa_Psp_20",
   "Invoicing_Date_Coa_Psp_20",
+  "Cancelled_Coa_Psp_Received_Date_20",
   "Sso_Coa_Date_100",
   "Billing_Upon_Sso_Coa_100",
   "Invoicing_No_Sso_Coa_100",
   "Invoicing_Date_Sso_Coa_100",
+  "Cancelled_Sso_Coa_Date_100",
   "Coa_Ni_Date_100",
   "Billing_Upon_Coa_Ni_100",
   "Invoicing_No_Coa_Ni_100",
   "Invoicing_Date_Coa_Ni_100",
+  "Cancelled_Coa_Ni_Date_100",
   "Ses_No",
   "Ses_Status",
-  "Link_1",
+  // "Link",
+  "Ni_Coa_Submission_Status",
+  "Deal_Name",
+  "Hammer",
+  "Project_Description",
+];
+
+const header_materialmapping = [
+  "Project",
+  "Po_Number",
+  // "Data_1",
+  "Lookup_Reference",
+  "Region",
+  "Reference_Loc_Id",
+  "New_Loc_Id",
+  "Site_Name",
+  "New_Site_Name",
+  "Config",
+  "Po",
+  "Line",
+  "Description",
+  "Qty",
+  "CNI_Date",
+  "Mapping_Date",
+  "Remarks",
+  "Premr_No",
+  "Proceed_Billing_100",
+  "Celcom_User",
+  "Pcode",
+  "Unit_Price",
+  "Total_Price",
+  "Type",
+  "Discounted_Unit_Price",
+  "Discounted_Po_Price",
+];
+
+const header_pfm = [
+  "So_Line_Item_Description",
+  "Sitepcode",
+  "VlookupWbs",
+  "So_No",
+  "Wbs_No",
+  "Billing_100",
+  // "Atp_Coa_Received_Date_80",
+  "Billing_Upon_Atp_Coa_80",
+  "Invoicing_No_Atp_Coa_80",
+  "Invoicing_Date_Atp_Coa_80",
+  "Cancelled_Atp_Coa_80",
+  // "Ni_Coa_Date_20",
+  "Billing_Upon_Ni_20",
+  "Invoicing_No_Ni_20",
+  "Invoicing_Date_Ni_20",
+  "Cancelled_Invoicing_Ni_20",
+  // "Sso_Coa_Date_80",
+  "Billing_Upon_Sso_80",
+  "Invoicing_No_Sso_80",
+  "Invoicing_Date_Sso_80",
+  "Cancelled_Sso_Coa_Date_80",
+  // "Coa_Psp_Received_Date_20",
+  "Billing_Upon_Coa_Psp_20",
+  "Invoicing_No_Coa_Psp_20",
+  "Invoicing_Date_Coa_Psp_20",
+  "Cancelled_Coa_Psp_Received_Date_20",
+  // "Sso_Coa_Date_100",
+  "Billing_Upon_Sso_Coa_100",
+  "Invoicing_No_Sso_Coa_100",
+  "Invoicing_Date_Sso_Coa_100",
+  "Cancelled_Sso_Coa_Date_100",
+  "Coa_Ni_Date_100",
+  "Billing_Upon_Coa_Ni_100",
+  "Invoicing_No_Coa_Ni_100",
+  "Invoicing_Date_Coa_Ni_100",
+  "Cancelled_Coa_Ni_Date_100",
+];
+
+const header_admin = [
+  "Billing_100",
+  "Atp_Coa_Received_Date_80",
+  "Ni_Coa_Date_20",
+  "Sso_Coa_Date_80",
+  "Coa_Psp_Received_Date_20",
+  "Sso_Coa_Date_100",
+  "Ses_No",
+  "Ses_Status",
   "Ni_Coa_Submission_Status",
 ];
+
 class MappingSVC extends React.Component {
   constructor(props) {
     super(props);
@@ -244,8 +349,8 @@ class MappingSVC extends React.Component {
   }
 
   componentDidMount() {
-    // console.log("header", header.length);
-    // console.log("model_header", header_model.length);
+    console.log("header", header.length);
+    console.log("model_header", header_model.length);
     this.getList();
     this.getListAll();
     this.getMaster();
@@ -311,7 +416,7 @@ class MappingSVC extends React.Component {
     filter_array.push('"Not_Required":' + null);
     let whereAnd = "{" + filter_array.join(",") + "}";
     getDatafromAPINODE(
-      "/cpoMapping/getCpo/svc?q=" +
+      "/cpoMapping/getCpo/required/svc?q=" +
         whereAnd +
         "&lmt=" +
         this.state.perPage +
@@ -329,7 +434,7 @@ class MappingSVC extends React.Component {
 
   getListAll() {
     getDatafromAPINODE(
-      "/cpoMapping/getCpo/svc?noPg=1",
+      "/cpoMapping/getCpo/required/svc?noPg=1",
       this.state.tokenUser
     ).then((res) => {
       if (res.data !== undefined) {
@@ -407,8 +512,8 @@ class MappingSVC extends React.Component {
     const wb = new Excel.Workbook();
     const ws = wb.addWorksheet();
 
-    ws.addRow(header_model);
-    for (let i = 1; i < header_model.length + 1; i++) {
+    ws.addRow(header_materialmapping);
+    for (let i = 1; i < header_materialmapping.length + 1; i++) {
       ws.getCell(numToSSColumn(i) + "1").fill = {
         type: "pattern",
         pattern: "solid",
@@ -417,10 +522,120 @@ class MappingSVC extends React.Component {
       };
     }
     const PPFormat = await wb.xlsx.writeBuffer();
-    saveAs(new Blob([PPFormat]), modul_name + " Template.xlsx");
+    saveAs(
+      new Blob([PPFormat]),
+      this.state.roleUser[1] + " " + modul_name + " Template.xlsx"
+    );
   };
 
   exportTemplate2 = async () => {
+    const wb = new Excel.Workbook();
+    const ws = wb.addWorksheet();
+
+    const download_all_template = await getDatafromAPINODE(
+      "/cpoMapping/getCpo/svc?noPg=1",
+      this.state.tokenUser
+    );
+
+    ws.addRow(header_materialmapping);
+    for (let i = 1; i < header_materialmapping.length + 1; i++) {
+      ws.getCell(numToSSColumn(i) + "1").fill = {
+        type: "pattern",
+        pattern: "solid",
+        fgColor: { argb: "FFFFFF00" },
+        bgColor: { argb: "A9A9A9" },
+      };
+    }
+
+    if (download_all_template.data !== undefined) {
+      console.log(download_all_template.data.data.map((u) => u._id));
+
+      for (let i = 0; i < download_all_template.data.data.length; i++) {
+        let e = download_all_template.data.data[i];
+        ws.addRow([
+          e.Project,
+          e.Internal_Po,
+          // e.Link,
+          e.Lookup_Reference,
+          e.Region,
+          e.Reference_Loc_Id,
+          e.New_Loc_Id,
+          e.Site_Name,
+          e.New_Site_Name,
+          e.Config,
+          e.Po,
+          e.Line,
+          this.LookupField(e.Po + "-" + e.Line, "Description"),
+          e.Qty,
+          e.CNI_Date,
+          e.Mapping_Date,
+          e.Remarks,
+          e.Celcom_User,
+          this.LookupField(e.Po + "-" + e.Line, "Pcode"),
+          this.LookupField(e.Po + "-" + e.Line, "Unit_Price"),
+          e.Total_Price,
+          e.Discounted_Unit_Price,
+          e.Discounted_Po_Price,
+          // e.Type,
+          // e.So_Line_Item_Description,
+          // e.So_No,
+          // e.Wbs_No,
+          // e.Billing_100,
+          // e.Atp_Coa_Received_Date_80,
+          // e.Billing_Upon_Atp_Coa_80,
+          // e.Invoicing_No_Atp_Coa_80,
+          // e.Invoicing_Date_Atp_Coa_80,
+          // e.Cancelled_Atp_Coa_80,
+          // e.Ni_Coa_Date_20,
+          // e.Billing_Upon_Ni_20,
+          // e.Invoicing_No_Ni_20,
+          // e.Invoicing_Date_Ni_20,
+          // e.Sso_Coa_Date_80,
+          // e.Billing_Upon_Sso_80,
+          // e.Invoicing_No_Sso_80,
+          // e.Invoicing_Date_Sso_80,
+          // e.Coa_Psp_Received_Date_20,
+          // e.Billing_Upon_Coa_Psp_20,
+          // e.Invoicing_No_Coa_Psp_20,
+          // e.Invoicing_Date_Coa_Psp_20,
+          // e.Sso_Coa_Date_100,
+          // e.Billing_Upon_Sso_Coa_100,
+          // e.Invoicing_No_Sso_Coa_100,
+          // e.Invoicing_Date_Sso_Coa_100,
+          // e.Coa_Ni_Date_100,
+          // e.Billing_Upon_Coa_Ni_100,
+          // e.Invoicing_No_Coa_Ni_100,
+          // e.Invoicing_Date_Coa_Ni_100,
+          // e.Ses_No,
+          // e.Ses_Status,
+          // e.Link_1,
+          // e.Ni_Coa_Submission_Status,
+          // e.Invoicing_Date_Sso_20_1,
+          // e.Cancelled_Sso_20,
+          // e.Vlookup_SSO_100_In_Service,
+          // e.Hw_Coa_100,
+          // e.Billing_Upon_Hw_Coa_100,
+          // e.Invoicing_No_Hw_Coa_100,
+          // e.Invoicing_Date_Hw_Coa_100,
+          // e.Reference_Loc_Id_1,
+          // e.Po_1,
+          // e.Reff_1,
+          // e.Site_List,
+          // e.Reff_2,
+          // e.Ni,
+          // e.Sso,
+          // e.Ref_Ni,
+        ]);
+      }
+    }
+    const PPFormat = await wb.xlsx.writeBuffer();
+    saveAs(
+      new Blob([PPFormat]),
+      this.state.roleUser[1] + " " + modul_name + " All Data.xlsx"
+    );
+  };
+
+  exportTemplateall = async () => {
     const wb = new Excel.Workbook();
     const ws = wb.addWorksheet();
 
@@ -445,8 +660,9 @@ class MappingSVC extends React.Component {
       for (let i = 0; i < download_all_template.data.data.length; i++) {
         let e = download_all_template.data.data[i];
         ws.addRow([
+          e.Project,
           e.Internal_Po,
-          e.Link,
+          // e.Link,
           e.Lookup_Reference,
           e.Region,
           e.Reference_Loc_Id,
@@ -456,7 +672,7 @@ class MappingSVC extends React.Component {
           e.Config,
           e.Po,
           e.Line,
-          e.Description,
+          this.LookupField(e.Po + "-" + e.Line, "Description"),
           e.Qty,
           e.CNI_Date,
           e.Mapping_Date,
@@ -520,7 +736,10 @@ class MappingSVC extends React.Component {
       }
     }
     const PPFormat = await wb.xlsx.writeBuffer();
-    saveAs(new Blob([PPFormat]), modul_name + " All.xlsx");
+    saveAs(
+      new Blob([PPFormat]),
+      this.state.roleUser[1] + " " + modul_name + " All Data.xlsx"
+    );
   };
 
   togglecreateModal = () => {
@@ -564,10 +783,18 @@ class MappingSVC extends React.Component {
     this.toggleLoading();
     this.togglecreateModal();
     const BulkXLSX = this.state.rowsXLS;
+    const roles =
+      this.state.roleUser.includes("BAM-MAT PLANNER") === true
+        ? 1
+        : this.state.roleUser.includes("BAM-PFM") === true
+        ? 2
+        : 3;
     const res = await postDatatoAPINODE(
       "/cpoMapping/createCpo",
       {
         cpo_type: "svc",
+        required_check: true,
+        roles: roles,
         cpo_data: this.state.rowsXLS,
       },
       this.state.tokenUser
@@ -575,9 +802,9 @@ class MappingSVC extends React.Component {
     if (res.data !== undefined) {
       this.setState({ action_status: "success" });
       this.toggleLoading();
-      setTimeout(function () {
-        window.location.reload();
-      }, 1500);
+      // setTimeout(function () {
+      //   window.location.reload();
+      // }, 1500);
     } else {
       if (
         res.response !== undefined &&
@@ -645,94 +872,51 @@ class MappingSVC extends React.Component {
   saveUpdate = async () => {
     // this.toggleEdit();
     this.toggleLoading();
-    if (this.state.tabs_submenu[0] === true) {
-      let checked_data = this.state.dataChecked_container;
-      const newForm = checked_data
-        .map(({ Not_Required, ...item }) => item)
-        .map((obj) => ({ ...obj, Not_Required: true }));
-      console.log("not req form", checked_data, newForm);
+    let checked_data = this.state.dataChecked_container;
+    const newForm = checked_data
+      .map(({ Not_Required, ...item }) => item)
+      .map((obj) => ({ ...obj, Not_Required: true }));
+    console.log("not req form", checked_data, newForm);
 
-      const res = await patchDatatoAPINODE(
-        "/cpoMapping/updateCpo",
-        {
-          cpo_type: "svc",
-          data: newForm,
-        },
-        this.state.tokenUser
-      );
-      if (res.data !== undefined) {
-        this.setState({ action_status: "success" });
-        this.toggleLoading();
-        setTimeout(function () {
-          window.location.reload();
-        }, 1500);
-      } else {
-        if (
-          res.response !== undefined &&
-          res.response.data !== undefined &&
-          res.response.data.error !== undefined
-        ) {
-          if (res.response.data.error.message !== undefined) {
-            this.setState({
-              action_status: "failed",
-              action_message: res.response.data.error.message,
-            });
-          } else {
-            this.setState({
-              action_status: "failed",
-              action_message: res.response.data.error,
-            });
-          }
-        } else {
-          this.setState({ action_status: "failed" });
-        }
-        this.toggleLoading();
-      }
+    const res = await patchDatatoAPINODE(
+      "/cpoMapping/updateCpo/required",
+      {
+        cpo_type: "svc",
+        data: newForm,
+      },
+      this.state.tokenUser
+    );
+    if (res.data !== undefined) {
+      this.setState({ action_status: "success" });
+      this.toggleLoading();
+      setTimeout(function () {
+        window.location.reload();
+      }, 1500);
     } else {
-      let checked_data2 = this.state.dataChecked_container2;
-      const newForm2 = checked_data2
-        .map(({ Not_Required, ...item }) => item)
-        .map((obj) => ({ ...obj, Not_Required: null }));
-      const res = await patchDatatoAPINODE(
-        "/cpoMapping/updateCpo",
-        {
-          cpo_type: "svc",
-          data: newForm2,
-        },
-        this.state.tokenUser
-      );
-      if (res.data !== undefined) {
-        this.setState({ action_status: "success" });
-        this.toggleLoading();
-        setTimeout(function () {
-          window.location.reload();
-        }, 1500);
-      } else {
-        if (
-          res.response !== undefined &&
-          res.response.data !== undefined &&
-          res.response.data.error !== undefined
-        ) {
-          if (res.response.data.error.message !== undefined) {
-            this.setState({
-              action_status: "failed",
-              action_message: res.response.data.error.message,
-            });
-          } else {
-            this.setState({
-              action_status: "failed",
-              action_message: res.response.data.error,
-            });
-          }
+      if (
+        res.response !== undefined &&
+        res.response.data !== undefined &&
+        res.response.data.error !== undefined
+      ) {
+        if (res.response.data.error.message !== undefined) {
+          this.setState({
+            action_status: "failed",
+            action_message: res.response.data.error.message,
+          });
         } else {
-          this.setState({ action_status: "failed" });
+          this.setState({
+            action_status: "failed",
+            action_message: res.response.data.error,
+          });
         }
-        this.toggleLoading();
+      } else {
+        this.setState({ action_status: "failed" });
       }
+      this.toggleLoading();
     }
   };
 
-  downloadAll_B = async () => {
+  download_Admin = async () => {
     this.toggleLoading();
     const download_all_A = await getDatafromAPINODE(
       "/cpoMapping/getCpo/svc?noPg=1",
@@ -742,37 +926,8 @@ class MappingSVC extends React.Component {
     const wb = new Excel.Workbook();
     const ws = wb.addWorksheet();
 
-    let header = [
-      "Lookup_Reference",
-      "Region",
-      "Reference_Loc_Id",
-      "New_Loc_Id",
-
-      "New_Site_Name",
-      "Config",
-      "Po",
-      "Line",
-      "Description",
-
-      "CNI_Date",
-      "Mapping_Date",
-      "Remarks",
-      "Celcom_User",
-
-      "Total_Price",
-      "Discounted_Unit_Price",
-      "Discounted_Po_Price",
-      "Type",
-
-      "So_No",
-      "Wbs_No",
-      "Billing_100",
-      "Atp_Coa_Received_Date_80",
-      "Billing_Upon_Atp_Coa_80",
-    ];
-
-    ws.addRow(header);
-    for (let i = 1; i < header.length + 1; i++) {
+    ws.addRow(header_admin);
+    for (let i = 1; i < header_admin.length + 1; i++) {
       ws.getCell(numToSSColumn(i) + "1").fill = {
         type: "pattern",
         pattern: "solid",
@@ -785,39 +940,28 @@ class MappingSVC extends React.Component {
       for (let i = 0; i < download_all_A.data.data.length; i++) {
         let e = download_all_A.data.data[i];
         ws.addRow([
-          e.Lookup_Reference,
-          e.Region,
-          e.Reference_Loc_Id,
-          e.New_Loc_Id,
-          e.New_Site_Name,
-          e.Config,
-          e.Po,
-          e.Line,
-          e.Description,
-          e.CNI_Date,
-          e.Mapping_Date,
-          e.Remarks,
-          e.Celcom_User,
-          e.Unit_Price,
-          e.Total_Price,
-          e.Discounted_Unit_Price,
-          e.Discounted_Po_Price,
-          e.Type,
-          e.So_No,
-          e.Wbs_No,
           e.Billing_100,
           e.Atp_Coa_Received_Date_80,
-          e.Billing_Upon_Atp_Coa_80,
+          e.Ni_Coa_Date_20,
+          e.Sso_Coa_Date_80,
+          e.Coa_Psp_Received_Date_20,
+          e.Sso_Coa_Date_100,
+          e.Ses_No,
+          e.Ses_Status,
+          e.Ni_Coa_Submission_Status,
         ]);
       }
     }
 
     const allocexport = await wb.xlsx.writeBuffer();
-    saveAs(new Blob([allocexport]), "Template " + modul_name + " Role B.xlsx");
+    saveAs(
+      new Blob([allocexport]),
+      "All Data " + this.state.roleUser[1] + " " + modul_name + ".xlsx"
+    );
     this.toggleLoading();
   };
 
-  downloadAll_A = async () => {
+  export_Admin = async () => {
     this.toggleLoading();
     const download_all_A = await getDatafromAPINODE(
       "/cpoMapping/getCpo/svc?noPg=1",
@@ -827,21 +971,36 @@ class MappingSVC extends React.Component {
     const wb = new Excel.Workbook();
     const ws = wb.addWorksheet();
 
-    let header = [
-      "Link",
+    ws.addRow(header_admin);
+    for (let i = 1; i < header_admin.length + 1; i++) {
+      ws.getCell(numToSSColumn(i) + "1").fill = {
+        type: "pattern",
+        pattern: "solid",
+        fgColor: { argb: "FFFFFF00" },
+        bgColor: { argb: "A9A9A9" },
+      };
+    }
 
-      "New_Loc_Id",
-      "Site_Name",
+    const allocexport = await wb.xlsx.writeBuffer();
+    saveAs(
+      new Blob([allocexport]),
+      "Template " + this.state.roleUser[1] + " " + modul_name + ".xlsx"
+    );
+    this.toggleLoading();
+  };
 
-      "Po",
-      "Line",
-      "Qty",
+  download_PFM = async () => {
+    this.toggleLoading();
+    const download_all_A = await getDatafromAPINODE(
+      "/cpoMapping/getCpo/svc?noPg=1",
+      this.state.tokenUser
+    );
 
-      "So_Line_Item_Description",
-    ];
+    const wb = new Excel.Workbook();
+    const ws = wb.addWorksheet();
 
-    ws.addRow(header);
-    for (let i = 1; i < header.length + 1; i++) {
+    ws.addRow(header_pfm);
+    for (let i = 1; i < header_pfm.length + 1; i++) {
       ws.getCell(numToSSColumn(i) + "1").fill = {
         type: "pattern",
         pattern: "solid",
@@ -856,19 +1015,74 @@ class MappingSVC extends React.Component {
       for (let i = 0; i < download_all_A.data.data.length; i++) {
         let e = download_all_A.data.data[i];
         ws.addRow([
-          e.Link,
-          e.New_Loc_Id,
-          e.Site_Name,
-          e.Po,
-          e.Line,
-          e.Qty,
           e.So_Line_Item_Description,
+          e.Sitepcode,
+          e.VlookupWbs,
+          e.So_No,
+          e.Wbs_No,
+          e.Billing_100,
+          e.Billing_Upon_Atp_Coa_80,
+          e.Invoicing_No_Atp_Coa_80,
+          e.Invoicing_Date_Atp_Coa_80,
+          e.Cancelled_Atp_Coa_80,
+          e.Billing_Upon_Ni_20,
+          e.Invoicing_No_Ni_20,
+          e.Invoicing_Date_Ni_20,
+          e.Cancelled_Invoicing_Ni_20,
+          e.Billing_Upon_Sso_80,
+          e.Invoicing_No_Sso_80,
+          e.Invoicing_Date_Sso_80,
+          e.Cancelled_Sso_Coa_Date_80,
+          e.Billing_Upon_Coa_Psp_20,
+          e.Invoicing_No_Coa_Psp_20,
+          e.Invoicing_Date_Coa_Psp_20,
+          e.Cancelled_Coa_Psp_Received_Date_20,
+          e.Billing_Upon_Sso_Coa_100,
+          e.Invoicing_No_Sso_Coa_100,
+          e.Invoicing_Date_Sso_Coa_100,
+          e.Cancelled_Sso_Coa_Date_100,
+          e.Coa_Ni_Date_100,
+          e.Billing_Upon_Coa_Ni_100,
+          e.Invoicing_No_Coa_Ni_100,
+          e.Invoicing_Date_Coa_Ni_100,
+          e.Cancelled_Coa_Ni_Date_100,
         ]);
       }
     }
 
     const allocexport = await wb.xlsx.writeBuffer();
-    saveAs(new Blob([allocexport]), "Template " + modul_name + " Role A.xlsx");
+    saveAs(
+      new Blob([allocexport]),
+      "All Data " + this.state.roleUser[1] + " " + modul_name + ".xlsx"
+    );
+    this.toggleLoading();
+  };
+
+  export_PFM = async () => {
+    this.toggleLoading();
+    const download_all_A = await getDatafromAPINODE(
+      "/cpoMapping/getCpo/svc?noPg=1",
+      this.state.tokenUser
+    );
+
+    const wb = new Excel.Workbook();
+    const ws = wb.addWorksheet();
+
+    ws.addRow(header_pfm);
+    for (let i = 1; i < header_pfm.length + 1; i++) {
+      ws.getCell(numToSSColumn(i) + "1").fill = {
+        type: "pattern",
+        pattern: "solid",
+        fgColor: { argb: "FFFFFF00" },
+        bgColor: { argb: "A9A9A9" },
+      };
+    }
+
+    const allocexport = await wb.xlsx.writeBuffer();
+    saveAs(
+      new Blob([allocexport]),
+      "Template" + this.state.roleUser[1] + " " + modul_name + ".xlsx"
+    );
     this.toggleLoading();
   };
 
@@ -894,28 +1108,28 @@ class MappingSVC extends React.Component {
     for (let i = 0; i < header_model.length; i++) {
       searchBar.push(
         <td>
-          {i !== 0 && i !== 3 && i !== 5 && i !== 7 && i !== 9 && i !== 10 ? (
+          {/* {i !== 0 && i !== 3 && i !== 5 && i !== 7 && i !== 9 && i !== 10 ? (
             ""
-          ) : (
-            <div className="controls" style={{ width: "150px" }}>
-              <InputGroup className="input-prepend">
-                <InputGroupAddon addonType="prepend">
-                  <InputGroupText>
-                    <i className="fa fa-search"></i>
-                  </InputGroupText>
-                </InputGroupAddon>
-                <Input
-                  // className="col-sm-3"
-                  type="text"
-                  placeholder="Search"
-                  onChange={this.handleFilterList}
-                  value={this.state.filter_list[header_model[i]]}
-                  name={header_model[i]}
-                  size="sm"
-                />
-              </InputGroup>
-            </div>
-          )}
+          ) : ( */}
+          <div className="controls" style={{ width: "150px" }}>
+            <InputGroup className="input-prepend">
+              <InputGroupAddon addonType="prepend">
+                <InputGroupText>
+                  <i className="fa fa-search"></i>
+                </InputGroupText>
+              </InputGroupAddon>
+              <Input
+                // className="col-sm-3"
+                type="text"
+                placeholder="Search"
+                onChange={this.handleFilterList}
+                value={this.state.filter_list[header_model[i]]}
+                name={header_model[i]}
+                size="sm"
+              />
+            </InputGroup>
+          </div>
+          {/* )} */}
         </td>
       );
     }
@@ -1109,32 +1323,54 @@ class MappingSVC extends React.Component {
                         Export
                       </DropdownToggle>
                       <DropdownMenu>
+                        <DropdownItem header>Export Data</DropdownItem>
+                        <DropdownItem onClick={this.exportTemplateall}>
+                          {" "}
+                          All Data SVC Export
+                        </DropdownItem>
                         <DropdownItem header>Uploader Template</DropdownItem>
+
                         {role.includes("BAM-MAT PLANNER") === true ? (
                           <>
                             <DropdownItem onClick={this.exportTemplate}>
                               {" "}
-                              Mapping Template
+                              Mapping Template{" " +
+                                this.state.roleUser[1]}{" "}
                             </DropdownItem>
                             <DropdownItem onClick={this.exportTemplate2}>
                               {" "}
-                              All Data Template
+                              All Data Template{" " +
+                                this.state.roleUser[1]}{" "}
+                            </DropdownItem>
+                          </>
+                        ) : (
+                          ""
+                        )}
+                        {role.includes("BAM-PFM") === true ? (
+                          <>
+                            <DropdownItem onClick={this.export_PFM}>
+                              {" "}
+                              Mapping Template{" " +
+                                this.state.roleUser[1]}{" "}
+                            </DropdownItem>
+                            <DropdownItem onClick={this.download_PFM}>
+                              All Data Template{" " + this.state.roleUser[1]}{" "}
                             </DropdownItem>
                           </>
                         ) : (
                           ""
                         )}
                         {role.includes("BAM-IM") === true ? (
-                          <DropdownItem onClick={this.downloadAll_A}>
-                            Template A{" "}
-                          </DropdownItem>
-                        ) : (
-                          ""
-                        )}
-                        {role.includes("BAM-PFM") === true ? (
-                          <DropdownItem onClick={this.downloadAll_B}>
-                            Template B{" "}
-                          </DropdownItem>
+                          <>
+                            <DropdownItem onClick={this.export_Admin}>
+                              {" "}
+                              Mapping Template{" " +
+                                this.state.roleUser[1]}{" "}
+                            </DropdownItem>
+                            <DropdownItem onClick={this.download_Admin}>
+                              All Data Template{" " + this.state.roleUser[1]}{" "}
+                            </DropdownItem>
+                          </>
                         ) : (
                           ""
                         )}
@@ -1218,12 +1454,25 @@ class MappingSVC extends React.Component {
                               <th>{head}</th>
                             ))}
                           </tr>
-                          <tr align="center">
-                            <th></th>
-                            {header_model.map((head) => (
-                              <th>{this.countheader(head)}</th>
-                            ))}
-                          </tr>
+                          {this.state.tabs_submenu[0] === true ? (
+                            <>
+                              <tr align="center">
+                                <th></th>
+                                <th></th>
+                                {header_model.map((head) => (
+                                  <th>{this.countheader(head)}</th>
+                                ))}
+                              </tr>
+                            </>
+                          ) : (
+                            <>
+                              <tr align="center">
+                                {header_model.map((head) => (
+                                  <th>{this.countheader(head)}</th>
+                                ))}
+                              </tr>
+                            </>
+                          )}
                           <tr align="center">
                             <td></td>
                             <td>
@@ -1269,8 +1518,9 @@ class MappingSVC extends React.Component {
                                       value={e}
                                     />
                                   </td>
+                                  <td>{e.Project}</td>
                                   <td>{e.Internal_Po}</td>
-                                  <td>{e.Link}</td>
+                                  {/* <td>{e.Link}</td> */}
                                   <td>{e.Lookup_Reference}</td>
                                   <td>{e.Region}</td>
                                   <td>{e.Reference_Loc_Id}</td>
@@ -1280,7 +1530,12 @@ class MappingSVC extends React.Component {
                                   <td>{e.Config}</td>
                                   <td>{e.Po}</td>
                                   <td>{e.Line}</td>
-                                  <td>{e.Description}</td>
+                                  <td>
+                                    {this.LookupField(
+                                      e.Po + "-" + e.Line,
+                                      "Description"
+                                    )}
+                                  </td>
                                   <td>{e.Qty}</td>
                                   <td>{e.CNI_Date}</td>
                                   <td>{e.Mapping_Date}</td>
@@ -1615,7 +1870,7 @@ class MappingSVC extends React.Component {
           toggle={this.togglecreateModal}
           className={this.props.className}
           onClosed={this.resettogglecreateModal}
-          title={"Create " + modul_name}
+          title={"Manage " + modul_name}
         >
           <div>
             <table>
@@ -1635,7 +1890,7 @@ class MappingSVC extends React.Component {
             </table>
           </div>
           <ModalFooter>
-            {role.includes("BAM-IM") === true ||
+            {/* {role.includes("BAM-IM") === true ||
             role.includes("BAM-PFM") === true ? (
               <Button
                 size="sm"
@@ -1648,19 +1903,19 @@ class MappingSVC extends React.Component {
               >
                 Update
               </Button>
-            ) : (
-              <Button
-                size="sm"
-                block
-                color="success"
-                className="btn-pill"
-                disabled={this.state.rowsXLS.length === 0}
-                onClick={this.saveBulk}
-                style={{ height: "30px", width: "100px" }}
-              >
-                Save
-              </Button>
-            )}
+            ) : ( */}
+            <Button
+              size="sm"
+              block
+              color="success"
+              className="btn-pill"
+              disabled={this.state.rowsXLS.length === 0}
+              onClick={this.saveBulk}
+              style={{ height: "30px", width: "100px" }}
+            >
+              Save
+            </Button>
+            {/* )} */}
           </ModalFooter>
         </ModalCreateNew>
 

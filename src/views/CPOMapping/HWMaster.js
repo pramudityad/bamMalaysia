@@ -48,6 +48,7 @@ const DefaultNotif = React.lazy(() =>
 const modul_name = "HW Master";
 const header = [
   "",
+  "Project",
   "PO#",
   "LINE ITEM",
   "DESCRIPTION",
@@ -57,11 +58,7 @@ const header = [
   "UNIT PRICE",
   "TOTAL PRICE",
   "ASSIGNED PRICE",
-  "DISCOUNTED UNIT PRICE",
-  "DISCOUNTED PO PRICE",
-  "DISCOUNTED ASSIGNED PRICE",
   "PCODE",
-  "PCODE TO BE USED",
   "TYPE",
   "PSP REMARKS",
   "WBS ",
@@ -69,6 +66,7 @@ const header = [
   "REMARKS",
 ];
 const header_model = [
+  "Project",
   "Po",
   "Line_Item",
   "Description",
@@ -78,16 +76,25 @@ const header_model = [
   "Unit_Price",
   "Total_Price",
   "Assigned_Price",
-  "Discounted_Unit_Price",
-  "Discounted_Po_Price",
-  "Discounted_Assigned_Price",
-  "Pcod",
-  "Pcod_To_Be_Used",
+  "Pcode",
   "Type",
-  "PSP_Remarks",
-  "Wbs ",
+  "Psp_Remarks",
+  "Wbs",
   "Total_Po_Amount",
   "Remarks",
+];
+
+const header_materialmapping = [
+  "Project",
+  "Po",
+  "Line_Item",
+  "Description",
+  "Qty",
+
+  "Unit_Price",
+
+  "Pcode",
+  "Type",
 ];
 
 const td_value = [];
@@ -100,6 +107,7 @@ class HWMaster extends React.Component {
       roleUser: this.props.dataLogin.role,
       dropdownOpen: new Array(3).fill(false),
       all_data: [],
+      all_data_line: [],
       createModal: false,
       rowsXLS: [],
       modal_loading: false,
@@ -121,6 +129,7 @@ class HWMaster extends React.Component {
     // console.log("header", header.length);
     // console.log("model_header", header_model.length);
     this.getList();
+    this.getListAll();
   }
 
   getList() {
@@ -142,22 +151,92 @@ class HWMaster extends React.Component {
     this.state.filter_list["New_Site_Name"] !== null &&
       this.state.filter_list["New_Site_Name"] !== undefined &&
       filter_array.push(
-        '"site_info.site_id":{"$regex" : "' +
+        '"New_Site_Name":{"$regex" : "' +
           this.state.filter_list["New_Site_Name"] +
           '", "$options" : "i"}'
       );
     this.state.filter_list["Po"] !== null &&
       this.state.filter_list["Po"] !== undefined &&
       filter_array.push(
-        '"site_info.Po":{"$regex" : "' +
+        '"Po":{"$regex" : "' +
           this.state.filter_list["Po"] +
           '", "$options" : "i"}'
       );
-    this.state.filter_list["Line"] !== null &&
-      this.state.filter_list["Line"] !== undefined &&
+    this.state.filter_list["Line_Item"] !== null &&
+      this.state.filter_list["Line_Item"] !== undefined &&
       filter_array.push(
-        '"Line":{"$regex" : "' +
-          this.state.filter_list["Line"] +
+        '"Line_Item":{"$regex" : "' +
+          this.state.filter_list["Line_Item"] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list["Description"] !== null &&
+      this.state.filter_list["Description"] !== undefined &&
+      filter_array.push(
+        '"Description":{"$regex" : "' +
+          this.state.filter_list["Description"] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list["Total_Po_Amount"] !== null &&
+      this.state.filter_list["Total_Po_Amount"] !== undefined &&
+      filter_array.push(
+        '"Total_Po_Amount":{"$regex" : "' +
+          this.state.filter_list["Total_Po_Amount"] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list["Remarks"] !== null &&
+      this.state.filter_list["Remarks"] !== undefined &&
+      filter_array.push(
+        '"Remarks":{"$regex" : "' +
+          this.state.filter_list["Remarks"] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list["Unit_Price"] !== null &&
+      this.state.filter_list["Unit_Price"] !== undefined &&
+      filter_array.push(
+        '"Unit_Price":{"$regex" : "' +
+          this.state.filter_list["Unit_Price"] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list["Total_Price"] !== null &&
+      this.state.filter_list["Total_Price"] !== undefined &&
+      filter_array.push(
+        '"Total_Price":{"$regex" : "' +
+          this.state.filter_list["Total_Price"] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list["Assigned_Price"] !== null &&
+      this.state.filter_list["Assigned_Price"] !== undefined &&
+      filter_array.push(
+        '"Assigned_Price":{"$regex" : "' +
+          this.state.filter_list["Assigned_Price"] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list["Pcode"] !== null &&
+      this.state.filter_list["Pcode"] !== undefined &&
+      filter_array.push(
+        '"Pcode":{"$regex" : "' +
+          this.state.filter_list["Pcode"] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list["Type"] !== null &&
+      this.state.filter_list["Type"] !== undefined &&
+      filter_array.push(
+        '"Type":{"$regex" : "' +
+          this.state.filter_list["Type"] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list["Wbs"] !== null &&
+      this.state.filter_list["Wbs"] !== undefined &&
+      filter_array.push(
+        '"Wbs":{"$regex" : "' +
+          this.state.filter_list["Wbs"] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list["Psp_Remarks"] !== null &&
+      this.state.filter_list["Psp_Remarks"] !== undefined &&
+      filter_array.push(
+        '"Psp_Remarks":{"$regex" : "' +
+          this.state.filter_list["Psp_Remarks"] +
           '", "$options" : "i"}'
       );
     let whereAnd = "{" + filter_array.join(",") + "}";
@@ -180,6 +259,18 @@ class HWMaster extends React.Component {
     });
   }
 
+  getListAll() {
+    getDatafromAPINODE(
+      "/lineItemMapping/getLineItem/hw?noPg=1",
+      this.state.tokenUser
+    ).then((res) => {
+      if (res.data !== undefined) {
+        const items = res.data.data;
+        this.setState({ all_data_line: items });
+      }
+    });
+  }
+
   getMapping() {
     getDatafromAPINODE(
       "/cpoMapping/getCpo/hw?noPg=1",
@@ -196,8 +287,8 @@ class HWMaster extends React.Component {
     const wb = new Excel.Workbook();
     const ws = wb.addWorksheet();
 
-    ws.addRow(header_model);
-    for (let i = 1; i < header_model.length + 1; i++) {
+    ws.addRow(header_materialmapping);
+    for (let i = 1; i < header_materialmapping.length + 1; i++) {
       ws.getCell(numToSSColumn(i) + "1").fill = {
         type: "pattern",
         pattern: "solid",
@@ -221,7 +312,7 @@ class HWMaster extends React.Component {
     });
   };
 
-  fileHandlerHWMaster = (event) => {
+  fileHandlerSVCMaster = (event) => {
     let fileObj = event.target.files[0];
     if (fileObj !== undefined) {
       ExcelRenderer(fileObj, (err, rest) => {
@@ -261,9 +352,9 @@ class HWMaster extends React.Component {
     if (res.data !== undefined) {
       this.setState({ action_status: "success" });
       this.toggleLoading();
-      setTimeout(function () {
-        window.location.reload();
-      }, 1500);
+      // setTimeout(function () {
+      //   window.location.reload();
+      // }, 1500);
     } else {
       if (
         res.response !== undefined &&
@@ -402,11 +493,7 @@ class HWMaster extends React.Component {
           e.Unit_Price,
           e.Qty * e.Unit_Price,
           this.countUsed(e.Po, e.Line_Item) * e.Unit_Price,
-          e.Discounted_Unit_Price,
-          e.Discounted_Unit_Price * e.Qty,
-          e.Discounted_Unit_Price * this.countUsed(e.Po, e.Line_Item),
-          e.Pcod,
-          e.Pcod_To_Be_Used,
+          e.Pcode,
           e.Type,
           e.PSP_Remarks,
           e.Wbs,
@@ -477,28 +564,28 @@ class HWMaster extends React.Component {
     for (let i = 0; i < header_model.length; i++) {
       searchBar.push(
         <td>
-          {i !== 1 && i !== 3 && i !== 5 && i !== 7 && i !== 8 ? (
+          {/* {i !== 1 && i !== 3 && i !== 5 && i !== 7 && i !== 8 ? (
             ""
-          ) : (
-            <div className="controls" style={{ width: "150px" }}>
-              <InputGroup className="input-prepend">
-                <InputGroupAddon addonType="prepend">
-                  <InputGroupText>
-                    <i className="fa fa-search"></i>
-                  </InputGroupText>
-                </InputGroupAddon>
-                <Input
-                  // className="col-sm-3"
-                  type="text"
-                  placeholder="Search"
-                  onChange={this.handleFilterList}
-                  value={this.state.filter_list[header_model[i]]}
-                  name={header_model[i]}
-                  size="sm"
-                />
-              </InputGroup>
-            </div>
-          )}
+          ) : ( */}
+          <div className="controls" style={{ width: "150px" }}>
+            <InputGroup className="input-prepend">
+              <InputGroupAddon addonType="prepend">
+                <InputGroupText>
+                  <i className="fa fa-search"></i>
+                </InputGroupText>
+              </InputGroupAddon>
+              <Input
+                // className="col-sm-3"
+                type="text"
+                placeholder="Search"
+                onChange={this.handleFilterList}
+                value={this.state.filter_list[header_model[i]]}
+                name={header_model[i]}
+                size="sm"
+              />
+            </InputGroup>
+          </div>
+          {/* )} */}
         </td>
       );
     }
@@ -514,6 +601,20 @@ class HWMaster extends React.Component {
       .filter((element) => element.Po === po && element.Line === line_item)
       .reduce((a, { Qty }) => a + Qty, 0);
     return sum_used;
+  };
+
+  handleChangeLimit = (e) => {
+    let limitpg = e.currentTarget.value;
+    this.setState({ perPage: limitpg }, () => this.getList());
+  };
+
+  countheader = (params_field) => {
+    let value = "element." + params_field;
+    let sumheader = this.state.all_data_line.filter(
+      (element) => eval(value) !== null && eval(value) !== ""
+    );
+    return sumheader.length;
+    // console.log(params_field, sumheader);
   };
 
   render() {
@@ -575,11 +676,11 @@ class HWMaster extends React.Component {
                         <DropdownItem header>Uploader Template</DropdownItem>
                         <DropdownItem onClick={this.exportTemplate}>
                           {" "}
-                          CPO Master Template
+                          {modul_name} Template
                         </DropdownItem>
                         <DropdownItem onClick={this.downloadAll_A}>
                           {" "}
-                          {modul_name} Data
+                          All {modul_name} Data
                         </DropdownItem>
                       </DropdownMenu>
                     </Dropdown>
@@ -588,8 +689,32 @@ class HWMaster extends React.Component {
               </CardHeader>
 
               <CardBody>
-                <Row></Row>
+                {/* <Row></Row> */}
                 <Row>
+                  <Col>
+                    <div style={{ marginBottom: "10px" }}>
+                      <div
+                        style={{
+                          float: "left",
+                          margin: "5px",
+                          display: "inline-flex",
+                        }}
+                      >
+                        <Input
+                          type="select"
+                          name="select"
+                          id="selectLimit"
+                          onChange={this.handleChangeLimit}
+                        >
+                          <option value={"10"}>10</option>
+                          <option value={"25"}>25</option>
+                          <option value={"50"}>50</option>
+                          <option value={"100"}>100</option>
+                          <option value={"noPg=1"}>All</option>
+                        </Input>
+                      </div>
+                    </div>
+                  </Col>
                   <Col>
                     <div
                       style={{
@@ -604,10 +729,16 @@ class HWMaster extends React.Component {
                               <th>{head}</th>
                             ))}
                           </tr>
-                          {/* <tr>
+                          <tr align="center">
+                            <th></th>
+                            {header_model.map((head) => (
+                              <th>{this.countheader(head)}</th>
+                            ))}
+                          </tr>
+                          <tr align="center">
                             <td></td>
                             {this.loopSearchBar()}
-                          </tr> */}
+                          </tr>
                         </thead>
                         <tbody>
                           {this.state.all_data !== undefined &&
@@ -628,29 +759,25 @@ class HWMaster extends React.Component {
                                       ></i>
                                     </Button>
                                   </td>
-
+                                  <td>{e.Project}</td>
                                   <td>{e.Po}</td>
                                   <td>{e.Line_Item}</td>
                                   <td>{e.Description}</td>
                                   <td>{e.Qty}</td>
-                                  <td>{this.countUsed(e.Po, e.Line_Item)}</td>
-                                  <td>
+                                  {/* <td>{this.countUsed(e.Po, e.Line_Item)}</td> */}
+                                  <td>{e.Used}</td>
+                                  {/* <td>
                                     {e.Qty - this.countUsed(e.Po, e.Line_Item)}
-                                  </td>
+                                  </td> */}
+                                  <td>{e.Balance}</td>
                                   <td>{e.Unit_Price}</td>
                                   <td>{e.Qty * e.Unit_Price}</td>
-                                  <td>
+                                  {/* <td>
                                     {this.countUsed(e.Po, e.Line_Item) *
                                       e.Unit_Price}
-                                  </td>
-                                  <td>{e.Discounted_Unit_Price}</td>
-                                  <td>{e.Discounted_Unit_Price * e.Qty}</td>
-                                  <td>
-                                    {e.Discounted_Unit_Price *
-                                      this.countUsed(e.Po, e.Line_Item)}
-                                  </td>
-                                  <td>{e.Pcod}</td>
-                                  <td>{e.Pcod_To_Be_Used}</td>
+                                  </td> */}
+                                  <td>{e.Used * e.Unit_Price}</td>
+                                  <td>{e.Pcode}</td>
                                   <td>{e.Type}</td>
                                   <td>{e.PSP_Remarks}</td>
                                   <td>{e.Wbs}</td>
@@ -727,6 +854,7 @@ class HWMaster extends React.Component {
                     <FormGroup>
                       <Label>Description</Label>
                       <Input
+                        readOnly
                         type="text"
                         name="Description"
                         placeholder=""
@@ -739,7 +867,7 @@ class HWMaster extends React.Component {
                     <FormGroup>
                       <Label>Qty</Label>
                       <Input
-                        type="text"
+                        type="number"
                         name="Qty"
                         placeholder=""
                         value={CPOForm.Qty}
@@ -763,7 +891,7 @@ class HWMaster extends React.Component {
                     <FormGroup>
                       <Label>Assigned_Price</Label>
                       <Input
-                        type="text"
+                        type="number"
                         name="Assigned_Price"
                         placeholder=""
                         value={CPOForm.Assigned_Price}
@@ -780,72 +908,12 @@ class HWMaster extends React.Component {
                 <FormGroup row>
                   <Col>
                     <FormGroup>
-                      <Label>Discounted_Unit_Price</Label>
-                      <Input
-                        type="number"
-                        name="Discounted_Unit_Price"
-                        placeholder=""
-                        value={CPOForm.Discounted_Unit_Price}
-                        onChange={this.handleChangeForm}
-                      />
-                    </FormGroup>
-                  </Col>
-                  <Col>
-                    <FormGroup>
-                      <Label>Discounted_Po_Price</Label>
-                      <Input
-                        type="number"
-                        name="Discounted_Po_Price"
-                        placeholder=""
-                        value={CPOForm.Discounted_Po_Price}
-                        onChange={this.handleChangeForm}
-                      />
-                    </FormGroup>
-                  </Col>
-                  <Col>
-                    <FormGroup>
-                      <Label>Discounted_Assigned_Price</Label>
-                      <Input
-                        type="number"
-                        name="Discounted_Assigned_Price"
-                        placeholder=""
-                        value={CPOForm.Discounted_Assigned_Price}
-                        onChange={this.handleChangeForm}
-                      />
-                    </FormGroup>
-                  </Col>
-                  <Col>
-                    <FormGroup>
-                      <Label>Pcod</Label>
+                      <Label>Pcode</Label>
                       <Input
                         type="text"
-                        name="Pcod"
+                        name="Pcode"
                         placeholder=""
-                        value={CPOForm.Pcod}
-                        onChange={this.handleChangeForm}
-                      />
-                    </FormGroup>
-                  </Col>
-                  <Col>
-                    <FormGroup>
-                      <Label>Pcod_To_Be_Used</Label>
-                      <Input
-                        type="number"
-                        name="Pcod_To_Be_Used"
-                        placeholder=""
-                        value={CPOForm.Pcod_To_Be_Used}
-                        onChange={this.handleChangeForm}
-                      />
-                    </FormGroup>
-                  </Col>
-                  <Col>
-                    <FormGroup>
-                      <Label>PSP_Remarks</Label>
-                      <Input
-                        type="text"
-                        name="PSP_Remarks"
-                        placeholder=""
-                        value={CPOForm.PSP_Remarks}
+                        value={CPOForm.Pcode}
                         onChange={this.handleChangeForm}
                       />
                     </FormGroup>
@@ -864,24 +932,25 @@ class HWMaster extends React.Component {
                   </Col>
                   <Col>
                     <FormGroup>
+                      <Label>PSP_Remarks</Label>
+                      <Input
+                        type="text"
+                        name="PSP_Remarks"
+                        placeholder=""
+                        value={CPOForm.PSP_Remarks}
+                        onChange={this.handleChangeForm}
+                      />
+                    </FormGroup>
+                  </Col>
+
+                  <Col>
+                    <FormGroup>
                       <Label>Wbs</Label>
                       <Input
                         type="text"
                         name="Wbs"
                         placeholder=""
                         value={CPOForm.Wbs}
-                        onChange={this.handleChangeForm}
-                      />
-                    </FormGroup>
-                  </Col>
-                  <Col>
-                    <FormGroup>
-                      <Label>Total_Po_Amount</Label>
-                      <Input
-                        type="number"
-                        name="Total_Po_Amount"
-                        placeholder=""
-                        value={CPOForm.Total_Po_Amount}
                         onChange={this.handleChangeForm}
                       />
                     </FormGroup>
@@ -926,7 +995,7 @@ class HWMaster extends React.Component {
                   <td>
                     <input
                       type="file"
-                      onChange={this.fileHandlerHWMaster.bind(this)}
+                      onChange={this.fileHandlerSVCMaster.bind(this)}
                       style={{ padding: "10px", visiblity: "hidden" }}
                     />
                   </td>
