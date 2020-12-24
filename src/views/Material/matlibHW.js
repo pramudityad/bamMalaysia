@@ -10,6 +10,9 @@ import {
   DropdownMenu,
   DropdownToggle,
   Collapse,
+  InputGroup,
+  InputGroupAddon,
+  InputGroupText,
 } from "reactstrap";
 import { Col, FormGroup, Label, Row, Table, Input } from "reactstrap";
 import { Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
@@ -37,51 +40,15 @@ const DefaultNotif = React.lazy(() =>
 );
 
 const modul_name = "HW";
-const BearerToken =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjYXNfaWQiOiIxOTM2YmE0Yy0wMjlkLTQ1MzktYWRkOC1mZjc2OTNiMDlmZmUiLCJyb2xlcyI6WyJCQU0tU3VwZXJBZG1pbiJdLCJhY2NvdW50IjoiMSIsImlhdCI6MTU5MjQ3MDI4Mn0.tIJSzHa-ewhqz0Ail7J0maIZx4R9P1aXE2E_49pe4KY";
-const MaterialDB = [
-  {
-    MM_Code: "MM Code",
-    BB_Sub: "BB_sub",
-    SoW_Description: "SoW Description",
-    UoM: "UoM",
-    Region: "Region",
-    Unit_Price: 100,
-    MM_Code: "MM Description",
-    Acceptance: "Acceptance",
-    Vendor_List: [
-      {
-        Vendor_Name: "TUMPAT SOLUTIONS",
-        Identifier: 0,
-      },
-
-      {
-        Vendor_Name: "FA FRONTLINERS SDN BHD",
-        Identifier: 1,
-      },
-    ],
-  },
-  {
-    MM_Code: "MM Code1",
-    BB_Sub: "BB_sub1",
-    SoW_Description: "SoW Description1",
-    UoM: "UoM1",
-    Region: "Region1",
-    Unit_Price: 200,
-    MM_Code: "MM Description1",
-    Acceptance: "Acceptance1",
-    Vendor_List: [
-      {
-        Vendor_Name: "TUMPAT SOLUTIONS",
-        Identifier: 1,
-      },
-
-      {
-        Vendor_Name: "FA FRONTLINERS SDN BHD",
-        Identifier: 0,
-      },
-    ],
-  },
+const header_model = [
+  "Vendor_ID",
+  "Vendor_Name",
+  "MM_Code",
+  "MM_Description",
+  "Unit_Price",
+  "Currency",
+  "Valid_To",
+  "Created_On",
 ];
 
 class MatHW extends React.Component {
@@ -108,6 +75,7 @@ class MatHW extends React.Component {
       material_list: [],
       material_list_all: [],
       selected_vendor: "",
+      filter_list: {},
     };
     this.toggle = this.toggle.bind(this);
     this.toggleLoading = this.toggleLoading.bind(this);
@@ -148,13 +116,75 @@ class MatHW extends React.Component {
     this.setState((prevState) => ({
       modal_loading: !prevState.modal_loading,
     }));
+    let filter_array = [];
+    filter_array.push(
+      '"Material_Type":{"$regex" : "' + modul_name + '", "$options" : "i"}'
+    );
+    this.state.filter_list["Vendor_ID"] !== null &&
+      this.state.filter_list["Vendor_ID"] !== undefined &&
+      filter_array.push(
+        '"Vendor_ID":{"$regex" : "' +
+          this.state.filter_list["Vendor_ID"] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list["Vendor_Name"] !== null &&
+      this.state.filter_list["Vendor_Name"] !== undefined &&
+      filter_array.push(
+        '"Vendor_Name":{"$regex" : "' +
+          this.state.filter_list["Vendor_Name"] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list["MM_Code"] !== null &&
+      this.state.filter_list["MM_Code"] !== undefined &&
+      filter_array.push(
+        '"MM_Code":{"$regex" : "' +
+          this.state.filter_list["MM_Code"] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list["MM_Description"] !== null &&
+      this.state.filter_list["MM_Description"] !== undefined &&
+      filter_array.push(
+        '"MM_Description":{"$regex" : "' +
+          this.state.filter_list["MM_Description"] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list["Unit_Price"] !== null &&
+      this.state.filter_list["Unit_Price"] !== undefined &&
+      filter_array.push(
+        '"Unit_Price":{"$regex" : "' +
+          this.state.filter_list["Unit_Price"] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list["Currency"] !== null &&
+      this.state.filter_list["Currency"] !== undefined &&
+      filter_array.push(
+        '"Currency":{"$regex" : "' +
+          this.state.filter_list["Currency"] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list["Valid_To"] !== null &&
+      this.state.filter_list["Valid_To"] !== undefined &&
+      filter_array.push(
+        '"Valid_To":{"$regex" : "' +
+          this.state.filter_list["Valid_To"] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list["Created_On"] !== null &&
+      this.state.filter_list["Created_On"] !== undefined &&
+      filter_array.push(
+        '"Created_On":{"$regex" : "' +
+          this.state.filter_list["Created_On"] +
+          '", "$options" : "i"}'
+      );
+
+    let whereAnd = "{" + filter_array.join(",") + "}";
+
     getDatafromAPINODE(
-      '/mmCode/getMm?q={"Material_Type": "' +
-        modul_name +
-        '"}' +
-        "&lmt=" +
+      "/mmCode/getMm?q=" +
+        whereAnd +
+        "&max_results=" +
         this.state.perPage +
-        "&pg=" +
+        "&page=" +
         this.state.activePage,
       this.state.tokenUser
     ).then((res) => {
@@ -575,6 +605,52 @@ class MatHW extends React.Component {
     }
   };
 
+  loopSearchBar = () => {
+    let searchBar = [];
+    for (let i = 0; i < 12; i++) {
+      searchBar.push(
+        <td>
+          <div className="controls" style={{ width: "150px" }}>
+            <InputGroup className="input-prepend">
+              <InputGroupAddon addonType="prepend">
+                <InputGroupText>
+                  <i className="fa fa-search"></i>
+                </InputGroupText>
+              </InputGroupAddon>
+              <Input
+                // className="col-sm-3"
+                type="text"
+                placeholder="Search"
+                onChange={this.handleFilterList}
+                value={this.state.filter_list[header_model[i]]}
+                name={header_model[i]}
+                size="sm"
+              />
+            </InputGroup>
+          </div>
+        </td>
+      );
+    }
+    return searchBar;
+  };
+
+  handleFilterList = (e) => {
+    const index = e.target.name;
+    let value = e.target.value;
+    if (value.length === 0) {
+      value = null;
+    }
+    let dataFilter = this.state.filter_list;
+    dataFilter[index] = value;
+    this.setState({ filter_list: dataFilter, activePage: 1 }, () => {
+      this.onChangeDebounced(e);
+    });
+  };
+
+  onChangeDebounced(e) {
+    this.getMaterialList();
+  }
+
   render() {
     const NROForm = this.state.NROForm;
     return (
@@ -721,6 +797,7 @@ class MatHW extends React.Component {
                           </tr>
                         </thead>
                         <tbody>
+                          <tr>{this.loopSearchBar()}</tr>
                           {this.state.material_list !== undefined &&
                             this.state.material_list !== null &&
                             this.state.material_list.map((e) => (

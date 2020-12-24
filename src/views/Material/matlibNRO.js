@@ -10,6 +10,9 @@ import {
   DropdownMenu,
   DropdownToggle,
   Collapse,
+  InputGroup,
+  InputGroupAddon,
+  InputGroupText,
 } from "reactstrap";
 import { Col, FormGroup, Label, Row, Table, Input } from "reactstrap";
 import { Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
@@ -19,7 +22,7 @@ import Excel from "exceljs";
 import * as XLSX from "xlsx";
 import ModalCreateNew from "../Component/ModalCreateNew";
 import ModalDelete from "../Component/ModalDelete";
-import { connect } from 'react-redux';
+import { connect } from "react-redux";
 
 import Loading from "../Component/Loading";
 import { ExcelRenderer } from "react-excel-renderer";
@@ -30,7 +33,7 @@ import {
   patchDatatoAPINODE,
   deleteDataFromAPINODE2,
 } from "../../helper/asyncFunction";
-import {numToSSColumn} from '../../helper/basicFunction'
+import { numToSSColumn } from "../../helper/basicFunction";
 
 const DefaultNotif = React.lazy(() => import("../DefaultView/DefaultNotif"));
 const Checkbox = ({
@@ -55,51 +58,15 @@ const Checkbox = ({
   />
 );
 const modul_name = "NRO";
-const BearerToken =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjYXNfaWQiOiIxOTM2YmE0Yy0wMjlkLTQ1MzktYWRkOC1mZjc2OTNiMDlmZmUiLCJyb2xlcyI6WyJCQU0tU3VwZXJBZG1pbiJdLCJhY2NvdW50IjoiMSIsImlhdCI6MTU5MjQ3MDI4Mn0.tIJSzHa-ewhqz0Ail7J0maIZx4R9P1aXE2E_49pe4KY";
-const MaterialDB = [
-  {
-    MM_Code: "MM Code",
-    BB_Sub: "BB_sub",
-    SoW_Description: "SoW Description",
-    UoM: "UoM",
-    Region: "Region",
-    Unit_Price: 100,
-    MM_Description: "MM Description",
-    Acceptance: "Acceptance",
-    Vendor_List: [
-      {
-        Vendor_Name: "TUMPAT SOLUTIONS",
-        Identifier: 0,
-      },
+const header_model = [
+  "BB",
+  "BB_Sub",
+  "UoM",
+  "Region",
 
-      {
-        Vendor_Name: "FA FRONTLINERS SDN BHD",
-        Identifier: 1,
-      },
-    ],
-  },
-  {
-    MM_Code: "MM Code1",
-    BB_Sub: "BB_sub1",
-    SoW_Description: "SoW Description1",
-    UoM: "UoM1",
-    Region: "Region1",
-    Unit_Price: 200,
-    MM_Description: "MM Description1",
-    Acceptance: "Acceptance1",
-    Vendor_List: [
-      {
-        Vendor_Name: "TUMPAT SOLUTIONS",
-        Identifier: 1,
-      },
-
-      {
-        Vendor_Name: "FA FRONTLINERS SDN BHD",
-        Identifier: 0,
-      },
-    ],
-  },
+  "Unit_Price",
+  "MM_Code",
+  "MM_Description",
 ];
 
 class TabelNRO extends React.Component {
@@ -153,7 +120,6 @@ class TabelNRO extends React.Component {
     }
   }
 
-
   render() {
     let MatIdcol = [];
     MatIdcol.push(this.props.DataMaterial.map((a) => a._id));
@@ -162,10 +128,10 @@ class TabelNRO extends React.Component {
       <Table striped hover bordered responsive size="sm">
         <thead>
           <tr>
-          <th rowSpan="2">
+            <th rowSpan="2">
               <b>BB</b>
             </th>
-          <th rowSpan="2">
+            <th rowSpan="2">
               <b>BB_Sub</b>
             </th>
             <th rowSpan="2">
@@ -191,7 +157,7 @@ class TabelNRO extends React.Component {
                 <th>{vendor.Name}</th>
               </Fragment>
             ))}
-            <th colspan="2"></th>
+            <th colspan="3"></th>
           </tr>
           <tr>
             {this.props.Vendor_header.map((vendor, i) => (
@@ -213,11 +179,14 @@ class TabelNRO extends React.Component {
           </tr>
         </thead>
         <tbody>
+          {/* <tr>{this.loopSearchBar()}</tr> */}
           {this.props.DataMaterial.map((e) => (
             <tr>
               <td style={{ textAlign: "center" }}>{e.BB}</td>
               <td style={{ textAlign: "center" }}>{e.BB_Sub}</td>
-              <td style={{ textAlign: "center" }}>{e.SoW_Description_or_Site_Type}</td>
+              <td style={{ textAlign: "center" }}>
+                {e.SoW_Description_or_Site_Type}
+              </td>
               <td style={{ textAlign: "center" }}>{e.UoM}</td>
               <td style={{ textAlign: "center" }}>{e.Region}</td>
               <td style={{ textAlign: "center" }}>{e.Unit_Price}</td>
@@ -291,6 +260,7 @@ class MatNRO extends React.Component {
       activePage: 1,
       perPage: 10,
       modalEdit: false,
+      filter_list: {},
     };
     this.togglePPForm = this.togglePPForm.bind(this);
     this.toggle = this.toggle.bind(this);
@@ -300,7 +270,7 @@ class MatNRO extends React.Component {
     this.saveUpdateNROVendorData = this.saveUpdateNROVendorData.bind(this);
   }
 
-  componentDidMount() {    
+  componentDidMount() {
     this.getVendorList();
     this.getMaterialList();
     this.getMaterialListAll();
@@ -320,26 +290,88 @@ class MatNRO extends React.Component {
     this.setState((prevState) => ({
       modal_loading: !prevState.modal_loading,
     }));
+    let filter_array = [];
+    filter_array.push(
+      '"Material_Type":{"$regex" : "' + modul_name + '", "$options" : "i"}'
+    );
+    this.state.filter_list["BB"] !== null &&
+      this.state.filter_list["BB"] !== undefined &&
+      filter_array.push(
+        '"BB":{"$regex" : "' +
+          this.state.filter_list["BB"] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list["BB_Sub"] !== null &&
+      this.state.filter_list["BB_Sub"] !== undefined &&
+      filter_array.push(
+        '"BB_Sub":{"$regex" : "' +
+          this.state.filter_list["BB_Sub"] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list["UoM"] !== null &&
+      this.state.filter_list["UoM"] !== undefined &&
+      filter_array.push(
+        '"UoM":{"$regex" : "' +
+          this.state.filter_list["UoM"] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list["Region"] !== null &&
+      this.state.filter_list["Region"] !== undefined &&
+      filter_array.push(
+        '"Region":{"$regex" : "' +
+          this.state.filter_list["Region"] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list["Unit_Price"] !== null &&
+      this.state.filter_list["Unit_Price"] !== undefined &&
+      filter_array.push(
+        '"Unit_Price":{"$regex" : "' +
+          this.state.filter_list["Unit_Price"] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list["MM_Code"] !== null &&
+      this.state.filter_list["MM_Code"] !== undefined &&
+      filter_array.push(
+        '"MM_Code":{"$regex" : "' +
+          this.state.filter_list["MM_Code"] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list["MM_Description"] !== null &&
+      this.state.filter_list["MM_Description"] !== undefined &&
+      filter_array.push(
+        '"MM_Description":{"$regex" : "' +
+          this.state.filter_list["MM_Description"] +
+          '", "$options" : "i"}'
+      );
+    let whereAnd = "{" + filter_array.join(",") + "}";
+
     getDatafromAPINODE(
-      '/mmCode/getMm?q={"Material_Type": "'+modul_name+'"}' +
-        "&lmt=" +
+      "/mmCode/getMm?q=" +
+        whereAnd +
+        "&max_results=" +
         this.state.perPage +
-        "&pg=" +
+        "&page=" +
         this.state.activePage,
       this.state.tokenUser
     ).then((res) => {
       if (res.data !== undefined) {
         const items = res.data.data;
         const totalData = res.data.totalResults;
-        this.setState({ material_list: items, totalData: totalData, modal_loading: !this.state.modal_loading }, ()=>console.log(items.map(e=>e._id)));
+        this.setState(
+          {
+            material_list: items,
+            totalData: totalData,
+            modal_loading: !this.state.modal_loading,
+          },
+          () => console.log(items.map((e) => e._id))
+        );
       }
     });
   }
 
   getMaterialListAll() {
     getDatafromAPINODE(
-      '/mmCode/getMm?q={"Material_Type": "'+modul_name+'"}' +
-        "&noPg=1",
+      '/mmCode/getMm?q={"Material_Type": "' + modul_name + '"}' + "&noPg=1",
       this.state.tokenUser
     ).then((res) => {
       if (res.data !== undefined) {
@@ -365,21 +397,21 @@ class MatNRO extends React.Component {
       "MM_Code",
       "MM_Description",
       "SLA",
-      "Remarks",      
+      "Remarks",
     ];
     // header = header.concat(vendorName);
 
     ws.addRow(header);
     for (let i = 1; i < header.length + 1; i++) {
-      ws.getCell(numToSSColumn(i) + '1').fill = { type: 'pattern',
-      pattern:'solid',
-      fgColor:{argb:'FFFFFF00'},
-      bgColor:{argb:'A9A9A9'}};
+      ws.getCell(numToSSColumn(i) + "1").fill = {
+        type: "pattern",
+        pattern: "solid",
+        fgColor: { argb: "FFFFFF00" },
+        bgColor: { argb: "A9A9A9" },
+      };
     }
 
-    ws.addRow([
-      modul_name,
-    ]);
+    ws.addRow([modul_name]);
 
     const PPFormat = await wb.xlsx.writeBuffer();
     saveAs(new Blob([PPFormat]), "Material " + modul_name + " Template.xlsx");
@@ -442,7 +474,9 @@ class MatNRO extends React.Component {
     if (res.data !== undefined) {
       this.setState({ action_status: "success" });
       this.toggleLoading();
-      setTimeout(function(){ window.location.reload(); }, 1500);
+      setTimeout(function () {
+        window.location.reload();
+      }, 1500);
     } else {
       if (
         res.response !== undefined &&
@@ -717,16 +751,18 @@ class MatNRO extends React.Component {
       "MM_Code",
       "MM_Description",
       "SLA",
-      "Remarks",      
+      "Remarks",
     ];
     // header = header.concat(vendorName);
 
     ws.addRow(header);
     for (let i = 1; i < header.length + 1; i++) {
-      ws.getCell(numToSSColumn(i) + '1').fill = { type: 'pattern',
-      pattern:'solid',
-      fgColor:{argb:'FFFFFF00'},
-      bgColor:{argb:'A9A9A9'}};
+      ws.getCell(numToSSColumn(i) + "1").fill = {
+        type: "pattern",
+        pattern: "solid",
+        fgColor: { argb: "FFFFFF00" },
+        bgColor: { argb: "A9A9A9" },
+      };
     }
 
     for (let i = 0; i < download_all.length; i++) {
@@ -877,10 +913,57 @@ class MatNRO extends React.Component {
     }
   };
 
-  sortVendor(vendorlist){
-    return vendorlist.sort((a,b) => a.Name > b.Name ? 1: -1).filter(e => e.Name !== "")
+  sortVendor(vendorlist) {
+    return vendorlist
+      .sort((a, b) => (a.Name > b.Name ? 1 : -1))
+      .filter((e) => e.Name !== "");
   }
 
+  loopSearchBar = () => {
+    let searchBar = [];
+    for (let i = 0; i < 12; i++) {
+      searchBar.push(
+        <td>
+          <div className="controls" style={{ width: "150px" }}>
+            <InputGroup className="input-prepend">
+              <InputGroupAddon addonType="prepend">
+                <InputGroupText>
+                  <i className="fa fa-search"></i>
+                </InputGroupText>
+              </InputGroupAddon>
+              <Input
+                // className="col-sm-3"
+                type="text"
+                placeholder="Search"
+                onChange={this.handleFilterList}
+                value={this.state.filter_list[header_model[i]]}
+                name={header_model[i]}
+                size="sm"
+              />
+            </InputGroup>
+          </div>
+        </td>
+      );
+    }
+    return searchBar;
+  };
+
+  handleFilterList = (e) => {
+    const index = e.target.name;
+    let value = e.target.value;
+    if (value.length === 0) {
+      value = null;
+    }
+    let dataFilter = this.state.filter_list;
+    dataFilter[index] = value;
+    this.setState({ filter_list: dataFilter, activePage: 1 }, () => {
+      this.onChangeDebounced(e);
+    });
+  };
+
+  onChangeDebounced(e) {
+    this.getMaterialList();
+  }
 
   render() {
     return (
@@ -1016,7 +1099,7 @@ class MatNRO extends React.Component {
           <ModalBody>
             <Row>
               <Col sm="12">
-              <FormGroup>
+                <FormGroup>
                   <Label>MM_Code</Label>
                   <Input
                     type="text"
@@ -1251,17 +1334,17 @@ class MatNRO extends React.Component {
                 </FormGroup>
                 <FormGroup row>
                   <Col xs="12">
-                  <FormGroup>
-                  <Label>MM_Code</Label>
-                  <Input
-                  readOnly
-                    type="text"
-                    name="1"
-                    placeholder=""
-                    value={this.state.PPForm[1]}
-                    onChange={this.handleChangeForm}
-                  />
-                </FormGroup>
+                    <FormGroup>
+                      <Label>MM_Code</Label>
+                      <Input
+                        readOnly
+                        type="text"
+                        name="1"
+                        placeholder=""
+                        value={this.state.PPForm[1]}
+                        onChange={this.handleChangeForm}
+                      />
+                    </FormGroup>
                     <FormGroup>
                       <Label>MM_Description</Label>
                       <Input
@@ -1402,9 +1485,9 @@ class MatNRO extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    dataLogin : state.loginData,
-    SidebarMinimize : state.minimizeSidebar
-  }
-}
+    dataLogin: state.loginData,
+    SidebarMinimize: state.minimizeSidebar,
+  };
+};
 
 export default connect(mapStateToProps)(MatNRO);

@@ -27,6 +27,7 @@ import { connect } from "react-redux";
 const header_model = [
   "lmr_id",
   "header_text",
+  "po",
   "lmr_issued_by",
   "project_name",
   "vendor_name",
@@ -143,6 +144,13 @@ class MYASGList extends Component {
       filter_array.push(
         '"header_text":{"$regex" : "' +
           this.state.filter_list["header_text"] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list["po"] !== null &&
+      this.state.filter_list["po"] !== undefined &&
+      filter_array.push(
+        '"po":{"$regex" : "' +
+          this.state.filter_list["po"] +
           '", "$options" : "i"}'
       );
     this.state.filter_list["lmr_issued_by"] !== null &&
@@ -350,7 +358,7 @@ class MYASGList extends Component {
 
   loopSearchBar = () => {
     let searchBar = [];
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 6; i++) {
       searchBar.push(
         <td>
           <div className="controls" style={{ width: "150px" }}>
@@ -434,6 +442,7 @@ class MYASGList extends Component {
                       <th>Action</th>
                       <th>LMR ID</th>
                       <th>Header Text</th>
+                      <th>PO</th>
                       <th>Requisitioner</th>
                       <th>Project Name</th>
                       <th>Vendor Name</th>
@@ -460,6 +469,8 @@ class MYASGList extends Component {
                           </td>
                           <td>{e.lmr_id}</td>
                           <td>{e.header_text}</td>
+                          <td>{e.po}</td>
+
                           <td>{e.lmr_issued_by}</td>
                           <td>{e.project_name}</td>
                           <td>{e.vendor_name}</td>

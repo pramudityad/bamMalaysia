@@ -10,6 +10,9 @@ import {
   DropdownMenu,
   DropdownToggle,
   Collapse,
+  InputGroup,
+  InputGroupAddon,
+  InputGroupText,
 } from "reactstrap";
 import { Col, FormGroup, Label, Row, Table, Input } from "reactstrap";
 import { Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
@@ -19,7 +22,7 @@ import Excel from "exceljs";
 import * as XLSX from "xlsx";
 import ModalCreateNew from "../Component/ModalCreateNew";
 import ModalDelete from "../Component/ModalDelete";
-import { connect } from 'react-redux';
+import { connect } from "react-redux";
 
 import Loading from "../Component/Loading";
 import { ExcelRenderer } from "react-excel-renderer";
@@ -28,16 +31,29 @@ import {
   getDatafromAPINODE,
   postDatatoAPINODE,
   deleteDataFromAPINODE2,
-  patchDatatoAPINODE
+  patchDatatoAPINODE,
 } from "../../helper/asyncFunction";
-import {numToSSColumn} from '../../helper/basicFunction'
+import { numToSSColumn } from "../../helper/basicFunction";
 const DefaultNotif = React.lazy(() =>
   import("../../views/DefaultView/DefaultNotif")
 );
 
 const modul_name = "NDO";
-const BearerToken =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjYXNfaWQiOiIxOTM2YmE0Yy0wMjlkLTQ1MzktYWRkOC1mZjc2OTNiMDlmZmUiLCJyb2xlcyI6WyJCQU0tU3VwZXJBZG1pbiJdLCJhY2NvdW50IjoiMSIsImlhdCI6MTU5MjQ3MDI4Mn0.tIJSzHa-ewhqz0Ail7J0maIZx4R9P1aXE2E_49pe4KY";
+
+const header_model = [
+  "BB",
+  "BB_Sub",
+  "SoW_Description_or_Site_Type",
+  "Sla",
+  "UoM",
+  "Unit_Price",
+  "Region",
+  "MM_Code",
+  "MM_Description",
+  "Vendor_ID",
+  "Vendor_Name",
+  "Remarks",
+];
 
 class MatNDO extends React.Component {
   constructor(props) {
@@ -61,7 +77,8 @@ class MatNDO extends React.Component {
       perPage: 10,
       modalEdit: false,
       material_list: [],
-      material_list_all: []
+      material_list_all: [],
+      filter_list: {},
     };
     this.toggle = this.toggle.bind(this);
     this.toggleLoading = this.toggleLoading.bind(this);
@@ -70,7 +87,6 @@ class MatNDO extends React.Component {
   }
 
   componentDidMount() {
-    
     this.getVendorList();
     this.getMaterialList();
     this.getMaterialListAll();
@@ -87,8 +103,7 @@ class MatNDO extends React.Component {
 
   getMaterialListAll() {
     getDatafromAPINODE(
-      '/mmCode/getMm?q={"Material_Type": "'+modul_name+'"}' +
-        "&noPg=1",
+      '/mmCode/getMm?q={"Material_Type": "' + modul_name + '"}' + "&noPg=1",
       this.state.tokenUser
     ).then((res) => {
       if (res.data !== undefined) {
@@ -102,21 +117,115 @@ class MatNDO extends React.Component {
     this.setState((prevState) => ({
       modal_loading: !prevState.modal_loading,
     }));
-    let whereAnd =
-      '{ "Material_Type":{"$regex" : "' + modul_name + '", "$options" : "i"}}';
-      getDatafromAPINODE(
+    let filter_array = [];
+    filter_array.push(
+      '"Material_Type":{"$regex" : "' + modul_name + '", "$options" : "i"}'
+    );
+    this.state.filter_list["BB"] !== null &&
+      this.state.filter_list["BB"] !== undefined &&
+      filter_array.push(
+        '"BB":{"$regex" : "' +
+          this.state.filter_list["BB"] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list["BB_Sub"] !== null &&
+      this.state.filter_list["BB_Sub"] !== undefined &&
+      filter_array.push(
+        '"BB_Sub":{"$regex" : "' +
+          this.state.filter_list["BB_Sub"] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list["SoW_Description_or_Site_Type"] !== null &&
+      this.state.filter_list["SoW_Description_or_Site_Type"] !== undefined &&
+      filter_array.push(
+        '"SoW_Description_or_Site_Type":{"$regex" : "' +
+          this.state.filter_list["SoW_Description_or_Site_Type"] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list["sla"] !== null &&
+      this.state.filter_list["sla"] !== undefined &&
+      filter_array.push(
+        '"sla":{"$regex" : "' +
+          this.state.filter_list["sla"] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list["UoM"] !== null &&
+      this.state.filter_list["UoM"] !== undefined &&
+      filter_array.push(
+        '"UoM":{"$regex" : "' +
+          this.state.filter_list["UoM"] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list["Unit_Price"] !== null &&
+      this.state.filter_list["Unit_Price"] !== undefined &&
+      filter_array.push(
+        '"Unit_Price":{"$regex" : "' +
+          this.state.filter_list["Unit_Price"] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list["Region"] !== null &&
+      this.state.filter_list["Region"] !== undefined &&
+      filter_array.push(
+        '"Region":{"$regex" : "' +
+          this.state.filter_list["Region"] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list["MM_Code"] !== null &&
+      this.state.filter_list["MM_Code"] !== undefined &&
+      filter_array.push(
+        '"MM_Code":{"$regex" : "' +
+          this.state.filter_list["MM_Code"] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list["MM_Description"] !== null &&
+      this.state.filter_list["MM_Description"] !== undefined &&
+      filter_array.push(
+        '"MM_Description":{"$regex" : "' +
+          this.state.filter_list["MM_Description"] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list["Vendor_ID"] !== null &&
+      this.state.filter_list["Vendor_ID"] !== undefined &&
+      filter_array.push(
+        '"Vendor_ID":{"$regex" : "' +
+          this.state.filter_list["Vendor_ID"] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list["Vendor_Name"] !== null &&
+      this.state.filter_list["Vendor_Name"] !== undefined &&
+      filter_array.push(
+        '"Vendor_Name":{"$regex" : "' +
+          this.state.filter_list["Vendor_Name"] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list["Remarks"] !== null &&
+      this.state.filter_list["Remarks"] !== undefined &&
+      filter_array.push(
+        '"Remarks":{"$regex" : "' +
+          this.state.filter_list["Remarks"] +
+          '", "$options" : "i"}'
+      );
+    let whereAnd = "{" + filter_array.join(",") + "}";
+
+    getDatafromAPINODE(
       "/mmCode/getMm?q=" +
         whereAnd +
         "&max_results=" +
         this.state.perPage +
         "&page=" +
         this.state.activePage,
-        this.state.tokenUser
+      this.state.tokenUser
     ).then((res) => {
       if (res.data !== undefined) {
         const items = res.data.data;
         const totalData = res.data.totalResults;
-        this.setState({ material_list: items, totalData: totalData, modal_loading: !this.state.modal_loading}, ()=>console.log(items.map(e=>e.SLA))
+        this.setState(
+          {
+            material_list: items,
+            totalData: totalData,
+            modal_loading: !this.state.modal_loading,
+          },
+          () => console.log(items.map((e) => e.SLA))
         );
       }
     });
@@ -131,9 +240,9 @@ class MatNDO extends React.Component {
       "BB",
       "BB_Sub",
       "SoW_Description_or_Site_Type",
-      "SLA",        
+      "SLA",
       "UoM",
-      "Unit_Price",      
+      "Unit_Price",
       "Region",
       "MM_Code",
       "MM_Description",
@@ -144,15 +253,15 @@ class MatNDO extends React.Component {
 
     ws.addRow(header);
     for (let i = 1; i < header.length + 1; i++) {
-      ws.getCell(numToSSColumn(i) + '1').fill = { type: 'pattern',
-      pattern:'solid',
-      fgColor:{argb:'FFFFFF00'},
-      bgColor:{argb:'A9A9A9'}};
+      ws.getCell(numToSSColumn(i) + "1").fill = {
+        type: "pattern",
+        pattern: "solid",
+        fgColor: { argb: "FFFFFF00" },
+        bgColor: { argb: "A9A9A9" },
+      };
     }
 
-    ws.addRow([
-      modul_name,
-    ]);
+    ws.addRow([modul_name]);
 
     const PPFormat = await wb.xlsx.writeBuffer();
     saveAs(new Blob([PPFormat]), "Material " + modul_name + " Template.xlsx");
@@ -215,7 +324,9 @@ class MatNDO extends React.Component {
     if (res.data !== undefined) {
       this.setState({ action_status: "success" });
       this.toggleLoading();
-      setTimeout(function(){ window.location.reload(); }, 1500);
+      setTimeout(function () {
+        window.location.reload();
+      }, 1500);
     } else {
       if (
         res.response !== undefined &&
@@ -243,13 +354,13 @@ class MatNDO extends React.Component {
   saveNew = async () => {
     this.togglePPForm();
     this.toggleLoading();
-    let dataForm = [ 
+    let dataForm = [
       [
         "Material_Type",
         "MM_Code",
-        "BB", 
-        "BB_Sub", 
-        "MM_Description", 
+        "BB",
+        "BB_Sub",
+        "MM_Description",
         "UoM",
         "Unit_Price",
 
@@ -274,8 +385,8 @@ class MatNDO extends React.Component {
         this.state.PPForm[11],
         this.findVendorName(this.state.PPForm[11]),
         this.state.PPForm[12],
-      ]
-    ]
+      ],
+    ];
     const res = await postDatatoAPINODE(
       "/mmCode/createMmCode",
       {
@@ -322,11 +433,11 @@ class MatNDO extends React.Component {
     this.setState((prevState) => ({
       modalPPForm: !prevState.modalPPForm,
     }));
-  }
+  };
 
   downloadAll = async () => {
     let download_all = [];
-    let getAll_nonpage = this.state.material_list_all
+    let getAll_nonpage = this.state.material_list_all;
 
     if (getAll_nonpage !== undefined) {
       download_all = getAll_nonpage;
@@ -339,9 +450,9 @@ class MatNDO extends React.Component {
       "BB",
       "BB_Sub",
       "SoW_Description_or_Site_Type",
-      "SLA",        
+      "SLA",
       "UoM",
-      "Unit_Price",      
+      "Unit_Price",
       "Region",
       "MM_Code",
       "MM_Description",
@@ -351,10 +462,12 @@ class MatNDO extends React.Component {
     ];
     ws.addRow(headerRow);
     for (let i = 1; i < headerRow.length + 1; i++) {
-      ws.getCell(numToSSColumn(i) + '1').fill = { type: 'pattern',
-      pattern:'solid',
-      fgColor:{argb:'FFFFFF00'},
-      bgColor:{argb:'A9A9A9'}};
+      ws.getCell(numToSSColumn(i) + "1").fill = {
+        type: "pattern",
+        pattern: "solid",
+        fgColor: { argb: "FFFFFF00" },
+        bgColor: { argb: "A9A9A9" },
+      };
     }
 
     for (let i = 0; i < download_all.length; i++) {
@@ -375,29 +488,30 @@ class MatNDO extends React.Component {
     }
 
     const allocexport = await wb.xlsx.writeBuffer();
-    saveAs(new Blob([allocexport]), 'All ' + modul_name + '.xlsx');
-  }
+    saveAs(new Blob([allocexport]), "All " + modul_name + ".xlsx");
+  };
 
   findVendorName = (vendor_id) => {
-    let vendordata = this.state.vendor_list.find(element => element.Vendor_Code === vendor_id);
-    if(vendordata !== undefined){
-      return vendordata.Name
-    }else{
-      return null
+    let vendordata = this.state.vendor_list.find(
+      (element) => element.Vendor_Code === vendor_id
+    );
+    if (vendordata !== undefined) {
+      return vendordata.Name;
+    } else {
+      return null;
     }
-    
-  }
+  };
 
-  toggleDelete=(e) => {
+  toggleDelete = (e) => {
     const modalDelete = this.state.danger;
     if (modalDelete === false) {
       const _id = e.currentTarget.value;
-      const name = this.state.material_list_all.find(e => e._id === _id)
+      const name = this.state.material_list_all.find((e) => e._id === _id);
       this.setState({
         danger: !this.state.danger,
         selected_id: _id,
         selected_name: name.MM_Code,
-        selected_vendor: name.Vendor_ID
+        selected_vendor: name.Vendor_ID,
       });
     } else {
       this.setState({
@@ -407,14 +521,16 @@ class MatNDO extends React.Component {
     this.setState((prevState) => ({
       modalDelete: !prevState.modalDelete,
     }));
-  }
+  };
 
   DeleteData = async () => {
     const objData = this.state.selected_id;
     this.toggleLoading();
     this.toggleDelete();
     const DelData = deleteDataFromAPINODE2(
-      "/mmCode/deleteMmCode", this.state.tokenUser, {data:[objData]}
+      "/mmCode/deleteMmCode",
+      this.state.tokenUser,
+      { data: [objData] }
     ).then((res) => {
       if (res.data !== undefined) {
         this.setState({ action_status: "success" });
@@ -431,7 +547,7 @@ class MatNDO extends React.Component {
     this.setState({ activePage: pageNumber }, () => {
       this.getMaterialList();
     });
-  }
+  };
 
   toggleEdit = (e) => {
     const modalEdit = this.state.modalEdit;
@@ -458,27 +574,26 @@ class MatNDO extends React.Component {
     this.setState((prevState) => ({
       modalEdit: !prevState.modalEdit,
     }));
-  }
+  };
 
   saveUpdate = async () => {
     this.toggleEdit();
     this.toggleLoading();
-    let dataForm =      
-      {
-        _id: this.state.selected_id,
-        BB: this.state.PPForm[2],
-        BB_Sub: this.state.PPForm[3],
-        MM_Description: this.state.PPForm[4],
-        UoM: this.state.PPForm[5],
-        Unit_Price: this.state.PPForm[6],
-        MM_Code: this.state.PPForm[7],
-        Region: this.state.PPForm[8],
-        SLA: this.state.PPForm[9],
-        SoW_Description_or_Site_Type: this.state.PPForm[10],
-        Vendor_ID: this.state.PPForm[11],
-        Vendor_Name: this.findVendorName(this.state.PPForm[11]),
-        Note: this.state.PPForm[12],
-      }
+    let dataForm = {
+      _id: this.state.selected_id,
+      BB: this.state.PPForm[2],
+      BB_Sub: this.state.PPForm[3],
+      MM_Description: this.state.PPForm[4],
+      UoM: this.state.PPForm[5],
+      Unit_Price: this.state.PPForm[6],
+      MM_Code: this.state.PPForm[7],
+      Region: this.state.PPForm[8],
+      SLA: this.state.PPForm[9],
+      SoW_Description_or_Site_Type: this.state.PPForm[10],
+      Vendor_ID: this.state.PPForm[11],
+      Vendor_Name: this.findVendorName(this.state.PPForm[11]),
+      Note: this.state.PPForm[12],
+    };
     const res = await patchDatatoAPINODE(
       "/mmCode/updateMmCode",
       {
@@ -511,6 +626,52 @@ class MatNDO extends React.Component {
       }
       this.toggleLoading();
     }
+  };
+
+  loopSearchBar = () => {
+    let searchBar = [];
+    for (let i = 0; i < 12; i++) {
+      searchBar.push(
+        <td>
+          <div className="controls" style={{ width: "150px" }}>
+            <InputGroup className="input-prepend">
+              <InputGroupAddon addonType="prepend">
+                <InputGroupText>
+                  <i className="fa fa-search"></i>
+                </InputGroupText>
+              </InputGroupAddon>
+              <Input
+                // className="col-sm-3"
+                type="text"
+                placeholder="Search"
+                onChange={this.handleFilterList}
+                value={this.state.filter_list[header_model[i]]}
+                name={header_model[i]}
+                size="sm"
+              />
+            </InputGroup>
+          </div>
+        </td>
+      );
+    }
+    return searchBar;
+  };
+
+  handleFilterList = (e) => {
+    const index = e.target.name;
+    let value = e.target.value;
+    if (value.length === 0) {
+      value = null;
+    }
+    let dataFilter = this.state.filter_list;
+    dataFilter[index] = value;
+    this.setState({ filter_list: dataFilter, activePage: 1 }, () => {
+      this.onChangeDebounced(e);
+    });
+  };
+
+  onChangeDebounced(e) {
+    this.getMaterialList();
   }
 
   render() {
@@ -646,10 +807,10 @@ class MatNDO extends React.Component {
                             <th>SoW_Description_or_Site_Type</th>
                             <th>SLA</th>
                             <th>UoM</th>
-                            <th>Unit_Price</th>                            
+                            <th>Unit_Price</th>
                             <th>Region</th>
                             <th>MM_Code</th>
-                            <th>MM_Description</th>     
+                            <th>MM_Description</th>
                             <th>Vendor_ID</th>
                             <th>Vendor_Name</th>
                             <th>Remarks</th>
@@ -657,6 +818,7 @@ class MatNDO extends React.Component {
                           </tr>
                         </thead>
                         <tbody>
+                          <tr>{this.loopSearchBar()}</tr>
                           {this.state.material_list !== undefined &&
                             this.state.material_list !== null &&
                             this.state.material_list.map((e) => (
@@ -666,7 +828,7 @@ class MatNDO extends React.Component {
                                   // className="fixbody"
                                   key={e._id}
                                 >
-                                    <td style={{ textAlign: "center" }}>
+                                  <td style={{ textAlign: "center" }}>
                                     {e.BB}
                                   </td>
                                   <td style={{ textAlign: "center" }}>
@@ -692,7 +854,7 @@ class MatNDO extends React.Component {
                                   </td>
                                   <td style={{ textAlign: "center" }}>
                                     {e.MM_Description}
-                                  </td>                              
+                                  </td>
                                   <td style={{ textAlign: "center" }}>
                                     {e.Vendor_ID}
                                   </td>
@@ -710,11 +872,14 @@ class MatNDO extends React.Component {
                                       onClick={this.toggleEdit}
                                       title="Edit"
                                     >
-                                      <i className="fa fa-edit" aria-hidden="true"></i>
+                                      <i
+                                        className="fa fa-edit"
+                                        aria-hidden="true"
+                                      ></i>
                                     </Button>
                                   </td>
                                   <td>
-                                  <Button
+                                    <Button
                                       size="sm"
                                       color="danger"
                                       value={e._id}
@@ -732,7 +897,7 @@ class MatNDO extends React.Component {
                               </React.Fragment>
                             ))}
                         </tbody>
-                      </Table>                      
+                      </Table>
                     </div>
                   </Col>
                 </Row>
@@ -788,55 +953,55 @@ class MatNDO extends React.Component {
                   />
                 </FormGroup>
                 <FormGroup row>
-                <Col xs="12">
+                  <Col xs="12">
                     <FormGroup>
                       <Label>MM_Code</Label>
                       <Input
-                    type="text"
-                    name="7"
-                    placeholder=""
-                    value={this.state.PPForm[7]}
-                    onChange={this.handleChangeForm}
-                  />
+                        type="text"
+                        name="7"
+                        placeholder=""
+                        value={this.state.PPForm[7]}
+                        onChange={this.handleChangeForm}
+                      />
                     </FormGroup>
                   </Col>
                   <Col xs="12">
                     <FormGroup>
                       <Label>MM_Description</Label>
                       <Input
-                    type="text"
-                    name="4"
-                    placeholder=""
-                    value={this.state.PPForm[4]}
-                    onChange={this.handleChangeForm}
-                  />
+                        type="text"
+                        name="4"
+                        placeholder=""
+                        value={this.state.PPForm[4]}
+                        onChange={this.handleChangeForm}
+                      />
                     </FormGroup>
                   </Col>
                   <Col xs="12">
                     <FormGroup>
                       <Label>UoM</Label>
                       <Input
-                    type="text"
-                    name="5"
-                    placeholder=""
-                    value={this.state.PPForm[5]}
-                    onChange={this.handleChangeForm}
-                  />
+                        type="text"
+                        name="5"
+                        placeholder=""
+                        value={this.state.PPForm[5]}
+                        onChange={this.handleChangeForm}
+                      />
                     </FormGroup>
                   </Col>
                   <Col xs="12">
                     <FormGroup>
                       <Label>Unit_Price</Label>
                       <Input
-                    type="number"
-                    name="6"
-                    placeholder=""
-                    value={this.state.PPForm[6]}
-                    onChange={this.handleChangeForm}
-                  />
+                        type="number"
+                        name="6"
+                        placeholder=""
+                        value={this.state.PPForm[6]}
+                        onChange={this.handleChangeForm}
+                      />
                     </FormGroup>
                   </Col>
-                </FormGroup>              
+                </FormGroup>
                 <FormGroup>
                   <Label>Region</Label>
                   <Input
@@ -880,7 +1045,9 @@ class MatNDO extends React.Component {
                       Select Vendor
                     </option>
                     {this.state.vendor_list.map((asp) => (
-                      <option value={asp.Vendor_Code}>{asp.Vendor_Code}-{asp.Name}</option>
+                      <option value={asp.Vendor_Code}>
+                        {asp.Vendor_Code}-{asp.Name}
+                      </option>
                     ))}
                   </Input>
                 </FormGroup>
@@ -905,8 +1072,8 @@ class MatNDO extends React.Component {
         </Modal>
         {/*  Modal New PP*/}
 
-           {/* Modal Update */}
-           <Modal
+        {/* Modal Update */}
+        <Modal
           isOpen={this.state.modalEdit}
           toggle={this.toggleEdit}
           className="modal--form"
@@ -940,52 +1107,52 @@ class MatNDO extends React.Component {
                     <FormGroup>
                       <Label>MM_Description</Label>
                       <Input
-                    type="text"
-                    name="4"
-                    placeholder=""
-                    value={this.state.PPForm[4]}
-                    onChange={this.handleChangeForm}
-                  />
+                        type="text"
+                        name="4"
+                        placeholder=""
+                        value={this.state.PPForm[4]}
+                        onChange={this.handleChangeForm}
+                      />
                     </FormGroup>
                   </Col>
                   <Col xs="12">
                     <FormGroup>
                       <Label>MM_Code</Label>
                       <Input
-                      readOnly
-                    type="text"
-                    name="7"
-                    placeholder=""
-                    value={this.state.PPForm[7]}
-                    onChange={this.handleChangeForm}
-                  />
+                        readOnly
+                        type="text"
+                        name="7"
+                        placeholder=""
+                        value={this.state.PPForm[7]}
+                        onChange={this.handleChangeForm}
+                      />
                     </FormGroup>
                   </Col>
                   <Col xs="12">
                     <FormGroup>
                       <Label>UoM</Label>
                       <Input
-                    type="text"
-                    name="5"
-                    placeholder=""
-                    value={this.state.PPForm[5]}
-                    onChange={this.handleChangeForm}
-                  />
+                        type="text"
+                        name="5"
+                        placeholder=""
+                        value={this.state.PPForm[5]}
+                        onChange={this.handleChangeForm}
+                      />
                     </FormGroup>
                   </Col>
                   <Col xs="12">
                     <FormGroup>
                       <Label>Unit_Price</Label>
                       <Input
-                    type="number"
-                    name="6"
-                    placeholder=""
-                    value={this.state.PPForm[6]}
-                    onChange={this.handleChangeForm}
-                  />
+                        type="number"
+                        name="6"
+                        placeholder=""
+                        value={this.state.PPForm[6]}
+                        onChange={this.handleChangeForm}
+                      />
                     </FormGroup>
-                  </Col>                  
-                </FormGroup>                 
+                  </Col>
+                </FormGroup>
                 <FormGroup>
                   <Label>Region</Label>
                   <Input
@@ -1102,12 +1269,17 @@ class MatNDO extends React.Component {
         ></Loading>
         {/* end Modal Loading */}
 
-         {/* Modal confirmation delete */}
-         <ModalDelete
+        {/* Modal confirmation delete */}
+        <ModalDelete
           isOpen={this.state.danger}
           toggle={this.toggleDelete}
           className={"modal-danger " + this.props.className}
-          title={"Delete "+ this.state.selected_name+ " for " + this.findVendorName(this.state.selected_vendor)}
+          title={
+            "Delete " +
+            this.state.selected_name +
+            " for " +
+            this.findVendorName(this.state.selected_vendor)
+          }
           body={"Are you sure ?"}
         >
           <Button color="danger" onClick={this.DeleteData}>
@@ -1124,9 +1296,9 @@ class MatNDO extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    dataLogin : state.loginData,
-    SidebarMinimize : state.minimizeSidebar
-  }
-}
+    dataLogin: state.loginData,
+    SidebarMinimize: state.minimizeSidebar,
+  };
+};
 
 export default connect(mapStateToProps)(MatNDO);
