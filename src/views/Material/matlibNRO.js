@@ -61,6 +61,7 @@ const modul_name = "NRO";
 const header_model = [
   "BB",
   "BB_Sub",
+  "SoW_Description_or_Site_Type",
   "UoM",
   "Region",
 
@@ -119,6 +120,35 @@ class TabelNRO extends React.Component {
       );
     }
   }
+
+  loopSearchBar = () => {
+    let searchBar = [];
+    for (let i = 0; i < 8; i++) {
+      searchBar.push(
+        <td>
+          <div className="controls" style={{ width: "150px" }}>
+            <InputGroup className="input-prepend">
+              <InputGroupAddon addonType="prepend">
+                <InputGroupText>
+                  <i className="fa fa-search"></i>
+                </InputGroupText>
+              </InputGroupAddon>
+              <Input
+                // className="col-sm-3"
+                type="text"
+                placeholder="Search"
+                onChange={this.props.handleFilterList}
+                value={this.props.filter_list[header_model[i]]}
+                name={header_model[i]}
+                size="sm"
+              />
+            </InputGroup>
+          </div>
+        </td>
+      );
+    }
+    return searchBar;
+  };
 
   render() {
     let MatIdcol = [];
@@ -179,7 +209,7 @@ class TabelNRO extends React.Component {
           </tr>
         </thead>
         <tbody>
-          {/* <tr>{this.loopSearchBar()}</tr> */}
+          <tr>{this.loopSearchBar()}</tr>
           {this.props.DataMaterial.map((e) => (
             <tr>
               <td style={{ textAlign: "center" }}>{e.BB}</td>
@@ -919,34 +949,34 @@ class MatNRO extends React.Component {
       .filter((e) => e.Name !== "");
   }
 
-  loopSearchBar = () => {
-    let searchBar = [];
-    for (let i = 0; i < 12; i++) {
-      searchBar.push(
-        <td>
-          <div className="controls" style={{ width: "150px" }}>
-            <InputGroup className="input-prepend">
-              <InputGroupAddon addonType="prepend">
-                <InputGroupText>
-                  <i className="fa fa-search"></i>
-                </InputGroupText>
-              </InputGroupAddon>
-              <Input
-                // className="col-sm-3"
-                type="text"
-                placeholder="Search"
-                onChange={this.handleFilterList}
-                value={this.state.filter_list[header_model[i]]}
-                name={header_model[i]}
-                size="sm"
-              />
-            </InputGroup>
-          </div>
-        </td>
-      );
-    }
-    return searchBar;
-  };
+  // loopSearchBar = () => {
+  //   let searchBar = [];
+  //   for (let i = 0; i < 12; i++) {
+  //     searchBar.push(
+  //       <td>
+  //         <div className="controls" style={{ width: "150px" }}>
+  //           <InputGroup className="input-prepend">
+  //             <InputGroupAddon addonType="prepend">
+  //               <InputGroupText>
+  //                 <i className="fa fa-search"></i>
+  //               </InputGroupText>
+  //             </InputGroupAddon>
+  //             <Input
+  //               // className="col-sm-3"
+  //               type="text"
+  //               placeholder="Search"
+  //               onChange={this.handleFilterList}
+  //               value={this.state.filter_list[header_model[i]]}
+  //               name={header_model[i]}
+  //               size="sm"
+  //             />
+  //           </InputGroup>
+  //         </div>
+  //       </td>
+  //     );
+  //   }
+  //   return searchBar;
+  // };
 
   handleFilterList = (e) => {
     const index = e.target.name;
@@ -1055,6 +1085,8 @@ class MatNRO extends React.Component {
                         handleCheckVendorAll={this.handleCheckVendorAll}
                         toggleEdit={this.toggleEdit}
                         toggleDelete={this.toggleDelete}
+                        handleFilterList={this.handleFilterList}
+                        filter_list={this.state.filter_list}
                       />
                     </div>
                   </Col>
