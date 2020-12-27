@@ -130,3 +130,14 @@ All notable changes to BAM https://bam-my.e-dpm.com will be documented in this f
 ### Fixed
 
 - validation material qty & delivery date
+
+## [1.3.9] - 2020-12-28
+
+### Added
+
+- search bar PO lmr list
+- search bar 4 mm data
+
+### Changed
+
+### Fixed
