@@ -42,7 +42,7 @@ export const convertDateFormat = (jsondate) => {
 
 // full dateformat hh:mm:ss
 export const convertDateFormatfull = (jsondate) => {
-  if(jsondate !== undefined && jsondate !== null){
+  if (jsondate !== undefined && jsondate !== null) {
     let date = new Date(jsondate);
     let year = date.getFullYear();
     let month = date.getMonth() + 1;
@@ -58,8 +58,8 @@ export const convertDateFormatfull = (jsondate) => {
       month = "0" + month;
     }
     return year + "-" + month + "-" + dt + " " + hh + ":" + mm + ":" + ss;
-  }else{
-    return null
+  } else {
+    return null;
   }
 };
 
@@ -76,11 +76,11 @@ export const numToSSColumn = (num) => {
   return s || undefined;
 };
 
-export const convertDMSToDD  = (dms) => {
+export const convertDMSToDD = (dms) => {
   let parts = dms.split(/[^\d+(\,\d+)\d+(\.\d+)?\w]+/);
   let degrees = parseFloat(parts[0]);
   let minutes = parseFloat(parts[1]);
-  let seconds = parseFloat(parts[2].replace(',','.'));
+  let seconds = parseFloat(parts[2].replace(",", "."));
   let direction = parts[3];
 
   // console.log('degrees: '+degrees)
@@ -90,8 +90,12 @@ export const convertDMSToDD  = (dms) => {
 
   let dd = degrees + minutes / 60 + seconds / (60 * 60);
 
-  if (direction == 'S' || direction == 'W') {
+  if (direction == "S" || direction == "W") {
     dd = dd * -1;
   } // Don't do anything for N or E
   return dd;
-}
+};
+
+export const getUniqueListBy = (arr, key) => {
+  return [...new Map(arr.map((item) => [item[key], item])).values()];
+};

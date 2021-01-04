@@ -41,9 +41,10 @@ import {
 import ModalCreateNew from "../Component/ModalCreateNew";
 import Pagination from "react-js-pagination";
 import { saveAs } from "file-saver";
-import { numToSSColumn } from "../../helper/basicFunction";
+import { numToSSColumn, getUniqueListBy } from "../../helper/basicFunction";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
+import AsyncSelect from "react-select/async";
 
 import "./cpomapping.css";
 const DefaultNotif = React.lazy(() =>
@@ -331,7 +332,7 @@ class MappingSVC extends React.Component {
       activePage: 1,
       totalData: 0,
       perPage: 10,
-      CPOForm: {},
+      CPOForm: [],
       modalEdit: false,
       modal_loading: false,
       action_status: null,
@@ -339,12 +340,15 @@ class MappingSVC extends React.Component {
       filter_list: {},
       all_data_master: [],
       all_data_mapping: [],
+      multiple_select: [],
+      reloc_options: [],
       dataChecked: new Map(),
       dataChecked_container: [],
       dataChecked_container2: [],
       tabs_submenu: [true, false],
       all_data_true: [],
       dataChecked_all: false,
+      modal_callof: false,
     };
   }
 
@@ -439,10 +443,58 @@ class MappingSVC extends React.Component {
     ).then((res) => {
       if (res.data !== undefined) {
         const items = res.data.data;
-        this.setState({ all_data_mapping: items });
+        this.setState({ all_data_mapping: items }, () =>
+          this.loadOptionsReclocID(items)
+        );
       }
     });
   }
+
+  loadOptionsReclocID = async (inputValue) => {
+    if (!inputValue) {
+      return [];
+    } else {
+      let asycn_options = [];
+      await this.state.all_data_mapping.map((data) =>
+        asycn_options.push({
+          label: data.unique_code,
+          value: data._id,
+          Reference_Loc_Id: data.Reference_Loc_Id,
+          Po: data.Po,
+          Line: data.Line,
+        })
+      );
+      return asycn_options.filter((i) =>
+        i.label.toLowerCase().includes(inputValue)
+      );
+    }
+  };
+
+  handlemultipleRelocID = (datalist) => {
+    let multiple_array = [];
+    let site_selected = [];
+    console.log("datalist", datalist);
+    if (datalist !== undefined && datalist !== null) {
+      datalist.map((e) =>
+        multiple_array.push({
+          _id: e.value,
+          Reference_Loc_Id: e.Reference_Loc_Id,
+          unique_code: e.label,
+          Mapping_Date: "",
+          Po: e.Po,
+          Line: e.Line,
+        })
+      );
+      // datalist.map(e => site_selected.push({id_site_doc: e.Site_Info_SiteID_NE, site_id: e.Site_Info_SiteID_NE_Actual, site_ne_id: e.Site_Info_SiteID_Value_NE, site_name: e.Site_Info_SiteName_NE_Actual, site_region: e.Activity_Region}));
+      this.setState({ multiple_select: multiple_array }, () =>
+        console.log(this.state.multiple_select)
+      );
+    } else {
+      this.setState({ multiple_select: [] }, () =>
+        console.log(this.state.multiple_select)
+      );
+    }
+  };
 
   getList2() {
     let filter_array = [];
@@ -748,6 +800,12 @@ class MappingSVC extends React.Component {
     });
   };
 
+  toggleCallOff = () => {
+    this.setState({
+      modal_callof: !this.state.modal_callof,
+    });
+  };
+
   resettogglecreateModal = () => {
     this.setState({
       rowsXLS: [],
@@ -782,7 +840,6 @@ class MappingSVC extends React.Component {
   saveBulk = async () => {
     this.toggleLoading();
     this.togglecreateModal();
-    const BulkXLSX = this.state.rowsXLS;
     const roles =
       this.state.roleUser.includes("BAM-MAT PLANNER") === true
         ? 1
@@ -841,32 +898,18 @@ class MappingSVC extends React.Component {
     });
   };
 
-  toggleEdit = (e) => {
-    const modalEdit = this.state.modalEdit;
-    if (modalEdit === false) {
-      const value = e.currentTarget.value;
-      const aEdit = this.state.all_data.find((e) => e._id === value);
-      this.setState({ CPOForm: aEdit, selected_id: value });
-    } else {
-      this.setState({ CPOForm: {} });
-    }
-    this.setState((prevState) => ({
-      modalEdit: !prevState.modalEdit,
-    }));
-  };
-
   handleChangeForm = (e) => {
     const value = e.target.value;
-    const name = e.target.name;
-    this.setState(
-      (prevState) => ({
-        CPOForm: {
-          ...prevState.CPOForm,
-          [name]: value,
-        },
-      }),
-      () => console.log(this.state.CPOForm)
-    );
+    const unique_code = e.target.name;
+    this.setState((state) => {
+      const multiple_select = state.multiple_select.map((item, j) => {
+        if (item.unique_code === unique_code) {
+          return (item.Mapping_Date = value);
+        } else {
+          return;
+        }
+      });
+    });
   };
 
   saveUpdate = async () => {
@@ -892,6 +935,70 @@ class MappingSVC extends React.Component {
       setTimeout(function () {
         window.location.reload();
       }, 1500);
+    } else {
+      if (
+        res.response !== undefined &&
+        res.response.data !== undefined &&
+        res.response.data.error !== undefined
+      ) {
+        if (res.response.data.error.message !== undefined) {
+          this.setState({
+            action_status: "failed",
+            action_message: res.response.data.error.message,
+          });
+        } else {
+          this.setState({
+            action_status: "failed",
+            action_message: res.response.data.error,
+          });
+        }
+      } else {
+        this.setState({ action_status: "failed" });
+      }
+      this.toggleLoading();
+    }
+  };
+
+  saveUpdate_CallOf = async () => {
+    this.toggleLoading();
+    this.toggleCallOff();
+    let req_body = [];
+    const roles =
+      this.state.roleUser.includes("BAM-MAT PLANNER") === true
+        ? 1
+        : this.state.roleUser.includes("BAM-PFM") === true
+        ? 2
+        : 3;
+    const header_update_Mapping_Date = [
+      ["Po", "Line", "Reference_Loc_Id", "Mapping_Date"],
+    ];
+    const body_update_Mapping_Date = this.state.multiple_select.map((req) =>
+      req_body.push([req.Po, req.Line, req.Reference_Loc_Id, req.Mapping_Date])
+    );
+    // console.log(req_body);
+    const res = await postDatatoAPINODE(
+      "/cpoMapping/createCpo",
+      {
+        cpo_type: "svc",
+        required_check: true,
+        roles: roles,
+        cpo_data: header_update_Mapping_Date.concat(req_body),
+      },
+      // const res = await patchDatatoAPINODE(
+      //   "/cpoMapping/updateCpo",
+      //   {
+      //     cpo_type: "svc",
+      //     role: roles,
+      //     data: this.state.multiple_select,
+      //   },
+      this.state.tokenUser
+    );
+    if (res.data !== undefined) {
+      this.setState({ action_status: "success" });
+      this.toggleLoading();
+      // setTimeout(function () {
+      //   window.location.reload();
+      // }, 1500);
     } else {
       if (
         res.response !== undefined &&
@@ -1254,13 +1361,23 @@ class MappingSVC extends React.Component {
     this.setState({ perPage: limitpg }, () => this.getList());
   };
 
-  countheader = (params_field) => {
+  countheaderNaN = (params_field) => {
     let value = "element." + params_field;
     let sumheader = this.state.all_data_mapping.filter(
       (element) => eval(value) !== null && eval(value) !== ""
     );
     return sumheader.length;
     // console.log(params_field, sumheader);
+  };
+
+  countheader = (params_field) => {
+    let value = "curr." + params_field;
+    let sumheader = this.state.all_data_mapping.reduce(
+      (acc, curr) => acc + eval(value),
+      0
+    );
+    // console.log(sumheader);
+    return Math.round((sumheader + Number.EPSILON) * 100) / 100;
   };
 
   render() {
@@ -1288,6 +1405,23 @@ class MappingSVC extends React.Component {
                   className="card-header-actions"
                   style={{ display: "inline-flex" }}
                 >
+                  <div>
+                    <div>
+                      {role.includes("BAM-MAT PLANNER") === true ? (
+                        <Button
+                          block
+                          color="info"
+                          size="sm"
+                          onClick={this.toggleCallOff}
+                        >
+                          Call Off
+                        </Button>
+                      ) : (
+                        ""
+                      )}
+                    </div>
+                  </div>
+                  &nbsp;&nbsp;&nbsp;
                   <div>
                     <div>
                       <Button
@@ -1459,16 +1593,24 @@ class MappingSVC extends React.Component {
                               <tr align="center">
                                 <th></th>
                                 <th></th>
-                                {header_model.map((head) => (
-                                  <th>{this.countheader(head)}</th>
-                                ))}
+                                {header_model.map((head, j) =>
+                                  head === "Qty" ||
+                                  head === "Unit_Price" ||
+                                  head === "Total_Price" ||
+                                  head === "Discounted_Unit_Price" ||
+                                  head === "Discounted_Po_Price" ? (
+                                    <th>{this.countheader(head)}</th>
+                                  ) : (
+                                    <th>{this.countheaderNaN(head)}</th>
+                                  )
+                                )}
                               </tr>
                             </>
                           ) : (
                             <>
                               <tr align="center">
                                 {header_model.map((head) => (
-                                  <th>{this.countheader(head)}</th>
+                                  <th>{this.countheaderNaN(head)}</th>
                                 ))}
                               </tr>
                             </>
@@ -1519,8 +1661,7 @@ class MappingSVC extends React.Component {
                                     />
                                   </td>
                                   <td>{e.Project}</td>
-                                  <td>{e.Internal_Po}</td>
-                                  {/* <td>{e.Link}</td> */}
+                                  <td>{e.Po_Number}</td>
                                   <td>{e.Lookup_Reference}</td>
                                   <td>{e.Region}</td>
                                   <td>{e.Reference_Loc_Id}</td>
@@ -1530,34 +1671,23 @@ class MappingSVC extends React.Component {
                                   <td>{e.Config}</td>
                                   <td>{e.Po}</td>
                                   <td>{e.Line}</td>
-                                  <td>
-                                    {this.LookupField(
-                                      e.Po + "-" + e.Line,
-                                      "Description"
-                                    )}
-                                  </td>
+                                  <td>{e.Description}</td>
                                   <td>{e.Qty}</td>
                                   <td>{e.CNI_Date}</td>
                                   <td>{e.Mapping_Date}</td>
                                   <td>{e.Remarks}</td>
+                                  <td>{e.Premr_No}</td>
+                                  <td>{e.Proceed_Billing_100}</td>
                                   <td>{e.Celcom_User}</td>
-                                  <td>
-                                    {this.LookupField(
-                                      e.Po + "-" + e.Line,
-                                      "Pcode"
-                                    )}
-                                  </td>
-                                  <td>
-                                    {this.LookupField(
-                                      e.Po + "-" + e.Line,
-                                      "Unit_Price"
-                                    )}
-                                  </td>
+                                  <td>{e.Pcode}</td>
+                                  <td>{e.Unit_Price}</td>
                                   <td>{e.Total_Price}</td>
+                                  <td>{e.Type}</td>
                                   <td>{e.Discounted_Unit_Price}</td>
                                   <td>{e.Discounted_Po_Price}</td>
-                                  <td>{e.Type}</td>
                                   <td>{e.So_Line_Item_Description}</td>
+                                  <td>{e.Sitepcode}</td>
+                                  <td>{e.VlookupWbs}</td>
                                   <td>{e.So_No}</td>
                                   <td>{e.Wbs_No}</td>
                                   <td>{e.Billing_100}</td>
@@ -1570,41 +1700,35 @@ class MappingSVC extends React.Component {
                                   <td>{e.Billing_Upon_Ni_20}</td>
                                   <td>{e.Invoicing_No_Ni_20}</td>
                                   <td>{e.Invoicing_Date_Ni_20}</td>
+                                  <td>{e.Cancelled_Invoicing_Ni_20}</td>
                                   <td>{e.Sso_Coa_Date_80}</td>
                                   <td>{e.Billing_Upon_Sso_80}</td>
                                   <td>{e.Invoicing_No_Sso_80}</td>
                                   <td>{e.Invoicing_Date_Sso_80}</td>
+                                  <td>{e.Cancelled_Sso_Coa_Date_80}</td>
                                   <td>{e.Coa_Psp_Received_Date_20}</td>
                                   <td>{e.Billing_Upon_Coa_Psp_20}</td>
                                   <td>{e.Invoicing_No_Coa_Psp_20}</td>
                                   <td>{e.Invoicing_Date_Coa_Psp_20}</td>
+                                  <td>
+                                    {e.Cancelled_Coa_Psp_Received_Date_20}
+                                  </td>
                                   <td>{e.Sso_Coa_Date_100}</td>
                                   <td>{e.Billing_Upon_Sso_Coa_100}</td>
                                   <td>{e.Invoicing_No_Sso_Coa_100}</td>
                                   <td>{e.Invoicing_Date_Sso_Coa_100}</td>
+                                  <td>{e.Cancelled_Sso_Coa_Date_100}</td>
                                   <td>{e.Coa_Ni_Date_100}</td>
                                   <td>{e.Billing_Upon_Coa_Ni_100}</td>
                                   <td>{e.Invoicing_No_Coa_Ni_100}</td>
                                   <td>{e.Invoicing_Date_Coa_Ni_100}</td>
+                                  <td>{e.Cancelled_Coa_Ni_Date_100}</td>
                                   <td>{e.Ses_No}</td>
                                   <td>{e.Ses_Status}</td>
-                                  <td>{e.Link_1}</td>
                                   <td>{e.Ni_Coa_Submission_Status}</td>
-                                  <td>{e.Invoicing_Date_Sso_20_1}</td>
-                                  <td>{e.Cancelled_Sso_20}</td>
-                                  <td>{e.Vlookup_SSO_100_In_Service}</td>
-                                  <td>{e.Hw_Coa_100}</td>
-                                  <td>{e.Billing_Upon_Hw_Coa_100}</td>
-                                  <td>{e.Invoicing_No_Hw_Coa_100}</td>
-                                  <td>{e.Invoicing_Date_Hw_Coa_100}</td>
-                                  <td>{e.Reference_Loc_Id_1}</td>
-                                  <td>{e.Po_1}</td>
-                                  <td>{e.Reff_1}</td>
-                                  <td>{e.Site_List}</td>
-                                  <td>{e.Reff_2}</td>
-                                  <td>{e.Ni}</td>
-                                  <td>{e.Sso}</td>
-                                  <td>{e.Ref_Ni}</td>
+                                  <td>{e.Deal_Name}</td>
+                                  <td>{e.Hammer}</td>
+                                  <td>{e.Project_Description}</td>
                                 </tr>
                               </React.Fragment>
                             ))}
@@ -1759,106 +1883,54 @@ class MappingSVC extends React.Component {
 
         {/* Modal Update */}
         <Modal
-          isOpen={this.state.modalEdit}
-          toggle={this.toggleEdit}
+          isOpen={this.state.modal_callof}
+          toggle={this.toggleCallOff}
           className="modal--form"
         >
-          <ModalHeader>Form Update</ModalHeader>
+          <ModalHeader>Form Call Off</ModalHeader>
           <ModalBody>
             <Row>
               <Col sm="12">
                 <FormGroup row>
-                  <Col xs="4">
+                  <Col xs="8">
                     <FormGroup>
-                      <Label>Line</Label>
-                      <Input
-                        readOnly
-                        type="text"
-                        name="Line"
-                        placeholder=""
-                        value={CPOForm.Line}
-                        onChange={this.handleChangeForm}
+                      <Label>Reference Loc ID</Label>
+                      <AsyncSelect
+                        isMulti
+                        cacheOptions
+                        loadOptions={this.loadOptionsReclocID}
+                        defaultOptions
+                        onChange={this.handlemultipleRelocID}
                       />
-                    </FormGroup>
-                  </Col>
-                  <Col xs="4">
-                    <FormGroup>
-                      <Label>PO</Label>
-                      <Input
-                        readOnly
-                        type="text"
-                        name="Po"
-                        placeholder=""
-                        value={CPOForm.Po}
-                        onChange={this.handleChangeForm}
-                      />
-                    </FormGroup>
-                  </Col>
-                  <Col xs="4">
-                    <FormGroup>
-                      <Label>NEW LOC ID</Label>
-                      <Input
-                        readOnly
-                        type="text"
-                        name="New_Loc_Id"
-                        placeholder=""
-                        value={CPOForm.New_Loc_Id}
-                        onChange={this.handleChangeForm}
-                      />
-                    </FormGroup>
-                  </Col>
-                  <Col xs="12">
-                    <FormGroup>
-                      <Label>Config</Label>
-                      {role.includes("BAM-IM") === true ? (
-                        <Input
-                          type="text"
-                          name="Config"
-                          placeholder=""
-                          value={CPOForm.Config}
-                          onChange={this.handleChangeForm}
-                        />
-                      ) : (
-                        <Input
-                          readOnly
-                          type="text"
-                          name="Config"
-                          placeholder=""
-                          value={CPOForm.Config}
-                          onChange={this.handleChangeForm}
-                        />
-                      )}
-                    </FormGroup>
-                  </Col>
-                  <Col xs="12">
-                    <FormGroup>
-                      <Label>QTY</Label>
-                      {role.includes("BAM-IM") === true ? (
-                        <Input
-                          readOnly
-                          type="number"
-                          name="Qty"
-                          placeholder=""
-                          value={CPOForm.Qty}
-                          onChange={this.handleChangeForm}
-                        />
-                      ) : (
-                        <Input
-                          type="number"
-                          name="Qty"
-                          placeholder=""
-                          value={CPOForm.Qty}
-                          onChange={this.handleChangeForm}
-                        />
-                      )}
                     </FormGroup>
                   </Col>
                 </FormGroup>
               </Col>
             </Row>
+            {this.state.multiple_select !== null &&
+              this.state.multiple_select.map((box, i) => (
+                <Row>
+                  <Col sm="12">
+                    <FormGroup row>
+                      <Col xs="8">
+                        <FormGroup>
+                          <Label>Date # {box.unique_code}</Label>
+                          <Input
+                            type="date"
+                            name={box.unique_code}
+                            placeholder=""
+                            value={CPOForm.Line}
+                            onChange={this.handleChangeForm}
+                          />
+                        </FormGroup>
+                      </Col>
+                    </FormGroup>
+                  </Col>
+                </Row>
+              ))}
           </ModalBody>
           <ModalFooter>
-            <Button color="success" onClick={this.saveUpdate}>
+            <Button color="success" onClick={this.saveUpdate_CallOf}>
               Update
             </Button>
           </ModalFooter>

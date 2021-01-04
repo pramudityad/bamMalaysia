@@ -6,6 +6,7 @@ const MatNDO = React.lazy(() => import("./views/Material/matlibNDO"));
 const MatNRO = React.lazy(() => import("./views/Material/matlibNRO"));
 const MatHW = React.lazy(() => import("./views/Material/matlibHW"));
 const MatARP = React.lazy(() => import("./views/Material/matlibARP"));
+const ImportCas = React.lazy(() => import("./views/Material/importCas"));
 
 const HWMapping = React.lazy(() => import("./views/CPOMapping/HW"));
 const HWMaster = React.lazy(() => import("./views/CPOMapping/HWMaster"));
@@ -29,7 +30,6 @@ const LMRDetailGR = React.lazy(() =>
   import("./views/MYAssignment/MYASGDetailGR")
 );
 const LMRList = React.lazy(() => import("./views/MYAssignment/MYASGList"));
-
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
 const routes = [
   { path: "/", exact: true, name: "Home" },
@@ -137,6 +137,12 @@ const routes = [
     exact: true,
     name: "Assignment LMR Detail GR",
     component: LMRDetailGR,
+  },
+  {
+    path: "/importcas",
+    exact: true,
+    name: "Import Cas",
+    component: ImportCas,
   },
 ];
 
