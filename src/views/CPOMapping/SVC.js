@@ -41,7 +41,11 @@ import {
 import ModalCreateNew from "../Component/ModalCreateNew";
 import Pagination from "react-js-pagination";
 import { saveAs } from "file-saver";
-import { numToSSColumn, getUniqueListBy } from "../../helper/basicFunction";
+import {
+  numToSSColumn,
+  getUniqueListBy,
+  convertDateFormat,
+} from "../../helper/basicFunction";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 import AsyncSelect from "react-select/async";
@@ -261,9 +265,9 @@ const header_materialmapping = [
   "Pcode",
   "Unit_Price",
   "Total_Price",
-  "Type",
   "Discounted_Unit_Price",
   "Discounted_Po_Price",
+  "Type",
 ];
 
 const header_pfm = [
@@ -417,7 +421,7 @@ class MappingSVC extends React.Component {
           '", "$options" : "i"}'
       );
 
-    filter_array.push('"Not_Required":' + null);
+    // filter_array.push('"Not_Required":' + null);
     let whereAnd = "{" + filter_array.join(",") + "}";
     getDatafromAPINODE(
       "/cpoMapping/getCpo/required/svc?q=" +
@@ -541,7 +545,7 @@ class MappingSVC extends React.Component {
           '", "$options" : "i"}'
       );
 
-    filter_array.push('"Not_Required":' + true);
+    // filter_array.push('"Not_Required":' + true);
     let whereAnd = "{" + filter_array.join(",") + "}";
     getDatafromAPINODE(
       "/cpoMapping/getCpo/svc?q=" +
@@ -913,28 +917,113 @@ class MappingSVC extends React.Component {
   };
 
   saveUpdate = async () => {
-    // this.toggleEdit();
     this.toggleLoading();
-    let checked_data = this.state.dataChecked_container;
-    const newForm = checked_data
-      .map(({ Not_Required, ...item }) => item)
-      .map((obj) => ({ ...obj, Not_Required: true }));
-    console.log("not req form", checked_data, newForm);
+    // create
+    const roles =
+      this.state.roleUser.includes("BAM-MAT PLANNER") === true
+        ? 1
+        : this.state.roleUser.includes("BAM-PFM") === true
+        ? 2
+        : 3;
+    const header_create_not_req = [header_materialmapping];
+    // const body_create_not_req = this.state.dataChecked_container.map(
+    //   ({
+    //     _id,
+    //     unique_code,
+    //     cpo_id,
+    //     deleted,
+    //     _etag,
+    //     created_by,
+    //     updated_by,
+    //     __v,
+    //     created_on,
+    //     updated_on,
+    //     creator,
+    //     updater,
+    //     Data_1,
+    //     Link,
+    //     Not_Required,
+    //     ...data_not_req
+    //   }) => data_not_req
+    // );
+    const body_create_not_req = this.state.dataChecked_container.map((data) =>
+      Object.keys(data)
+        .filter((key) => header_materialmapping.includes(key))
+        .reduce((obj, key) => {
+          obj[key] = data[key];
+          return obj;
+        }, {})
+    );
+    const trimm_body_create_not_req = body_create_not_req.map((data) =>
+      Object.keys(data).map((key) => data[key])
+    );
 
-    const res = await patchDatatoAPINODE(
-      "/cpoMapping/updateCpo/required",
+    console.log(
+      "header",
+      body_create_not_req.map((data) => Object.keys(data).map((key) => key))
+    );
+    console.log("body", trimm_body_create_not_req);
+    console.log(
+      "post not req",
+      header_create_not_req.concat(trimm_body_create_not_req)
+    );
+    const res = await postDatatoAPINODE(
+      "/cpoMapping/createCpo",
       {
         cpo_type: "svc",
-        data: newForm,
+        required_check: false,
+        roles: roles,
+        cpo_data: header_create_not_req.concat(trimm_body_create_not_req),
       },
       this.state.tokenUser
     );
+
     if (res.data !== undefined) {
-      this.setState({ action_status: "success" });
-      this.toggleLoading();
-      setTimeout(function () {
-        window.location.reload();
-      }, 1500);
+      // delete
+      let req_body_del = [];
+      const _id_delete = this.state.dataChecked_container.map((del) =>
+        req_body_del.push(del._id)
+      );
+      // const newForm = checked_data
+      //   .map(({ Not_Required, ...item }) => item)
+      //   .map((obj) => ({ ...obj, Not_Required: true }));
+      // console.log("not req form", checked_data, newForm);
+      const resdel = await deleteDataFromAPINODE2(
+        "/cpoMapping/deleteCpo",
+        this.state.tokenUser,
+        {
+          cpo_type: "svc",
+          data: req_body_del,
+        }
+      );
+      if (resdel !== undefined) {
+        this.setState({ action_status: "success" });
+        this.toggleLoading();
+        // setTimeout(function () {
+        //   window.location.reload();
+        // }, 1500);
+      } else {
+        if (
+          resdel.response !== undefined &&
+          resdel.response.data !== undefined &&
+          resdel.response.data.error !== undefined
+        ) {
+          if (resdel.response.data.error.message !== undefined) {
+            this.setState({
+              action_status: "failed",
+              action_message: resdel.response.data.error.message,
+            });
+          } else {
+            this.setState({
+              action_status: "failed",
+              action_message: resdel.response.data.error,
+            });
+          }
+        } else {
+          this.setState({ action_status: "failed" });
+        }
+        this.toggleLoading();
+      }
     } else {
       if (
         res.response !== undefined &&
@@ -1674,7 +1763,7 @@ class MappingSVC extends React.Component {
                                   <td>{e.Description}</td>
                                   <td>{e.Qty}</td>
                                   <td>{e.CNI_Date}</td>
-                                  <td>{e.Mapping_Date}</td>
+                                  <td>{convertDateFormat(e.Mapping_Date)}</td>
                                   <td>{e.Remarks}</td>
                                   <td>{e.Premr_No}</td>
                                   <td>{e.Proceed_Billing_100}</td>
@@ -1930,7 +2019,11 @@ class MappingSVC extends React.Component {
               ))}
           </ModalBody>
           <ModalFooter>
-            <Button color="success" onClick={this.saveUpdate_CallOf}>
+            <Button
+              color="success"
+              onClick={this.saveUpdate_CallOf}
+              disabled={this.state.multiple_select.length === 0}
+            >
               Update
             </Button>
           </ModalFooter>
