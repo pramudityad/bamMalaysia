@@ -1,8 +1,8 @@
-import React, { Component } from "react";
+import React from "react";
 import { Button, Modal, ModalBody, ModalFooter } from "reactstrap";
 import Proptypes from "prop-types";
 
-const Loading = ({ isOpen, toggle, className }) => {
+export default React.memo(({ isOpen, toggle }) => {
   return (
     <div>
       {/* Modal Loading */}
@@ -32,6 +32,4 @@ const Loading = ({ isOpen, toggle, className }) => {
       {/* end Modal Loading */}
     </div>
   );
-};
-
-export default React.memo(Loading);
+});

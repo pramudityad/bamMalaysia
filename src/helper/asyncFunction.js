@@ -1,6 +1,5 @@
 import axios from "axios";
 
-// EXCEL
 export const getDatafromAPIMY = async (url) => {
   try {
     let respond = await axios.get(process.env.REACT_APP_API_URL_MAS + url, {
@@ -143,6 +142,22 @@ export const deleteDataFromAPINODE2 = async (url, props, data) => {
   } catch (err) {
     let respond = err;
     console.log("respond delete Data err", err);
+    return respond;
+  }
+};
+
+/**
+ *
+ * @param {data_email} data
+ */
+export const apiSendEmail = async (data) => {
+  try {
+    let respond = await axios.post(process.env.REACT_APP_API_EMAIL, data, {
+      headers: { "Content-Type": "application/json" },
+    });
+    return respond;
+  } catch (err) {
+    let respond = undefined;
     return respond;
   }
 };

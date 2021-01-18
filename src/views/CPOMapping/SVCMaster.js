@@ -33,6 +33,7 @@ import {
   patchDatatoAPINODE,
   deleteDataFromAPINODE2,
   getDatafromAPINODE,
+  apiSendEmail,
 } from "../../helper/asyncFunction";
 import ModalCreateNew from "../Component/ModalCreateNew";
 import Pagination from "react-js-pagination";
@@ -104,6 +105,7 @@ class SVCMaster extends React.Component {
     super(props);
     this.state = {
       tokenUser: this.props.dataLogin.token,
+      userMail: this.props.dataLogin.email,
       roleUser: this.props.dataLogin.role,
       dropdownOpen: new Array(3).fill(false),
       all_data: [],
@@ -337,6 +339,11 @@ class SVCMaster extends React.Component {
     });
   };
 
+  trim = (words) => {
+    let edited = words.replace(/^,|,$/g, "");
+    return edited;
+  };
+
   saveBulk = async () => {
     this.toggleLoading();
     this.togglecreateModal();
@@ -350,11 +357,121 @@ class SVCMaster extends React.Component {
       this.state.tokenUser
     );
     if (res.data !== undefined) {
-      this.setState({ action_status: "success" });
-      this.toggleLoading();
-      // setTimeout(function () {
-      //   window.location.reload();
-      // }, 1500);
+      if (res.data.data.length !== 0) {
+        // new Data
+        const new_table_header = Object.keys(res.data.data[0]).slice(2, -8);
+        console.log(new_table_header);
+        const new_Data = res.data.data;
+        let value = "row.";
+        const body_new =
+          "<br/><span>The following " +
+          modul_name +
+          " data has been successfully created </span><br/><br/><table><tr>" +
+          new_table_header.map((tab, i) => "<th>" + tab + "</th>").join(" ") +
+          "</tr>" +
+          new_Data
+            .map(
+              (row, j) =>
+                "<tr key={" +
+                j +
+                "}>" +
+                new_table_header
+                  .map((td) => "<td>" + eval(value + td) + "</td>")
+                  .join(" ") +
+                "</tr>"
+            )
+            .join(" ") +
+          "</table>";
+        // updated Data
+        const updated_table_header = Object.keys(res.data.updateData[0]).slice(
+          0,
+          -3
+        );
+        const update_Data = res.data.updateData;
+        const body_updated =
+          "<br/><span>Please be notified that the following " +
+          modul_name +
+          " data has been updated </span><br/><br/><table><tr>" +
+          updated_table_header
+            .map((tab, i) => "<th>" + tab + "</th>")
+            .join(" ") +
+          "</tr>" +
+          update_Data
+            .map(
+              (row, j) =>
+                "<tr key={" +
+                j +
+                "}>" +
+                updated_table_header
+                  .map((td) => "<td>" + eval(value + td) + "</td>")
+                  .join(" ") +
+                "</tr>"
+            )
+            .join(" ") +
+          "</table>";
+
+        const bodyEmail =
+          "<h2>DPM - BAM Notification</h2>" + body_new + body_updated;
+        let dataEmail = {
+          // "to": creatorEmail,
+          to: "pramudityad@student.telkomuniversity.ac.id",
+          // to: "pramudityad@outlook.com",
+          subject: "[NOTIFY to CPM] " + modul_name,
+          body: bodyEmail,
+        };
+        // const sendEmail = await apiSendEmail(dataEmail);
+        console.log(bodyEmail);
+        this.setState({ action_status: "success" });
+        this.toggleLoading();
+        // // setTimeout(function () {
+        // //   window.location.reload();
+        // // }, 1500);
+      } else {
+        // updated Data
+        const updated_table_header = Object.keys(res.data.updateData[0]).slice(
+          0,
+          -3
+        );
+        const update_Data = res.data.updateData;
+        let value = "row.";
+        const body_updated =
+          "<br/><span>Please be notified that the following " +
+          modul_name +
+          " data has been updated </span><br/><br/><table><tr>" +
+          updated_table_header
+            .map((tab, i) => "<th>" + tab + "</th>")
+            .join(" ") +
+          "</tr>" +
+          update_Data
+            .map(
+              (row, j) =>
+                "<tr key={" +
+                j +
+                "}>" +
+                updated_table_header
+                  .map((td) => "<td>" + eval(value + td) + "</td>")
+                  .join(" ") +
+                "</tr>"
+            )
+            .join(" ") +
+          "</table>";
+
+        const bodyEmail = "<h2>DPM - BAM Notification</h2>" + body_updated;
+        let dataEmail = {
+          // "to": creatorEmail,
+          to: "pramudityad@student.telkomuniversity.ac.id",
+          // to: "pramudityad@outlook.com",
+          subject: "[NOTIFY to CPM] " + modul_name,
+          body: bodyEmail,
+        };
+        // const sendEmail = await apiSendEmail(dataEmail);
+        console.log(bodyEmail);
+        this.setState({ action_status: "success" });
+        this.toggleLoading();
+        // setTimeout(function () {
+        //   window.location.reload();
+        // }, 1500);
+      }
     } else {
       if (
         res.response !== undefined &&
@@ -639,23 +756,27 @@ class SVCMaster extends React.Component {
                   style={{ display: "inline-flex" }}
                 >
                   <div>
-                    <div>
-                      <Button
-                        block
-                        color="success"
-                        size="sm"
-                        onClick={this.togglecreateModal}
-                      >
-                        <i className="fa fa-plus-square" aria-hidden="true">
-                          {" "}
-                          &nbsp;{" "}
-                        </i>{" "}
-                        {role.includes("BAM-IM") === true ||
-                        role.includes("BAM-PFM") === true
-                          ? "Update"
-                          : "New"}
-                      </Button>
-                    </div>
+                    {role.includes("BAM-MAT PLANNER") === true ? (
+                      <div>
+                        <Button
+                          block
+                          color="success"
+                          size="sm"
+                          onClick={this.togglecreateModal}
+                        >
+                          <i className="fa fa-plus-square" aria-hidden="true">
+                            {" "}
+                            &nbsp;{" "}
+                          </i>{" "}
+                          {role.includes("BAM-IM") === true ||
+                          role.includes("BAM-PFM") === true
+                            ? "Update"
+                            : "New"}
+                        </Button>
+                      </div>
+                    ) : (
+                      ""
+                    )}
                   </div>
                   &nbsp;&nbsp;&nbsp;
                   <div>
@@ -1004,7 +1125,7 @@ class SVCMaster extends React.Component {
             </table>
           </div>
           <ModalFooter>
-            {role.includes("BAM-IM") === true ||
+            {/* {role.includes("BAM-IM") === true ||
             role.includes("BAM-PFM") === true ? (
               <Button
                 size="sm"
@@ -1017,19 +1138,19 @@ class SVCMaster extends React.Component {
               >
                 Update
               </Button>
-            ) : (
-              <Button
-                size="sm"
-                block
-                color="success"
-                className="btn-pill"
-                disabled={this.state.rowsXLS.length === 0}
-                onClick={this.saveBulk}
-                style={{ height: "30px", width: "100px" }}
-              >
-                Save
-              </Button>
-            )}
+            ) : ( */}
+            <Button
+              size="sm"
+              block
+              color="success"
+              className="btn-pill"
+              disabled={this.state.rowsXLS.length === 0}
+              onClick={this.saveBulk}
+              style={{ height: "30px", width: "100px" }}
+            >
+              Save
+            </Button>
+            {/* )} */}
           </ModalFooter>
         </ModalCreateNew>
 

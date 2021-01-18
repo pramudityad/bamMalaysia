@@ -29,7 +29,7 @@ import {
   NavLink,
 } from "reactstrap";
 import Excel from "exceljs";
-import Loading from "../Component/Loading";
+
 import { ExcelRenderer } from "react-excel-renderer";
 import {
   getDatafromAPIMY,
@@ -37,6 +37,7 @@ import {
   patchDatatoAPINODE,
   deleteDataFromAPINODE2,
   getDatafromAPINODE,
+  apiSendEmail,
 } from "../../helper/asyncFunction";
 import ModalCreateNew from "../Component/ModalCreateNew";
 import Pagination from "react-js-pagination";
@@ -54,6 +55,8 @@ import "./cpomapping.css";
 const DefaultNotif = React.lazy(() =>
   import("../../views/DefaultView/DefaultNotif")
 );
+const Loading = React.lazy(() => import("../Component/Loading"));
+
 const Checkbox1 = ({
   type = "checkbox",
   name,
@@ -75,27 +78,7 @@ const Checkbox1 = ({
     matId={matId}
   />
 );
-const Checkbox2 = ({
-  type = "checkbox",
-  name,
-  checked = true,
-  onChange,
-  value,
-  id,
-  matId,
-  key,
-}) => (
-  <input
-    key={key}
-    type={type}
-    name={name}
-    checked={checked}
-    onChange={onChange}
-    value={value}
-    id={id}
-    matId={matId}
-  />
-);
+
 const modul_name = "SVC Mapping";
 const header = [
   "PROJECT",
@@ -321,7 +304,7 @@ const header_admin = [
   "Ni_Coa_Submission_Status",
 ];
 
-class MappingSVC extends React.Component {
+class MappingSVC extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {
@@ -345,6 +328,8 @@ class MappingSVC extends React.Component {
       all_data_master: [],
       all_data_mapping: [],
       multiple_select: [],
+      mapping_date: "",
+      po_select: null,
       reloc_options: [],
       dataChecked: new Map(),
       dataChecked_container: [],
@@ -459,13 +444,36 @@ class MappingSVC extends React.Component {
       return [];
     } else {
       let asycn_options = [];
-      await this.state.all_data_mapping.map((data) =>
+      await getUniqueListBy(
+        this.state.all_data_mapping,
+        "Reference_Loc_Id"
+      ).map((data) =>
         asycn_options.push({
-          label: data.unique_code,
-          value: data._id,
-          Reference_Loc_Id: data.Reference_Loc_Id,
-          Po: data.Po,
-          Line: data.Line,
+          label: data.Reference_Loc_Id,
+          value: data.Reference_Loc_Id,
+          // Reference_Loc_Id: data.Reference_Loc_Id,
+          // Po: data.Po,
+          // Line: data.Line,
+        })
+      );
+      return asycn_options.filter((i) =>
+        i.label.toLowerCase().includes(inputValue)
+      );
+    }
+  };
+
+  loadOptionsPO = async (inputValue) => {
+    if (!inputValue) {
+      return [];
+    } else {
+      let asycn_options = [];
+      await getUniqueListBy(this.state.all_data_mapping, "Po").map((data) =>
+        asycn_options.push({
+          label: data.Po,
+          value: data.Po,
+          // Reference_Loc_Id: data.Reference_Loc_Id,
+          // Po: data.Po,
+          // Line: data.Line,
         })
       );
       return asycn_options.filter((i) =>
@@ -477,19 +485,21 @@ class MappingSVC extends React.Component {
   handlemultipleRelocID = (datalist) => {
     let multiple_array = [];
     let site_selected = [];
-    console.log("datalist", datalist);
+    // console.log("datalist", datalist);
     if (datalist !== undefined && datalist !== null) {
-      datalist.map((e) =>
-        multiple_array.push({
-          _id: e.value,
-          Reference_Loc_Id: e.Reference_Loc_Id,
-          unique_code: e.label,
-          Mapping_Date: "",
-          Po: e.Po,
-          Line: e.Line,
-        })
-      );
-      // datalist.map(e => site_selected.push({id_site_doc: e.Site_Info_SiteID_NE, site_id: e.Site_Info_SiteID_NE_Actual, site_ne_id: e.Site_Info_SiteID_Value_NE, site_name: e.Site_Info_SiteName_NE_Actual, site_region: e.Activity_Region}));
+      const data_ref = this.state.all_data_mapping
+        .filter((ref) => ref.Reference_Loc_Id === datalist.value)
+        .map((e) =>
+          multiple_array.push({
+            _id: e._id,
+            Reference_Loc_Id: e.Reference_Loc_Id,
+            unique_code: e.unique_code,
+            Mapping_Date: "",
+            Po: e.Po,
+            Line: e.Line,
+          })
+        );
+      // console.log("dataref", data_ref);
       this.setState({ multiple_select: multiple_array }, () =>
         console.log(this.state.multiple_select)
       );
@@ -497,6 +507,21 @@ class MappingSVC extends React.Component {
       this.setState({ multiple_select: [] }, () =>
         console.log(this.state.multiple_select)
       );
+    }
+  };
+
+  handleChangePO = (datalist) => {
+    const mapping_data = this.state.multiple_select.filter(
+      (po) => po.Po === datalist.value
+    );
+    // console.log("po", datalist);
+    if (datalist !== undefined && datalist !== null) {
+      this.setState(
+        { multiple_select: mapping_data, po_select: datalist.value },
+        () => console.log(this.state.multiple_select)
+      );
+    } else {
+      this.setState({ datalist: null }, () => console.log(this.state.datalist));
     }
   };
 
@@ -861,6 +886,40 @@ class MappingSVC extends React.Component {
       this.state.tokenUser
     );
     if (res.data !== undefined) {
+      const table_header = Object.keys(res.data.updateData[0]);
+      const update_Data = res.data.updateData;
+      const new_table_header = table_header.slice(0, -2);
+      // update_Data.map((row, k) => console.log(row));
+      // console.log(new_table_header);
+      let value = "row.";
+      const bodyEmail =
+        "<h2>DPM - BAM Notification</h2><br/><span>Please be notified that the following " +
+        modul_name +
+        " data has been updated <br/><br/><table><tr>" +
+        new_table_header.map((tab, i) => "<th>" + tab + "</th>").join(" ") +
+        "</tr>" +
+        update_Data
+          .map(
+            (row, j) =>
+              "<tr key={" +
+              j +
+              "}>" +
+              new_table_header
+                .map((td) => "<td>" + eval(value + td) + "</td>")
+                .join(" ") +
+              "</tr>"
+          )
+          .join(" ") +
+        "</table>";
+      let dataEmail = {
+        // "to": creatorEmail,
+        // to: "pramudityad@student.telkomuniversity.ac.id",
+        to: "pramudityad@outlook.com",
+        subject: "[NOTIFY to CPM] " + modul_name,
+        body: bodyEmail,
+      };
+      const sendEmail = await apiSendEmail(dataEmail);
+      console.log(sendEmail);
       this.setState({ action_status: "success" });
       this.toggleLoading();
       // setTimeout(function () {
@@ -905,15 +964,7 @@ class MappingSVC extends React.Component {
   handleChangeForm = (e) => {
     const value = e.target.value;
     const unique_code = e.target.name;
-    this.setState((state) => {
-      const multiple_select = state.multiple_select.map((item, j) => {
-        if (item.unique_code === unique_code) {
-          return (item.Mapping_Date = value);
-        } else {
-          return;
-        }
-      });
-    });
+    this.setState({ mapping_date: value });
   };
 
   saveUpdate = async () => {
@@ -926,26 +977,6 @@ class MappingSVC extends React.Component {
         ? 2
         : 3;
     const header_create_not_req = [header_materialmapping];
-    // const body_create_not_req = this.state.dataChecked_container.map(
-    //   ({
-    //     _id,
-    //     unique_code,
-    //     cpo_id,
-    //     deleted,
-    //     _etag,
-    //     created_by,
-    //     updated_by,
-    //     __v,
-    //     created_on,
-    //     updated_on,
-    //     creator,
-    //     updater,
-    //     Data_1,
-    //     Link,
-    //     Not_Required,
-    //     ...data_not_req
-    //   }) => data_not_req
-    // );
     const body_create_not_req = this.state.dataChecked_container.map((data) =>
       Object.keys(data)
         .filter((key) => header_materialmapping.includes(key))
@@ -958,15 +989,15 @@ class MappingSVC extends React.Component {
       Object.keys(data).map((key) => data[key])
     );
 
-    console.log(
-      "header",
-      body_create_not_req.map((data) => Object.keys(data).map((key) => key))
-    );
-    console.log("body", trimm_body_create_not_req);
-    console.log(
-      "post not req",
-      header_create_not_req.concat(trimm_body_create_not_req)
-    );
+    // console.log(
+    //   "header",
+    //   body_create_not_req.map((data) => Object.keys(data).map((key) => key))
+    // );
+    // console.log("body", trimm_body_create_not_req);
+    // console.log(
+    //   "post not req",
+    //   header_create_not_req.concat(trimm_body_create_not_req)
+    // );
     const res = await postDatatoAPINODE(
       "/cpoMapping/createCpo",
       {
@@ -984,10 +1015,6 @@ class MappingSVC extends React.Component {
       const _id_delete = this.state.dataChecked_container.map((del) =>
         req_body_del.push(del._id)
       );
-      // const newForm = checked_data
-      //   .map(({ Not_Required, ...item }) => item)
-      //   .map((obj) => ({ ...obj, Not_Required: true }));
-      // console.log("not req form", checked_data, newForm);
       const resdel = await deleteDataFromAPINODE2(
         "/cpoMapping/deleteCpo",
         this.state.tokenUser,
@@ -1062,7 +1089,12 @@ class MappingSVC extends React.Component {
       ["Po", "Line", "Reference_Loc_Id", "Mapping_Date"],
     ];
     const body_update_Mapping_Date = this.state.multiple_select.map((req) =>
-      req_body.push([req.Po, req.Line, req.Reference_Loc_Id, req.Mapping_Date])
+      req_body.push([
+        req.Po,
+        req.Line,
+        req.Reference_Loc_Id,
+        this.state.mapping_date,
+      ])
     );
     // console.log(req_body);
     const res = await postDatatoAPINODE(
@@ -1472,6 +1504,11 @@ class MappingSVC extends React.Component {
   render() {
     const CPOForm = this.state.CPOForm;
     const role = this.state.roleUser;
+    // {
+    //   React.useMemo(() => {
+    //     console.log("render page");
+    //   });
+    // }
     return (
       <div className="animated fadeIn">
         <Row className="row-alert-fixed">
@@ -1602,7 +1639,6 @@ class MappingSVC extends React.Component {
                   </div>
                 </div>
               </CardHeader>
-
               <CardBody>
                 <Row>
                   <Col>
@@ -1979,13 +2015,13 @@ class MappingSVC extends React.Component {
           <ModalHeader>Form Call Off</ModalHeader>
           <ModalBody>
             <Row>
-              <Col sm="12">
+              <Col sm="8">
                 <FormGroup row>
                   <Col xs="8">
                     <FormGroup>
                       <Label>Reference Loc ID</Label>
                       <AsyncSelect
-                        isMulti
+                        // isMulti
                         cacheOptions
                         loadOptions={this.loadOptionsReclocID}
                         defaultOptions
@@ -1995,18 +2031,40 @@ class MappingSVC extends React.Component {
                   </Col>
                 </FormGroup>
               </Col>
+              <Col sm="8">
+                <FormGroup row>
+                  <Col xs="8">
+                    <FormGroup>
+                      <Label>PO</Label>
+                      <AsyncSelect
+                        // isMulti
+                        cacheOptions
+                        loadOptions={this.loadOptionsPO}
+                        defaultOptions
+                        onChange={this.handleChangePO}
+                      />
+                    </FormGroup>
+                  </Col>
+                </FormGroup>
+              </Col>
             </Row>
             {this.state.multiple_select !== null &&
-              this.state.multiple_select.map((box, i) => (
+            this.state.po_select !== null ? (
+              <>
                 <Row>
                   <Col sm="12">
                     <FormGroup row>
                       <Col xs="8">
                         <FormGroup>
-                          <Label>Date # {box.unique_code}</Label>
+                          <Label>
+                            <h6>
+                              There are {this.state.multiple_select.length}{" "}
+                              items under this combination
+                            </h6>
+                          </Label>
                           <Input
                             type="date"
-                            name={box.unique_code}
+                            name={"unique_code"}
                             placeholder=""
                             value={CPOForm.Line}
                             onChange={this.handleChangeForm}
@@ -2016,7 +2074,10 @@ class MappingSVC extends React.Component {
                     </FormGroup>
                   </Col>
                 </Row>
-              ))}
+              </>
+            ) : (
+              ""
+            )}
           </ModalBody>
           <ModalFooter>
             <Button
@@ -2088,7 +2149,6 @@ class MappingSVC extends React.Component {
         <Loading
           isOpen={this.state.modal_loading}
           toggle={this.toggleLoading}
-          className={"modal-sm modal--loading "}
         ></Loading>
         {/* end Modal Loading */}
       </div>
