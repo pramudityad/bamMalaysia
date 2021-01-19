@@ -414,12 +414,12 @@ class SVCMaster extends React.Component {
           "<h2>DPM - BAM Notification</h2>" + body_new + body_updated;
         let dataEmail = {
           // "to": creatorEmail,
-          to: "pramudityad@student.telkomuniversity.ac.id",
-          // to: "pramudityad@outlook.com",
+          // to: "pramudityad@student.telkomuniversity.ac.id",
+          to: "pramudityad@outlook.com",
           subject: "[NOTIFY to CPM] " + modul_name,
           body: bodyEmail,
         };
-        // const sendEmail = await apiSendEmail(dataEmail);
+        const sendEmail = await apiSendEmail(dataEmail);
         console.log(bodyEmail);
         this.setState({ action_status: "success" });
         this.toggleLoading();
@@ -725,13 +725,24 @@ class SVCMaster extends React.Component {
     this.setState({ perPage: limitpg }, () => this.getList());
   };
 
-  countheader = (params_field) => {
+  countheaderNaN = (params_field) => {
     let value = "element." + params_field;
     let sumheader = this.state.all_data_line.filter(
       (element) => eval(value) !== null && eval(value) !== ""
     );
-    return sumheader.length;
     // console.log(params_field, sumheader);
+
+    return sumheader.length;
+  };
+
+  countheader = (params_field) => {
+    let value = "curr." + params_field;
+    let sumheader = this.state.all_data_line.reduce(
+      (acc, curr) => acc + eval(value),
+      0
+    );
+    // console.log(sumheader);
+    return Math.round((sumheader + Number.EPSILON) * 100) / 100;
   };
 
   render() {
@@ -852,9 +863,19 @@ class SVCMaster extends React.Component {
                           </tr>
                           <tr align="center">
                             <th></th>
-                            {header_model.map((head) => (
-                              <th>{this.countheader(head)}</th>
-                            ))}
+                            {header_model.map((head, j) =>
+                              head === "Qty" ||
+                              head === "Used" ||
+                              head === "Balance" ||
+                              head === "Unit_Price" ||
+                              head === "Total_Price" ||
+                              head === "Assigned_Price" ||
+                              head === "Total_Po_Amount" ? (
+                                <th>{this.countheader(head)}</th>
+                              ) : (
+                                <th>{this.countheaderNaN(head)}</th>
+                              )
+                            )}
                           </tr>
                           <tr align="center">
                             <td></td>
