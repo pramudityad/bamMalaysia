@@ -442,11 +442,9 @@ class MYASGCreation extends Component {
         if (resCD.data.result !== undefined) {
           const list_cd_act = resCD.data.result.raw_data;
           const filter_cd_id = list_cd_act.filter(
-            (cd) => cd.cd_id !== null && cd.cd_id !== "null"
+            (cd) => cd.cdid !== null && cd.cdid !== "null"
           );
-          const filter_project = list_cd_act.filter(
-            (proj) => proj.cd_id !== null
-          );
+
           console.log("lenght dev", filter_cd_id.length);
           this.setState(
             (prevState) => ({
