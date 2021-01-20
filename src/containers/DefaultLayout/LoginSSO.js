@@ -28,6 +28,7 @@ import {
   Row,
 } from "reactstrap";
 import celcom from "../../assets/img/customer/celcom.png";
+import digi from "../../assets/img/customer/digi.png";
 import ericssonLogoBlack from "../../assets/img/brand/ERI_horizontal_RGB_BLACK.svg";
 import { postDatatoAPILogin } from "../../helper/asyncFunction";
 const loading = () => (
@@ -244,16 +245,32 @@ class SSOLogin extends Component {
                 <h3>Please Select Account :</h3>
               </Row>
               <Row className="justify-content-center">
-                <Col md="12" lg="12" xl="12">
+                <Col md="6" lg="6" xl="6">
                   <div className="flex--card-account">
                     <div
-                      className="card-account--telkom"
+                      className="card-account--celcom"
                       onClick={() => this.handleChangeAccount("1")}
                     >
                       <div>
                         <img
                           src={celcom}
-                          alt="telkom logo"
+                          alt="celcom logo"
+                          style={{ width: "30%", marginTop: "5%" }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </Col>
+                <Col md="6" lg="6" xl="6">
+                  <div className="flex--card-account">
+                    <div
+                      className="card-account--digi"
+                      onClick={() => this.handleChangeAccount("1")}
+                    >
+                      <div>
+                        <img
+                          src={digi}
+                          alt="digi logo"
                           style={{ width: "30%", marginTop: "5%" }}
                         />
                       </div>
