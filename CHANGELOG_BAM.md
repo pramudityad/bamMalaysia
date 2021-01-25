@@ -141,3 +141,15 @@ All notable changes to BAM https://bam-my.e-dpm.com will be documented in this f
 ### Changed
 
 ### Fixed
+
+## [1.3.10] - 2021-01-25
+
+### Added
+
+- new data from project 2021 (fas id, cd id, etc)
+
+### Changed
+
+### Fixed
+
+- validation item_category in lmr creation
