@@ -29,53 +29,21 @@ const DefaultNotif = React.lazy(() =>
   import("../../views/DefaultView/DefaultNotif")
 );
 
-const data_raw = {
+const data_raw_dev = {
   query_param: {
-    table: "p_celc_tes2_m_site_data",
+    table: "p_celc_cel2_m_site_data",
     columns: [
       "m_id",
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6dd97a9d-d14e-11ea-b481-000d3aa2f57d"."value"\')) as workplan_id',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6ddc5ad9-d14e-11ea-b481-000d3aa2f57d"."value"\')) as workplan_name',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6ddd5695-d14e-11ea-b481-000d3aa2f57d"."value"\')) as network_element_name',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6ddf06e9-d14e-11ea-b481-000d3aa2f57d"."value"\')) as program',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6de2185d-d14e-11ea-b481-000d3aa2f57d"."value"\')) as project',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6de3e9c6-d14e-11ea-b481-000d3aa2f57d"."value"\')) as sub_project',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6de50a63-d14e-11ea-b481-000d3aa2f57d"."value"\')) as po',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6de61b94-d14e-11ea-b481-000d3aa2f57d"."value"\')) as cluster',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6de7236f-d14e-11ea-b481-000d3aa2f57d"."value"\')) as pc_sc_npc',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6de80a3a-d14e-11ea-b481-000d3aa2f57d"."value"\')) as region',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6de9936c-d14e-11ea-b481-000d3aa2f57d"."value"\')) as site_category',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6deb0872-d14e-11ea-b481-000d3aa2f57d"."value"\')) as ref_no',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6dec7a1c-d14e-11ea-b481-000d3aa2f57d"."value"\')) as loc_id',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6deda4c0-d14e-11ea-b481-000d3aa2f57d"."value"\')) as site_name',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6dee8ffe-d14e-11ea-b481-000d3aa2f57d"."value"\')) as technology',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6def62c1-d14e-11ea-b481-000d3aa2f57d"."value"\')) as final_planned_tech',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6df05af4-d14e-11ea-b481-000d3aa2f57d"."value"\')) as material_purchase',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6df162c1-d14e-11ea-b481-000d3aa2f57d"."value"\')) as scope_status',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6df24065-d14e-11ea-b481-000d3aa2f57d"."value"\')) as wbs_hw',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6df35010-d14e-11ea-b481-000d3aa2f57d"."value"\')) as wbs_nro',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6df51f22-d14e-11ea-b481-000d3aa2f57d"."value"\')) as asp_assigned',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6dfb6b35-d14e-11ea-b481-000d3aa2f57d"."value"\')) as fas_id',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."24637634-07a9-11eb-8887-000d3aa2f57d"."value"\')) as asp_assigned_survey',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."246461b2-07a9-11eb-8887-000d3aa2f57d"."value"\')) as committed_cost_cleared_hw',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."24652856-07a9-11eb-8887-000d3aa2f57d"."value"\')) as committed_cost_cleared_nro',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."24660220-07a9-11eb-8887-000d3aa2f57d"."value"\')) as committed_cost_cleared_ndo',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."2466d3dc-07a9-11eb-8887-000d3aa2f57d"."value"\')) as wbs_closure_hw',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."2467c011-07a9-11eb-8887-000d3aa2f57d"."value"\')) as wbs_closure_nro',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."24688eea-07a9-11eb-8887-000d3aa2f57d"."value"\')) as wbs_closure_ndo',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."24695f14-07a9-11eb-8887-000d3aa2f57d"."value"\')) as wbs_lm',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."246a2819-07a9-11eb-8887-000d3aa2f57d"."value"\')) as wbs_hwac',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."858ddfa1-1291-11eb-a1c8-000d3aa2f57d"."value"\')) as wbs_eab',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."246aed1a-07a9-11eb-8887-000d3aa2f57d"."value"\')) as nw_lm',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."246bc7e7-07a9-11eb-8887-000d3aa2f57d"."value"\')) as nw_hwac',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."246aed1a-07a9-11eb-8887-000d3aa2f57d"."value"\')) as nw_eab',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."246ca447-07a9-11eb-8887-000d3aa2f57d"."value"\')) as nro_service',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."246d7d56-07a9-11eb-8887-000d3aa2f57d"."value"\')) as ndo_service',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."246e7ca2-07a9-11eb-8887-000d3aa2f57d"."value"\')) as nro_local_material',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."2460b228-07a9-11eb-8887-000d3aa2f57d"."value"\')) as wbs_ndo',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."2461aac5-07a9-11eb-8887-000d3aa2f57d"."value"\')) as nw_nro',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."2462836e-07a9-11eb-8887-000d3aa2f57d"."value"\')) as nw_ndo',
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."3e55d901-172d-11eb-99f8-000d3aa2f57d"."value"\')) as cd_id',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."e4da52e4-56f7-11eb-ba70-000d3aa2f57d"."value"\')) as workplan_id',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."e4e6a5de-56f7-11eb-ba70-000d3aa2f57d"."value"\')) as loc_id',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."e4ea0d5f-56f7-11eb-ba70-000d3aa2f57d"."value"\')) as site_name',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."e4d7f8d0-56f7-11eb-ba70-000d3aa2f57d"."value"\')) as fas_id',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."e52bb552-56f7-11eb-ba70-000d3aa2f57d"."value"\')) as nw_hw',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."e5242ed6-56f7-11eb-ba70-000d3aa2f57d"."value"\')) as nw_nro',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."e525e83c-56f7-11eb-ba70-000d3aa2f57d"."value"\')) as nw_ndo',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."e5220947-56f7-11eb-ba70-000d3aa2f57d"."value"\')) as cdid',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."e4e4143a-56f7-11eb-ba70-000d3aa2f57d"."value"\')) as project',
+      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."e4ebe943-56f7-11eb-ba70-000d3aa2f57d"."value"\')) as sub_project',
     ],
     join: {},
     condition: {},
@@ -84,7 +52,6 @@ const data_raw = {
     length_per_page: 10,
   },
 };
-
 const all_reqbody_raw = {
   query_param: {
     table: "p_celc_apim1_m_site_data",
@@ -390,6 +357,25 @@ class MYASGEdit extends Component {
     }
   }
 
+  async getCDfromACTdev(proxyurl, url) {
+    try {
+      let respond = await axios.post(proxyurl + url, data_raw_dev, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Basic dXNlcml4dDpYUXJuMzJuNWtxb00=",
+        },
+      });
+      if (respond.status >= 200 && respond.status < 300) {
+        console.log("respond Get Data", respond);
+      }
+      return respond;
+    } catch (err) {
+      let respond = err;
+      console.log("respond Get Data", err);
+      return respond;
+    }
+  }
+
   async getDataFromAPINODE(url) {
     try {
       let respond = await axios.get(process.env.REACT_APP_API_URL_NODE + url, {
@@ -410,58 +396,65 @@ class MYASGEdit extends Component {
   }
 
   getDataCDACT = () => {
+    this.toggleLoading();
     this.getCDfromACT(
       "https://cors-anywhere.herokuapp.com/",
       "https://act.e-dpm.com/index.php/android/get_data_new"
     ).then((resCD) => {
-      this.toggleLoading();
       if (resCD.data !== undefined) {
         if (resCD.data.result !== undefined) {
           const list_cd_act = resCD.data.result.raw_data;
           const filter_cd_id = list_cd_act.filter(
             (cd) => cd.cdid !== null && cd.cdid !== "null"
           );
-          const filter_project = list_cd_act.filter(
-            (proj) => proj.cdid !== null
-          );
-          // console.log("lenght", filter_cd_id.length);
+          console.log("lenght", filter_cd_id.length);
           this.setState({ list_cd_id_act: filter_cd_id }, () =>
-            this.UniqueProject(filter_project)
+            this.getDataCDACTdev()
           );
         }
       }
-      if (resCD === 500) {
+      if (resCD.status > 500) {
         this.setState({
           action_status: "failed",
           action_message: "Error getting CD Data, please reload the page",
         });
+        this.toggleLoading();
       }
     });
-    this.toggleLoading();
   };
 
-  getDataCDACT_Fas() {
-    this.toggleLoading();
-    this.getFASfromACT(
+  getDataCDACTdev = () => {
+    this.getCDfromACTdev(
       "https://cors-anywhere.herokuapp.com/",
       "https://act.e-dpm.com/index.php/android/get_data_new"
     ).then((resCD) => {
+      // this.toggleLoading();
       if (resCD.data !== undefined) {
         if (resCD.data.result !== undefined) {
-          const list_fas = resCD.data.result.raw_data;
-          const Unique_fas = [...new Set(list_fas.map((item) => item.fas_id))];
-          this.setState({ list_fas: Unique_fas });
+          const list_cd_act = resCD.data.result.raw_data;
+          const filter_cd_id = list_cd_act.filter(
+            (cd) => cd.cdid !== null && cd.cdid !== "null"
+          );
+          this.toggleLoading();
+          console.log("lenght dev", filter_cd_id.length);
+          this.setState(
+            (prevState) => ({
+              list_cd_id_act: prevState.list_cd_id_act.concat(filter_cd_id),
+            }),
+            // () => console.log("after concat", this.state.list_cd_id_act),
+            () => this.UniqueProject(this.state.list_cd_id_act)
+          );
         }
       }
-      if (resCD === 500) {
+      if (resCD.status > 500) {
         this.setState({
           action_status: "failed",
           action_message: "Error getting CD Data, please reload the page",
         });
+        this.toggleLoading();
       }
     });
-    this.toggleLoading();
-  }
+  };
 
   UniqueProject = (listvalue) => {
     const UniqueProject = [...new Set(listvalue.map((item) => item.project))];
@@ -1682,14 +1675,6 @@ class MYASGEdit extends Component {
     }
   }
 
-  // loadcdACT = () => {
-  //     let cd_id_list = [];
-  //   this.state.list_cd_id_act.map((e) =>
-  //     cd_id_list.push({ label: e.workplan_id, value: e.workplan_id })
-  //   );
-  //   this.setState({options: cd_id_list}, () => console.log(this.state.options))
-  // }
-
   onMenuOpen = () => {
     let cd_id_list = [];
     this.state.list_cd_id_act
@@ -1706,9 +1691,14 @@ class MYASGEdit extends Component {
     if (!inputValue) {
       return [];
     } else {
+      let select_fas_id = this.state.lmr_form.fas_id;
       let cd_id_list = [];
       await this.state.list_cd_id_act
-        .filter((data) => data.cdid.includes(inputValue.toString()))
+        .filter(
+          (data) =>
+            data.cdid.includes(select_fas_id) &&
+            data.cdid.includes(inputValue.toString())
+        )
         .map((e) => cd_id_list.push({ label: e.cdid, value: e.cdid }));
       // console.log(cd_id_list);
       // this.setState({
