@@ -1741,16 +1741,15 @@ class MappingSVC extends React.PureComponent {
                             </>
                           )}
                           <tr align="center">
-                            <td></td>
-                            <td>
-                              {/* <Checkbox1
-                                name={"all"}
-                                checked={this.state.dataChecked_all}
-                                onChange={this.handleChangeChecklistAll}
-                                value={"all"}
-                              /> */}
-                            </td>{" "}
-                            {this.loopSearchBar()}
+                            {this.state.tabs_submenu[0] === true ? (
+                              <>
+                                <td></td>
+                                <td></td>
+                                {this.loopSearchBar()}
+                              </>
+                            ) : (
+                              <>{this.loopSearchBar()}</>
+                            )}
                           </tr>
                         </thead>
                         <tbody>

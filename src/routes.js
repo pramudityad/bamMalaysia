@@ -91,7 +91,7 @@ const routes = [
     component: SVCMapping,
   },
   {
-    path: "/svc-master",
+    path: "/summary-master",
     exact: true,
     name: "HW Summary Master",
     component: SVCMaster,
