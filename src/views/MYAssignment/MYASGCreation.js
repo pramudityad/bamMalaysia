@@ -438,14 +438,8 @@ class MYASGCreation extends Component {
   };
 
   UniqueProject = (listvalue) => {
-    const UniqueProject = [...new Set(listvalue.map((item) => item.project))];
     const UniqueFas = [...new Set(listvalue.map((item) => item.fas_id))];
-    const addSubProject = UniqueProject.concat([
-      ...new Set(listvalue.map((item) => item.sub_project)),
-    ]);
-    this.setState({ list_project: addSubProject, list_fas: UniqueFas }, () =>
-      this.CheckDraft()
-    );
+    this.setState({ list_fas: UniqueFas }, () => this.CheckDraft());
   };
 
   getOptionbyRole1 = (role) => {
@@ -629,7 +623,7 @@ class MYASGCreation extends Component {
   CheckDraft() {
     const header_data = JSON.parse(localStorage.getItem("asp_data"));
     const child_data = JSON.parse(localStorage.getItem("asp_data_child"));
-    console.log("draft ", header_data, child_data);
+    // console.log("draft ", header_data, child_data);
     if (header_data !== null && child_data !== null) {
       this.setState({
         header_data: header_data,
@@ -1313,6 +1307,29 @@ class MYASGCreation extends Component {
     if (name === "lmr_type" && value !== "Cost Collector") {
       lmr_form["plan_cost_reduction"] = "No";
       // this.setState({ lmr_edit: false });
+    }
+    if (name === "fas_id") {
+      let fas_data = this.state.list_cd_id_act.filter(
+        (fas) => fas.fas_id === value
+      );
+      // console.log("fas_data", fas_data);
+      const UniqueProject = [
+        ...new Set(
+          fas_data
+            .filter((item) => item.project !== null && item.project !== "")
+            .map((item) => item.project)
+        ),
+      ];
+      const addSubProject = UniqueProject.concat([
+        ...new Set(
+          fas_data
+            .filter(
+              (item) => item.sub_project !== null && item.sub_project !== ""
+            )
+            .map((item) => item.sub_project)
+        ),
+      ]);
+      this.setState({ list_project: addSubProject });
     }
     if (name === "gl_account") {
       let selected_options = e.target.options[e.target.selectedIndex].text;

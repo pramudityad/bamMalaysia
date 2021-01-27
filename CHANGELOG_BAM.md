@@ -153,3 +153,13 @@ All notable changes to BAM https://bam-my.e-dpm.com will be documented in this f
 ### Fixed
 
 - validation item_category in lmr creation
+
+## [1.3.10] - 2021-01-27
+
+### Added
+
+### Changed
+
+### Fixed
+
+- Filter Project & Sub project based on fas id
