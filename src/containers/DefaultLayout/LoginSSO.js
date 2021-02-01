@@ -51,7 +51,7 @@ class SSOLogin extends Component {
 
   async getDataLogin(keycloak, account_id) {
     const dataReq = {
-      account_id: account_id,
+      account_id: "1", // please change back to account_id once pdb is available
       cas_id: keycloak.sub,
       data: {
         first_name: keycloak.given_name,
@@ -265,7 +265,7 @@ class SSOLogin extends Component {
                   <div className="flex--card-account">
                     <div
                       className="card-account--digi"
-                      onClick={() => this.handleChangeAccount("1")}
+                      onClick={() => this.handleChangeAccount("2")}
                     >
                       <div>
                         <img

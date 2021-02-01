@@ -18,9 +18,11 @@ import {
 } from "@coreui/react";
 // sidebar nav config
 import navigation from "../../_nav";
+import navigationDigi from "../../_navDigi";
 
 // routes config
 import routes from "../../routes";
+import routesDigi from "../../routesDigi";
 
 const DefaultAside = React.lazy(() => import("./DefaultAside"));
 const DefaultFooter = React.lazy(() => import("./DefaultFooter"));
@@ -33,8 +35,8 @@ class DefaultLayout extends Component {
       name: "",
       email: "",
       id: "",
-      navMenu: navigation,
-      routes: this.props.dataLogin.account_id,
+      navMenu: this.props.dataLogin.account_id === "1" ? navigation : navigationDigi,
+      routes: this.props.dataLogin.account_id === "1" ? routes : routesDigi,
       userRole: this.props.dataLogin.role,
       minimize: this.props.SidebarMinimize,
       vendor_name: this.props.dataLogin.vendor_name,
@@ -141,11 +143,11 @@ class DefaultLayout extends Component {
             <AppSidebarMinimizer />
           </AppSidebar>
           <main className="main">
-            <AppBreadcrumb appRoutes={routes} router={router} />
+            <AppBreadcrumb appRoutes={this.state.routes} router={router} />
             <Container fluid>
               <Suspense fallback={this.loading()}>
                 <Switch>
-                  {routes.map((route, idx) => {
+                  {this.state.routes.map((route, idx) => {
                     return route.component ? (
                       <Route
                         key={idx}
