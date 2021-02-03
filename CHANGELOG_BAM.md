@@ -163,3 +163,11 @@ All notable changes to BAM https://bam-my.e-dpm.com will be documented in this f
 ### Fixed
 
 - Filter Project & Sub project based on fas id
+
+## [1.3.10] - 2021-02-03
+
+### Added
+- GR Document No in GR Detail
+### Changed
+
+### Fixed

@@ -341,7 +341,7 @@ class MYASGDetail extends Component {
           const dataLMRDetail = res.data.data;
           this.setState({ lmr_detail: dataLMRDetail });
         }
-        console.log("gr data", this.state.lmr_detail);
+        // console.log("gr data", this.state.lmr_detail);
       }
     );
   }
@@ -1199,6 +1199,7 @@ class MYASGDetail extends Component {
                             ""
                           )}
                         </th>
+                        <th>GR_Document_No</th>
                         <th>Required GR Qty</th>
                         <th>DN No</th>
                         <th style={{ width: "10%" }}>File</th>
@@ -1234,6 +1235,7 @@ class MYASGDetail extends Component {
                             <td>{e.PO_Item}</td>
                             <td>{e.PO_Price}</td>
                             <td>{e.PO_Qty}</td>
+                            <td>{e.GR_Document_No}</td>
                             <td>{e.Required_GR_Qty}</td>
                             <td>{e.DN_No}</td>
                             <td>
