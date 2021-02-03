@@ -150,6 +150,7 @@ const header = [
   "DEAL NAME",
   "HAMMER",
   "PROJECT DESCRIPTION",
+  "Commodity",
 ];
 
 const header_model = [
@@ -222,6 +223,7 @@ const header_model = [
   "Deal_Name",
   "Hammer",
   "Project_Description",
+  "Commodity",
 ];
 
 const header_materialmapping = [
@@ -342,8 +344,8 @@ class MappingSVC extends React.PureComponent {
   }
 
   componentDidMount() {
-    console.log("header", header.length);
-    console.log("model_header", header_model.length);
+    // console.log("header", header.length);
+    // console.log("model_header", header_model.length);
     this.getList();
     this.getListAll();
     this.getMaster();
@@ -351,7 +353,7 @@ class MappingSVC extends React.PureComponent {
 
   getMaster() {
     getDatafromAPINODE(
-      "/lineItemMapping/getLineItem/svc?noPg=1",
+      "/summaryMaster/getSummaryMaster?noPg=1",
       this.state.tokenUser
     ).then((res) => {
       if (res.data !== undefined) {
@@ -1365,10 +1367,12 @@ class MappingSVC extends React.PureComponent {
   };
 
   LookupField = (unique_id_master, params_field) => {
+    console.log(unique_id_master);
     let value = "objectData." + params_field;
     let objectData = this.state.all_data_master.find(
       (e) => e.unique_code === unique_id_master
     );
+    console.log(objectData);
     if (objectData !== undefined) {
       return eval(value);
     } else {
@@ -1772,7 +1776,6 @@ class MappingSVC extends React.PureComponent {
                                       </Button>
                                     </Link>
                                   </td>
-
                                   <td>
                                     <Checkbox1
                                       checked={this.state.dataChecked.get(
@@ -1795,7 +1798,12 @@ class MappingSVC extends React.PureComponent {
                                   <td>{e.Config}</td>
                                   <td>{e.Po}</td>
                                   <td>{e.Line}</td>
-                                  <td>{e.Description}</td>
+                                  <td>
+                                    {this.LookupField(
+                                      e.Po + "-" + e.Line,
+                                      "Description"
+                                    )}
+                                  </td>{" "}
                                   <td>{e.Qty}</td>
                                   <td>{e.CNI_Date}</td>
                                   <td>{convertDateFormat(e.Mapping_Date)}</td>
@@ -1803,8 +1811,18 @@ class MappingSVC extends React.PureComponent {
                                   <td>{e.Premr_No}</td>
                                   <td>{e.Proceed_Billing_100}</td>
                                   <td>{e.Celcom_User}</td>
-                                  <td>{e.Pcode}</td>
-                                  <td>{e.Unit_Price}</td>
+                                  <td>
+                                    {this.LookupField(
+                                      e.Po + "-" + e.Line,
+                                      "Pcode"
+                                    )}
+                                  </td>
+                                  <td>
+                                    {this.LookupField(
+                                      e.Po + "-" + e.Line,
+                                      "Unit_Price"
+                                    )}
+                                  </td>
                                   <td>{e.Total_Price}</td>
                                   <td>{e.Type}</td>
                                   <td>{e.Discounted_Unit_Price}</td>

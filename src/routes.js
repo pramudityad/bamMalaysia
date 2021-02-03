@@ -9,9 +9,8 @@ const MatARP = React.lazy(() => import("./views/Material/matlibARP"));
 const ImportCas = React.lazy(() => import("./views/Material/importCas"));
 
 const HWMapping = React.lazy(() => import("./views/CPOMapping/HW"));
-const HWMaster = React.lazy(() => import("./views/CPOMapping/HWMaster"));
 const SVCMapping = React.lazy(() => import("./views/CPOMapping/SVC"));
-const SVCMaster = React.lazy(() => import("./views/CPOMapping/SVCMaster"));
+const Master = React.lazy(() => import("./views/CPOMapping/SummaryMaster"));
 
 const SVCEdit = React.lazy(() => import("./views/CPOMapping/SVCedit"));
 const HWEdit = React.lazy(() => import("./views/CPOMapping/HWedit"));
@@ -67,12 +66,6 @@ const routes = [
     component: HWMapping,
   },
   {
-    path: "/hw-master",
-    exact: true,
-    name: "HW Summary Master",
-    component: HWMaster,
-  },
-  {
     path: "/hw-dashboard",
     exact: true,
     name: "HW Dashboard",
@@ -94,7 +87,7 @@ const routes = [
     path: "/summary-master",
     exact: true,
     name: "HW Summary Master",
-    component: SVCMaster,
+    component: Master,
   },
   {
     path: "/svc-cpo/:id",

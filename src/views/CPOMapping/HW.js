@@ -93,74 +93,91 @@ const Checkbox2 = ({
 );
 const modul_name = "HW Mapping";
 const header = [
-  "PROJECT",
-  "PO NUMBER",
-  "LOOKUP REFERENCE",
-  "REGION",
-  "REFERENCE LOC ID",
-  "NEW LOC ID",
-  "SITE NAME",
-  "NEW SITE NAME",
-  "CONFIG",
-  "PO#",
-  "LINE",
-  "DESCRIPTION",
-  "QTY",
-  "NW#",
-  "ON AIR DATE",
-  "MAPPING DATE",
-  "REMARKS",
-  "PREMR NO.",
-  "PROCEED BILLING 100%",
-  "CELCOM USER",
-  "PCODE",
-  "UNIT PRICE",
-  "TOTAL PRICE",
-  "DISCOUNTED UNIT PRICE",
-  "DISCOUNTED PO PRICE",
-  "SO LINE ITEM DESCRIPTION",
-  "sitePCode",
-  "VlookupWBS",
-  "SO NO.",
-  "WBS  NO.",
-  "FOR CHECKING PURPOSE ONLY-RASHIDAH",
-  "HW COA RECEIVED DATE",
-  "80% BILLING UPON HW COA",
-  "80% INVOICING NO.",
-  "80% INVOICING DATE",
-  "Cancel Invoice",
-  "NI COA DATE (VLOOKUP FROM SERVICES MAPPING)",
-  "20% BILLING UPON NI",
-  "20% INVOICING NO.",
-  "20% INVOICING DATE",
-  "Cancelled",
-  "HW COA RECEIVED DATE",
-  "40% BILLING UPON COA HW",
-  "40% INVOICING NO.",
-  "40% INVOICING DATE",
-  "Cancelled",
-  "NI COA date (vlookup from SERVICES MAPPING)",
-  "40% BILLING UPON COA NI",
-  "40% INVOICING Number",
-  "40% INVOICING DATE",
-  "Cancelled",
-  "SSO COA date (vlookup from SERVICES MAPPING)",
-  "20% BILLING UPON COA SSO",
-  "20% INVOICING NO.",
-  "20% INVOICING DATE",
-  "Cancelled",
-  "100%  HW COA ",
-  "100% BILLING UPON HW COA",
-  "100% INVOICING NO.",
-  "100% INVOICING DATE",
-  "Cancelled",
-  "Cancel column",
-  "REFERENCE LOC ID",
-  "REFF",
-  "Vlookup for billing",
+  "Project",
+  "Po_Number",
+  "Data_1",
+  "Lookup_Reference",
+  "Region",
+  "Reference_Loc_Id",
+  "New_Loc_Id",
+  "Site_Name",
+  "New_Site_Name",
+  "Config",
+  "Po",
+  "Line",
+  "Description",
+  "Qty",
+  "NW",
+  "On_Air_Date",
+  "Mapping_Date",
+  "Remarks",
+  "Premr_No",
+  "Proceed_Billing_100",
+  "Celcom_User",
+  "Pcode",
+  "Unit_Price",
+  "Total_Price",
+  "Discounted_Unit_Price",
+  "Discounted_Po_Price",
+  "So_Line_Item_Description",
+  "Sitepcode",
+  "VlookupWbs",
+  "So_No",
+  "Wbs_No",
+  "For_Checking_Purpose_Only_Rashidah",
+  "Hw_Coa_Received_Date_80",
+  "Billing_Upon_Hw_Coa_80",
+  "Invoicing_No_Hw_Coa_80",
+  "Invoicing_Date_Hw_Coa_80",
+  "Cancelled_Invoice_Hw_Coa_80",
+  "Ni_Coa_Date_20",
+  "Billing_Upon_Ni_20",
+  "Invoicing_No_Ni_20",
+  "Invoicing_Date_Ni_20",
+  "Cancelled_Invoicing_Ni_20",
+  "Sso_Coa_Date_20",
+  "Billing_Upon_Sso_20",
+  "Invoicing_No_Sso_20",
+  "Invoicing_Date_Sso_20",
+  "Gr_Number",
+  "Hw_Coa_Received_Date_40",
+  "Billing_Upon_Hw_Coa_40",
+  "Invoicing_No_Hw_Coa_40",
+  "Invoicing_Date_Hw_Coa_40",
+  "Cancelled_Hw_Coa_40",
+  "Ni_Coa_Date_40",
+  "Billing_Upon_Ni_40",
+  "Invoicing_No_Ni_40",
+  "Invoicing_Date_Ni_40",
+  "Cancelled_Ni_40",
+  "Sso_Coa_Date_20_1",
+  "Billing_Upon_Sso_20_1",
+  "Invoicing_No_Sso_20_1",
+  "Invoicing_Date_Sso_20_1",
+  "Cancelled_Sso_20",
+  "Vlookup_SSO_100_In_Service",
+  "Hw_Coa_100",
+  "Billing_Upon_Hw_Coa_100",
+  "Invoicing_No_Hw_Coa_100",
+  "Invoicing_Date_Hw_Coa_100",
+  "Cancelled_Invoicing_Hw_Coa_100",
+  "Cancel_Column",
+  "Reference_Loc_Id_1",
+  "Po_1",
+  "Reff",
+  "Vlookup_For_Billing",
+  // "Not_Required",
+  "Deal_Name",
+  "Hammer",
+  "Hammer_1_Hd_Total",
+  "Project_Description",
 ];
 
 const header_model = [
+  "Deal_Name",
+  "Hammer",
+  "Data_1",
+  "Project_Description",
   "Project",
   "Po_Number",
   "Lookup_Reference",
@@ -202,11 +219,11 @@ const header_model = [
   "Invoicing_No_Ni_20",
   "Invoicing_Date_Ni_20",
   "Cancelled_Invoicing_Ni_20",
-  // "Sso_Coa_Date_20",
-  // "Billing_Upon_Sso_20",
-  // "Invoicing_No_Sso_20",
-  // "Invoicing_Date_Sso_20",
-  // "Gr_Number",
+  "Sso_Coa_Date_20",
+  "Billing_Upon_Sso_20",
+  "Invoicing_No_Sso_20",
+  "Invoicing_Date_Sso_20",
+  "Gr_Number",
   "Hw_Coa_Received_Date_40",
   "Billing_Upon_Hw_Coa_40",
   "Invoicing_No_Hw_Coa_40",
@@ -222,7 +239,7 @@ const header_model = [
   "Invoicing_No_Sso_20_1",
   "Invoicing_Date_Sso_20_1",
   "Cancelled_Sso_20",
-  // "Vlookup_SSO_100_In_Service",
+  "Vlookup_SSO_100_In_Service",
   "Hw_Coa_100",
   "Billing_Upon_Hw_Coa_100",
   "Invoicing_No_Hw_Coa_100",
@@ -230,14 +247,18 @@ const header_model = [
   "Cancelled_Invoicing_Hw_Coa_100",
   "Cancel_Column",
   "Reference_Loc_Id_1",
+  "Po_1",
   "Reff",
   "Vlookup_For_Billing",
-  "Deal_Name",
-  "Hammer",
-  "Project_Description",
+  // "Not_Required",
+  "Hammer_1_Hd_Total",
 ];
 
 const header_materialmapping = [
+  "Deal_Name",
+  "Hammer",
+  "Data_1",
+  "Project_Description",
   "Project",
   "Po_Number",
   "Lookup_Reference",
@@ -360,7 +381,7 @@ class MappingHW extends React.Component {
 
   getMaster() {
     getDatafromAPINODE(
-      "/lineItemMapping/getLineItem/hw?noPg=1",
+      "/summaryMaster/getSummaryMaster?noPg=1",
       this.state.tokenUser
     ).then((res) => {
       if (res.data !== undefined) {
@@ -415,10 +436,10 @@ class MappingHW extends React.Component {
           '", "$options" : "i"}'
       );
 
-    filter_array.push('"Not_Required":' + null);
+    // filter_array.push('"Not_Required":' + null);
     let whereAnd = "{" + filter_array.join(",") + "}";
     getDatafromAPINODE(
-      "/cpoMapping/getCpo/hw?q=" +
+      "/cpoMapping/getCpo/required/hw?q=" +
         whereAnd +
         "&lmt=" +
         this.state.perPage +
@@ -436,7 +457,7 @@ class MappingHW extends React.Component {
 
   getListAll() {
     getDatafromAPINODE(
-      "/cpoMapping/getCpo/hw?noPg=1",
+      "/cpoMapping/getCpo/required/hw?noPg=1",
       this.state.tokenUser
     ).then((res) => {
       if (res.data !== undefined) {
@@ -1564,8 +1585,8 @@ class MappingHW extends React.Component {
                                     />
                                   </td>
                                   <td>{e.Project}</td>
-                                  <td>{e.Internal_Po}</td>
-                                  {/* <td>{e.Link}</td> */}
+                                  <td>{e.Po_Number}</td>
+                                  <td>{e.Data_1}</td>
                                   <td>{e.Lookup_Reference}</td>
                                   <td>{e.Region}</td>
                                   <td>{e.Reference_Loc_Id}</td>
@@ -1577,59 +1598,54 @@ class MappingHW extends React.Component {
                                   <td>{e.Line}</td>
                                   <td>{e.Description}</td>
                                   <td>{e.Qty}</td>
-                                  <td>{e.CNI_Date}</td>
+                                  <td>{e.NW}</td>
+                                  <td>{e.On_Air_Date}</td>
                                   <td>{e.Mapping_Date}</td>
                                   <td>{e.Remarks}</td>
+                                  <td>{e.Premr_No}</td>
+                                  <td>{e.Proceed_Billing_100}</td>
                                   <td>{e.Celcom_User}</td>
-                                  <td>
-                                    {this.LookupField(
-                                      e.Po + "-" + e.Line,
-                                      "Pcode"
-                                    )}
-                                  </td>
-                                  <td>
-                                    {this.LookupField(
-                                      e.Po + "-" + e.Line,
-                                      "Unit_Price"
-                                    )}
-                                  </td>
-                                  <td>{e.Total_Price}</td>
+                                  <td>{e.Pcode}</td>
+                                  <td>{e.Unit_Price}</td>
+                                  <td>{e.Unit_Price * e.Qty}</td>
                                   <td>{e.Discounted_Unit_Price}</td>
                                   <td>{e.Discounted_Po_Price}</td>
-                                  <td>{e.Type}</td>
                                   <td>{e.So_Line_Item_Description}</td>
+                                  <td>{e.Sitepcode}</td>
+                                  <td>{e.VlookupWbs}</td>
                                   <td>{e.So_No}</td>
                                   <td>{e.Wbs_No}</td>
-                                  <td>{e.Billing_100}</td>
-                                  <td>{e.Atp_Coa_Received_Date_80}</td>
-                                  <td>{e.Billing_Upon_Atp_Coa_80}</td>
-                                  <td>{e.Invoicing_No_Atp_Coa_80}</td>
-                                  <td>{e.Invoicing_Date_Atp_Coa_80}</td>
-                                  <td>{e.Cancelled_Atp_Coa_80}</td>
+                                  <td>
+                                    {e.For_Checking_Purpose_Only_Rashidah}
+                                  </td>
+                                  <td>{e.Hw_Coa_Received_Date_80}</td>
+                                  <td>{e.Billing_Upon_Hw_Coa_80}</td>
+                                  <td>{e.Invoicing_No_Hw_Coa_80}</td>
+                                  <td>{e.Invoicing_Date_Hw_Coa_80}</td>
+                                  <td>{e.Cancelled_Invoice_Hw_Coa_80}</td>
                                   <td>{e.Ni_Coa_Date_20}</td>
                                   <td>{e.Billing_Upon_Ni_20}</td>
                                   <td>{e.Invoicing_No_Ni_20}</td>
                                   <td>{e.Invoicing_Date_Ni_20}</td>
-                                  <td>{e.Sso_Coa_Date_80}</td>
-                                  <td>{e.Billing_Upon_Sso_80}</td>
-                                  <td>{e.Invoicing_No_Sso_80}</td>
-                                  <td>{e.Invoicing_Date_Sso_80}</td>
-                                  <td>{e.Coa_Psp_Received_Date_20}</td>
-                                  <td>{e.Billing_Upon_Coa_Psp_20}</td>
-                                  <td>{e.Invoicing_No_Coa_Psp_20}</td>
-                                  <td>{e.Invoicing_Date_Coa_Psp_20}</td>
-                                  <td>{e.Sso_Coa_Date_100}</td>
-                                  <td>{e.Billing_Upon_Sso_Coa_100}</td>
-                                  <td>{e.Invoicing_No_Sso_Coa_100}</td>
-                                  <td>{e.Invoicing_Date_Sso_Coa_100}</td>
-                                  <td>{e.Coa_Ni_Date_100}</td>
-                                  <td>{e.Billing_Upon_Coa_Ni_100}</td>
-                                  <td>{e.Invoicing_No_Coa_Ni_100}</td>
-                                  <td>{e.Invoicing_Date_Coa_Ni_100}</td>
-                                  <td>{e.Ses_No}</td>
-                                  <td>{e.Ses_Status}</td>
-                                  <td>{e.Link_1}</td>
-                                  <td>{e.Ni_Coa_Submission_Status}</td>
+                                  <td>{e.Cancelled_Invoicing_Ni_20}</td>
+                                  <td>{e.Sso_Coa_Date_20}</td>
+                                  <td>{e.Billing_Upon_Sso_20}</td>
+                                  <td>{e.Invoicing_No_Sso_20}</td>
+                                  <td>{e.Invoicing_Date_Sso_20}</td>
+                                  <td>{e.Gr_Number}</td>
+                                  <td>{e.Hw_Coa_Received_Date_40}</td>
+                                  <td>{e.Billing_Upon_Hw_Coa_40}</td>
+                                  <td>{e.Invoicing_No_Hw_Coa_40}</td>
+                                  <td>{e.Invoicing_Date_Hw_Coa_40}</td>
+                                  <td>{e.Cancelled_Hw_Coa_40}</td>
+                                  <td>{e.Ni_Coa_Date_40}</td>
+                                  <td>{e.Billing_Upon_Ni_40}</td>
+                                  <td>{e.Invoicing_No_Ni_40}</td>
+                                  <td>{e.Invoicing_Date_Ni_40}</td>
+                                  <td>{e.Cancelled_Ni_40}</td>
+                                  <td>{e.Sso_Coa_Date_20_1}</td>
+                                  <td>{e.Billing_Upon_Sso_20_1}</td>
+                                  <td>{e.Invoicing_No_Sso_20_1}</td>
                                   <td>{e.Invoicing_Date_Sso_20_1}</td>
                                   <td>{e.Cancelled_Sso_20}</td>
                                   <td>{e.Vlookup_SSO_100_In_Service}</td>
@@ -1637,14 +1653,24 @@ class MappingHW extends React.Component {
                                   <td>{e.Billing_Upon_Hw_Coa_100}</td>
                                   <td>{e.Invoicing_No_Hw_Coa_100}</td>
                                   <td>{e.Invoicing_Date_Hw_Coa_100}</td>
+                                  <td>{e.Cancelled_Invoicing_Hw_Coa_100}</td>
+                                  <td>{e.Cancel_Column}</td>
                                   <td>{e.Reference_Loc_Id_1}</td>
                                   <td>{e.Po_1}</td>
-                                  <td>{e.Reff_1}</td>
-                                  <td>{e.Site_List}</td>
-                                  <td>{e.Reff_2}</td>
-                                  <td>{e.Ni}</td>
-                                  <td>{e.Sso}</td>
-                                  <td>{e.Ref_Ni}</td>
+                                  <td>{e.Reff}</td>
+                                  <td>{e.Vlookup_For_Billing}</td>
+                                  <td>{e.Deal_Name}</td>
+                                  <td>{e.Hammer}</td>
+                                  <td>
+                                    {e.Unit_Price *
+                                      e.Qty *
+                                      (this.LookupField(
+                                        e.Po + "-" + e.Line,
+                                        "Hammer_1_Hd"
+                                      ) /
+                                        100)}
+                                  </td>
+                                  <td>{e.Project_Description}</td>
                                 </tr>
                               </React.Fragment>
                             ))}
@@ -1672,7 +1698,9 @@ class MappingHW extends React.Component {
                                   ) : (
                                     <td></td>
                                   )}
-                                  <td>{e.Link}</td>
+                                  <td>{e.Project}</td>
+                                  <td>{e.Po_Number}</td>
+                                  <td>{e.Data_1}</td>
                                   <td>{e.Lookup_Reference}</td>
                                   <td>{e.Region}</td>
                                   <td>{e.Reference_Loc_Id}</td>
@@ -1684,59 +1712,54 @@ class MappingHW extends React.Component {
                                   <td>{e.Line}</td>
                                   <td>{e.Description}</td>
                                   <td>{e.Qty}</td>
-                                  <td>{e.CNI_Date}</td>
+                                  <td>{e.NW}</td>
+                                  <td>{e.On_Air_Date}</td>
                                   <td>{e.Mapping_Date}</td>
                                   <td>{e.Remarks}</td>
+                                  <td>{e.Premr_No}</td>
+                                  <td>{e.Proceed_Billing_100}</td>
                                   <td>{e.Celcom_User}</td>
-                                  <td>
-                                    {this.LookupField(
-                                      e.Po + "-" + e.Line,
-                                      "Pcode"
-                                    )}
-                                  </td>
-                                  <td>
-                                    {this.LookupField(
-                                      e.Po + "-" + e.Line,
-                                      "Unit_Price"
-                                    )}
-                                  </td>
+                                  <td>{e.Pcode}</td>
+                                  <td>{e.Unit_Price}</td>
                                   <td>{e.Total_Price}</td>
                                   <td>{e.Discounted_Unit_Price}</td>
                                   <td>{e.Discounted_Po_Price}</td>
-                                  <td>{e.Type}</td>
                                   <td>{e.So_Line_Item_Description}</td>
+                                  <td>{e.Sitepcode}</td>
+                                  <td>{e.VlookupWbs}</td>
                                   <td>{e.So_No}</td>
                                   <td>{e.Wbs_No}</td>
-                                  <td>{e.Billing_100}</td>
-                                  <td>{e.Atp_Coa_Received_Date_80}</td>
-                                  <td>{e.Billing_Upon_Atp_Coa_80}</td>
-                                  <td>{e.Invoicing_No_Atp_Coa_80}</td>
-                                  <td>{e.Invoicing_Date_Atp_Coa_80}</td>
-                                  <td>{e.Cancelled_Atp_Coa_80}</td>
+                                  <td>
+                                    {e.For_Checking_Purpose_Only_Rashidah}
+                                  </td>
+                                  <td>{e.Hw_Coa_Received_Date_80}</td>
+                                  <td>{e.Billing_Upon_Hw_Coa_80}</td>
+                                  <td>{e.Invoicing_No_Hw_Coa_80}</td>
+                                  <td>{e.Invoicing_Date_Hw_Coa_80}</td>
+                                  <td>{e.Cancelled_Invoice_Hw_Coa_80}</td>
                                   <td>{e.Ni_Coa_Date_20}</td>
                                   <td>{e.Billing_Upon_Ni_20}</td>
                                   <td>{e.Invoicing_No_Ni_20}</td>
                                   <td>{e.Invoicing_Date_Ni_20}</td>
-                                  <td>{e.Sso_Coa_Date_80}</td>
-                                  <td>{e.Billing_Upon_Sso_80}</td>
-                                  <td>{e.Invoicing_No_Sso_80}</td>
-                                  <td>{e.Invoicing_Date_Sso_80}</td>
-                                  <td>{e.Coa_Psp_Received_Date_20}</td>
-                                  <td>{e.Billing_Upon_Coa_Psp_20}</td>
-                                  <td>{e.Invoicing_No_Coa_Psp_20}</td>
-                                  <td>{e.Invoicing_Date_Coa_Psp_20}</td>
-                                  <td>{e.Sso_Coa_Date_100}</td>
-                                  <td>{e.Billing_Upon_Sso_Coa_100}</td>
-                                  <td>{e.Invoicing_No_Sso_Coa_100}</td>
-                                  <td>{e.Invoicing_Date_Sso_Coa_100}</td>
-                                  <td>{e.Coa_Ni_Date_100}</td>
-                                  <td>{e.Billing_Upon_Coa_Ni_100}</td>
-                                  <td>{e.Invoicing_No_Coa_Ni_100}</td>
-                                  <td>{e.Invoicing_Date_Coa_Ni_100}</td>
-                                  <td>{e.Ses_No}</td>
-                                  <td>{e.Ses_Status}</td>
-                                  <td>{e.Link_1}</td>
-                                  <td>{e.Ni_Coa_Submission_Status}</td>
+                                  <td>{e.Cancelled_Invoicing_Ni_20}</td>
+                                  <td>{e.Sso_Coa_Date_20}</td>
+                                  <td>{e.Billing_Upon_Sso_20}</td>
+                                  <td>{e.Invoicing_No_Sso_20}</td>
+                                  <td>{e.Invoicing_Date_Sso_20}</td>
+                                  <td>{e.Gr_Number}</td>
+                                  <td>{e.Hw_Coa_Received_Date_40}</td>
+                                  <td>{e.Billing_Upon_Hw_Coa_40}</td>
+                                  <td>{e.Invoicing_No_Hw_Coa_40}</td>
+                                  <td>{e.Invoicing_Date_Hw_Coa_40}</td>
+                                  <td>{e.Cancelled_Hw_Coa_40}</td>
+                                  <td>{e.Ni_Coa_Date_40}</td>
+                                  <td>{e.Billing_Upon_Ni_40}</td>
+                                  <td>{e.Invoicing_No_Ni_40}</td>
+                                  <td>{e.Invoicing_Date_Ni_40}</td>
+                                  <td>{e.Cancelled_Ni_40}</td>
+                                  <td>{e.Sso_Coa_Date_20_1}</td>
+                                  <td>{e.Billing_Upon_Sso_20_1}</td>
+                                  <td>{e.Invoicing_No_Sso_20_1}</td>
                                   <td>{e.Invoicing_Date_Sso_20_1}</td>
                                   <td>{e.Cancelled_Sso_20}</td>
                                   <td>{e.Vlookup_SSO_100_In_Service}</td>
@@ -1744,14 +1767,22 @@ class MappingHW extends React.Component {
                                   <td>{e.Billing_Upon_Hw_Coa_100}</td>
                                   <td>{e.Invoicing_No_Hw_Coa_100}</td>
                                   <td>{e.Invoicing_Date_Hw_Coa_100}</td>
+                                  <td>{e.Cancelled_Invoicing_Hw_Coa_100}</td>
+                                  <td>{e.Cancel_Column}</td>
                                   <td>{e.Reference_Loc_Id_1}</td>
                                   <td>{e.Po_1}</td>
-                                  <td>{e.Reff_1}</td>
-                                  <td>{e.Site_List}</td>
-                                  <td>{e.Reff_2}</td>
-                                  <td>{e.Ni}</td>
-                                  <td>{e.Sso}</td>
-                                  <td>{e.Ref_Ni}</td>
+                                  <td>{e.Reff}</td>
+                                  <td>{e.Vlookup_For_Billing}</td>
+                                  <td>{e.Deal_Name}</td>
+                                  <td>{e.Hammer}</td>
+                                  <td>
+                                    {this.LookupField(
+                                      e.Po + "-" + e.Line,
+                                      "Hammer_1_Hd_Total"
+                                    ) *
+                                      (e.Unit_Price * e.Qty)}
+                                  </td>
+                                  <td>{e.Project_Description}</td>
                                 </tr>
                               </React.Fragment>
                             ))}

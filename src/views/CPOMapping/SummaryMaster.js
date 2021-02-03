@@ -33,6 +33,7 @@ import {
   patchDatatoAPINODE,
   deleteDataFromAPINODE2,
   getDatafromAPINODE,
+  apiSendEmail,
 } from "../../helper/asyncFunction";
 import ModalCreateNew from "../Component/ModalCreateNew";
 import Pagination from "react-js-pagination";
@@ -42,31 +43,15 @@ import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 
 import "./cpomapping.css";
-const DefaultNotif = React.lazy(() =>
-  import("../../views/DefaultView/DefaultNotif")
-);
-const modul_name = "HW Master";
+const DefaultNotif = React.lazy(() => import("../DefaultView/DefaultNotif"));
+const modul_name = "Summary Master";
 const header = [
   "",
-  "Project",
-  "PO#",
-  "LINE ITEM",
-  "DESCRIPTION",
-  "QTY",
-  "USED",
-  "BALANCE",
-  "UNIT PRICE",
-  "TOTAL PRICE",
-  "ASSIGNED PRICE",
-  "PCODE",
-  "TYPE",
-  "PSP REMARKS",
-  "WBS ",
-  "TOTAL PO AMOUNT",
-  "REMARKS",
-];
-const header_model = [
-  "Project",
+  "Type",
+  "Deal_Name",
+  "Hammer",
+  "Project_Description",
+  "Po_Number",
   "Po",
   "Line_Item",
   "Description",
@@ -76,34 +61,67 @@ const header_model = [
   "Unit_Price",
   "Total_Price",
   "Assigned_Price",
+  "Discounted_Unit_Price",
+  "Discounted_Po_Price",
+  "Discounted_Assigned_Price",
+  "Hammer_1_Hd",
   "Pcode",
-  "Type",
-  "Psp_Remarks",
-  "Wbs",
-  "Total_Po_Amount",
-  "Remarks",
+  "Commodity",
 ];
-
-const header_materialmapping = [
-  "Project",
+const header_model = [
+  "type_summary",
+  "Deal_Name",
+  "Hammer",
+  "Project_Description",
+  "Po_Number",
   "Po",
   "Line_Item",
   "Description",
   "Qty",
-
+  "Used",
+  "Balance",
   "Unit_Price",
-
+  "Total_Price",
+  "Assigned_Price",
+  "Discounted_Unit_Price",
+  "Discounted_Po_Price",
+  "Discounted_Assigned_Price",
+  "Hammer_1_Hd",
   "Pcode",
-  "Type",
+  "Commodity",
+];
+
+const header_materialmapping = [
+  "hw_svc",
+  "Deal_Name",
+  "Hammer",
+  "Project_Description",
+  "Po_Number",
+  "Po",
+  "Line_Item",
+  "Description",
+  "Qty",
+  // "Used",
+  // "Balance",
+  "Unit_Price",
+  // "Total_Price",
+  // "Assigned_Price",
+  "Discounted_Unit_Price",
+  // "Discounted_Po_Price",
+  // "Discounted_Assigned_Price",
+  "Hammer_1_Hd",
+  "Pcode",
+  "Commodity",
 ];
 
 const td_value = [];
 
-class HWMaster extends React.Component {
+class SVCMaster extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       tokenUser: this.props.dataLogin.token,
+      userMail: this.props.dataLogin.email,
       roleUser: this.props.dataLogin.role,
       dropdownOpen: new Array(3).fill(false),
       all_data: [],
@@ -241,7 +259,7 @@ class HWMaster extends React.Component {
       );
     let whereAnd = "{" + filter_array.join(",") + "}";
     getDatafromAPINODE(
-      "/lineItemMapping/getLineItem/hw?q=" +
+      "/summaryMaster/getSummaryMaster?q=" +
         whereAnd +
         "&lmt=" +
         this.state.perPage +
@@ -261,7 +279,7 @@ class HWMaster extends React.Component {
 
   getListAll() {
     getDatafromAPINODE(
-      "/lineItemMapping/getLineItem/hw?noPg=1",
+      "/summaryMaster/getSummaryMaster?noPg=1",
       this.state.tokenUser
     ).then((res) => {
       if (res.data !== undefined) {
@@ -273,7 +291,7 @@ class HWMaster extends React.Component {
 
   getMapping() {
     getDatafromAPINODE(
-      "/cpoMapping/getCpo/hw?noPg=1",
+      "/cpoMapping/getCpo/svc?noPg=1",
       this.state.tokenUser
     ).then((res) => {
       if (res.data !== undefined) {
@@ -337,24 +355,139 @@ class HWMaster extends React.Component {
     });
   };
 
+  trim = (words) => {
+    let edited = words.replace(/^,|,$/g, "");
+    return edited;
+  };
+
   saveBulk = async () => {
     this.toggleLoading();
     this.togglecreateModal();
     const BulkXLSX = this.state.rowsXLS;
     const res = await postDatatoAPINODE(
-      "/lineItemMapping/createLineItem",
+      "/summaryMaster/createSummaryMaster",
       {
-        line_item_type: "hw",
+        // line_item_type: "svc",
         line_item_data: this.state.rowsXLS,
       },
       this.state.tokenUser
     );
     if (res.data !== undefined) {
-      this.setState({ action_status: "success" });
-      this.toggleLoading();
-      // setTimeout(function () {
-      //   window.location.reload();
-      // }, 1500);
+      if (res.data.data.length !== 0) {
+        // new Data
+        const new_table_header = Object.keys(res.data.data[0]).slice(2, -8);
+        console.log(new_table_header);
+        const new_Data = res.data.data;
+        let value = "row.";
+        const body_new =
+          "<br/><span>The following " +
+          modul_name +
+          " data has been successfully created </span><br/><br/><table><tr>" +
+          new_table_header.map((tab, i) => "<th>" + tab + "</th>").join(" ") +
+          "</tr>" +
+          new_Data
+            .map(
+              (row, j) =>
+                "<tr key={" +
+                j +
+                "}>" +
+                new_table_header
+                  .map((td) => "<td>" + eval(value + td) + "</td>")
+                  .join(" ") +
+                "</tr>"
+            )
+            .join(" ") +
+          "</table>";
+        // updated Data
+        const updated_table_header = Object.keys(res.data.updateData[0]).slice(
+          0,
+          -3
+        );
+        const update_Data = res.data.updateData;
+        const body_updated =
+          "<br/><span>Please be notified that the following " +
+          modul_name +
+          " data has been updated </span><br/><br/><table><tr>" +
+          updated_table_header
+            .map((tab, i) => "<th>" + tab + "</th>")
+            .join(" ") +
+          "</tr>" +
+          update_Data
+            .map(
+              (row, j) =>
+                "<tr key={" +
+                j +
+                "}>" +
+                updated_table_header
+                  .map((td) => "<td>" + eval(value + td) + "</td>")
+                  .join(" ") +
+                "</tr>"
+            )
+            .join(" ") +
+          "</table>";
+
+        const bodyEmail =
+          "<h2>DPM - BAM Notification</h2>" + body_new + body_updated;
+        let dataEmail = {
+          // "to": creatorEmail,
+          // to: "pramudityad@student.telkomuniversity.ac.id",
+          to: "pramudityad@outlook.com",
+          subject: "[NOTIFY to CPM] " + modul_name,
+          body: bodyEmail,
+        };
+        const sendEmail = await apiSendEmail(dataEmail);
+        console.log(bodyEmail);
+        this.setState({ action_status: "success" });
+        this.toggleLoading();
+        // // setTimeout(function () {
+        // //   window.location.reload();
+        // // }, 1500);
+      } else {
+        // updated Data
+        const updated_table_header = Object.keys(res.data.updateData[0]).slice(
+          0,
+          -3
+        );
+        const update_Data = res.data.updateData;
+        let value = "row.";
+        const body_updated =
+          "<br/><span>Please be notified that the following " +
+          modul_name +
+          " data has been updated </span><br/><br/><table><tr>" +
+          updated_table_header
+            .map((tab, i) => "<th>" + tab + "</th>")
+            .join(" ") +
+          "</tr>" +
+          update_Data
+            .map(
+              (row, j) =>
+                "<tr key={" +
+                j +
+                "}>" +
+                updated_table_header
+                  .map((td) => "<td>" + eval(value + td) + "</td>")
+                  .join(" ") +
+                "</tr>"
+            )
+            .join(" ") +
+          "</table>";
+
+        const bodyEmail = "<h2>DPM - BAM Notification</h2>" + body_updated;
+        let dataEmail = {
+          // "to": creatorEmail,
+          to: "pramudityad@student.telkomuniversity.ac.id",
+          // to: "pramudityad@outlook.com",
+          subject: "[NOTIFY to CPM] " + modul_name,
+          body: bodyEmail,
+        };
+        // const sendEmail = await apiSendEmail(dataEmail);
+        console.log(bodyEmail);
+        this.setState({ action_status: "success" });
+        this.toggleLoading();
+        // setTimeout(function () {
+        //   window.location.reload();
+        // }, 1500);
+      }
     } else {
       if (
         res.response !== undefined &&
@@ -423,9 +556,9 @@ class HWMaster extends React.Component {
     this.toggleEdit();
     this.toggleLoading();
     const res = await patchDatatoAPINODE(
-      "/lineItemMapping/updateLineItem",
+      "/lineItem/updateLineItem1",
       {
-        cpo_type: "hw",
+        cpo_type: "svc",
         data: [this.state.CPOForm],
       },
       this.state.tokenUser
@@ -463,7 +596,7 @@ class HWMaster extends React.Component {
   downloadAll_A = async () => {
     this.toggleLoading();
     const download_all_A = await getDatafromAPINODE(
-      "/lineItemMapping/getLineItem/hw?noPg=1",
+      "/summaryMaster/getSummaryMaster?noPg=1",
       this.state.tokenUser
     );
 
@@ -511,7 +644,7 @@ class HWMaster extends React.Component {
   downloadAll_B = async () => {
     this.toggleLoading();
     const download_all_A = await getDatafromAPINODE(
-      "/lineItemMapping/getLineItem/hw?noPg=1",
+      "/summaryMaster/getSummaryMaster?noPg=1",
       this.state.tokenUser
     );
 
@@ -608,13 +741,24 @@ class HWMaster extends React.Component {
     this.setState({ perPage: limitpg }, () => this.getList());
   };
 
-  countheader = (params_field) => {
+  countheaderNaN = (params_field) => {
     let value = "element." + params_field;
     let sumheader = this.state.all_data_line.filter(
       (element) => eval(value) !== null && eval(value) !== ""
     );
-    return sumheader.length;
     // console.log(params_field, sumheader);
+
+    return sumheader.length;
+  };
+
+  countheader = (params_field) => {
+    let value = "curr." + params_field;
+    let sumheader = this.state.all_data_line.reduce(
+      (acc, curr) => acc + eval(value),
+      0
+    );
+    // console.log(sumheader);
+    return Math.round((sumheader + Number.EPSILON) * 100) / 100;
   };
 
   render() {
@@ -639,23 +783,27 @@ class HWMaster extends React.Component {
                   style={{ display: "inline-flex" }}
                 >
                   <div>
-                    <div>
-                      <Button
-                        block
-                        color="success"
-                        size="sm"
-                        onClick={this.togglecreateModal}
-                      >
-                        <i className="fa fa-plus-square" aria-hidden="true">
-                          {" "}
-                          &nbsp;{" "}
-                        </i>{" "}
-                        {role.includes("BAM-IM") === true ||
-                        role.includes("BAM-PFM") === true
-                          ? "Update"
-                          : "New"}
-                      </Button>
-                    </div>
+                    {role.includes("BAM-MAT PLANNER") === true ? (
+                      <div>
+                        <Button
+                          block
+                          color="success"
+                          size="sm"
+                          onClick={this.togglecreateModal}
+                        >
+                          <i className="fa fa-plus-square" aria-hidden="true">
+                            {" "}
+                            &nbsp;{" "}
+                          </i>{" "}
+                          {role.includes("BAM-IM") === true ||
+                          role.includes("BAM-PFM") === true
+                            ? "Update"
+                            : "New"}
+                        </Button>
+                      </div>
+                    ) : (
+                      ""
+                    )}
                   </div>
                   &nbsp;&nbsp;&nbsp;
                   <div>
@@ -731,9 +879,19 @@ class HWMaster extends React.Component {
                           </tr>
                           <tr align="center">
                             <th></th>
-                            {header_model.map((head) => (
-                              <th>{this.countheader(head)}</th>
-                            ))}
+                            {header_model.map((head, j) =>
+                              head === "Qty" ||
+                              head === "Used" ||
+                              head === "Balance" ||
+                              head === "Unit_Price" ||
+                              head === "Total_Price" ||
+                              head === "Assigned_Price" ||
+                              head === "Total_Po_Amount" ? (
+                                <th>{this.countheader(head)}</th>
+                              ) : (
+                                <th>{this.countheaderNaN(head)}</th>
+                              )
+                            )}
                           </tr>
                           <tr align="center">
                             <td></td>
@@ -759,30 +917,26 @@ class HWMaster extends React.Component {
                                       ></i>
                                     </Button>
                                   </td>
-                                  <td>{e.Project}</td>
+                                  <td>{e.type_summary}</td>
+                                  <td>{e.Deal_Name}</td>
+                                  <td>{e.Hammer}</td>
+                                  <td>{e.Project_Description}</td>
+                                  <td>{e.Po_Number}</td>
                                   <td>{e.Po}</td>
                                   <td>{e.Line_Item}</td>
                                   <td>{e.Description}</td>
                                   <td>{e.Qty}</td>
-                                  {/* <td>{this.countUsed(e.Po, e.Line_Item)}</td> */}
                                   <td>{e.Used}</td>
-                                  {/* <td>
-                                    {e.Qty - this.countUsed(e.Po, e.Line_Item)}
-                                  </td> */}
                                   <td>{e.Balance}</td>
                                   <td>{e.Unit_Price}</td>
-                                  <td>{e.Qty * e.Unit_Price}</td>
-                                  {/* <td>
-                                    {this.countUsed(e.Po, e.Line_Item) *
-                                      e.Unit_Price}
-                                  </td> */}
-                                  <td>{e.Used * e.Unit_Price}</td>
+                                  <td>{e.Total_Price}</td>
+                                  <td>{e.Assigned_Price}</td>
+                                  <td>{e.Discounted_Unit_Price}</td>
+                                  <td>{e.Discounted_Po_Price}</td>
+                                  <td>{e.Discounted_Assigned_Price}</td>
+                                  <td>{e.Hammer_1_Hd}</td>
                                   <td>{e.Pcode}</td>
-                                  <td>{e.Type}</td>
-                                  <td>{e.PSP_Remarks}</td>
-                                  <td>{e.Wbs}</td>
-                                  <td>{e.Qty * e.Unit_Price}</td>
-                                  <td>{e.Remarks}</td>
+                                  <td>{e.Commodity}</td>
                                 </tr>
                               </React.Fragment>
                             ))}
@@ -1004,7 +1158,7 @@ class HWMaster extends React.Component {
             </table>
           </div>
           <ModalFooter>
-            {role.includes("BAM-IM") === true ||
+            {/* {role.includes("BAM-IM") === true ||
             role.includes("BAM-PFM") === true ? (
               <Button
                 size="sm"
@@ -1017,19 +1171,19 @@ class HWMaster extends React.Component {
               >
                 Update
               </Button>
-            ) : (
-              <Button
-                size="sm"
-                block
-                color="success"
-                className="btn-pill"
-                disabled={this.state.rowsXLS.length === 0}
-                onClick={this.saveBulk}
-                style={{ height: "30px", width: "100px" }}
-              >
-                Save
-              </Button>
-            )}
+            ) : ( */}
+            <Button
+              size="sm"
+              block
+              color="success"
+              className="btn-pill"
+              disabled={this.state.rowsXLS.length === 0}
+              onClick={this.saveBulk}
+              style={{ height: "30px", width: "100px" }}
+            >
+              Save
+            </Button>
+            {/* )} */}
           </ModalFooter>
         </ModalCreateNew>
 
@@ -1052,4 +1206,4 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps)(HWMaster);
+export default connect(mapStateToProps)(SVCMaster);
