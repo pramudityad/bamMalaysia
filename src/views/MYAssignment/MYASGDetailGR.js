@@ -1426,6 +1426,18 @@ class MYASGDetail extends Component {
                           )}
                           <td style={{ width: "10%" }}>
                             <input
+                              type="text"   
+                              disabled
+                              readonly             
+                              name="GR_Document_No"
+                              id="GR_Document_No"
+                              value={child_data.GR_Document_No}
+                              // onChange={this.handleInputchild(idx)}
+                              // style={{ width: "10%" }}
+                            />
+                          </td>
+                          <td style={{ width: "10%" }}>
+                            <input
                               type="number"
                               min="0"
                               max="10"
