@@ -327,6 +327,9 @@ class MYASGCreation extends Component {
           "Content-Type": "application/json",
           Authorization: "Basic dXNlcml4dDpYUXJuMzJuNWtxb00=",
         },
+        httpsAgent: new https.Agent({
+          rejectUnauthorized: false
+        })
       });
       if (respond.status >= 200 && respond.status < 300) {
         console.log("respond Get Data", respond);
@@ -347,6 +350,9 @@ class MYASGCreation extends Component {
           "Content-Type": "application/json",
           Authorization: "Basic dXNlcml4dDpYUXJuMzJuNWtxb00=",
         },
+        httpsAgent: new https.Agent({
+          rejectUnauthorized: false
+        })
       });
       if (respond.status >= 200 && respond.status < 300) {
         console.log("respond Get Data", respond);
