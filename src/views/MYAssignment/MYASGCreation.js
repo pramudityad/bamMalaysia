@@ -600,6 +600,7 @@ class MYASGCreation extends Component {
   };
 
   componentDidMount() {
+    console.log(process.env.REACT_APP_PROXY_URL)
     // this.toggleLoading();
     this.getVendorList();
     // this.getProjectList();
