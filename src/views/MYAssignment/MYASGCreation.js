@@ -323,6 +323,7 @@ class MYASGCreation extends Component {
     try {
       let respond = await axios.post(process.env.REACT_APP_PROXY_URL + url, all_reqbody_raw, {
         headers: {
+          'X-Requested-With': 'XMLHttpRequest',
           "Content-Type": "application/json",
           Authorization: "Basic dXNlcml4dDpYUXJuMzJuNWtxb00=",
         },
@@ -342,6 +343,7 @@ class MYASGCreation extends Component {
     try {
       let respond = await axios.post(process.env.REACT_APP_PROXY_URL + url, data_raw_dev, {
         headers: {
+          'X-Requested-With': 'XMLHttpRequest',
           "Content-Type": "application/json",
           Authorization: "Basic dXNlcml4dDpYUXJuMzJuNWtxb00=",
         },
