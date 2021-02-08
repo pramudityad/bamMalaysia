@@ -29,7 +29,7 @@ import { connect } from "react-redux";
 const DefaultNotif = React.lazy(() =>
   import("../../views/DefaultView/DefaultNotif")
 );
-
+const https = require('https');
 const data_raw_dev = {
   query_param: {
     table: "p_celc_cel2_m_site_data",
