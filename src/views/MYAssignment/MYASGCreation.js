@@ -300,9 +300,9 @@ class MYASGCreation extends Component {
     }
   }
 
-  async getFASfromACT(proxyurl, url) {
+  async getFASfromACT(url) {
     try {
-      let respond = await axios.post(proxyurl + url, fas_reqbody, {
+      let respond = await axios.post(process.env.REACT_APP_PROXY_URL + url, fas_reqbody, {
         headers: {
           "Content-Type": "application/json",
           Authorization: "Basic dXNlcml4dDpYUXJuMzJuNWtxb00=",
@@ -319,9 +319,9 @@ class MYASGCreation extends Component {
     }
   }
 
-  async getCDfromACT(proxyurl, url) {
+  async getCDfromACT(url) {
     try {
-      let respond = await axios.post(proxyurl + url, all_reqbody_raw, {
+      let respond = await axios.post(process.env.REACT_APP_PROXY_URL + url, all_reqbody_raw, {
         headers: {
           "Content-Type": "application/json",
           Authorization: "Basic dXNlcml4dDpYUXJuMzJuNWtxb00=",
@@ -338,9 +338,9 @@ class MYASGCreation extends Component {
     }
   }
 
-  async getCDfromACTdev(proxyurl, url) {
+  async getCDfromACTdev(url) {
     try {
-      let respond = await axios.post(proxyurl + url, data_raw_dev, {
+      let respond = await axios.post(process.env.REACT_APP_PROXY_URL + url, data_raw_dev, {
         headers: {
           "Content-Type": "application/json",
           Authorization: "Basic dXNlcml4dDpYUXJuMzJuNWtxb00=",
@@ -379,7 +379,6 @@ class MYASGCreation extends Component {
   getDataCDACT = () => {
     this.toggleLoading();
     this.getCDfromACT(
-      process.env.REACT_APP_PROXY_URL,
       "https://act.e-dpm.com/index.php/android/get_data_new"
     ).then((resCD) => {
       if (resCD.data !== undefined) {
@@ -406,7 +405,6 @@ class MYASGCreation extends Component {
 
   getDataCDACTdev = () => {
     this.getCDfromACTdev(
-      process.env.REACT_APP_PROXY_URL,
       "https://act.e-dpm.com/index.php/android/get_data_new"
     ).then((resCD) => {
       // this.toggleLoading();
