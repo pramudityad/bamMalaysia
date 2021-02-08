@@ -171,3 +171,12 @@ All notable changes to BAM https://bam-my.e-dpm.com will be documented in this f
 ### Changed
 
 ### Fixed
+
+## [1.3.10] - 2021-02-08
+
+### Added
+
+### Changed
+
+### Fixed
+- selfhost corsanywhere
