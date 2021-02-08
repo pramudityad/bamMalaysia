@@ -357,9 +357,9 @@ class MYASGEdit extends Component {
     }
   }
 
-  async getCDfromACTdev(proxyurl, url) {
+  async getCDfromACTdev(url) {
     try {
-      let respond = await axios.post(proxyurl + url, data_raw_dev, {
+      let respond = await axios.post(process.env.REACT_APP_PROXY_URL + url, data_raw_dev, {
         headers: {
           "Content-Type": "application/json",
           Authorization: "Basic dXNlcml4dDpYUXJuMzJuNWtxb00=",
