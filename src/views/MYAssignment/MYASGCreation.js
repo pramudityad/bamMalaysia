@@ -18,7 +18,6 @@ import Pagination from "react-js-pagination";
 import { Modal, ModalBody, ModalHeader, ModalFooter } from "reactstrap";
 import { convertDateFormat } from "../../helper/basicFunction";
 import ModalCreateNew from "../Component/ModalCreateNew";
-
 import axios from "axios";
 import { Link, Redirect } from "react-router-dom";
 import AsyncSelect from "react-select/async";
@@ -30,6 +29,7 @@ const DefaultNotif = React.lazy(() =>
   import("../../views/DefaultView/DefaultNotif")
 );
 const https = require('https');
+
 const data_raw_dev = {
   query_param: {
     table: "p_celc_cel2_m_site_data",
