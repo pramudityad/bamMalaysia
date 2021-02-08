@@ -1305,6 +1305,15 @@ class MappingHW extends React.Component {
     // console.log(params_field, sumheader);
   };
 
+  countheaderNaN = (params_field) => {
+    let value = "element." + params_field;
+    let sumheader = this.state.all_data_mapping.filter(
+      (element) => eval(value) !== null && eval(value) !== ""
+    );
+    return sumheader.length;
+    // console.log(params_field, sumheader);
+  };
+
   render() {
     const CPOForm = this.state.CPOForm;
     const role = this.state.roleUser;
@@ -1481,7 +1490,7 @@ class MappingHW extends React.Component {
                         "overflow-y": "auto",
                       }}
                     >
-                      <table class="table table-hover">
+                      <table style={{ width: "10%" }} class="table table-hover">
                         <thead class="thead-dark">
                           <tr align="center">
                             {this.state.tabs_submenu[0] === true ? (
@@ -1501,9 +1510,17 @@ class MappingHW extends React.Component {
                               <tr align="center">
                                 <th></th>
                                 <th></th>
-                                {header_model.map((head) => (
-                                  <th>{this.countheader(head)}</th>
-                                ))}
+                                {header_model.map((head, j) =>
+                                  head === "Qty" ||
+                                  head === "Unit_Price" ||
+                                  head === "Total_Price" ||
+                                  head === "Discounted_Unit_Price" ||
+                                  head === "Discounted_Po_Price" ? (
+                                    <th>{this.countheader(head)}</th>
+                                  ) : (
+                                    <th>{this.countheaderNaN(head)}</th>
+                                  )
+                                )}
                               </tr>
                             </>
                           ) : (
@@ -1560,8 +1577,30 @@ class MappingHW extends React.Component {
                                       value={e}
                                     />
                                   </td>
-                                  <td>{e.Project}</td>
-                                  <td>{e.Po_Number}</td>
+                                  <td>
+                                    {this.LookupField(
+                                      e.Po + "-" + e.Line,
+                                      "Deal_Name"
+                                    )}
+                                  </td>
+                                  <td>
+                                    {this.LookupField(
+                                      e.Po + "-" + e.Line,
+                                      "Hammer"
+                                    )}
+                                  </td>
+                                  <td>
+                                    {this.LookupField(
+                                      e.Po + "-" + e.Line,
+                                      "Project_Description"
+                                    )}
+                                  </td>
+                                  <td>
+                                    {this.LookupField(
+                                      e.Po + "-" + e.Line,
+                                      "Po_Number"
+                                    )}
+                                  </td>
                                   <td>{e.Data_1}</td>
                                   <td>{e.Lookup_Reference}</td>
                                   <td>{e.Region}</td>
@@ -1572,7 +1611,12 @@ class MappingHW extends React.Component {
                                   <td>{e.Config}</td>
                                   <td>{e.Po}</td>
                                   <td>{e.Line}</td>
-                                  <td>{e.Description}</td>
+                                  <td>
+                                    {this.LookupField(
+                                      e.Po + "-" + e.Line,
+                                      "Description"
+                                    )}
+                                  </td>
                                   <td>{e.Qty}</td>
                                   <td>{e.NW}</td>
                                   <td>{e.On_Air_Date}</td>
@@ -1581,11 +1625,45 @@ class MappingHW extends React.Component {
                                   <td>{e.Premr_No}</td>
                                   <td>{e.Proceed_Billing_100}</td>
                                   <td>{e.Celcom_User}</td>
-                                  <td>{e.Pcode}</td>
-                                  <td>{e.Unit_Price}</td>
-                                  <td>{e.Unit_Price * e.Qty}</td>
-                                  <td>{e.Discounted_Unit_Price}</td>
-                                  <td>{e.Discounted_Po_Price}</td>
+                                  <td>
+                                    {this.LookupField(
+                                      e.Po + "-" + e.Line,
+                                      "Pcode"
+                                    )}
+                                  </td>
+                                  <td>
+                                    {this.LookupField(
+                                      e.Po + "-" + e.Line,
+                                      "Unit_Price"
+                                    )}
+                                  </td>
+                                  <td>
+                                    {this.LookupField(
+                                      e.Po + "-" + e.Line,
+                                      "Total_Price"
+                                    )}
+                                  </td>
+                                  <td>
+                                    {this.LookupField(
+                                      e.Po + "-" + e.Line,
+                                      "Discounted_Unit_Price"
+                                    )}
+                                  </td>
+                                  <td>
+                                    {this.LookupField(
+                                      e.Po + "-" + e.Line,
+                                      "Discounted_Po_Price"
+                                    )}
+                                  </td>
+                                  <td>
+                                    {e.Unit_Price *
+                                      e.Qty *
+                                      (this.LookupField(
+                                        e.Po + "-" + e.Line,
+                                        "Hammer_1_Hd"
+                                      ) /
+                                        100)}
+                                  </td>
                                   <td>{e.So_Line_Item_Description}</td>
                                   <td>{e.Sitepcode}</td>
                                   <td>{e.VlookupWbs}</td>
@@ -1604,11 +1682,6 @@ class MappingHW extends React.Component {
                                   <td>{e.Invoicing_No_Ni_20}</td>
                                   <td>{e.Invoicing_Date_Ni_20}</td>
                                   <td>{e.Cancelled_Invoicing_Ni_20}</td>
-                                  <td>{e.Sso_Coa_Date_20}</td>
-                                  <td>{e.Billing_Upon_Sso_20}</td>
-                                  <td>{e.Invoicing_No_Sso_20}</td>
-                                  <td>{e.Invoicing_Date_Sso_20}</td>
-                                  <td>{e.Gr_Number}</td>
                                   <td>{e.Hw_Coa_Received_Date_40}</td>
                                   <td>{e.Billing_Upon_Hw_Coa_40}</td>
                                   <td>{e.Invoicing_No_Hw_Coa_40}</td>
@@ -1624,7 +1697,6 @@ class MappingHW extends React.Component {
                                   <td>{e.Invoicing_No_Sso_20_1}</td>
                                   <td>{e.Invoicing_Date_Sso_20_1}</td>
                                   <td>{e.Cancelled_Sso_20}</td>
-                                  <td>{e.Vlookup_SSO_100_In_Service}</td>
                                   <td>{e.Hw_Coa_100}</td>
                                   <td>{e.Billing_Upon_Hw_Coa_100}</td>
                                   <td>{e.Invoicing_No_Hw_Coa_100}</td>
@@ -1635,18 +1707,6 @@ class MappingHW extends React.Component {
                                   <td>{e.Po_1}</td>
                                   <td>{e.Reff}</td>
                                   <td>{e.Vlookup_For_Billing}</td>
-                                  <td>{e.Deal_Name}</td>
-                                  <td>{e.Hammer}</td>
-                                  <td>
-                                    {e.Unit_Price *
-                                      e.Qty *
-                                      (this.LookupField(
-                                        e.Po + "-" + e.Line,
-                                        "Hammer_1_Hd"
-                                      ) /
-                                        100)}
-                                  </td>
-                                  <td>{e.Project_Description}</td>
                                 </tr>
                               </React.Fragment>
                             ))}
@@ -1674,8 +1734,30 @@ class MappingHW extends React.Component {
                                   ) : (
                                     <td></td>
                                   )}
-                                  <td>{e.Project}</td>
-                                  <td>{e.Po_Number}</td>
+                                  <td>
+                                    {this.LookupField(
+                                      e.Po + "-" + e.Line,
+                                      "Deal_Name"
+                                    )}
+                                  </td>
+                                  <td>
+                                    {this.LookupField(
+                                      e.Po + "-" + e.Line,
+                                      "Hammer"
+                                    )}
+                                  </td>
+                                  <td>
+                                    {this.LookupField(
+                                      e.Po + "-" + e.Line,
+                                      "Project_Description"
+                                    )}
+                                  </td>
+                                  <td>
+                                    {this.LookupField(
+                                      e.Po + "-" + e.Line,
+                                      "Po_Number"
+                                    )}
+                                  </td>
                                   <td>{e.Data_1}</td>
                                   <td>{e.Lookup_Reference}</td>
                                   <td>{e.Region}</td>
@@ -1686,7 +1768,12 @@ class MappingHW extends React.Component {
                                   <td>{e.Config}</td>
                                   <td>{e.Po}</td>
                                   <td>{e.Line}</td>
-                                  <td>{e.Description}</td>
+                                  <td>
+                                    {this.LookupField(
+                                      e.Po + "-" + e.Line,
+                                      "Description"
+                                    )}
+                                  </td>
                                   <td>{e.Qty}</td>
                                   <td>{e.NW}</td>
                                   <td>{e.On_Air_Date}</td>
@@ -1695,11 +1782,45 @@ class MappingHW extends React.Component {
                                   <td>{e.Premr_No}</td>
                                   <td>{e.Proceed_Billing_100}</td>
                                   <td>{e.Celcom_User}</td>
-                                  <td>{e.Pcode}</td>
-                                  <td>{e.Unit_Price}</td>
-                                  <td>{e.Total_Price}</td>
-                                  <td>{e.Discounted_Unit_Price}</td>
-                                  <td>{e.Discounted_Po_Price}</td>
+                                  <td>
+                                    {this.LookupField(
+                                      e.Po + "-" + e.Line,
+                                      "Pcode"
+                                    )}
+                                  </td>
+                                  <td>
+                                    {this.LookupField(
+                                      e.Po + "-" + e.Line,
+                                      "Unit_Price"
+                                    )}
+                                  </td>
+                                  <td>
+                                    {this.LookupField(
+                                      e.Po + "-" + e.Line,
+                                      "Total_Price"
+                                    )}
+                                  </td>
+                                  <td>
+                                    {this.LookupField(
+                                      e.Po + "-" + e.Line,
+                                      "Discounted_Unit_Price"
+                                    )}
+                                  </td>
+                                  <td>
+                                    {this.LookupField(
+                                      e.Po + "-" + e.Line,
+                                      "Discounted_Po_Price"
+                                    )}
+                                  </td>
+                                  <td>
+                                    {e.Unit_Price *
+                                      e.Qty *
+                                      (this.LookupField(
+                                        e.Po + "-" + e.Line,
+                                        "Hammer_1_Hd"
+                                      ) /
+                                        100)}
+                                  </td>
                                   <td>{e.So_Line_Item_Description}</td>
                                   <td>{e.Sitepcode}</td>
                                   <td>{e.VlookupWbs}</td>
@@ -1718,11 +1839,6 @@ class MappingHW extends React.Component {
                                   <td>{e.Invoicing_No_Ni_20}</td>
                                   <td>{e.Invoicing_Date_Ni_20}</td>
                                   <td>{e.Cancelled_Invoicing_Ni_20}</td>
-                                  <td>{e.Sso_Coa_Date_20}</td>
-                                  <td>{e.Billing_Upon_Sso_20}</td>
-                                  <td>{e.Invoicing_No_Sso_20}</td>
-                                  <td>{e.Invoicing_Date_Sso_20}</td>
-                                  <td>{e.Gr_Number}</td>
                                   <td>{e.Hw_Coa_Received_Date_40}</td>
                                   <td>{e.Billing_Upon_Hw_Coa_40}</td>
                                   <td>{e.Invoicing_No_Hw_Coa_40}</td>
@@ -1738,7 +1854,6 @@ class MappingHW extends React.Component {
                                   <td>{e.Invoicing_No_Sso_20_1}</td>
                                   <td>{e.Invoicing_Date_Sso_20_1}</td>
                                   <td>{e.Cancelled_Sso_20}</td>
-                                  <td>{e.Vlookup_SSO_100_In_Service}</td>
                                   <td>{e.Hw_Coa_100}</td>
                                   <td>{e.Billing_Upon_Hw_Coa_100}</td>
                                   <td>{e.Invoicing_No_Hw_Coa_100}</td>
@@ -1749,16 +1864,6 @@ class MappingHW extends React.Component {
                                   <td>{e.Po_1}</td>
                                   <td>{e.Reff}</td>
                                   <td>{e.Vlookup_For_Billing}</td>
-                                  <td>{e.Deal_Name}</td>
-                                  <td>{e.Hammer}</td>
-                                  <td>
-                                    {this.LookupField(
-                                      e.Po + "-" + e.Line,
-                                      "Hammer_1_Hd_Total"
-                                    ) *
-                                      (e.Unit_Price * e.Qty)}
-                                  </td>
-                                  <td>{e.Project_Description}</td>
                                 </tr>
                               </React.Fragment>
                             ))}

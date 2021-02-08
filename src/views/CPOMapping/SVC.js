@@ -81,9 +81,11 @@ const Checkbox1 = ({
 
 const modul_name = "SVC Mapping";
 const header = [
-  "PROJECT",
+  "DEAL NAME",
+  "HAMMER ",
+  "PROJECT DESCRIPTION",
   "PO NUMBER",
-  // "1",
+  "1",
   "LOOKUP REFERENCE",
   "REGION",
   "REFERENCE LOC ID",
@@ -104,9 +106,10 @@ const header = [
   "PCODE",
   "UNIT PRICE",
   "TOTAL PRICE",
-  "TYPE",
+  "COMMODITY",
   "DISCOUNTED UNIT PRICE",
   "DISCOUNTED PO PRICE",
+  "HAMMER 1 HD TOTAL",
   "SO LINE ITEM DESCRIPTION",
   "sitePCode",
   "VlookupWBS",
@@ -133,6 +136,16 @@ const header = [
   "20% INVOICING NO.",
   "20% INVOICING DATE",
   "Cancelled",
+  "COA NI RCVD DATE",
+  "40% BILLING UPON NI",
+  "40% INVOICING NO.",
+  "40% INVOICING DATE",
+  "Cancelled",
+  "COSSO RCVD DATE",
+  "60% BILLING UPON SSO",
+  "60% INVOICING NO.",
+  "60% INVOICING DATE",
+  "Cancelled",
   "COA SSO RCVD DATE 100%",
   "100% BILLING UPON SSO",
   "100% INVOICING NO.",
@@ -145,18 +158,16 @@ const header = [
   "Cancelled",
   "SES NO.",
   "SES STATUS",
-  // "LINK",
+  "LINK",
   "NI COA SUBMISSION STATUS",
-  "DEAL NAME",
-  "HAMMER",
-  "PROJECT DESCRIPTION",
-  "Commodity",
 ];
 
 const header_model = [
-  "Project",
+  "Deal_Name",
+  "Hammer",
+  "Project_Description",
   "Po_Number",
-  // "Data_1",
+  "Data_1",
   "Lookup_Reference",
   "Region",
   "Reference_Loc_Id",
@@ -177,9 +188,10 @@ const header_model = [
   "Pcode",
   "Unit_Price",
   "Total_Price",
-  "Type",
+  "Commodity",
   "Discounted_Unit_Price",
   "Discounted_Po_Price",
+  "Hammer_1_Hd_Total",
   "So_Line_Item_Description",
   "Sitepcode",
   "VlookupWbs",
@@ -206,6 +218,16 @@ const header_model = [
   "Invoicing_No_Coa_Psp_20",
   "Invoicing_Date_Coa_Psp_20",
   "Cancelled_Coa_Psp_Received_Date_20",
+  "Coa_Ni_Received_Date_40",
+  "Billing_Upon_Coa_Ni_40",
+  "Invoicing_No_Coa_Ni_40",
+  "Invoicing_Date_Coa_Ni_40",
+  "Cancelled_Coa_Ni_Received_Date_40",
+  "Cosso_Received_Date_60",
+  "Billing_Upon_Cosso_60",
+  "Invoicing_No_Cosso_60",
+  "Invoicing_Date_Cosso_60",
+  "Cancelled_Cosso_Received_Date_60",
   "Sso_Coa_Date_100",
   "Billing_Upon_Sso_Coa_100",
   "Invoicing_No_Sso_Coa_100",
@@ -218,18 +240,14 @@ const header_model = [
   "Cancelled_Coa_Ni_Date_100",
   "Ses_No",
   "Ses_Status",
-  // "Link",
+  "Link",
   "Ni_Coa_Submission_Status",
-  "Deal_Name",
-  "Hammer",
-  "Project_Description",
-  "Commodity",
 ];
 
 const header_materialmapping = [
-  "Project",
+  "Project_Description",
   "Po_Number",
-  // "Data_1",
+  "Data_1",
   "Lookup_Reference",
   "Region",
   "Reference_Loc_Id",
@@ -250,9 +268,9 @@ const header_materialmapping = [
   "Pcode",
   "Unit_Price",
   "Total_Price",
+  "Commodity",
   "Discounted_Unit_Price",
   "Discounted_Po_Price",
-  "Type",
 ];
 
 const header_pfm = [
@@ -261,7 +279,6 @@ const header_pfm = [
   "VlookupWbs",
   "So_No",
   "Wbs_No",
-  "Billing_100",
   // "Atp_Coa_Received_Date_80",
   "Billing_Upon_Atp_Coa_80",
   "Invoicing_No_Atp_Coa_80",
@@ -295,14 +312,18 @@ const header_pfm = [
 ];
 
 const header_admin = [
+  "Proceed_Billing_100",
   "Billing_100",
   "Atp_Coa_Received_Date_80",
   "Ni_Coa_Date_20",
   "Sso_Coa_Date_80",
   "Coa_Psp_Received_Date_20",
-  "Sso_Coa_Date_100",
+  "Coa_Ni_Received_Date_40",
+  "Cosso_Received_Date_60",
+  "Coa_Ni_Date_100",
   "Ses_No",
   "Ses_Status",
+  "Link",
   "Ni_Coa_Submission_Status",
 ];
 
@@ -1702,7 +1723,7 @@ class MappingSVC extends React.PureComponent {
                         "overflow-y": "auto",
                       }}
                     >
-                      <table class="table table-hover">
+                      <table style={{ width: "10%" }} class="table table-hover">
                         <thead class="thead-dark">
                           <tr align="center">
                             {this.state.tabs_submenu[0] === true ? (
@@ -1787,8 +1808,31 @@ class MappingSVC extends React.PureComponent {
                                       value={e}
                                     />
                                   </td>
-                                  <td>{e.Project}</td>
-                                  <td>{e.Po_Number}</td>
+                                  <td>
+                                    {this.LookupField(
+                                      e.Po + "-" + e.Line,
+                                      "Deal_Name"
+                                    )}
+                                  </td>
+                                  <td>
+                                    {this.LookupField(
+                                      e.Po + "-" + e.Line,
+                                      "Hammer"
+                                    )}
+                                  </td>
+                                  <td>
+                                    {this.LookupField(
+                                      e.Po + "-" + e.Line,
+                                      "Project_Description"
+                                    )}
+                                  </td>
+                                  <td>
+                                    {this.LookupField(
+                                      e.Po + "-" + e.Line,
+                                      "Po_Number"
+                                    )}
+                                  </td>
+                                  <td>{e.Data_1}</td>
                                   <td>{e.Lookup_Reference}</td>
                                   <td>{e.Region}</td>
                                   <td>{e.Reference_Loc_Id}</td>
@@ -1803,10 +1847,10 @@ class MappingSVC extends React.PureComponent {
                                       e.Po + "-" + e.Line,
                                       "Description"
                                     )}
-                                  </td>{" "}
+                                  </td>
                                   <td>{e.Qty}</td>
                                   <td>{e.CNI_Date}</td>
-                                  <td>{convertDateFormat(e.Mapping_Date)}</td>
+                                  <td>{e.Mapping_Date}</td>
                                   <td>{e.Remarks}</td>
                                   <td>{e.Premr_No}</td>
                                   <td>{e.Proceed_Billing_100}</td>
@@ -1823,10 +1867,39 @@ class MappingSVC extends React.PureComponent {
                                       "Unit_Price"
                                     )}
                                   </td>
-                                  <td>{e.Total_Price}</td>
-                                  <td>{e.Type}</td>
-                                  <td>{e.Discounted_Unit_Price}</td>
-                                  <td>{e.Discounted_Po_Price}</td>
+                                  <td>
+                                    {this.LookupField(
+                                      e.Po + "-" + e.Line,
+                                      "Total_Price"
+                                    )}
+                                  </td>
+                                  <td>
+                                    {this.LookupField(
+                                      e.Po + "-" + e.Line,
+                                      "Commodity"
+                                    )}
+                                  </td>
+                                  <td>
+                                    {this.LookupField(
+                                      e.Po + "-" + e.Line,
+                                      "Discounted_Unit_Price"
+                                    )}
+                                  </td>
+                                  <td>
+                                    {this.LookupField(
+                                      e.Po + "-" + e.Line,
+                                      "Discounted_Po_Price"
+                                    )}
+                                  </td>
+                                  <td>
+                                    {e.Unit_Price *
+                                      e.Qty *
+                                      (this.LookupField(
+                                        e.Po + "-" + e.Line,
+                                        "Hammer_1_Hd"
+                                      ) /
+                                        100)}
+                                  </td>
                                   <td>{e.So_Line_Item_Description}</td>
                                   <td>{e.Sitepcode}</td>
                                   <td>{e.VlookupWbs}</td>
@@ -1855,6 +1928,16 @@ class MappingSVC extends React.PureComponent {
                                   <td>
                                     {e.Cancelled_Coa_Psp_Received_Date_20}
                                   </td>
+                                  <td>{e.Coa_Ni_Received_Date_40}</td>
+                                  <td>{e.Billing_Upon_Coa_Ni_40}</td>
+                                  <td>{e.Invoicing_No_Coa_Ni_40}</td>
+                                  <td>{e.Invoicing_Date_Coa_Ni_40}</td>
+                                  <td>{e.Cancelled_Coa_Ni_Received_Date_40}</td>
+                                  <td>{e.Cosso_Received_Date_60}</td>
+                                  <td>{e.Billing_Upon_Cosso_60}</td>
+                                  <td>{e.Invoicing_No_Cosso_60}</td>
+                                  <td>{e.Invoicing_Date_Cosso_60}</td>
+                                  <td>{e.Cancelled_Cosso_Received_Date_60}</td>
                                   <td>{e.Sso_Coa_Date_100}</td>
                                   <td>{e.Billing_Upon_Sso_Coa_100}</td>
                                   <td>{e.Invoicing_No_Sso_Coa_100}</td>
@@ -1867,10 +1950,8 @@ class MappingSVC extends React.PureComponent {
                                   <td>{e.Cancelled_Coa_Ni_Date_100}</td>
                                   <td>{e.Ses_No}</td>
                                   <td>{e.Ses_Status}</td>
+                                  <td>{e.Link}</td>
                                   <td>{e.Ni_Coa_Submission_Status}</td>
-                                  <td>{e.Deal_Name}</td>
-                                  <td>{e.Hammer}</td>
-                                  <td>{e.Project_Description}</td>
                                 </tr>
                               </React.Fragment>
                             ))}
@@ -1898,7 +1979,31 @@ class MappingSVC extends React.PureComponent {
                                   ) : (
                                     <td></td>
                                   )}
-                                  <td>{e.Link}</td>
+                                  <td>
+                                    {this.LookupField(
+                                      e.Po + "-" + e.Line,
+                                      "Deal_Name"
+                                    )}
+                                  </td>
+                                  <td>
+                                    {this.LookupField(
+                                      e.Po + "-" + e.Line,
+                                      "Hammer"
+                                    )}
+                                  </td>
+                                  <td>
+                                    {this.LookupField(
+                                      e.Po + "-" + e.Line,
+                                      "Project_Description"
+                                    )}
+                                  </td>
+                                  <td>
+                                    {this.LookupField(
+                                      e.Po + "-" + e.Line,
+                                      "Po_Number"
+                                    )}
+                                  </td>
+                                  <td>{e.Data_1}</td>
                                   <td>{e.Lookup_Reference}</td>
                                   <td>{e.Region}</td>
                                   <td>{e.Reference_Loc_Id}</td>
@@ -1908,11 +2013,18 @@ class MappingSVC extends React.PureComponent {
                                   <td>{e.Config}</td>
                                   <td>{e.Po}</td>
                                   <td>{e.Line}</td>
-                                  <td>{e.Description}</td>
+                                  <td>
+                                    {this.LookupField(
+                                      e.Po + "-" + e.Line,
+                                      "Description"
+                                    )}
+                                  </td>
                                   <td>{e.Qty}</td>
                                   <td>{e.CNI_Date}</td>
                                   <td>{e.Mapping_Date}</td>
                                   <td>{e.Remarks}</td>
+                                  <td>{e.Premr_No}</td>
+                                  <td>{e.Proceed_Billing_100}</td>
                                   <td>{e.Celcom_User}</td>
                                   <td>
                                     {this.LookupField(
@@ -1926,11 +2038,42 @@ class MappingSVC extends React.PureComponent {
                                       "Unit_Price"
                                     )}
                                   </td>
-                                  <td>{e.Total_Price}</td>
-                                  <td>{e.Discounted_Unit_Price}</td>
-                                  <td>{e.Discounted_Po_Price}</td>
-                                  <td>{e.Type}</td>
+                                  <td>
+                                    {this.LookupField(
+                                      e.Po + "-" + e.Line,
+                                      "Total_Price"
+                                    )}
+                                  </td>
+                                  <td>
+                                    {this.LookupField(
+                                      e.Po + "-" + e.Line,
+                                      "Commodity"
+                                    )}
+                                  </td>
+                                  <td>
+                                    {this.LookupField(
+                                      e.Po + "-" + e.Line,
+                                      "Discounted_Unit_Price"
+                                    )}
+                                  </td>
+                                  <td>
+                                    {this.LookupField(
+                                      e.Po + "-" + e.Line,
+                                      "Discounted_Po_Price"
+                                    )}
+                                  </td>
+                                  <td>
+                                    {e.Unit_Price *
+                                      e.Qty *
+                                      (this.LookupField(
+                                        e.Po + "-" + e.Line,
+                                        "Hammer_1_Hd"
+                                      ) /
+                                        100)}
+                                  </td>
                                   <td>{e.So_Line_Item_Description}</td>
+                                  <td>{e.Sitepcode}</td>
+                                  <td>{e.VlookupWbs}</td>
                                   <td>{e.So_No}</td>
                                   <td>{e.Wbs_No}</td>
                                   <td>{e.Billing_100}</td>
@@ -1943,41 +2086,43 @@ class MappingSVC extends React.PureComponent {
                                   <td>{e.Billing_Upon_Ni_20}</td>
                                   <td>{e.Invoicing_No_Ni_20}</td>
                                   <td>{e.Invoicing_Date_Ni_20}</td>
+                                  <td>{e.Cancelled_Invoicing_Ni_20}</td>
                                   <td>{e.Sso_Coa_Date_80}</td>
                                   <td>{e.Billing_Upon_Sso_80}</td>
                                   <td>{e.Invoicing_No_Sso_80}</td>
                                   <td>{e.Invoicing_Date_Sso_80}</td>
+                                  <td>{e.Cancelled_Sso_Coa_Date_80}</td>
                                   <td>{e.Coa_Psp_Received_Date_20}</td>
                                   <td>{e.Billing_Upon_Coa_Psp_20}</td>
                                   <td>{e.Invoicing_No_Coa_Psp_20}</td>
                                   <td>{e.Invoicing_Date_Coa_Psp_20}</td>
+                                  <td>
+                                    {e.Cancelled_Coa_Psp_Received_Date_20}
+                                  </td>
+                                  <td>{e.Coa_Ni_Received_Date_40}</td>
+                                  <td>{e.Billing_Upon_Coa_Ni_40}</td>
+                                  <td>{e.Invoicing_No_Coa_Ni_40}</td>
+                                  <td>{e.Invoicing_Date_Coa_Ni_40}</td>
+                                  <td>{e.Cancelled_Coa_Ni_Received_Date_40}</td>
+                                  <td>{e.Cosso_Received_Date_60}</td>
+                                  <td>{e.Billing_Upon_Cosso_60}</td>
+                                  <td>{e.Invoicing_No_Cosso_60}</td>
+                                  <td>{e.Invoicing_Date_Cosso_60}</td>
+                                  <td>{e.Cancelled_Cosso_Received_Date_60}</td>
                                   <td>{e.Sso_Coa_Date_100}</td>
                                   <td>{e.Billing_Upon_Sso_Coa_100}</td>
                                   <td>{e.Invoicing_No_Sso_Coa_100}</td>
                                   <td>{e.Invoicing_Date_Sso_Coa_100}</td>
+                                  <td>{e.Cancelled_Sso_Coa_Date_100}</td>
                                   <td>{e.Coa_Ni_Date_100}</td>
                                   <td>{e.Billing_Upon_Coa_Ni_100}</td>
                                   <td>{e.Invoicing_No_Coa_Ni_100}</td>
                                   <td>{e.Invoicing_Date_Coa_Ni_100}</td>
+                                  <td>{e.Cancelled_Coa_Ni_Date_100}</td>
                                   <td>{e.Ses_No}</td>
                                   <td>{e.Ses_Status}</td>
-                                  <td>{e.Link_1}</td>
+                                  <td>{e.Link}</td>
                                   <td>{e.Ni_Coa_Submission_Status}</td>
-                                  <td>{e.Invoicing_Date_Sso_20_1}</td>
-                                  <td>{e.Cancelled_Sso_20}</td>
-                                  <td>{e.Vlookup_SSO_100_In_Service}</td>
-                                  <td>{e.Hw_Coa_100}</td>
-                                  <td>{e.Billing_Upon_Hw_Coa_100}</td>
-                                  <td>{e.Invoicing_No_Hw_Coa_100}</td>
-                                  <td>{e.Invoicing_Date_Hw_Coa_100}</td>
-                                  <td>{e.Reference_Loc_Id_1}</td>
-                                  <td>{e.Po_1}</td>
-                                  <td>{e.Reff_1}</td>
-                                  <td>{e.Site_List}</td>
-                                  <td>{e.Reff_2}</td>
-                                  <td>{e.Ni}</td>
-                                  <td>{e.Sso}</td>
-                                  <td>{e.Ref_Ni}</td>
                                 </tr>
                               </React.Fragment>
                             ))}
