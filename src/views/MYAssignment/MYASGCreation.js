@@ -379,7 +379,7 @@ class MYASGCreation extends Component {
   getDataCDACT = () => {
     this.toggleLoading();
     this.getCDfromACT(
-      "https://cors-anywhere.herokuapp.com/",
+      process.env.REACT_APP_PROXY_URL,
       "https://act.e-dpm.com/index.php/android/get_data_new"
     ).then((resCD) => {
       if (resCD.data !== undefined) {
@@ -406,7 +406,7 @@ class MYASGCreation extends Component {
 
   getDataCDACTdev = () => {
     this.getCDfromACTdev(
-      "https://cors-anywhere.herokuapp.com/",
+      process.env.REACT_APP_PROXY_URL,
       "https://act.e-dpm.com/index.php/android/get_data_new"
     ).then((resCD) => {
       // this.toggleLoading();
