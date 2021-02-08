@@ -319,9 +319,9 @@ class MYASGEdit extends Component {
     }
   }
 
-  async getFASfromACT(proxyurl, url) {
+  async getFASfromACT(url) {
     try {
-      let respond = await axios.post(proxyurl + url, fas_reqbody, {
+      let respond = await axios.post(process.env.REACT_APP_PROXY_URL + url, fas_reqbody, {
         headers: {
           "Content-Type": "application/json",
           Authorization: "Basic dXNlcml4dDpYUXJuMzJuNWtxb00=",
@@ -338,9 +338,9 @@ class MYASGEdit extends Component {
     }
   }
 
-  async getCDfromACT(proxyurl, url) {
+  async getCDfromACT(url) {
     try {
-      let respond = await axios.post(proxyurl + url, all_reqbody_raw, {
+      let respond = await axios.post(process.env.REACT_APP_PROXY_URL +  url, all_reqbody_raw, {
         headers: {
           "Content-Type": "application/json",
           Authorization: "Basic dXNlcml4dDpYUXJuMzJuNWtxb00=",
@@ -398,7 +398,6 @@ class MYASGEdit extends Component {
   getDataCDACT = () => {
     this.toggleLoading();
     this.getCDfromACT(
-      "https://cors-anywhere.herokuapp.com/",
       "https://act.e-dpm.com/index.php/android/get_data_new"
     ).then((resCD) => {
       if (resCD.data !== undefined) {
@@ -425,7 +424,6 @@ class MYASGEdit extends Component {
 
   getDataCDACTdev = () => {
     this.getCDfromACTdev(
-      "https://cors-anywhere.herokuapp.com/",
       "https://act.e-dpm.com/index.php/android/get_data_new"
     ).then((resCD) => {
       // this.toggleLoading();
