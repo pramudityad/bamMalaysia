@@ -66,6 +66,7 @@ const header = [
   "Discounted_Assigned_Price",
   "Hammer_1_Hd",
   "Pcode",
+  "Pcode_Used",
   "Commodity",
 ];
 const header_model = [
@@ -88,6 +89,7 @@ const header_model = [
   "Discounted_Assigned_Price",
   "Hammer_1_Hd",
   "Pcode",
+  "Pcode_Used",
   "Commodity",
 ];
 
@@ -111,6 +113,7 @@ const header_materialmapping = [
   // "Discounted_Assigned_Price",
   "Hammer_1_Hd",
   "Pcode",
+  "Pcode_Used",
   "Commodity",
 ];
 
@@ -152,111 +155,13 @@ class SVCMaster extends React.Component {
 
   getList() {
     let filter_array = [];
-    this.state.filter_list["Region"] !== null &&
-      this.state.filter_list["Region"] !== undefined &&
-      filter_array.push(
-        '"Region":{"$regex" : "' +
-          this.state.filter_list["Region"] +
-          '", "$options" : "i"}'
-      );
-    this.state.filter_list["New_Loc_Id"] !== null &&
-      this.state.filter_list["New_Loc_Id"] !== undefined &&
-      filter_array.push(
-        '"New_Loc_Id":{"$regex" : "' +
-          this.state.filter_list["New_Loc_Id"] +
-          '", "$options" : "i"}'
-      );
-    this.state.filter_list["New_Site_Name"] !== null &&
-      this.state.filter_list["New_Site_Name"] !== undefined &&
-      filter_array.push(
-        '"New_Site_Name":{"$regex" : "' +
-          this.state.filter_list["New_Site_Name"] +
-          '", "$options" : "i"}'
-      );
-    this.state.filter_list["Po"] !== null &&
-      this.state.filter_list["Po"] !== undefined &&
-      filter_array.push(
-        '"Po":{"$regex" : "' +
-          this.state.filter_list["Po"] +
-          '", "$options" : "i"}'
-      );
-    this.state.filter_list["Line_Item"] !== null &&
-      this.state.filter_list["Line_Item"] !== undefined &&
-      filter_array.push(
-        '"Line_Item":{"$regex" : "' +
-          this.state.filter_list["Line_Item"] +
-          '", "$options" : "i"}'
-      );
-    this.state.filter_list["Description"] !== null &&
-      this.state.filter_list["Description"] !== undefined &&
-      filter_array.push(
-        '"Description":{"$regex" : "' +
-          this.state.filter_list["Description"] +
-          '", "$options" : "i"}'
-      );
-    this.state.filter_list["Total_Po_Amount"] !== null &&
-      this.state.filter_list["Total_Po_Amount"] !== undefined &&
-      filter_array.push(
-        '"Total_Po_Amount":{"$regex" : "' +
-          this.state.filter_list["Total_Po_Amount"] +
-          '", "$options" : "i"}'
-      );
-    this.state.filter_list["Remarks"] !== null &&
-      this.state.filter_list["Remarks"] !== undefined &&
-      filter_array.push(
-        '"Remarks":{"$regex" : "' +
-          this.state.filter_list["Remarks"] +
-          '", "$options" : "i"}'
-      );
-    this.state.filter_list["Unit_Price"] !== null &&
-      this.state.filter_list["Unit_Price"] !== undefined &&
-      filter_array.push(
-        '"Unit_Price":{"$regex" : "' +
-          this.state.filter_list["Unit_Price"] +
-          '", "$options" : "i"}'
-      );
-    this.state.filter_list["Total_Price"] !== null &&
-      this.state.filter_list["Total_Price"] !== undefined &&
-      filter_array.push(
-        '"Total_Price":{"$regex" : "' +
-          this.state.filter_list["Total_Price"] +
-          '", "$options" : "i"}'
-      );
-    this.state.filter_list["Assigned_Price"] !== null &&
-      this.state.filter_list["Assigned_Price"] !== undefined &&
-      filter_array.push(
-        '"Assigned_Price":{"$regex" : "' +
-          this.state.filter_list["Assigned_Price"] +
-          '", "$options" : "i"}'
-      );
-    this.state.filter_list["Pcode"] !== null &&
-      this.state.filter_list["Pcode"] !== undefined &&
-      filter_array.push(
-        '"Pcode":{"$regex" : "' +
-          this.state.filter_list["Pcode"] +
-          '", "$options" : "i"}'
-      );
-    this.state.filter_list["Type"] !== null &&
-      this.state.filter_list["Type"] !== undefined &&
-      filter_array.push(
-        '"Type":{"$regex" : "' +
-          this.state.filter_list["Type"] +
-          '", "$options" : "i"}'
-      );
-    this.state.filter_list["Wbs"] !== null &&
-      this.state.filter_list["Wbs"] !== undefined &&
-      filter_array.push(
-        '"Wbs":{"$regex" : "' +
-          this.state.filter_list["Wbs"] +
-          '", "$options" : "i"}'
-      );
-    this.state.filter_list["Psp_Remarks"] !== null &&
-      this.state.filter_list["Psp_Remarks"] !== undefined &&
-      filter_array.push(
-        '"Psp_Remarks":{"$regex" : "' +
-          this.state.filter_list["Psp_Remarks"] +
-          '", "$options" : "i"}'
-      );
+    for (const [key, value] of Object.entries(this.state.filter_list)) {
+      if (value !== null && value !== undefined) {
+        filter_array.push(
+          '"' + key + '":{"$regex" : "' + value + '", "$options" : "i"}'
+        );
+      }
+    }
     let whereAnd = "{" + filter_array.join(",") + "}";
     getDatafromAPINODE(
       "/summaryMaster/getSummaryMaster?q=" +
@@ -399,49 +304,51 @@ class SVCMaster extends React.Component {
             .join(" ") +
           "</table>";
         // updated Data
-        const updated_table_header = Object.keys(res.data.updateData[0]).slice(
-          0,
-          -3
-        );
-        const update_Data = res.data.updateData;
-        const body_updated =
-          "<br/><span>Please be notified that the following " +
-          modul_name +
-          " data has been updated </span><br/><br/><table><tr>" +
-          updated_table_header
-            .map((tab, i) => "<th>" + tab + "</th>")
-            .join(" ") +
-          "</tr>" +
-          update_Data
-            .map(
-              (row, j) =>
-                "<tr key={" +
-                j +
-                "}>" +
-                updated_table_header
-                  .map((td) => "<td>" + eval(value + td) + "</td>")
-                  .join(" ") +
-                "</tr>"
-            )
-            .join(" ") +
-          "</table>";
+        if (res.data.updateData !== undefined) {
+          const updated_table_header = Object.keys(
+            res.data.updateData[0]
+          ).slice(0, -3);
+          const update_Data = res.data.updateData;
+          const body_updated =
+            "<br/><span>Please be notified that the following " +
+            modul_name +
+            " data has been updated </span><br/><br/><table><tr>" +
+            updated_table_header
+              .map((tab, i) => "<th>" + tab + "</th>")
+              .join(" ") +
+            "</tr>" +
+            update_Data
+              .map(
+                (row, j) =>
+                  "<tr key={" +
+                  j +
+                  "}>" +
+                  updated_table_header
+                    .map((td) => "<td>" + eval(value + td) + "</td>")
+                    .join(" ") +
+                  "</tr>"
+              )
+              .join(" ") +
+            "</table>";
 
-        const bodyEmail =
-          "<h2>DPM - BAM Notification</h2>" + body_new + body_updated;
-        let dataEmail = {
-          // "to": creatorEmail,
-          // to: "pramudityad@student.telkomuniversity.ac.id",
-          to: "pramudityad@outlook.com",
-          subject: "[NOTIFY to CPM] " + modul_name,
-          body: bodyEmail,
-        };
-        const sendEmail = await apiSendEmail(dataEmail);
-        console.log(bodyEmail);
-        this.setState({ action_status: "success" });
-        this.toggleLoading();
-        // // setTimeout(function () {
-        // //   window.location.reload();
-        // // }, 1500);
+          const bodyEmail =
+            "<h2>DPM - BAM Notification</h2>" + body_new + body_updated;
+          let dataEmail = {
+            // "to": creatorEmail,
+            // to: "pramudityad@student.telkomuniversity.ac.id",
+            to: "pramudityad@outlook.com",
+            subject: "[NOTIFY to CPM] " + modul_name,
+            body: bodyEmail,
+          };
+          const sendEmail = await apiSendEmail(dataEmail);
+          console.log(bodyEmail);
+          this.setState({ action_status: "success" });
+          this.toggleLoading();
+          // // setTimeout(function () {
+          // //   window.location.reload();
+          // // }, 1500);
+        }
+        return;
       } else {
         // updated Data
         const updated_table_header = Object.keys(res.data.updateData[0]).slice(
@@ -687,8 +594,10 @@ class SVCMaster extends React.Component {
     }
     let dataFilter = this.state.filter_list;
     dataFilter[index] = value;
+    // console.log("dataFilter[index]", dataFilter[index], index);
     this.setState({ filter_list: dataFilter, activePage: 1 }, () => {
       this.onChangeDebounced(e);
+      // console.log(this.state.filter_list);
     });
   };
 
@@ -902,7 +811,7 @@ class SVCMaster extends React.Component {
                           {this.state.all_data !== undefined &&
                             this.state.all_data.map((e, i) => (
                               <React.Fragment key={e._id + "frag"}>
-                                <tr key={e._id}>
+                                <tr key={e._id} align="center">
                                   <td>
                                     <Button
                                       size="sm"
@@ -917,7 +826,7 @@ class SVCMaster extends React.Component {
                                       ></i>
                                     </Button>
                                   </td>
-                                  <td>{e.type_summary}</td>
+                                  <td>{e.type_summary.toUpperCase()}</td>
                                   <td>{e.Deal_Name}</td>
                                   <td>{e.Hammer}</td>
                                   <td>{e.Project_Description}</td>
@@ -936,6 +845,7 @@ class SVCMaster extends React.Component {
                                   <td>{e.Discounted_Assigned_Price}</td>
                                   <td>{e.Hammer_1_Hd}</td>
                                   <td>{e.Pcode}</td>
+                                  <td>{e.Pcode_Used}</td>
                                   <td>{e.Commodity}</td>
                                 </tr>
                               </React.Fragment>
