@@ -180,3 +180,12 @@ All notable changes to BAM https://bam-my.e-dpm.com will be documented in this f
 
 ### Fixed
 - selfhost corsanywhere
+
+## [1.3.11] - 2021-02-19
+
+### Added
+
+### Changed
+
+### Fixed
+- Missing PO details in GR child - DPM (ana issue)

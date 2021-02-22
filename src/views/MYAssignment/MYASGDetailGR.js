@@ -109,19 +109,19 @@ class MYASGDetail extends Component {
   }
 
   addGR() {
-    if (this.state.lmr_detail.length !== 0) {
+    if (this.state.list_pr_po.length !== 0) {
       this.setState({
         ChildForm: this.state.ChildForm.concat([
           {
             Plant: "2172",
             Request_Type: "Add GR",
-            PO_Number: this.state.lmr_detail[this.state.lmr_detail.length - 1]
+            PO_Number: this.state.list_pr_po[0]
               .PO_Number,
-            PO_Item: this.state.lmr_detail[this.state.lmr_detail.length - 1]
+            PO_Item: this.state.list_pr_po[0]
               .PO_Item,
-            PO_Price: this.state.lmr_detail[this.state.lmr_detail.length - 1]
+            PO_Price: this.state.list_pr_po[0]
               .PO_Price,
-            PO_Qty: this.state.lmr_detail[this.state.lmr_detail.length - 1]
+            PO_Qty: this.state.list_pr_po[0]
               .PO_Qty,
             Required_GR_Qty: "",
             DN_No: "",
@@ -367,9 +367,8 @@ class MYASGDetail extends Component {
       '/prpo_data?where={"id_child_doc" : "' + child_id + '"}'
     ).then((res) => {
       if (res.data !== undefined) {
-        const dataLMRDetailPRPO = res.data._items[0];
-        this.setState({ list_pr_po: dataLMRDetailPRPO }, () =>
-          console.log("prpo ", this.state.list_pr_po)
+        const dataLMRDetailPRPO = res.data._items;
+        this.setState({ list_pr_po: dataLMRDetailPRPO }
         );
       }
     });
@@ -925,7 +924,6 @@ class MYASGDetail extends Component {
 
   render() {
     const Dataform = this.state.Dataform;
-    // const prpo = this.state.list_pr_po[0];
     return (
       <div>
         <DefaultNotif
