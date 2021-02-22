@@ -34,11 +34,13 @@ import {
   patchDatatoAPINODE,
 } from "../../helper/asyncFunction";
 import { numToSSColumn } from "../../helper/basicFunction";
+import '../MYAssignment/LMRMY.css';
+
 const DefaultNotif = React.lazy(() =>
   import("../../views/DefaultView/DefaultNotif")
 );
 
-const modul_name = "NDO";
+const module_name = "NDO";
 
 const header_model = [
   "BB",
@@ -102,10 +104,7 @@ class MatNDO extends React.Component {
   }
 
   getMaterialListAll() {
-    getDatafromAPINODE(
-      '/mmCode/getMm?q={"Material_Type": "' + modul_name + '"}' + "&noPg=1",
-      this.state.tokenUser
-    ).then((res) => {
+    getDatafromAPINODE('/mmCodeDigi/getMm?srt=_id:-1&q={"Material_Type": "' + module_name + '"}' + "&noPg=1", this.state.tokenUser).then((res) => {
       if (res.data !== undefined) {
         const items = res.data.data;
         this.setState({ material_list_all: items });
@@ -114,106 +113,103 @@ class MatNDO extends React.Component {
   }
 
   getMaterialList() {
-    this.setState((prevState) => ({
-      modal_loading: !prevState.modal_loading,
-    }));
     let filter_array = [];
     filter_array.push(
-      '"Material_Type":{"$regex" : "' + modul_name + '", "$options" : "i"}'
+      '"Material_Type":{"$regex" : "' + module_name + '", "$options" : "i"}'
     );
     this.state.filter_list["BB"] !== null &&
       this.state.filter_list["BB"] !== undefined &&
       filter_array.push(
         '"BB":{"$regex" : "' +
-          this.state.filter_list["BB"] +
-          '", "$options" : "i"}'
+        this.state.filter_list["BB"] +
+        '", "$options" : "i"}'
       );
     this.state.filter_list["BB_Sub"] !== null &&
       this.state.filter_list["BB_Sub"] !== undefined &&
       filter_array.push(
         '"BB_Sub":{"$regex" : "' +
-          this.state.filter_list["BB_Sub"] +
-          '", "$options" : "i"}'
+        this.state.filter_list["BB_Sub"] +
+        '", "$options" : "i"}'
       );
     this.state.filter_list["SoW_Description_or_Site_Type"] !== null &&
       this.state.filter_list["SoW_Description_or_Site_Type"] !== undefined &&
       filter_array.push(
         '"SoW_Description_or_Site_Type":{"$regex" : "' +
-          this.state.filter_list["SoW_Description_or_Site_Type"] +
-          '", "$options" : "i"}'
+        this.state.filter_list["SoW_Description_or_Site_Type"] +
+        '", "$options" : "i"}'
       );
     this.state.filter_list["sla"] !== null &&
       this.state.filter_list["sla"] !== undefined &&
       filter_array.push(
         '"sla":{"$regex" : "' +
-          this.state.filter_list["sla"] +
-          '", "$options" : "i"}'
+        this.state.filter_list["sla"] +
+        '", "$options" : "i"}'
       );
     this.state.filter_list["UoM"] !== null &&
       this.state.filter_list["UoM"] !== undefined &&
       filter_array.push(
         '"UoM":{"$regex" : "' +
-          this.state.filter_list["UoM"] +
-          '", "$options" : "i"}'
+        this.state.filter_list["UoM"] +
+        '", "$options" : "i"}'
       );
     this.state.filter_list["Unit_Price"] !== null &&
       this.state.filter_list["Unit_Price"] !== undefined &&
       filter_array.push(
         '"Unit_Price":{"$regex" : "' +
-          this.state.filter_list["Unit_Price"] +
-          '", "$options" : "i"}'
+        this.state.filter_list["Unit_Price"] +
+        '", "$options" : "i"}'
       );
     this.state.filter_list["Region"] !== null &&
       this.state.filter_list["Region"] !== undefined &&
       filter_array.push(
         '"Region":{"$regex" : "' +
-          this.state.filter_list["Region"] +
-          '", "$options" : "i"}'
+        this.state.filter_list["Region"] +
+        '", "$options" : "i"}'
       );
     this.state.filter_list["MM_Code"] !== null &&
       this.state.filter_list["MM_Code"] !== undefined &&
       filter_array.push(
         '"MM_Code":{"$regex" : "' +
-          this.state.filter_list["MM_Code"] +
-          '", "$options" : "i"}'
+        this.state.filter_list["MM_Code"] +
+        '", "$options" : "i"}'
       );
     this.state.filter_list["MM_Description"] !== null &&
       this.state.filter_list["MM_Description"] !== undefined &&
       filter_array.push(
         '"MM_Description":{"$regex" : "' +
-          this.state.filter_list["MM_Description"] +
-          '", "$options" : "i"}'
+        this.state.filter_list["MM_Description"] +
+        '", "$options" : "i"}'
       );
     this.state.filter_list["Vendor_ID"] !== null &&
       this.state.filter_list["Vendor_ID"] !== undefined &&
       filter_array.push(
         '"Vendor_ID":{"$regex" : "' +
-          this.state.filter_list["Vendor_ID"] +
-          '", "$options" : "i"}'
+        this.state.filter_list["Vendor_ID"] +
+        '", "$options" : "i"}'
       );
     this.state.filter_list["Vendor_Name"] !== null &&
       this.state.filter_list["Vendor_Name"] !== undefined &&
       filter_array.push(
         '"Vendor_Name":{"$regex" : "' +
-          this.state.filter_list["Vendor_Name"] +
-          '", "$options" : "i"}'
+        this.state.filter_list["Vendor_Name"] +
+        '", "$options" : "i"}'
       );
     this.state.filter_list["Remarks"] !== null &&
       this.state.filter_list["Remarks"] !== undefined &&
       filter_array.push(
         '"Remarks":{"$regex" : "' +
-          this.state.filter_list["Remarks"] +
-          '", "$options" : "i"}'
+        this.state.filter_list["Remarks"] +
+        '", "$options" : "i"}'
       );
     let whereAnd = "{" + filter_array.join(",") + "}";
 
     getDatafromAPINODE(
-      "/mmCode/getMm?q=" +
-        whereAnd +
-        "&max_results=" +
-        this.state.perPage +
-        "&page=" +
-        this.state.activePage,
+      "/mmCodeDigi/getMm?srt=_id:-1&q=" +
+      whereAnd +
+      "&lmt=" +
+      this.state.perPage +
+      "&pg=" +
+      this.state.activePage,
       this.state.tokenUser
     ).then((res) => {
       if (res.data !== undefined) {
@@ -222,8 +218,7 @@ class MatNDO extends React.Component {
         this.setState(
           {
             material_list: items,
-            totalData: totalData,
-            modal_loading: !this.state.modal_loading,
+            totalData: totalData
           },
           () => console.log(items.map((e) => e.SLA))
         );
@@ -261,10 +256,10 @@ class MatNDO extends React.Component {
       };
     }
 
-    ws.addRow([modul_name]);
+    ws.addRow([module_name]);
 
     const PPFormat = await wb.xlsx.writeBuffer();
-    saveAs(new Blob([PPFormat]), "Material " + modul_name + " Template.xlsx");
+    saveAs(new Blob([PPFormat]), "Material " + module_name + " Template.xlsx");
   };
 
   toggleLoading() {
@@ -315,7 +310,7 @@ class MatNDO extends React.Component {
     this.togglecreateModal();
     const BulkXLSX = this.state.rowsXLS;
     const res = await postDatatoAPINODE(
-      "/mmCode/createMmCode",
+      "/mmCodeDigi/createMmCode",
       {
         mm_data: BulkXLSX,
       },
@@ -372,7 +367,7 @@ class MatNDO extends React.Component {
         "Note",
       ],
       [
-        modul_name,
+        module_name,
         this.state.PPForm[7],
         this.state.PPForm[2],
         this.state.PPForm[3],
@@ -388,7 +383,7 @@ class MatNDO extends React.Component {
       ],
     ];
     const res = await postDatatoAPINODE(
-      "/mmCode/createMmCode",
+      "/mmCodeDigi/createMmCode",
       {
         mm_data: dataForm,
       },
@@ -488,7 +483,7 @@ class MatNDO extends React.Component {
     }
 
     const allocexport = await wb.xlsx.writeBuffer();
-    saveAs(new Blob([allocexport]), "All " + modul_name + ".xlsx");
+    saveAs(new Blob([allocexport]), "All " + module_name + ".xlsx");
   };
 
   findVendorName = (vendor_id) => {
@@ -528,7 +523,7 @@ class MatNDO extends React.Component {
     this.toggleLoading();
     this.toggleDelete();
     const DelData = deleteDataFromAPINODE2(
-      "/mmCode/deleteMmCode",
+      "/mmCodeDigi/deleteMmCode",
       this.state.tokenUser,
       { data: [objData] }
     ).then((res) => {
@@ -595,7 +590,7 @@ class MatNDO extends React.Component {
       Note: this.state.PPForm[12],
     };
     const res = await patchDatatoAPINODE(
-      "/mmCode/updateMmCode",
+      "/mmCodeDigi/updateMmCode",
       {
         data: [dataForm],
       },
@@ -633,7 +628,7 @@ class MatNDO extends React.Component {
     for (let i = 0; i < 12; i++) {
       searchBar.push(
         <td>
-          <div className="controls" style={{ width: "150px" }}>
+          <div className="controls" style={{ minWidth: "150px" }}>
             <InputGroup className="input-prepend">
               <InputGroupAddon addonType="prepend">
                 <InputGroupText>
@@ -795,110 +790,103 @@ class MatNDO extends React.Component {
                 </Row>
                 <Row>
                   <Col>
-                    <div className="divtable">
-                      <Table striped hover bordered responsive size="sm">
-                        <thead
-                        // style={{ backgroundColor: "#73818f" }}
-                        // className="fixed-matlib"
-                        >
-                          <tr align="center">
-                            <th>BB</th>
-                            <th>BB_Sub</th>
-                            <th>SoW_Description_or_Site_Type</th>
-                            <th>SLA</th>
-                            <th>UoM</th>
-                            <th>Unit_Price</th>
-                            <th>Region</th>
-                            <th>MM_Code</th>
-                            <th>MM_Description</th>
-                            <th>Vendor_ID</th>
-                            <th>Vendor_Name</th>
-                            <th>Remarks</th>
-                            <th colspan="2"></th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr>{this.loopSearchBar()}</tr>
-                          {this.state.material_list !== undefined &&
-                            this.state.material_list !== null &&
-                            this.state.material_list.map((e) => (
-                              <React.Fragment key={e._id + "frag"}>
-                                <tr
-                                  // style={{ backgroundColor: "#d3d9e7" }}
-                                  // className="fixbody"
-                                  key={e._id}
-                                >
-                                  <td style={{ textAlign: "center" }}>
-                                    {e.BB}
-                                  </td>
-                                  <td style={{ textAlign: "center" }}>
-                                    {e.BB_Sub}
-                                  </td>
-                                  <td style={{ textAlign: "center" }}>
-                                    {e.SoW_Description_or_Site_Type}
-                                  </td>
-                                  <td style={{ textAlign: "center" }}>
-                                    {e.SLA}
-                                  </td>
-                                  <td style={{ textAlign: "center" }}>
-                                    {e.UoM}
-                                  </td>
-                                  <td style={{ textAlign: "center" }}>
-                                    {e.Unit_Price}
-                                  </td>
-                                  <td style={{ textAlign: "center" }}>
-                                    {e.Region}
-                                  </td>
-                                  <td style={{ textAlign: "center" }}>
-                                    {e.MM_Code}
-                                  </td>
-                                  <td style={{ textAlign: "center" }}>
-                                    {e.MM_Description}
-                                  </td>
-                                  <td style={{ textAlign: "center" }}>
-                                    {e.Vendor_ID}
-                                  </td>
-                                  <td style={{ textAlign: "center" }}>
-                                    {this.findVendorName(e.Vendor_ID)}
-                                  </td>
-                                  <td style={{ textAlign: "center" }}>
-                                    {e.Remarks}
-                                  </td>
-                                  <td>
-                                    <Button
-                                      size="sm"
-                                      color="secondary"
-                                      value={e._id}
-                                      onClick={this.toggleEdit}
-                                      title="Edit"
-                                    >
-                                      <i
-                                        className="fa fa-edit"
-                                        aria-hidden="true"
-                                      ></i>
-                                    </Button>
-                                  </td>
-                                  <td>
-                                    <Button
-                                      size="sm"
-                                      color="danger"
-                                      value={e._id}
-                                      name={e.MM_Code}
-                                      onClick={this.toggleDelete}
-                                      title="Delete"
-                                    >
-                                      <i
-                                        className="fa fa-trash"
-                                        aria-hidden="true"
-                                      ></i>
-                                    </Button>
-                                  </td>
-                                </tr>
-                              </React.Fragment>
-                            ))}
-                        </tbody>
-                      </Table>
-                    </div>
+                    <Table striped hover bordered responsive size="sm">
+                      <thead>
+                        <tr align="center">
+                          <th>BB</th>
+                          <th>BB_Sub</th>
+                          <th>SoW_Description_or_Site_Type</th>
+                          <th>SLA</th>
+                          <th>UoM</th>
+                          <th>Unit_Price</th>
+                          <th>Region</th>
+                          <th>MM_Code</th>
+                          <th>MM_Description</th>
+                          <th>Vendor_ID</th>
+                          <th>Vendor_Name</th>
+                          <th>Remarks</th>
+                          <th colSpan="2" rowSpan="2" style={{ verticalAlign: "middle" }}>Action</th>
+                        </tr>
+                        <tr>
+                          {this.loopSearchBar()}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {this.state.material_list !== undefined &&
+                          this.state.material_list !== null &&
+                          this.state.material_list.map((e) => (
+                            <React.Fragment key={e._id + "frag"}>
+                              <tr key={e._id}>
+                                <td style={{ textAlign: "center" }}>
+                                  {e.BB}
+                                </td>
+                                <td style={{ textAlign: "center" }}>
+                                  {e.BB_Sub}
+                                </td>
+                                <td style={{ textAlign: "center" }}>
+                                  {e.SoW_Description_or_Site_Type}
+                                </td>
+                                <td style={{ textAlign: "center" }}>
+                                  {e.SLA}
+                                </td>
+                                <td style={{ textAlign: "center" }}>
+                                  {e.UoM}
+                                </td>
+                                <td style={{ textAlign: "center" }}>
+                                  {e.Unit_Price}
+                                </td>
+                                <td style={{ textAlign: "center" }}>
+                                  {e.Region}
+                                </td>
+                                <td style={{ textAlign: "center" }}>
+                                  {e.MM_Code}
+                                </td>
+                                <td style={{ textAlign: "center" }}>
+                                  {e.MM_Description}
+                                </td>
+                                <td style={{ textAlign: "center" }}>
+                                  {e.Vendor_ID}
+                                </td>
+                                <td style={{ textAlign: "center" }}>
+                                  {this.findVendorName(e.Vendor_ID)}
+                                </td>
+                                <td style={{ textAlign: "center" }}>
+                                  {e.Remarks}
+                                </td>
+                                <td>
+                                  <Button
+                                    size="sm"
+                                    color="secondary"
+                                    value={e._id}
+                                    onClick={this.toggleEdit}
+                                    title="Edit"
+                                  >
+                                    <i
+                                      className="fa fa-edit"
+                                      aria-hidden="true"
+                                    ></i>
+                                  </Button>
+                                </td>
+                                <td>
+                                  <Button
+                                    size="sm"
+                                    color="danger"
+                                    value={e._id}
+                                    name={e.MM_Code}
+                                    onClick={this.toggleDelete}
+                                    title="Delete"
+                                  >
+                                    <i
+                                      className="fa fa-trash"
+                                      aria-hidden="true"
+                                    ></i>
+                                  </Button>
+                                </td>
+                              </tr>
+                            </React.Fragment>
+                          ))}
+                      </tbody>
+                    </Table>
                   </Col>
                 </Row>
                 <div style={{ margin: "8px 0px" }}>
@@ -928,7 +916,7 @@ class MatNDO extends React.Component {
           toggle={this.togglePPForm}
           className="modal--form"
         >
-          <ModalHeader>Form {modul_name}</ModalHeader>
+          <ModalHeader>Form {module_name}</ModalHeader>
           <ModalBody>
             <Row>
               <Col sm="12">
@@ -1078,7 +1066,7 @@ class MatNDO extends React.Component {
           toggle={this.toggleEdit}
           className="modal--form"
         >
-          <ModalHeader>Form {modul_name}</ModalHeader>
+          <ModalHeader>Form {module_name}</ModalHeader>
           <ModalBody>
             <Row>
               <Col sm="12">
@@ -1227,7 +1215,7 @@ class MatNDO extends React.Component {
           toggle={this.togglecreateModal}
           className={this.props.className}
           onClosed={this.resettogglecreateModal}
-          title={"Create " + modul_name}
+          title={"Create " + module_name}
         >
           <div>
             <table>

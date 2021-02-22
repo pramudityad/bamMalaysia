@@ -122,6 +122,79 @@ const fas_reqbody = {
   },
 };
 
+const lmr_child_example = [
+  {
+    activity: "111",
+    currency: "MYR",
+    delivery_date: "2021-02-19",
+    description: "FTK SSO-2Tech-2G/3G/LTE-OKV",
+    item_status: "Submit",
+    key: 1,
+    material: "ECM-FTK-NDO-KV2",
+    material_code_doc: "60112f2feea6d1f700aa55ab",
+    nw: "111",
+    qty: "1",
+    site_id: "SITE001",
+    tax_code: "I0",
+    total_value: 5400,
+    unit_price: 5400,
+    work_status: "Waiting for PR-PO creation"
+  }
+]
+
+const package_example = [
+  {
+    package_id: "0001",
+    package_name: "Package123",
+    region: "KV",
+    material_list: [
+      {
+        mm_code: "ECM-DG-NEW2.1-KV",
+        description: "Description of ECM-DG-NEW2.1-KV",
+        price: 1000,
+        qty: 1
+      },
+      {
+        mm_code: "ECM-DG-KV-ADD5.1",
+        description: "Description of ECM-DG-KV-ADD5.1",
+        price: 2000,
+        qty: 2
+      },
+      {
+        mm_code: "ECM-DG-KV-DOCONLY",
+        description: "Description of ECM-DG-KV-DOCONLY",
+        price: 3000,
+        qty: 3
+      }
+    ]
+  },
+  {
+    package_id: "0002",
+    package_name: "Package234",
+    region: "KV",
+    material_list: [
+      {
+        mm_code: "Material1",
+        description: "Description of Material1",
+        price: 2000,
+        qty: 1
+      },
+      {
+        mm_code: "Material2",
+        description: "Description of Material2",
+        price: 4000,
+        qty: 2
+      },
+      {
+        mm_code: "Material3",
+        description: "Description of Material3",
+        price: 6000,
+        qty: 3
+      }
+    ]
+  }
+]
+
 class MYASGCreation extends Component {
   constructor(props) {
     super(props);
@@ -146,8 +219,11 @@ class MYASGCreation extends Component {
       modal_material_NRO: false,
       modal_material_HW: false,
       modal_material_ARP: false,
+      modal_package: false,
+      modal_check_material_package: false,
       list_project: [],
       creation_lmr_child_form: [],
+      // creation_lmr_child_form: lmr_child_example,
       prevPage: 0,
       activePage: 1,
       totalData: 0,
@@ -162,6 +238,11 @@ class MYASGCreation extends Component {
       vendor_list: [],
       material_list: [],
       project_list: [],
+      package_list: package_example,
+      check_material_package_list: {},
+      lmr_child_package: {
+        currency: "MYR"
+      },
       validation_form: {},
       current_material_select: null,
       data_user: this.props.dataUser,
@@ -281,6 +362,18 @@ class MYASGCreation extends Component {
       modal_material_ARP: !prevState.modal_material_ARP,
     }));
   };
+
+  toggleModalPackage = () => {
+    this.setState((prevState) => ({
+      modal_package: !prevState.modal_package,
+    }));
+  }
+
+  toggleModalCheckMaterialPackage = () => {
+    this.setState((prevState) => ({
+      modal_check_material_package: !prevState.modal_check_material_package,
+    }));
+  }
 
   async postDatatoAPINODE(url, data) {
     try {
@@ -666,7 +759,7 @@ class MYASGCreation extends Component {
     this.getVendorList();
     // this.getProjectList();
     // this.getMaterialList();
-    this.getDataCDACT();
+    // this.getDataCDACT(); enable this again later
     // this.getDataCDACT_Fas();
     // this.getDataCD();
     // this.toggleLoading();
@@ -756,20 +849,20 @@ class MYASGCreation extends Component {
     this.state.mm_data_type !== "" &&
       filter_array.push(
         '"Material_Type":{"$regex" : "' +
-          this.state.mm_data_type +
-          '", "$options" : "i"}'
+        this.state.mm_data_type +
+        '", "$options" : "i"}'
       );
     this.state.filter_list[0] !== "" &&
       filter_array.push(
         '"BB":{"$regex" : "' +
-          this.state.filter_list[0] +
-          '", "$options" : "i"}'
+        this.state.filter_list[0] +
+        '", "$options" : "i"}'
       );
     this.state.filter_list[1] !== "" &&
       filter_array.push(
         '"BB_Sub":{"$regex" : "' +
-          this.state.filter_list[1] +
-          '", "$options" : "i"}'
+        this.state.filter_list[1] +
+        '", "$options" : "i"}'
       );
     // this.state.filter_list[2] !== "" &&
     //   filter_array.push(
@@ -780,20 +873,20 @@ class MYASGCreation extends Component {
     this.state.filter_list[3] !== "" &&
       filter_array.push(
         '"Material_Type":{"$regex" : "' +
-          this.state.filter_list[3] +
-          '", "$options" : "i"}'
+        this.state.filter_list[3] +
+        '", "$options" : "i"}'
       );
     this.state.filter_list[4] !== "" &&
       filter_array.push(
         '"SoW_Description":{"$regex" : "' +
-          this.state.filter_list[4] +
-          '", "$options" : "i"}'
+        this.state.filter_list[4] +
+        '", "$options" : "i"}'
       );
     this.state.filter_list[6] !== "" &&
       filter_array.push(
         '"UoM":{"$regex" : "' +
-          this.state.filter_list[6] +
-          '", "$options" : "i"}'
+        this.state.filter_list[6] +
+        '", "$options" : "i"}'
       );
     this.state.matfilter.region === "All" &&
       filter_array.push('"Region": {"$exists" : 1}');
@@ -801,23 +894,23 @@ class MYASGCreation extends Component {
       this.state.matfilter.region !== "All" &&
       filter_array.push(
         '"Region":{"$regex" : "' +
-          this.state.matfilter.region +
-          '", "$options" : "i"}'
+        this.state.matfilter.region +
+        '", "$options" : "i"}'
       );
     this.state.filter_list[2] !== "" &&
       filter_array.push(
         '"Region":{"$regex" : "' +
-          this.state.filter_list[2] +
-          '", "$options" : "i"}'
+        this.state.filter_list[2] +
+        '", "$options" : "i"}'
       );
     let whereAnd = "{" + filter_array.join(",") + "}";
     getDatafromAPINODE(
-      "/mmCode/getMm?q=" +
-        whereAnd +
-        "&lmt=" +
-        this.state.perPage +
-        "&pg=" +
-        this.state.activePage,
+      "/mmCodeDigi/getMm?q=" +
+      whereAnd +
+      "&lmt=" +
+      this.state.perPage +
+      "&pg=" +
+      this.state.activePage,
       this.state.tokenUser
     ).then((res) => {
       if (res.data !== undefined) {
@@ -840,60 +933,60 @@ class MYASGCreation extends Component {
     this.state.mm_data_type !== "" &&
       filter_array.push(
         '"Material_Type":{"$regex" : "' +
-          this.state.mm_data_type +
-          '", "$options" : "i"}'
+        this.state.mm_data_type +
+        '", "$options" : "i"}'
       );
 
     this.state.filter_list[0] !== "" &&
       filter_array.push(
         '"MM_Code":{"$regex" : "' +
-          this.state.filter_list[0] +
-          '", "$options" : "i"}'
+        this.state.filter_list[0] +
+        '", "$options" : "i"}'
       );
     this.state.filter_list[1] !== "" &&
       filter_array.push(
         '"UoM":{"$regex" : "' +
-          this.state.filter_list[1] +
-          '", "$options" : "i"}'
+        this.state.filter_list[1] +
+        '", "$options" : "i"}'
       );
     this.state.filter_list[2] !== "" &&
       filter_array.push(
         '"Unit_Price":{"$regex" : "' +
-          this.state.filter_list[2] +
-          '", "$options" : "i"}'
+        this.state.filter_list[2] +
+        '", "$options" : "i"}'
       );
     this.state.filter_list[3] !== "" &&
       filter_array.push(
         '"Currency":{"$regex" : "' +
-          this.state.filter_list[3] +
-          '", "$options" : "i"}'
+        this.state.filter_list[3] +
+        '", "$options" : "i"}'
       );
     this.state.filter_list[4] !== "" &&
       filter_array.push(
         '"Info_Rec":{"$regex" : "' +
-          this.state.filter_list[4] +
-          '", "$options" : "i"}'
+        this.state.filter_list[4] +
+        '", "$options" : "i"}'
       );
     this.state.filter_list[5] !== "" &&
       filter_array.push(
         '"Valid_To":{"$regex" : "' +
-          this.state.filter_list[5] +
-          '", "$options" : "i"}'
+        this.state.filter_list[5] +
+        '", "$options" : "i"}'
       );
     this.state.filter_list[6] !== "" &&
       filter_array.push(
         '"Created_On":{"$regex" : "' +
-          this.state.filter_list[6] +
-          '", "$options" : "i"}'
+        this.state.filter_list[6] +
+        '", "$options" : "i"}'
       );
     let whereAnd = "{" + filter_array.join(",") + "}";
     getDatafromAPINODE(
-      "/mmCode/getMm?q=" +
-        whereAnd +
-        "&lmt=" +
-        this.state.perPage +
-        "&pg=" +
-        this.state.activePage,
+      "/mmCodeDigi/getMm?q=" +
+      whereAnd +
+      "&lmt=" +
+      this.state.perPage +
+      "&pg=" +
+      this.state.activePage,
       this.state.tokenUser
     ).then((res) => {
       if (res.data !== undefined) {
@@ -916,54 +1009,54 @@ class MYASGCreation extends Component {
     this.state.mm_data_type !== "" &&
       filter_array.push(
         '"Material_Type":{"$regex" : "' +
-          this.state.mm_data_type +
-          '", "$options" : "i"}'
+        this.state.mm_data_type +
+        '", "$options" : "i"}'
       );
 
     this.state.filter_list[0] !== "" &&
       filter_array.push(
         '"MM_Code":{"$regex" : "' +
-          this.state.filter_list[0] +
-          '", "$options" : "i"}'
+        this.state.filter_list[0] +
+        '", "$options" : "i"}'
       );
     this.state.filter_list[1] !== "" &&
       filter_array.push(
         '"MM_Description":{"$regex" : "' +
-          this.state.filter_list[1] +
-          '", "$options" : "i"}'
+        this.state.filter_list[1] +
+        '", "$options" : "i"}'
       );
     this.state.filter_list[2] !== "" &&
       filter_array.push(
         '"UoM":{"$regex" : "' +
-          this.state.filter_list[2] +
-          '", "$options" : "i"}'
+        this.state.filter_list[2] +
+        '", "$options" : "i"}'
       );
     this.state.filter_list[3] !== "" &&
       filter_array.push(
         '"Unit_Price":{"$regex" : "' +
-          this.state.filter_list[3] +
-          '", "$options" : "i"}'
+        this.state.filter_list[3] +
+        '", "$options" : "i"}'
       );
     this.state.filter_list[4] !== "" &&
       filter_array.push(
         '"Currency":{"$regex" : "' +
-          this.state.filter_list[4] +
-          '", "$options" : "i"}'
+        this.state.filter_list[4] +
+        '", "$options" : "i"}'
       );
     this.state.filter_list[5] !== "" &&
       filter_array.push(
         '"Remarks":{"$regex" : "' +
-          this.state.filter_list[5] +
-          '", "$options" : "i"}'
+        this.state.filter_list[5] +
+        '", "$options" : "i"}'
       );
     let whereAnd = "{" + filter_array.join(",") + "}";
     getDatafromAPINODE(
-      "/mmCode/getMm?q=" +
-        whereAnd +
-        "&lmt=" +
-        this.state.perPage +
-        "&pg=" +
-        this.state.activePage,
+      "/mmCodeDigi/getMm?q=" +
+      whereAnd +
+      "&lmt=" +
+      this.state.perPage +
+      "&pg=" +
+      this.state.activePage,
       this.state.tokenUser
     ).then((res) => {
       if (res.data !== undefined) {
@@ -982,50 +1075,50 @@ class MYASGCreation extends Component {
     this.state.lmr_form.vendor_code_actual !== "" &&
       filter_array.push(
         '"Vendor_List.Vendor_Code":"' +
-          this.state.lmr_form.vendor_code_actual +
-          '"'
+        this.state.lmr_form.vendor_code_actual +
+        '"'
       );
     this.state.mm_data_type !== "" &&
       filter_array.push(
         '"Material_Type":{"$regex" : "' +
-          this.state.mm_data_type +
-          '", "$options" : "i"}'
+        this.state.mm_data_type +
+        '", "$options" : "i"}'
       );
     this.state.filter_list[0] !== "" &&
       filter_array.push(
         '"BB":{"$regex" : "' +
-          this.state.filter_list[0] +
-          '", "$options" : "i"}'
+        this.state.filter_list[0] +
+        '", "$options" : "i"}'
       );
     this.state.filter_list[1] !== "" &&
       filter_array.push(
         '"BB_Sub":{"$regex" : "' +
-          this.state.filter_list[1] +
-          '", "$options" : "i"}'
+        this.state.filter_list[1] +
+        '", "$options" : "i"}'
       );
     this.state.filter_list[2] !== "" &&
       filter_array.push(
         '"MM_Code":{"$regex" : "' +
-          this.state.filter_list[2] +
-          '", "$options" : "i"}'
+        this.state.filter_list[2] +
+        '", "$options" : "i"}'
       );
     this.state.filter_list[3] !== "" &&
       filter_array.push(
         '"MM_Code":{"$regex" : "' +
-          this.state.filter_list[3] +
-          '", "$options" : "i"}'
+        this.state.filter_list[3] +
+        '", "$options" : "i"}'
       );
     this.state.filter_list[4] !== "" &&
       filter_array.push(
         '"MM_Description":{"$regex" : "' +
-          this.state.filter_list[4] +
-          '", "$options" : "i"}'
+        this.state.filter_list[4] +
+        '", "$options" : "i"}'
       );
     this.state.filter_list[6] !== "" &&
       filter_array.push(
         '"UoM":{"$regex" : "' +
-          this.state.filter_list[6] +
-          '", "$options" : "i"}'
+        this.state.filter_list[6] +
+        '", "$options" : "i"}'
       );
     this.state.matfilter.region === "All" &&
       filter_array.push('"Region": {"$exists" : 1}');
@@ -1033,23 +1126,23 @@ class MYASGCreation extends Component {
       this.state.matfilter.region !== "All" &&
       filter_array.push(
         '"Region":{"$regex" : "' +
-          this.state.matfilter.region +
-          '", "$options" : "i"}'
+        this.state.matfilter.region +
+        '", "$options" : "i"}'
       );
     this.state.filter_list[5] !== "" &&
       filter_array.push(
         '"SoW_Description_or_Site_Type":{"$regex" : "' +
-          this.state.filter_list[5] +
-          '", "$options" : "i"}'
+        this.state.filter_list[5] +
+        '", "$options" : "i"}'
       );
     let whereAnd = "{" + filter_array.join(",") + "}";
     getDatafromAPINODE(
-      "/mmCode/getMm?q=" +
-        whereAnd +
-        "&lmt=" +
-        this.state.perPage +
-        "&pg=" +
-        this.state.activePage,
+      "/mmCodeDigi/getMm?q=" +
+      whereAnd +
+      "&lmt=" +
+      this.state.perPage +
+      "&pg=" +
+      this.state.activePage,
       this.state.tokenUser
     ).then((res) => {
       if (res.data !== undefined) {
@@ -1098,8 +1191,8 @@ class MYASGCreation extends Component {
       // const getSSOWID = await this.getDatafromAPIMY('/ssow_sorted_nonpage?where={"ssow_id":{"$regex":"'+inputValue+'", "$options":"i"}, "sow_type":"'+this.state.list_activity_selected.CD_Info_SOW_Type +'"}');
       const getWPID = await this.getDatafromAPIMY(
         '/custdel_sorted_non_page?where={"WP_ID":{"$regex":"' +
-          inputValue +
-          '", "$options":"i"}}'
+        inputValue +
+        '", "$options":"i"}}'
       );
       if (getWPID !== undefined && getWPID.data !== undefined) {
         getWPID.data._items.map((wp) =>
@@ -1461,8 +1554,22 @@ class MYASGCreation extends Component {
         creation_lmr_child_form: dataLMR,
         // so_nw_updated: dataLMR[parseInt(idx)]["nw"],
       },
-      () => this.sumTotalPrice()
+      () => {
+        console.log(this.state.creation_lmr_child_form)
+        this.sumTotalPrice();
+      }
     );
+  }
+
+  handleChangeFormLMRChildPackage = (e) => {
+    const name = e.target.name;
+    let value = e.target.value;
+    let lmr_child_package = this.state.lmr_child_package;
+    if (value !== (null && undefined)) {
+      value = value.toString();
+    }
+    lmr_child_package[name.toString()] = value;
+    this.setState({ lmr_child_package: lmr_child_package });
   }
 
   handleChangeCDFormLMRChild = (e, action) => {
@@ -1580,8 +1687,8 @@ class MYASGCreation extends Component {
               </InputGroup>
             </div>
           ) : (
-            ""
-          )}
+              ""
+            )}
         </td>
       );
     }
@@ -1594,6 +1701,34 @@ class MYASGCreation extends Component {
       searchBar.push(
         <td>
           <div className="controls" style={{ width: "150px" }}>
+            <InputGroup className="input-prepend">
+              <InputGroupAddon addonType="prepend">
+                <InputGroupText>
+                  <i className="fa fa-search"></i>
+                </InputGroupText>
+              </InputGroupAddon>
+              <Input
+                type="text"
+                placeholder="Search"
+                onChange={this.handleFilterList}
+                value={this.state.filter_list[i]}
+                name={i}
+                size="sm"
+              />
+            </InputGroup>
+          </div>
+        </td>
+      );
+    }
+    return searchBar;
+  };
+
+  loopSearchBarPackage = () => {
+    let searchBar = [];
+    for (let i = 0; i < 3; i++) {
+      searchBar.push(
+        <td>
+          <div className="controls" style={{ minWidth: "150px" }}>
             <InputGroup className="input-prepend">
               <InputGroupAddon addonType="prepend">
                 <InputGroupText>
@@ -1716,7 +1851,7 @@ class MYASGCreation extends Component {
     const form_to_validate = [
       "lmr_type",
       "gl_account",
-      "fas_id",
+      // "fas_id",
       "vendor_name",
       "header_text",
     ];
@@ -1741,6 +1876,55 @@ class MYASGCreation extends Component {
     );
   };
 
+  handleSelectPackage = (e) => {
+    const value = e.target.value;
+    let selectedPackage = this.state.package_list.find((e) => e.package_id === value);
+    let lmrChildAll = [];
+    for (let i = 0; i < selectedPackage.material_list.length; i++) {
+      let lmrChild = {
+        key: i + 1,
+        activity: this.state.lmr_child_package.activity,
+        currency: this.state.lmr_child_package.currency,
+        delivery_date: this.state.lmr_child_package.delivery_date,
+        description: selectedPackage.material_list[i].description,
+        item_status: "Submit",
+        material: selectedPackage.material_list[i].mm_code,
+        material_code_doc: "60112f2feea6d1f700aa55ab",
+        nw: this.state.lmr_child_package.nw,
+        qty: selectedPackage.material_list[i].qty,
+        site_id: this.state.lmr_child_package.site_id,
+        tax_code: this.state.lmr_child_package.tax_code,
+        total_value: selectedPackage.material_list[i].qty * selectedPackage.material_list[i].price,
+        unit_price: selectedPackage.material_list[i].price,
+        work_status: "Waiting for PR-PO creation"
+      }
+      lmrChildAll.push(lmrChild);
+    }
+    this.setState({ creation_lmr_child_form: lmrChildAll }, () => this.toggleModalPackage());
+  }
+
+  handleCheckMaterialPackage = (e) => {
+    const value = e.target.value;
+    let selectedPackage = this.state.package_list.find((e) => e.package_id === value);
+    let allMaterials = [];
+    for (let i = 0; i < selectedPackage.material_list.length; i++) {
+      let material = {
+        mm_code: selectedPackage.material_list[i].mm_code,
+        description: selectedPackage.material_list[i].description,
+        price: selectedPackage.material_list[i].price,
+        qty: selectedPackage.material_list[i].qty
+      }
+      allMaterials.push(material)
+    }
+    let check_material_package_list = {
+      package_id: selectedPackage.package_id,
+      package_name: selectedPackage.package_name,
+      region: selectedPackage.region,
+      materials: allMaterials
+    }
+    this.setState({ check_material_package_list: check_material_package_list }, () => this.toggleModalCheckMaterialPackage());
+  }
+
   render() {
     const matfilter = this.state.matfilter;
     // console.log("this.props.dataUser", this.props.dataUser);
@@ -1762,7 +1946,7 @@ class MYASGCreation extends Component {
           onClosed={this.togglecreateModal}
           title={"You have draft, want to load ?"}
         >
-          <div>{}</div>
+          <div>{ }</div>
           <ModalFooter>
             <Button
               size="sm"
@@ -1853,7 +2037,7 @@ class MYASGCreation extends Component {
                         {/* <option value={null} selected></option>
                           <option value="Add LMR">Add LMR</option>
                           <option value="Change LMR">Change LMR</option>
-                          <option value="Delete LMR">Delete LMR</option>                           */}
+                          <option value="Delete LMR">Delete LMR</option>*/}
                         {/* </Input> */}
                       </FormGroup>
                     </Col>
@@ -1962,21 +2146,21 @@ class MYASGCreation extends Component {
                             {this.getOptionbyRole3(this.state.roleUser)}
                           </Input>
                         ) : (
-                          <Input
-                            type="select"
-                            name="gl_account"
-                            id="gl_account"
-                            value={this.state.lmr_form.gl_account_actual}
-                            onChange={this.handleChangeFormLMR}
-                            style={
-                              this.state.formvalidate.gl_account === false
-                                ? { borderColor: "red" }
-                                : {}
-                            }
-                          >
-                            {this.getOptionbyRole1(this.state.roleUser)}
-                          </Input>
-                        )}
+                            <Input
+                              type="select"
+                              name="gl_account"
+                              id="gl_account"
+                              value={this.state.lmr_form.gl_account_actual}
+                              onChange={this.handleChangeFormLMR}
+                              style={
+                                this.state.formvalidate.gl_account === false
+                                  ? { borderColor: "red" }
+                                  : {}
+                              }
+                            >
+                              {this.getOptionbyRole1(this.state.roleUser)}
+                            </Input>
+                          )}
                       </FormGroup>
                     </Col>
                   </Row>
@@ -2186,6 +2370,7 @@ class MYASGCreation extends Component {
                 <hr className="upload-line--lmr"></hr>
                 <h5 style={{ marginTop: "16px" }}>LMR Child</h5>
                 <hr className="upload-line--lmr"></hr>
+                <Button color="primary" style={{ marginBottom: "16px" }} onClick={this.toggleModalPackage}><i className="fa fa-cubes" style={{ marginRight: "8px" }}></i>Select Package</Button>
                 {this.state.creation_lmr_child_form.map((lmr, i) => (
                   <Form>
                     <Row form>
@@ -2255,9 +2440,9 @@ class MYASGCreation extends Component {
                             id={i + " /// site_id"}
                             value={lmr.site_id}
                             onChange={this.handleChangeFormLMRChild}
-                            // disabled={
-                            //   this.state.lmr_form.lmr_type === "Cost Collector"
-                            // }
+                          // disabled={
+                          //   this.state.lmr_form.lmr_type === "Cost Collector"
+                          // }
                           />
                         </FormGroup>
                       </Col>
@@ -2270,9 +2455,9 @@ class MYASGCreation extends Component {
                             id={i + " /// nw"}
                             value={lmr.nw}
                             onChange={this.handleChangeFormLMRChild}
-                            // disabled={
-                            //   this.state.lmr_form.lmr_type === "Cost Collector"
-                            // }
+                          // disabled={
+                          //   this.state.lmr_form.lmr_type === "Cost Collector"
+                          // }
                           />
                         </FormGroup>
                       </Col>
@@ -2285,9 +2470,9 @@ class MYASGCreation extends Component {
                             id={i + " /// activity"}
                             value={lmr.activity}
                             onChange={this.handleChangeFormLMRChild}
-                            // disabled={
-                            //   this.state.lmr_form.lmr_type === "Cost Collector"
-                            // }
+                          // disabled={
+                          //   this.state.lmr_form.lmr_type === "Cost Collector"
+                          // }
                           />
                         </FormGroup>
                       </Col>
@@ -2340,7 +2525,7 @@ class MYASGCreation extends Component {
                             id={i + " /// material"}
                             value={lmr.material}
                             onClick={() => this.decideToggleMaterial(i)}
-                            // onChange={this.handleChangeFormLMRChild}
+                          // onChange={this.handleChangeFormLMRChild}
                           />
                         </FormGroup>
                       </Col>
@@ -2452,9 +2637,9 @@ class MYASGCreation extends Component {
                   style={{ float: "left" }}
                   onClick={this.saveLMR}
                 >
-                  <i className="fa-floppy-o" style={{ marginRight: "8px" }}></i>
+                  <i className="fa fa-save" style={{ marginRight: "8px" }}></i>
                   Save
-                </Button>{" "}
+                </Button>
                 <Button
                   color="success"
                   size="sm"
@@ -2506,8 +2691,8 @@ class MYASGCreation extends Component {
                     </Input>
                   </FormGroup>
                 ) : (
-                  ""
-                )}
+                    ""
+                  )}
               </Row>
             </div>
             <div class="table-container">
@@ -2608,8 +2793,8 @@ class MYASGCreation extends Component {
                     </Input>
                   </FormGroup>
                 ) : (
-                  ""
-                )}
+                    ""
+                  )}
               </Row>
             </div>
             <div class="table-container">
@@ -2854,6 +3039,235 @@ class MYASGCreation extends Component {
           </ModalFooter>
         </Modal>
         {/* end Modal Loading */}
+
+        {/* Modal Package */}
+        <Modal
+          isOpen={this.state.modal_package}
+          toggle={this.toggleModalPackage}
+          className={"modal-lg"}
+        >
+          <ModalBody>
+            <div class="table-container">
+              <Row>
+                <Col md={3}>
+                  <FormGroup>
+                    <Label>CD ID</Label>
+                    <AsyncSelect
+                      cacheOptions
+                      defaultOptions
+                      loadOptions={this.seachCDList}
+                      onChange={this.handleChangeCDFormLMRChild}
+                      isDisabled={
+                        this.state.lmr_form.lmr_type === "Cost Collector"
+                      }
+                    />
+                  </FormGroup>
+                </Col>
+                <Col md={3}>
+                  <FormGroup>
+                    <Label>Project Name</Label>
+                    <Input
+                      type="select"
+                      name="project_name"
+                      onChange={this.handleChangeFormLMRChildPackage}
+                      value={this.state.lmr_child_package.project_name}
+                    >
+                      <option value="" disabled selected hidden>Select Project Name</option>
+                      {this.state.list_project.map((e) => (
+                        <option value={e}>{e}</option>
+                      ))}
+                    </Input>
+                  </FormGroup>
+                </Col>
+                <Col md={3}>
+                  <FormGroup>
+                    <Label>Site ID / Text ID</Label>
+                    <Input
+                      type="text"
+                      name="site_id"
+                      onChange={this.handleChangeFormLMRChildPackage}
+                      value={this.state.lmr_child_package.site_id}
+                    />
+                  </FormGroup>
+                </Col>
+                <Col md={3}>
+                  <FormGroup>
+                    <Label>SO / NW</Label>
+                    <Input
+                      type="text"
+                      name="nw"
+                      onChange={this.handleChangeFormLMRChildPackage}
+                      value={this.state.lmr_child_package.nw}
+                    />
+                  </FormGroup>
+                </Col>
+              </Row>
+              <Row>
+                <Col md={3}>
+                  <FormGroup>
+                    <Label>NW Activity</Label>
+                    <Input
+                      type="text"
+                      name="activity"
+                      value={this.state.lmr_child_package.activity}
+                      onChange={this.handleChangeFormLMRChildPackage}
+                    />
+                  </FormGroup>
+                </Col>
+                <Col md={3}>
+                  <FormGroup>
+                    <Label>Tax Code</Label>
+                    <Input
+                      type="text"
+                      name="tax_code"
+                      value={this.state.lmr_child_package.tax_code}
+                      onChange={this.handleChangeFormLMRChildPackage}
+                    />
+                  </FormGroup>
+                </Col>
+                <Col md={3}>
+                  <FormGroup>
+                    <Label>Currency</Label>
+                    <Input
+                      type="select"
+                      name="currency"
+                      value={this.state.lmr_child_package.currency}
+                      onChange={this.handleChangeFormLMRChildPackage}
+                    >
+                      <option value="MYR">MYR</option>
+                      <option value="USD">USD</option>
+                      <option value="EUR">EUR</option>
+                    </Input>
+                  </FormGroup>
+                </Col>
+                <Col md={3}>
+                  <FormGroup>
+                    <Label>Delivery Date</Label>
+                    <Input
+                      type="date"
+                      name="delivery_date"
+                      value={this.state.lmr_child_package.delivery_date}
+                      onChange={this.handleChangeFormLMRChildPackage}
+                    />
+                  </FormGroup>
+                </Col>
+              </Row>
+              <Table responsive striped bordered size="sm">
+                <thead>
+                  <tr>
+                    <th rowSpan="2" style={{ verticalAlign: "middle", minWidth: 210 }}>Action</th>
+                    <th>Package ID</th>
+                    <th>Package Name</th>
+                    <th>Region</th>
+                  </tr>
+                  <tr>
+                    {this.loopSearchBarPackage()}
+                  </tr>
+                </thead>
+                <tbody>
+                  {
+                    this.state.package_list.map((e) => (
+                      <tr>
+                        <td>
+                          <Button
+                            color="success"
+                            size="sm"
+                            value={e.package_id}
+                            onClick={this.handleSelectPackage}
+                          >
+                            <i className="fa fa-check-square" style={{ marginRight: "8px" }}></i>Select
+                          </Button>
+                          <Button
+                            color="primary"
+                            size="sm"
+                            value={e.package_id}
+                            onClick={this.handleCheckMaterialPackage}
+                            style={{ marginLeft: 8 }}
+                          >
+                            <i className="fa fa-cubes" style={{ marginRight: "8px" }}></i>Check Material
+                          </Button>
+                        </td>
+                        <td>{e.package_id}</td>
+                        <td>{e.package_name}</td>
+                        <td>{e.region}</td>
+                      </tr>
+                    ))
+                  }
+                </tbody>
+              </Table>
+            </div>
+            <Pagination
+              activePage={this.state.activePage}
+              itemsCountPerPage={this.state.perPage}
+              totalItemsCount={this.state.totalData}
+              pageRangeDisplayed={5}
+              onChange={this.handlePageChange}
+              itemClass="page-item"
+              linkClass="page-link"
+            />
+          </ModalBody>
+          <ModalFooter>
+            <Button color="secondary" onClick={this.toggleModalPackage}>
+              Close
+            </Button>
+          </ModalFooter>
+        </Modal>
+        {/* end Modal Package */}
+
+        {/* Modal Check Material Package */}
+        <Modal
+          isOpen={this.state.modal_check_material_package}
+          toggle={this.toggleModalCheckMaterialPackage}
+          className={"modal-lg"}
+        >
+          <ModalBody>
+            <div class="table-container">
+              <div>
+                <strong>Package ID</strong> : {this.state.check_material_package_list.package_id}<br />
+                <strong>Package Name</strong> : {this.state.check_material_package_list.package_name}<br />
+                <strong>Region</strong> : {this.state.check_material_package_list.region}<br /><br />
+              </div>
+              <Table responsive striped bordered size="sm">
+                <thead>
+                  <tr>
+                    <th>MM Code</th>
+                    <th>Description</th>
+                    <th>Price</th>
+                    <th>Qty</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {
+                    this.state.check_material_package_list.materials !== undefined &&
+                    this.state.check_material_package_list.materials.map((e) => (
+                      <tr>
+                        <td>{e.mm_code}</td>
+                        <td>{e.description}</td>
+                        <td>{e.price}</td>
+                        <td>{e.qty}</td>
+                      </tr>
+                    ))
+                  }
+                </tbody>
+              </Table>
+            </div>
+            <Pagination
+              activePage={this.state.activePage}
+              itemsCountPerPage={this.state.perPage}
+              totalItemsCount={this.state.totalData}
+              pageRangeDisplayed={5}
+              onChange={this.handlePageChange}
+              itemClass="page-item"
+              linkClass="page-link"
+            />
+          </ModalBody>
+          <ModalFooter>
+            <Button color="secondary" onClick={this.toggleModalCheckMaterialPackage}>
+              Close
+            </Button>
+          </ModalFooter>
+        </Modal>
+        {/* end Modal Check Material Package */}
       </div>
     );
   }

@@ -406,7 +406,7 @@ class MYASGList extends Component {
                   <i
                     className="fa fa-align-justify"
                     style={{ marginRight: "8px" }}
-                  ></i>{" "}
+                  ></i>
                   LMR List Digi
                 </span>
                 <Link to={"/lmr-creation"}>

@@ -34,12 +34,13 @@ import {
 } from "../../helper/asyncFunction";
 import { numToSSColumn } from "../../helper/basicFunction";
 import { connect } from "react-redux";
+import '../MYAssignment/LMRMY.css';
 
 const DefaultNotif = React.lazy(() =>
   import("../../views/DefaultView/DefaultNotif")
 );
 
-const modul_name = "HW";
+const module_name = "HW";
 const header_model = [
   "Vendor_ID",
   "Vendor_Name",
@@ -102,7 +103,7 @@ class MatHW extends React.Component {
 
   getMaterialListAll() {
     getDatafromAPINODE(
-      '/mmCode/getMm?q={"Material_Type": "' + modul_name + '"}' + "&noPg=1",
+      '/mmCodeDigi/getMm?q={"Material_Type": "' + module_name + '"}' + "&noPg=1",
       this.state.tokenUser
     ).then((res) => {
       if (res.data !== undefined) {
@@ -113,79 +114,76 @@ class MatHW extends React.Component {
   }
 
   getMaterialList() {
-    this.setState((prevState) => ({
-      modal_loading: !prevState.modal_loading,
-    }));
     let filter_array = [];
     filter_array.push(
-      '"Material_Type":{"$regex" : "' + modul_name + '", "$options" : "i"}'
+      '"Material_Type":{"$regex" : "' + module_name + '", "$options" : "i"}'
     );
     this.state.filter_list["Vendor_ID"] !== null &&
       this.state.filter_list["Vendor_ID"] !== undefined &&
       filter_array.push(
         '"Vendor_ID":{"$regex" : "' +
-          this.state.filter_list["Vendor_ID"] +
-          '", "$options" : "i"}'
+        this.state.filter_list["Vendor_ID"] +
+        '", "$options" : "i"}'
       );
     this.state.filter_list["Vendor_Name"] !== null &&
       this.state.filter_list["Vendor_Name"] !== undefined &&
       filter_array.push(
         '"Vendor_Name":{"$regex" : "' +
-          this.state.filter_list["Vendor_Name"] +
-          '", "$options" : "i"}'
+        this.state.filter_list["Vendor_Name"] +
+        '", "$options" : "i"}'
       );
     this.state.filter_list["MM_Code"] !== null &&
       this.state.filter_list["MM_Code"] !== undefined &&
       filter_array.push(
         '"MM_Code":{"$regex" : "' +
-          this.state.filter_list["MM_Code"] +
-          '", "$options" : "i"}'
+        this.state.filter_list["MM_Code"] +
+        '", "$options" : "i"}'
       );
     this.state.filter_list["MM_Description"] !== null &&
       this.state.filter_list["MM_Description"] !== undefined &&
       filter_array.push(
         '"MM_Description":{"$regex" : "' +
-          this.state.filter_list["MM_Description"] +
-          '", "$options" : "i"}'
+        this.state.filter_list["MM_Description"] +
+        '", "$options" : "i"}'
       );
     this.state.filter_list["Unit_Price"] !== null &&
       this.state.filter_list["Unit_Price"] !== undefined &&
       filter_array.push(
         '"Unit_Price":{"$regex" : "' +
-          this.state.filter_list["Unit_Price"] +
-          '", "$options" : "i"}'
+        this.state.filter_list["Unit_Price"] +
+        '", "$options" : "i"}'
       );
     this.state.filter_list["Currency"] !== null &&
       this.state.filter_list["Currency"] !== undefined &&
       filter_array.push(
         '"Currency":{"$regex" : "' +
-          this.state.filter_list["Currency"] +
-          '", "$options" : "i"}'
+        this.state.filter_list["Currency"] +
+        '", "$options" : "i"}'
       );
     this.state.filter_list["Valid_To"] !== null &&
       this.state.filter_list["Valid_To"] !== undefined &&
       filter_array.push(
         '"Valid_To":{"$regex" : "' +
-          this.state.filter_list["Valid_To"] +
-          '", "$options" : "i"}'
+        this.state.filter_list["Valid_To"] +
+        '", "$options" : "i"}'
       );
     this.state.filter_list["Created_On"] !== null &&
       this.state.filter_list["Created_On"] !== undefined &&
       filter_array.push(
         '"Created_On":{"$regex" : "' +
-          this.state.filter_list["Created_On"] +
-          '", "$options" : "i"}'
+        this.state.filter_list["Created_On"] +
+        '", "$options" : "i"}'
       );
 
     let whereAnd = "{" + filter_array.join(",") + "}";
 
     getDatafromAPINODE(
-      "/mmCode/getMm?q=" +
-        whereAnd +
-        "&max_results=" +
-        this.state.perPage +
-        "&page=" +
-        this.state.activePage,
+      "/mmCodeDigi/getMm?q=" +
+      whereAnd +
+      "&max_results=" +
+      this.state.perPage +
+      "&page=" +
+      this.state.activePage,
       this.state.tokenUser
     ).then((res) => {
       if (res.data !== undefined) {
@@ -194,8 +192,7 @@ class MatHW extends React.Component {
         this.setState(
           {
             material_list: items,
-            totalData: totalData,
-            modal_loading: !this.state.modal_loading,
+            totalData: totalData
           },
           () => console.log(this.state.material_list)
         );
@@ -233,10 +230,10 @@ class MatHW extends React.Component {
       };
     }
 
-    ws.addRow([modul_name]);
+    ws.addRow([module_name]);
 
     const PPFormat = await wb.xlsx.writeBuffer();
-    saveAs(new Blob([PPFormat]), "Material " + modul_name + " Template.xlsx");
+    saveAs(new Blob([PPFormat]), "Material " + module_name + " Template.xlsx");
   };
 
   toggleLoading() {
@@ -287,7 +284,7 @@ class MatHW extends React.Component {
     this.togglecreateModal();
     const BulkXLSX = this.state.rowsXLS;
     const res = await postDatatoAPINODE(
-      "/mmCode/createMmCode",
+      "/mmCodeDigi/createMmCode",
       {
         mm_data: BulkXLSX,
       },
@@ -350,7 +347,7 @@ class MatHW extends React.Component {
         "Note",
       ],
       [
-        modul_name,
+        module_name,
         this.state.PPForm[2],
         this.state.PPForm[3],
         this.state.PPForm[4],
@@ -366,7 +363,7 @@ class MatHW extends React.Component {
       ],
     ];
     const res = await postDatatoAPINODE(
-      "/mmCode/createMmCode",
+      "/mmCodeDigi/createMmCode",
       {
         mm_data: dataForm,
       },
@@ -467,7 +464,7 @@ class MatHW extends React.Component {
     }
 
     const allocexport = await wb.xlsx.writeBuffer();
-    saveAs(new Blob([allocexport]), "All " + modul_name + ".xlsx");
+    saveAs(new Blob([allocexport]), "All " + module_name + ".xlsx");
   };
 
   findVendorName = (vendor_id) => {
@@ -507,7 +504,7 @@ class MatHW extends React.Component {
     this.toggleLoading();
     this.toggleDelete();
     const DelData = deleteDataFromAPINODE2(
-      "/mmCode/deleteMmCode",
+      "/mmCodeDigi/deleteMmCode",
       this.state.tokenUser,
       { data: [objData] }
     ).then((res) => {
@@ -572,7 +569,7 @@ class MatHW extends React.Component {
       Note: this.state.PPForm[11],
     };
     const res = await patchDatatoAPINODE(
-      "/mmCode/updateMmCode",
+      "/mmCodeDigi/updateMmCode",
       {
         data: [dataForm],
       },
@@ -607,10 +604,10 @@ class MatHW extends React.Component {
 
   loopSearchBar = () => {
     let searchBar = [];
-    for (let i = 0; i < 12; i++) {
+    for (let i = 0; i < 8; i++) {
       searchBar.push(
         <td>
-          <div className="controls" style={{ width: "150px" }}>
+          <div className="controls" style={{ minWidth: "150px" }}>
             <InputGroup className="input-prepend">
               <InputGroupAddon addonType="prepend">
                 <InputGroupText>
@@ -793,11 +790,12 @@ class MatHW extends React.Component {
                             {/* <th>Created_By</th>
                             <th>Status_Price_in_SAP</th>
                             <th>Note</th> */}
-                            <th colspan="2"></th>
+                          </tr>
+                          <tr>
+                            {this.loopSearchBar()}
                           </tr>
                         </thead>
                         <tbody>
-                          <tr>{this.loopSearchBar()}</tr>
                           {this.state.material_list !== undefined &&
                             this.state.material_list !== null &&
                             this.state.material_list.map((e) => (
@@ -911,7 +909,7 @@ class MatHW extends React.Component {
           toggle={this.togglePPForm}
           className="modal--form"
         >
-          <ModalHeader>Form {modul_name}</ModalHeader>
+          <ModalHeader>Form {module_name}</ModalHeader>
           <ModalBody>
             <Row>
               <Col sm="12">
@@ -1061,7 +1059,7 @@ class MatHW extends React.Component {
           toggle={this.togglecreateModal}
           className={this.props.className}
           onClosed={this.resettogglecreateModal}
-          title={"Create " + modul_name}
+          title={"Create " + module_name}
         >
           <div>
             <table>
@@ -1109,7 +1107,7 @@ class MatHW extends React.Component {
           toggle={this.toggleEdit}
           className="modal--form"
         >
-          <ModalHeader>Form {modul_name}</ModalHeader>
+          <ModalHeader>Form {module_name}</ModalHeader>
           <ModalBody>
             <Row>
               <Col sm="12">

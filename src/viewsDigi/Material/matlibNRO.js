@@ -34,6 +34,7 @@ import {
   deleteDataFromAPINODE2,
 } from "../../helper/asyncFunction";
 import { numToSSColumn } from "../../helper/basicFunction";
+import '../MYAssignment/LMRMY.css';
 
 const DefaultNotif = React.lazy(() => import("../DefaultView/DefaultNotif"));
 const Checkbox = ({
@@ -57,7 +58,7 @@ const Checkbox = ({
     matId={matId}
   />
 );
-const modul_name = "NRO";
+const module_name = "NRO";
 const header_model = [
   "BB",
   "BB_Sub",
@@ -86,8 +87,8 @@ class TabelNRO extends React.Component {
                   mat_id + " /// " + vendor.Vendor_Code
                 )
                   ? this.props.vendorChecked.get(
-                      mat_id + " /// " + vendor.Vendor_Code
-                    )
+                    mat_id + " /// " + vendor.Vendor_Code
+                  )
                   : true
               }
               onChange={this.props.handleCheckVendor}
@@ -95,7 +96,7 @@ class TabelNRO extends React.Component {
               value={vendor.Vendor_Code}
               id={vendor.Vendor_Code}
               matId={mat_id}
-              // key={mat_id}
+            // key={mat_id}
             />
           </td>
         </Fragment>
@@ -113,7 +114,7 @@ class TabelNRO extends React.Component {
               name={mat_id + " /// " + vendor.Vendor_Code}
               matId={mat_id}
               onChange={this.props.handleCheckVendor}
-              // key={mat_id}
+            // key={mat_id}
             />
           </td>
         </Fragment>
@@ -126,7 +127,7 @@ class TabelNRO extends React.Component {
     for (let i = 0; i < 8; i++) {
       searchBar.push(
         <td>
-          <div className="controls" style={{ width: "150px" }}>
+          <div className="controls" style={{ minWidth: "150px" }}>
             <InputGroup className="input-prepend">
               <InputGroupAddon addonType="prepend">
                 <InputGroupText>
@@ -158,33 +159,33 @@ class TabelNRO extends React.Component {
       <Table striped hover bordered responsive size="sm">
         <thead>
           <tr>
-            <th rowSpan="2">
+            <th rowSpan="2" style={{ verticalAlign: "middle" }}>
               <b>BB</b>
             </th>
-            <th rowSpan="2">
+            <th rowSpan="2" style={{ verticalAlign: "middle" }}>
               <b>BB_Sub</b>
             </th>
-            <th rowSpan="2">
+            <th rowSpan="2" style={{ verticalAlign: "middle" }}>
               <b>SoW_Description</b>
             </th>
-            <th rowSpan="2">
+            <th rowSpan="2" style={{ verticalAlign: "middle" }}>
               <b>UoM</b>
             </th>
-            <th rowSpan="2">
+            <th rowSpan="2" style={{ verticalAlign: "middle" }}>
               <b>Region</b>
             </th>
-            <th rowSpan="2">
+            <th rowSpan="2" style={{ verticalAlign: "middle" }}>
               <b>Unit_Price</b>
             </th>
-            <th rowSpan="2">
+            <th rowSpan="2" style={{ verticalAlign: "middle" }}>
               <b>MM Code</b>
             </th>
-            <th rowSpan="2">
+            <th rowSpan="2" style={{ verticalAlign: "middle" }}>
               <b>MM_Description</b>
             </th>
             {this.props.Vendor_header.map((vendor) => (
               <Fragment key={vendor._id}>
-                <th>{vendor.Name}</th>
+                <th style={{ verticalAlign: "middle" }}>{vendor.Name}</th>
               </Fragment>
             ))}
             <th colspan="3"></th>
@@ -207,9 +208,11 @@ class TabelNRO extends React.Component {
               </Fragment>
             ))}
           </tr>
+          <tr>
+            {this.loopSearchBar()}
+          </tr>
         </thead>
         <tbody>
-          <tr>{this.loopSearchBar()}</tr>
           {this.props.DataMaterial.map((e) => (
             <tr>
               <td style={{ textAlign: "center" }}>{e.BB}</td>
@@ -317,71 +320,68 @@ class MatNRO extends React.Component {
   }
 
   getMaterialList() {
-    this.setState((prevState) => ({
-      modal_loading: !prevState.modal_loading,
-    }));
     let filter_array = [];
     filter_array.push(
-      '"Material_Type":{"$regex" : "' + modul_name + '", "$options" : "i"}'
+      '"Material_Type":{"$regex" : "' + module_name + '", "$options" : "i"}'
     );
     this.state.filter_list["BB"] !== null &&
       this.state.filter_list["BB"] !== undefined &&
       filter_array.push(
         '"BB":{"$regex" : "' +
-          this.state.filter_list["BB"] +
-          '", "$options" : "i"}'
+        this.state.filter_list["BB"] +
+        '", "$options" : "i"}'
       );
     this.state.filter_list["BB_Sub"] !== null &&
       this.state.filter_list["BB_Sub"] !== undefined &&
       filter_array.push(
         '"BB_Sub":{"$regex" : "' +
-          this.state.filter_list["BB_Sub"] +
-          '", "$options" : "i"}'
+        this.state.filter_list["BB_Sub"] +
+        '", "$options" : "i"}'
       );
     this.state.filter_list["UoM"] !== null &&
       this.state.filter_list["UoM"] !== undefined &&
       filter_array.push(
         '"UoM":{"$regex" : "' +
-          this.state.filter_list["UoM"] +
-          '", "$options" : "i"}'
+        this.state.filter_list["UoM"] +
+        '", "$options" : "i"}'
       );
     this.state.filter_list["Region"] !== null &&
       this.state.filter_list["Region"] !== undefined &&
       filter_array.push(
         '"Region":{"$regex" : "' +
-          this.state.filter_list["Region"] +
-          '", "$options" : "i"}'
+        this.state.filter_list["Region"] +
+        '", "$options" : "i"}'
       );
     this.state.filter_list["Unit_Price"] !== null &&
       this.state.filter_list["Unit_Price"] !== undefined &&
       filter_array.push(
         '"Unit_Price":{"$regex" : "' +
-          this.state.filter_list["Unit_Price"] +
-          '", "$options" : "i"}'
+        this.state.filter_list["Unit_Price"] +
+        '", "$options" : "i"}'
       );
     this.state.filter_list["MM_Code"] !== null &&
       this.state.filter_list["MM_Code"] !== undefined &&
       filter_array.push(
         '"MM_Code":{"$regex" : "' +
-          this.state.filter_list["MM_Code"] +
-          '", "$options" : "i"}'
+        this.state.filter_list["MM_Code"] +
+        '", "$options" : "i"}'
       );
     this.state.filter_list["MM_Description"] !== null &&
       this.state.filter_list["MM_Description"] !== undefined &&
       filter_array.push(
         '"MM_Description":{"$regex" : "' +
-          this.state.filter_list["MM_Description"] +
-          '", "$options" : "i"}'
+        this.state.filter_list["MM_Description"] +
+        '", "$options" : "i"}'
       );
     let whereAnd = "{" + filter_array.join(",") + "}";
 
     getDatafromAPINODE(
-      "/mmCode/getMm?q=" +
-        whereAnd +
-        "&max_results=" +
-        this.state.perPage +
-        "&page=" +
-        this.state.activePage,
+      "/mmCodeDigi/getMm?q=" +
+      whereAnd +
+      "&max_results=" +
+      this.state.perPage +
+      "&page=" +
+      this.state.activePage,
       this.state.tokenUser
     ).then((res) => {
       if (res.data !== undefined) {
@@ -390,8 +390,7 @@ class MatNRO extends React.Component {
         this.setState(
           {
             material_list: items,
-            totalData: totalData,
-            modal_loading: !this.state.modal_loading,
+            totalData: totalData
           },
           () => console.log(items.map((e) => e._id))
         );
@@ -401,7 +400,7 @@ class MatNRO extends React.Component {
 
   getMaterialListAll() {
     getDatafromAPINODE(
-      '/mmCode/getMm?q={"Material_Type": "' + modul_name + '"}' + "&noPg=1",
+      '/mmCodeDigi/getMm?q={"Material_Type": "' + module_name + '"}' + "&noPg=1",
       this.state.tokenUser
     ).then((res) => {
       if (res.data !== undefined) {
@@ -441,10 +440,10 @@ class MatNRO extends React.Component {
       };
     }
 
-    ws.addRow([modul_name]);
+    ws.addRow([module_name]);
 
     const PPFormat = await wb.xlsx.writeBuffer();
-    saveAs(new Blob([PPFormat]), "Material " + modul_name + " Template.xlsx");
+    saveAs(new Blob([PPFormat]), "Material " + module_name + " Template.xlsx");
   };
 
   toggleLoading() {
@@ -495,7 +494,7 @@ class MatNRO extends React.Component {
     this.togglecreateModal();
     const BulkXLSX = this.state.rowsXLS;
     const res = await postDatatoAPINODE(
-      "/mmCode/createMmCode",
+      "/mmCodeDigi/createMmCode",
       {
         mm_data: BulkXLSX,
       },
@@ -601,7 +600,7 @@ class MatNRO extends React.Component {
     }
     console.log("dataVendorMatUpdate", dataVendorMatUpdate);
     const res = await patchDatatoAPINODE(
-      "/mmCode/updateMmCode",
+      "/mmCodeDigi/updateMmCode",
       { data: dataVendorMatUpdate },
       this.state.tokenUser
     );
@@ -695,7 +694,7 @@ class MatNRO extends React.Component {
         "Remarks",
       ],
       [
-        modul_name,
+        module_name,
         this.state.PPForm[1],
         this.state.PPForm[2],
         this.state.PPForm[3],
@@ -712,7 +711,7 @@ class MatNRO extends React.Component {
       ],
     ];
     const res = await postDatatoAPINODE(
-      "/mmCode/createMmCode",
+      "/mmCodeDigi/createMmCode",
       {
         mm_data: dataForm,
       },
@@ -816,7 +815,7 @@ class MatNRO extends React.Component {
     }
 
     const allocexport = await wb.xlsx.writeBuffer();
-    saveAs(new Blob([allocexport]), "All " + modul_name + ".xlsx");
+    saveAs(new Blob([allocexport]), "All " + module_name + ".xlsx");
   };
 
   toggleDelete = (e) => {
@@ -844,7 +843,7 @@ class MatNRO extends React.Component {
     this.toggleLoading();
     this.toggleDelete();
     const DelData = deleteDataFromAPINODE2(
-      "/mmCode/deleteMmCode",
+      "/mmCodeDigi/deleteMmCode",
       this.state.tokenUser,
       { data: [objData] }
     ).then((res) => {
@@ -910,7 +909,7 @@ class MatNRO extends React.Component {
       Note: this.state.PPForm[12],
     };
     const res = await patchDatatoAPINODE(
-      "/mmCode/updateMmCode",
+      "/mmCodeDigi/updateMmCode",
       {
         data: [dataForm],
       },
@@ -948,35 +947,6 @@ class MatNRO extends React.Component {
       .sort((a, b) => (a.Name > b.Name ? 1 : -1))
       .filter((e) => e.Name !== "");
   }
-
-  // loopSearchBar = () => {
-  //   let searchBar = [];
-  //   for (let i = 0; i < 12; i++) {
-  //     searchBar.push(
-  //       <td>
-  //         <div className="controls" style={{ width: "150px" }}>
-  //           <InputGroup className="input-prepend">
-  //             <InputGroupAddon addonType="prepend">
-  //               <InputGroupText>
-  //                 <i className="fa fa-search"></i>
-  //               </InputGroupText>
-  //             </InputGroupAddon>
-  //             <Input
-  //               // className="col-sm-3"
-  //               type="text"
-  //               placeholder="Search"
-  //               onChange={this.handleFilterList}
-  //               value={this.state.filter_list[header_model[i]]}
-  //               name={header_model[i]}
-  //               size="sm"
-  //             />
-  //           </InputGroup>
-  //         </div>
-  //       </td>
-  //     );
-  //   }
-  //   return searchBar;
-  // };
 
   handleFilterList = (e) => {
     const index = e.target.name;
@@ -1127,7 +1097,7 @@ class MatNRO extends React.Component {
           toggle={this.togglePPForm}
           className="modal--form"
         >
-          <ModalHeader>Form {modul_name}</ModalHeader>
+          <ModalHeader>Form {module_name}</ModalHeader>
           <ModalBody>
             <Row>
               <Col sm="12">
@@ -1292,7 +1262,7 @@ class MatNRO extends React.Component {
           toggle={this.togglecreateModal}
           className={this.props.className}
           onClosed={this.resettogglecreateModal}
-          title={"Create " + modul_name}
+          title={"Create " + module_name}
         >
           <div>
             <table>
@@ -1340,7 +1310,7 @@ class MatNRO extends React.Component {
           toggle={this.toggleEdit}
           className="modal--form"
         >
-          <ModalHeader>Form {modul_name}</ModalHeader>
+          <ModalHeader>Form {module_name}</ModalHeader>
           <ModalBody>
             <Row>
               <Col sm="12">

@@ -60,6 +60,12 @@ export default {
           icon: "icon-list",
           roles: ["BAM-Sourcing"],
         },
+        {
+          name: "Package",
+          url: "/package",
+          icon: "icon-list",
+          roles: ["BAM-Sourcing"],
+        },
       ],
     },
   ],

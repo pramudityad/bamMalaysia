@@ -33,12 +33,13 @@ import {
 import ModalDelete from "../Component/ModalDelete";
 import { numToSSColumn } from "../../helper/basicFunction";
 import { connect } from "react-redux";
+import '../MYAssignment/LMRMY.css';
 
 const DefaultNotif = React.lazy(() =>
   import("../../views/DefaultView/DefaultNotif")
 );
 
-const modul_name = "ARP";
+const module_name = "ARP";
 const header_model = [
   "MM_Code",
   "MM_Description",
@@ -99,7 +100,7 @@ class MatARP extends React.Component {
 
   getMaterialListAll() {
     getDatafromAPINODE(
-      '/mmCode/getMm?q={"Material_Type": "' + modul_name + '"}' + "&noPg=1",
+      '/mmCodeDigi/getMm?q={"Material_Type": "' + module_name + '"}' + "&noPg=1",
       this.state.tokenUser
     ).then((res) => {
       if (res.data !== undefined) {
@@ -110,72 +111,69 @@ class MatARP extends React.Component {
   }
 
   getMaterialList() {
-    this.setState((prevState) => ({
-      modal_loading: !prevState.modal_loading,
-    }));
     let filter_array = [];
     filter_array.push(
-      '"Material_Type":{"$regex" : "' + modul_name + '", "$options" : "i"}'
+      '"Material_Type":{"$regex" : "' + module_name + '", "$options" : "i"}'
     );
     this.state.filter_list["MM_Code"] !== null &&
       this.state.filter_list["MM_Code"] !== undefined &&
       filter_array.push(
         '"MM_Code":{"$regex" : "' +
-          this.state.filter_list["MM_Code"] +
-          '", "$options" : "i"}'
+        this.state.filter_list["MM_Code"] +
+        '", "$options" : "i"}'
       );
     this.state.filter_list["MM_Description"] !== null &&
       this.state.filter_list["MM_Description"] !== undefined &&
       filter_array.push(
         '"MM_Description":{"$regex" : "' +
-          this.state.filter_list["MM_Description"] +
-          '", "$options" : "i"}'
+        this.state.filter_list["MM_Description"] +
+        '", "$options" : "i"}'
       );
     this.state.filter_list["Unit_Price"] !== null &&
       this.state.filter_list["Unit_Price"] !== undefined &&
       filter_array.push(
         '"Unit_Price":{"$regex" : "' +
-          this.state.filter_list["Unit_Price"] +
-          '", "$options" : "i"}'
+        this.state.filter_list["Unit_Price"] +
+        '", "$options" : "i"}'
       );
     this.state.filter_list["Currency"] !== null &&
       this.state.filter_list["Currency"] !== undefined &&
       filter_array.push(
         '"Currency":{"$regex" : "' +
-          this.state.filter_list["Currency"] +
-          '", "$options" : "i"}'
+        this.state.filter_list["Currency"] +
+        '", "$options" : "i"}'
       );
     this.state.filter_list["Remarks_or_Acceptance"] !== null &&
       this.state.filter_list["Remarks_or_Acceptance"] !== undefined &&
       filter_array.push(
         '"Remarks_or_Acceptance":{"$regex" : "' +
-          this.state.filter_list["Remarks_or_Acceptance"] +
-          '", "$options" : "i"}'
+        this.state.filter_list["Remarks_or_Acceptance"] +
+        '", "$options" : "i"}'
       );
     this.state.filter_list["Vendor_ID"] !== null &&
       this.state.filter_list["Vendor_ID"] !== undefined &&
       filter_array.push(
         '"Vendor_ID":{"$regex" : "' +
-          this.state.filter_list["Vendor_ID"] +
-          '", "$options" : "i"}'
+        this.state.filter_list["Vendor_ID"] +
+        '", "$options" : "i"}'
       );
     this.state.filter_list["Vendor_Name"] !== null &&
       this.state.filter_list["Vendor_Name"] !== undefined &&
       filter_array.push(
         '"Vendor_Name":{"$regex" : "' +
-          this.state.filter_list["Vendor_Name"] +
-          '", "$options" : "i"}'
+        this.state.filter_list["Vendor_Name"] +
+        '", "$options" : "i"}'
       );
 
     let whereAnd = "{" + filter_array.join(",") + "}";
 
     getDatafromAPINODE(
-      "/mmCode/getMm?q=" +
-        whereAnd +
-        "&max_results=" +
-        this.state.perPage +
-        "&page=" +
-        this.state.activePage,
+      "/mmCodeDigi/getMm?q=" +
+      whereAnd +
+      "&max_results=" +
+      this.state.perPage +
+      "&page=" +
+      this.state.activePage,
       this.state.tokenUser
     ).then((res) => {
       if (res.data !== undefined) {
@@ -184,8 +182,7 @@ class MatARP extends React.Component {
         this.setState(
           {
             material_list: items,
-            totalData: totalData,
-            modal_loading: !this.state.modal_loading,
+            totalData: totalData
           },
           () => console.log(items.map((e) => e._id))
         );
@@ -219,10 +216,10 @@ class MatARP extends React.Component {
       };
     }
 
-    ws.addRow([modul_name]);
+    ws.addRow([module_name]);
 
     const PPFormat = await wb.xlsx.writeBuffer();
-    saveAs(new Blob([PPFormat]), "Material " + modul_name + " Template.xlsx");
+    saveAs(new Blob([PPFormat]), "Material " + module_name + " Template.xlsx");
   };
 
   toggleLoading() {
@@ -273,7 +270,7 @@ class MatARP extends React.Component {
     this.togglecreateModal();
     const BulkXLSX = this.state.rowsXLS;
     const res = await postDatatoAPINODE(
-      "/mmCode/createMmCode",
+      "/mmCodeDigi/createMmCode",
       {
         mm_data: BulkXLSX,
       },
@@ -328,7 +325,7 @@ class MatARP extends React.Component {
         "Vendor_Name",
       ],
       [
-        modul_name,
+        module_name,
         this.state.PPForm[1],
         this.state.PPForm[2],
         this.state.PPForm[3],
@@ -346,7 +343,7 @@ class MatARP extends React.Component {
       ],
     ];
     const res = await postDatatoAPINODE(
-      "/mmCode/createMmCode",
+      "/mmCodeDigi/createMmCode",
       {
         mm_data: dataForm,
       },
@@ -441,7 +438,7 @@ class MatARP extends React.Component {
     }
 
     const allocexport = await wb.xlsx.writeBuffer();
-    saveAs(new Blob([allocexport]), "All " + modul_name + ".xlsx");
+    saveAs(new Blob([allocexport]), "All " + module_name + ".xlsx");
   };
 
   findVendorName = (vendor_id) => {
@@ -481,7 +478,7 @@ class MatARP extends React.Component {
     this.toggleLoading();
     this.toggleDelete();
     const DelData = deleteDataFromAPINODE2(
-      "/mmCode/deleteMmCode",
+      "/mmCodeDigi/deleteMmCode",
       this.state.tokenUser,
       { data: [objData] }
     ).then((res) => {
@@ -546,7 +543,7 @@ class MatARP extends React.Component {
       Note: this.state.PPForm[11],
     };
     const res = await patchDatatoAPINODE(
-      "/mmCode/updateMmCode",
+      "/mmCodeDigi/updateMmCode",
       {
         data: [dataForm],
       },
@@ -584,7 +581,7 @@ class MatARP extends React.Component {
     for (let i = 0; i < 7; i++) {
       searchBar.push(
         <td>
-          <div className="controls" style={{ width: "150px" }}>
+          <div className="controls" style={{ minWidth: "150px" }}>
             <InputGroup className="input-prepend">
               <InputGroupAddon addonType="prepend">
                 <InputGroupText>
@@ -765,12 +762,13 @@ class MatARP extends React.Component {
                             {/* <th>ZERV_(18)</th>
                             <th>ZEXT_(40)</th>
                             <th>Note</th> */}
-                            <th colspan="2"></th>
+                            <th colSpan="2" rowSpan="2" style={{ verticalAlign: "middle" }}>Action</th>
+                          </tr>
+                          <tr>
+                            {this.loopSearchBar()}
                           </tr>
                         </thead>
                         <tbody>
-                          <tr>{this.loopSearchBar()}</tr>
-
                           {this.state.material_list !== undefined &&
                             this.state.material_list !== null &&
                             this.state.material_list.map((e) => (
@@ -877,7 +875,7 @@ class MatARP extends React.Component {
           toggle={this.togglePPForm}
           className="modal--form"
         >
-          <ModalHeader>Form {modul_name}</ModalHeader>
+          <ModalHeader>Form {module_name}</ModalHeader>
           <ModalBody>
             <Row>
               <Col sm="12">
@@ -1029,7 +1027,7 @@ class MatARP extends React.Component {
           toggle={this.togglecreateModal}
           className={this.props.className}
           onClosed={this.resettogglecreateModal}
-          title={"Create " + modul_name}
+          title={"Create " + module_name}
         >
           <div>
             <table>
@@ -1077,7 +1075,7 @@ class MatARP extends React.Component {
           toggle={this.toggleEdit}
           className="modal--form"
         >
-          <ModalHeader>Form {modul_name}</ModalHeader>
+          <ModalHeader>Form {module_name}</ModalHeader>
           <ModalBody>
             <Row>
               <Col sm="12">
