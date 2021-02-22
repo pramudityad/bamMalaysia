@@ -84,12 +84,12 @@ class MYASGList extends Component {
     const wb = new Excel.Workbook();
     const ws = wb.addWorksheet();
     let prpo_list = []
-    await getDatafromAPIMY('prpo_bam_report?where={"Customer":"CELCOM"}').then((res => {
+    await getDatafromAPIMY('/prpo_bam_report?where={"Customer":"CELCOM"}').then((res => {
       if(res.data !== undefined){
-        prpo_list = getUniqueListBy(res.data._items, 'LMR_No')
+        prpo_list = res.data._items.filter(pr => pr.PO_Number !== null)
       }
     }))
-    
+    console.log(prpo_list)
     const all_lmr = this.state.lmr_list_filter;
 
     let headerRow = [
@@ -105,6 +105,7 @@ class MYASGList extends Component {
       "L2 Approver",
       "L3 Approver",
       "Request Type",
+      "PO"
     ];
     ws.addRow(headerRow);
     for (let i = 1; i < headerRow.length + 1; i++) {
@@ -131,13 +132,22 @@ class MYASGList extends Component {
         e.l2_approver,
         e.l3_approver,
         e.request_type,
-        prpo_list.find(f => f.LMR_No === e.lmr_id)
+        // prpo_list.find(f => f.LMR_No === e.lmr_id)
+        this.getPO(prpo_list, e.lmr_id)
       ]);
     }
 
     const allocexport = await wb.xlsx.writeBuffer();
     saveAs(new Blob([allocexport]), "All LMR.xlsx");
   };
+
+  getPO(list_prpo, key2){
+    const data_prpo = list_prpo.find(a => a.LMR_No === key2)
+    if(data_prpo !== undefined){
+      return data_prpo.PO_Number
+    }
+    return null
+  }
 
   getMRList() {
     let filter_array = [];
