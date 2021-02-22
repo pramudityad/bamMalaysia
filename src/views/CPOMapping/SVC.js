@@ -957,6 +957,27 @@ class MappingSVC extends React.PureComponent {
           )
           .join(" ") +
         "</table>";
+      if (res.data.warnNotif.length !== 0) {
+        // let dataEmail = {
+        //   // "to": creatorEmail,
+        //   // to: "pramudityad@student.telkomuniversity.ac.id",
+        //   to: "pramudityad@outlook.com",
+        //   subject: "[NOTIFY to CPM] " + modul_name,
+        //   body: bodyEmail,
+        // };
+        // const sendEmail = await apiSendEmail(dataEmail);
+        // console.log(sendEmail);
+        this.setState({
+          action_status: "warning",
+          action_message:
+            "success with warn " + res.data.warnNotif.map((warn) => warn),
+        });
+        this.toggleLoading();
+        return;
+        // setTimeout(function () {
+        //   window.location.reload();
+        // }, 1500);
+      }
       let dataEmail = {
         // "to": creatorEmail,
         // to: "pramudityad@student.telkomuniversity.ac.id",
