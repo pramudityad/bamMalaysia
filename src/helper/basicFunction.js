@@ -95,3 +95,6 @@ export const convertDMSToDD  = (dms) => {
   } // Don't do anything for N or E
   return dd;
 }
+export const getUniqueListBy = (arr, key) => {
+  return [...new Map(arr.map((item) => [item[key], item])).values()];
+};

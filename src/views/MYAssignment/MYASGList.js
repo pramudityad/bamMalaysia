@@ -17,10 +17,12 @@ import axios from "axios";
 import Pagination from "react-js-pagination";
 import Excel from "exceljs";
 import { saveAs } from "file-saver";
-import { numToSSColumn } from "../../helper/basicFunction";
+import { getDatafromAPIMY } from "../../helper/asyncFunction";
 import {
   convertDateFormatfull,
   convertDateFormat,
+  getUniqueListBy,
+  numToSSColumn
 } from "../../helper/basicFunction";
 import { connect } from "react-redux";
 
@@ -81,7 +83,13 @@ class MYASGList extends Component {
   exportLMR = async () => {
     const wb = new Excel.Workbook();
     const ws = wb.addWorksheet();
-
+    let prpo_list = []
+    await getDatafromAPIMY('prpo_bam_report?where={"Customer":"CELCOM"}').then((res => {
+      if(res.data !== undefined){
+        prpo_list = getUniqueListBy(res.data._items, 'LMR_No')
+      }
+    }))
+    
     const all_lmr = this.state.lmr_list_filter;
 
     let headerRow = [
@@ -123,6 +131,7 @@ class MYASGList extends Component {
         e.l2_approver,
         e.l3_approver,
         e.request_type,
+        prpo_list.find(f => f.LMR_No === e.lmr_id)
       ]);
     }
 
