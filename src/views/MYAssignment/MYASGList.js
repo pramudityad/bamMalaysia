@@ -49,7 +49,7 @@ class MYASGList extends Component {
       totalData: 0,
       perPage: 10,
       filter_list: {},
-      mr_all: [],
+      prpo_all: [],
       lmr_list_filter: [],
       lmr_list_pagination: [],
     };
@@ -83,13 +83,8 @@ class MYASGList extends Component {
   exportLMR = async () => {
     const wb = new Excel.Workbook();
     const ws = wb.addWorksheet();
-    let prpo_list = []
-    await getDatafromAPIMY('/prpo_bam_report?where={"Customer":"CELCOM"}').then((res => {
-      if(res.data !== undefined){
-        prpo_list = res.data._items.filter(pr => pr.PO_Number !== null)
-      }
-    }))
-    console.log(prpo_list)
+    const prpo_list = this.state.prpo_all
+    // console.log(prpo_list)
     const all_lmr = this.state.lmr_list_filter;
 
     let headerRow = [
@@ -149,7 +144,16 @@ class MYASGList extends Component {
     return null
   }
 
-  getMRList() {
+  async getPRPO() {
+    await getDatafromAPIMY('/prpo_bam_report?where={"Customer":"CELCOM"}').then((res => {
+      if(res.data !== undefined){
+        const prpo_all = res.data._items.filter(pr => pr.PO_Number !== null)
+        this.setState({ prpo_all : prpo_all})
+      }
+    }))
+  }
+
+  async getMRList() {
     let filter_array = [];
     this.state.filter_list["lmr_id"] !== null &&
       this.state.filter_list["lmr_id"] !== undefined &&
@@ -194,7 +198,7 @@ class MYASGList extends Component {
           '", "$options" : "i"}'
       );
     let whereAnd = "{" + filter_array.join(",") + "}";
-    this.getDataFromAPINODE(
+    await this.getDataFromAPINODE(
       "/aspassignment/getAspAssignment?q=" + whereAnd + "&srt=_id:-1&noPg=1"
     ).then((res) => {
       console.log("MR List Sorted", res);
@@ -347,7 +351,7 @@ class MYASGList extends Component {
 
   componentDidMount() {
     this.getMRList();
-    // this.getAllMR();
+    this.getPRPO();
     // console.log('token ', this.props.dataLogin.token)
     document.title = "LMR List | BAM";
   }
@@ -378,7 +382,29 @@ class MYASGList extends Component {
   loopSearchBar = () => {
     let searchBar = [];
     for (let i = 0; i < 6; i++) {
-      searchBar.push(
+      i === 2 ? (searchBar.push(
+        <td>
+          <div className="controls" style={{ width: "150px" }}>
+            <InputGroup className="input-prepend">
+              <InputGroupAddon addonType="prepend">
+                <InputGroupText>
+                  <i className="fa fa-search"></i>
+                </InputGroupText>
+              </InputGroupAddon>
+              <Input
+                // className="col-sm-3"
+                readOnly
+                type="text"
+                placeholder="Search"
+                onChange={this.handleFilterList}
+                value={this.state.filter_list[header_model[i]]}
+                name={header_model[i]}
+                size="sm"
+              />
+            </InputGroup>
+          </div>
+        </td>
+      )):(searchBar.push(
         <td>
           <div className="controls" style={{ width: "150px" }}>
             <InputGroup className="input-prepend">
@@ -399,7 +425,8 @@ class MYASGList extends Component {
             </InputGroup>
           </div>
         </td>
-      );
+      ))
+      
     }
     return searchBar;
   };
@@ -488,7 +515,7 @@ class MYASGList extends Component {
                           </td>
                           <td>{e.lmr_id}</td>
                           <td>{e.header_text}</td>
-                          <td>{e.po}</td>
+                          <td>{this.getPO(this.state.prpo_all, e.lmr_id)}</td>
                           <td>{e.lmr_issued_by}</td>
                           <td>{e.project_name}</td>
                           <td>{e.vendor_name}</td>

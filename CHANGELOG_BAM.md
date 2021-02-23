@@ -189,3 +189,13 @@ All notable changes to BAM https://bam-my.e-dpm.com will be documented in this f
 
 ### Fixed
 - Missing PO details in GR child - DPM (ana issue)
+
+## [1.3.12] - 2021-02-23
+
+### Added
+- po number in view (not search able)
+- po number in report file
+
+### Changed
+
+### Fixed
