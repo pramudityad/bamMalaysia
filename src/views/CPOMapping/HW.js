@@ -342,6 +342,7 @@ class MappingHW extends React.Component {
       modal_loading: false,
       modal_callof: false,
       multiple_select: [],
+      multiple_select2: [],
       mapping_date: "",
       po_select: null,
       reloc_options: [],
@@ -433,17 +434,20 @@ class MappingHW extends React.Component {
     if (!inputValue) {
       return [];
     } else {
-      let asycn_options = [];
-      await getUniqueListBy(this.state.all_data_mapping, "Po").map((data) =>
-        asycn_options.push({
-          label: data.Po,
-          value: data.Po,
+      let async_options2 = [];
+      await getUniqueListBy(
+        this.state.all_data_master,
+        "Project_Description"
+      ).map((data) =>
+        async_options2.push({
+          label: data.Project_Description,
+          value: data.Project_Description,
           // Reference_Loc_Id: data.Reference_Loc_Id,
           // Po: data.Po,
           // Line: data.Line,
         })
       );
-      return asycn_options.filter((i) =>
+      return async_options2.filter((i) =>
         i.label.toLowerCase().includes(inputValue)
       );
     }
@@ -461,6 +465,10 @@ class MappingHW extends React.Component {
             _id: e._id,
             Reference_Loc_Id: e.Reference_Loc_Id,
             unique_code: e.unique_code,
+            Project_Description: this.LookupField(
+              e.Po + "-" + e.Line,
+              "Project_Description"
+            ),
             Mapping_Date: "",
             Po: e.Po,
             Line: e.Line,
@@ -477,15 +485,15 @@ class MappingHW extends React.Component {
     }
   };
 
-  handleChangePO = (datalist) => {
+  handleBeforeCallOf = (datalist) => {
     const mapping_data = this.state.multiple_select.filter(
-      (po) => po.Po === datalist.value
+      (data) => data.Project_Description === datalist.value
     );
-    // console.log("po", datalist);
+    // console.log("Project_Description", datalist.value);
     if (datalist !== undefined && datalist !== null) {
       this.setState(
-        { multiple_select: mapping_data, po_select: datalist.value },
-        () => console.log(this.state.multiple_select)
+        { multiple_select2: mapping_data, po_select: datalist.value },
+        () => console.log(this.state.multiple_select2)
       );
     } else {
       this.setState({ datalist: null }, () => console.log(this.state.datalist));
@@ -959,7 +967,7 @@ class MappingHW extends React.Component {
     const header_update_Mapping_Date = [
       ["Po", "Line", "Reference_Loc_Id", "Mapping_Date"],
     ];
-    const body_update_Mapping_Date = this.state.multiple_select.map((req) =>
+    const body_update_Mapping_Date = this.state.multiple_select2.map((req) =>
       req_body.push([
         req.Po,
         req.Line,
@@ -2346,20 +2354,20 @@ class MappingHW extends React.Component {
                 <FormGroup row>
                   <Col xs="8">
                     <FormGroup>
-                      <Label>PO</Label>
+                      <Label>Project Description</Label>
                       <AsyncSelect
                         // isMulti
                         cacheOptions
                         loadOptions={this.loadOptionsPO}
                         defaultOptions
-                        onChange={this.handleChangePO}
+                        onChange={this.handleBeforeCallOf}
                       />
                     </FormGroup>
                   </Col>
                 </FormGroup>
               </Col>
             </Row>
-            {this.state.multiple_select !== null &&
+            {this.state.multiple_select2 !== null &&
             this.state.po_select !== null ? (
               <>
                 <Row>
@@ -2369,7 +2377,7 @@ class MappingHW extends React.Component {
                         <FormGroup>
                           <Label>
                             <h6>
-                              There are {this.state.multiple_select.length}{" "}
+                              There are {this.state.multiple_select2.length}{" "}
                               items under this combination
                             </h6>
                           </Label>
@@ -2394,7 +2402,7 @@ class MappingHW extends React.Component {
             <Button
               color="success"
               onClick={this.saveUpdate_CallOf}
-              disabled={this.state.multiple_select.length === 0}
+              disabled={this.state.multiple_select2.length === 0}
             >
               Update
             </Button>

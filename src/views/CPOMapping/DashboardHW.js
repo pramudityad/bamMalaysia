@@ -1,34 +1,6 @@
 import React from "react";
-import {
-  Col,
-  FormGroup,
-  Label,
-  Row,
-  Table,
-  Input,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  Card,
-  CardBody,
-  CardHeader,
-  CardFooter,
-  Button,
-  Dropdown,
-  DropdownItem,
-  DropdownMenu,
-  DropdownToggle,
-  Collapse,
-  Container,
-} from "reactstrap";
-import {
-  getDatafromAPIMY,
-  postDatatoAPINODE,
-  patchDatatoAPINODE,
-  deleteDataFromAPINODE2,
-  getDatafromAPINODE,
-} from "../../helper/asyncFunction";
+import { Col, FormGroup, Row, Table, Card, Container } from "reactstrap";
+import { getDatafromAPINODE } from "../../helper/asyncFunction";
 import Pagination from "react-js-pagination";
 import { saveAs } from "file-saver";
 import { numToSSColumn } from "../../helper/basicFunction";
@@ -98,7 +70,7 @@ class ReportHW extends React.Component {
 
   getList() {
     getDatafromAPINODE(
-      "/cpoMapping/getCpo/hw?noPg=1",
+      "/cpoMapping/getCpo/required/hw?noPg=1",
       this.state.tokenUser
     ).then((res) => {
       if (res.data !== undefined) {

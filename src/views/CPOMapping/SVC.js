@@ -354,6 +354,7 @@ class MappingSVC extends React.PureComponent {
       all_data_master: [],
       all_data_mapping: [],
       multiple_select: [],
+      multiple_select2: [],
       mapping_date: "",
       po_select: null,
       reloc_options: [],
@@ -483,6 +484,10 @@ class MappingSVC extends React.PureComponent {
             _id: e._id,
             Reference_Loc_Id: e.Reference_Loc_Id,
             unique_code: e.unique_code,
+            Project_Description: this.LookupField(
+              e.Po + "-" + e.Line,
+              "Project_Description"
+            ),
             Mapping_Date: "",
             Po: e.Po,
             Line: e.Line,
@@ -499,18 +504,18 @@ class MappingSVC extends React.PureComponent {
     }
   };
 
-  handleChangePO = (datalist) => {
+  handleBeforeCallOf = (datalist) => {
     const mapping_data = this.state.multiple_select.filter(
-      (po) => po.Po === datalist.value
+      (data) => data.Project_Description === datalist.value
     );
-    // console.log("po", datalist);
+    // console.log("Project_Description", datalist.value);
     if (datalist !== undefined && datalist !== null) {
       this.setState(
-        { multiple_select: mapping_data, po_select: datalist.value },
-        () => console.log(this.state.multiple_select)
+        { multiple_select2: mapping_data, po_select: datalist.value },
+        () => console.log(this.state.multiple_select2)
       );
     } else {
-      this.setState({ datalist: null }, () => console.log(this.state.datalist));
+      this.setState({ datalist: null });
     }
   };
 
@@ -2286,20 +2291,20 @@ class MappingSVC extends React.PureComponent {
                 <FormGroup row>
                   <Col xs="8">
                     <FormGroup>
-                      <Label>PO</Label>
+                      <Label>Project Description</Label>
                       <AsyncSelect
                         // isMulti
                         cacheOptions
                         loadOptions={this.loadOptionsPO}
                         defaultOptions
-                        onChange={this.handleChangePO}
+                        onChange={this.handleBeforeCallOf}
                       />
                     </FormGroup>
                   </Col>
                 </FormGroup>
               </Col>
             </Row>
-            {this.state.multiple_select !== null &&
+            {this.state.multiple_select2 !== null &&
             this.state.po_select !== null ? (
               <>
                 <Row>
@@ -2309,7 +2314,7 @@ class MappingSVC extends React.PureComponent {
                         <FormGroup>
                           <Label>
                             <h6>
-                              There are {this.state.multiple_select.length}{" "}
+                              There are {this.state.multiple_select2.length}{" "}
                               items under this combination
                             </h6>
                           </Label>
