@@ -549,7 +549,7 @@ class MappingHW extends React.Component {
           '", "$options" : "i"}'
       );
 
-    filter_array.push('"Not_Required":' + true);
+    // filter_array.push('"Not_Required":' + true);
     let whereAnd = "{" + filter_array.join(",") + "}";
     getDatafromAPINODE(
       "/cpoMapping/getCpo/hw?q=" +
@@ -851,66 +851,71 @@ class MappingHW extends React.Component {
       this.state.tokenUser
     );
     if (res.data !== undefined) {
-      const table_header = Object.keys(res.data.updateData[0]);
-      const update_Data = res.data.updateData;
-      const new_table_header = table_header.slice(0, -2);
-      // update_Data.map((row, k) => console.log(row));
-      // console.log(table_header);
-      let value = "row.";
-      const bodyEmail =
-        "<h2>DPM - BAM Notification</h2><br/><span>Please be notified that the following " +
-        modul_name +
-        " data has been updated <br/><br/><table><tr>" +
-        new_table_header.map((tab, i) => "<th>" + tab + "</th>").join(" ") +
-        "</tr>" +
-        update_Data
-          .map(
-            (row, j) =>
-              "<tr key={" +
-              j +
-              "}>" +
-              new_table_header
-                .map((td) => "<td>" + eval(value + td) + "</td>")
-                .join(" ") +
-              "</tr>"
-          )
-          .join(" ") +
-        "</table>";
-      if (res.data.warnNotif.length !== 0) {
-        // let dataEmail = {
-        //   // "to": creatorEmail,
-        //   // to: "pramudityad@student.telkomuniversity.ac.id",
-        //   to: "pramudityad@outlook.com",
-        //   subject: "[NOTIFY to CPM] " + modul_name,
-        //   body: bodyEmail,
-        // };
-        // const sendEmail = await apiSendEmail(dataEmail);
-        // console.log(sendEmail);
-        this.setState({
-          action_status: "warning",
-          action_message:
-            "success with warn " + res.data.warnNotif.map((warn) => warn),
-        });
+      if (res.data.updateData.length !== 0) {
+        const table_header = Object.keys(res.data.updateData[0]);
+        const update_Data = res.data.updateData;
+        const new_table_header = table_header.slice(0, -2);
+        // update_Data.map((row, k) => console.log(row));
+        // console.log(table_header);
+        let value = "row.";
+        const bodyEmail =
+          "<h2>DPM - BAM Notification</h2><br/><span>Please be notified that the following " +
+          modul_name +
+          " data has been updated <br/><br/><table><tr>" +
+          new_table_header.map((tab, i) => "<th>" + tab + "</th>").join(" ") +
+          "</tr>" +
+          update_Data
+            .map(
+              (row, j) =>
+                "<tr key={" +
+                j +
+                "}>" +
+                new_table_header
+                  .map((td) => "<td>" + eval(value + td) + "</td>")
+                  .join(" ") +
+                "</tr>"
+            )
+            .join(" ") +
+          "</table>";
+        if (res.data.warnNotif.length !== 0) {
+          let dataEmail = {
+            // "to": creatorEmail,
+            // to: "pramudityad@student.telkomuniversity.ac.id",
+            to: "pramudityad@outlook.com",
+            subject: "[NOTIFY to CPM] " + modul_name,
+            body: bodyEmail,
+          };
+          const sendEmail = await apiSendEmail(dataEmail);
+          console.log(sendEmail);
+          this.setState({
+            action_status: "warning",
+            action_message:
+              "success with warn " + res.data.warnNotif.map((warn) => warn),
+          });
+          this.toggleLoading();
+          return;
+          // setTimeout(function () {
+          //   window.location.reload();
+          // }, 1500);
+        }
+        let dataEmail = {
+          // "to": creatorEmail,
+          // to: "pramudityad@student.telkomuniversity.ac.id",
+          to: "pramudityad@outlook.com",
+          subject: "[NOTIFY to CPM] " + modul_name,
+          body: bodyEmail,
+        };
+        const sendEmail = await apiSendEmail(dataEmail);
+        console.log(sendEmail);
+        this.setState({ action_status: "success" });
         this.toggleLoading();
-        return;
         // setTimeout(function () {
         //   window.location.reload();
         // }, 1500);
+      } else {
+        this.setState({ action_status: "success" });
+        this.toggleLoading();
       }
-      // let dataEmail = {
-      //   // "to": creatorEmail,
-      //   // to: "pramudityad@student.telkomuniversity.ac.id",
-      //   to: "pramudityad@outlook.com",
-      //   subject: "[NOTIFY to CPM] " + modul_name,
-      //   body: bodyEmail,
-      // };
-      // const sendEmail = await apiSendEmail(dataEmail);
-      // console.log(sendEmail);
-      this.setState({ action_status: "success" });
-      this.toggleLoading();
-      // setTimeout(function () {
-      //   window.location.reload();
-      // }, 1500);
     } else {
       if (
         res.response !== undefined &&
@@ -933,6 +938,12 @@ class MappingHW extends React.Component {
       }
       this.toggleLoading();
     }
+  };
+
+  handleChangeForm = (e) => {
+    const value = e.target.value;
+    const unique_code = e.target.name;
+    this.setState({ mapping_date: value });
   };
 
   saveUpdate_CallOf = async () => {
@@ -1022,59 +1033,127 @@ class MappingHW extends React.Component {
     }));
   };
 
-  handleChangeForm = (e) => {
-    const value = e.target.value;
-    const name = e.target.name;
-    this.setState(
-      (prevState) => ({
-        CPOForm: {
-          ...prevState.CPOForm,
-          [name]: value,
-        },
-      }),
-      () => console.log(this.state.CPOForm)
-    );
-  };
+  // handleChangeForm = (e) => {
+  //   const value = e.target.value;
+  //   const name = e.target.name;
+  //   this.setState(
+  //     (prevState) => ({
+  //       CPOForm: {
+  //         ...prevState.CPOForm,
+  //         [name]: value,
+  //       },
+  //     }),
+  //     () => console.log(this.state.CPOForm)
+  //   );
+  // };
 
   saveUpdate = async () => {
-    // this.toggleEdit();
     this.toggleLoading();
-    if (this.state.tabs_submenu[0] === true) {
-      let checked_data = this.state.dataChecked_container;
-      const newForm = checked_data
-        .map(({ Not_Required, ...item }) => item)
-        .map((obj) => ({ ...obj, Not_Required: true }));
-      console.log("not req form", checked_data, newForm);
+    // create
+    const roles =
+      this.state.roleUser.includes("BAM-MAT PLANNER") === true
+        ? 1
+        : this.state.roleUser.includes("BAM-PFM") === true
+        ? 2
+        : 3;
+    let header_move = [
+      "Po_Number",
+      "Data_1",
+      "Lookup_Reference",
+      "Region",
+      "Reference_Loc_Id",
+      "New_Loc_Id",
+      "Site_Name",
+      "New_Site_Name",
+      "Config",
+      "Po",
+      "Line",
+      "Description",
+      "Qty",
+      "NW",
+      "On_Air_Date",
+      "Mapping_Date",
+      "Remarks",
+      "Premr_No",
+      "Proceed_Billing_100",
+      "Celcom_User",
+      "Pcode",
+      "Unit_Price",
+      "Total_Price",
+      "Discounted_Unit_Price",
+      "Discounted_Po_Price",
+      "Deal_Name",
+      "So_Line_Item_Description",
+      "Sitepcode",
+    ];
+    const header_create_not_req = [header_move];
+    const body_create_not_req = this.state.dataChecked_container.map((data) =>
+      Object.keys(data)
+        .filter((key) => header_move.includes(key))
+        .reduce((obj, key) => {
+          obj[key] = data[key];
+          return obj;
+        }, {})
+    );
+    const trimm_body_create_not_req = body_create_not_req.map((data) =>
+      Object.keys(data).map((key) => data[key])
+    );
+    console.log("trimm_body_create_not_req", trimm_body_create_not_req);
+    // console.log(
+    //   "header",
+    //   body_create_not_req.map((data) => Object.keys(data).map((key) => key))
+    // );
+    // console.log("body", trimm_body_create_not_req);
+    // console.log(
+    //   "post not req",
+    //   header_create_not_req.concat(trimm_body_create_not_req)
+    // );
+    const res = await postDatatoAPINODE(
+      "/cpoMapping/createCpo",
+      {
+        cpo_type: "hw",
+        required_check: false,
+        roles: roles,
+        cpo_data: header_create_not_req.concat(trimm_body_create_not_req),
+      },
+      this.state.tokenUser
+    );
 
-      const res = await patchDatatoAPINODE(
-        "/cpoMapping/updateCpo",
+    if (res.data !== undefined) {
+      // delete
+      let req_body_del = [];
+      const _id_delete = this.state.dataChecked_container.map((del) =>
+        req_body_del.push(del._id)
+      );
+      const resdel = await deleteDataFromAPINODE2(
+        "/cpoMapping/deleteCpo",
+        this.state.tokenUser,
         {
           cpo_type: "hw",
-          data: newForm,
-        },
-        this.state.tokenUser
+          data: req_body_del,
+        }
       );
-      if (res.data !== undefined) {
+      if (resdel !== undefined) {
         this.setState({ action_status: "success" });
         this.toggleLoading();
-        setTimeout(function () {
-          window.location.reload();
-        }, 1500);
+        // setTimeout(function () {
+        //   window.location.reload();
+        // }, 1500);
       } else {
         if (
-          res.response !== undefined &&
-          res.response.data !== undefined &&
-          res.response.data.error !== undefined
+          resdel.response !== undefined &&
+          resdel.response.data !== undefined &&
+          resdel.response.data.error !== undefined
         ) {
-          if (res.response.data.error.message !== undefined) {
+          if (resdel.response.data.error.message !== undefined) {
             this.setState({
               action_status: "failed",
-              action_message: res.response.data.error.message,
+              action_message: resdel.response.data.error.message,
             });
           } else {
             this.setState({
               action_status: "failed",
-              action_message: res.response.data.error,
+              action_message: resdel.response.data.error,
             });
           }
         } else {
@@ -1083,46 +1162,26 @@ class MappingHW extends React.Component {
         this.toggleLoading();
       }
     } else {
-      let checked_data2 = this.state.dataChecked_container2;
-      const newForm2 = checked_data2
-        .map(({ Not_Required, ...item }) => item)
-        .map((obj) => ({ ...obj, Not_Required: null }));
-      const res = await patchDatatoAPINODE(
-        "/cpoMapping/updateCpo",
-        {
-          cpo_type: "hw",
-          data: newForm2,
-        },
-        this.state.tokenUser
-      );
-      if (res.data !== undefined) {
-        this.setState({ action_status: "success" });
-        this.toggleLoading();
-        setTimeout(function () {
-          window.location.reload();
-        }, 1500);
-      } else {
-        if (
-          res.response !== undefined &&
-          res.response.data !== undefined &&
-          res.response.data.error !== undefined
-        ) {
-          if (res.response.data.error.message !== undefined) {
-            this.setState({
-              action_status: "failed",
-              action_message: res.response.data.error.message,
-            });
-          } else {
-            this.setState({
-              action_status: "failed",
-              action_message: res.response.data.error,
-            });
-          }
+      if (
+        res.response !== undefined &&
+        res.response.data !== undefined &&
+        res.response.data.error !== undefined
+      ) {
+        if (res.response.data.error.message !== undefined) {
+          this.setState({
+            action_status: "failed",
+            action_message: res.response.data.error.message,
+          });
         } else {
-          this.setState({ action_status: "failed" });
+          this.setState({
+            action_status: "failed",
+            action_message: res.response.data.error,
+          });
         }
-        this.toggleLoading();
+      } else {
+        this.setState({ action_status: "failed" });
       }
+      this.toggleLoading();
     }
   };
 
@@ -1144,7 +1203,7 @@ class MappingHW extends React.Component {
         "Po",
       ].concat(header_admin)
     );
-    for (let i = 1; i < header_admin.length + 1; i++) {
+    for (let i = 1; i < header_admin.length + 3; i++) {
       ws.getCell(numToSSColumn(i) + "1").fill = {
         type: "pattern",
         pattern: "solid",
@@ -1158,21 +1217,17 @@ class MappingHW extends React.Component {
         let e = download_all_A[i];
         ws.addRow([
           e.Deal_Name,
-          e.Hammer,
-          e.Project_Description,
+          this.LookupField(e.Po_Number + "-" + e.Line, "Hammer"),
+          this.LookupField(e.Po_Number + "-" + e.Line, "Project_Description"),
           e.Po_Number,
           e.Reference_Loc_Id,
           e.Line,
           e.Po,
-          e.Billing_100,
-          e.Atp_Coa_Received_Date_80,
-          e.Ni_Coa_Date_20,
-          e.Sso_Coa_Date_80,
-          e.Coa_Psp_Received_Date_20,
-          e.Sso_Coa_Date_100,
-          e.Ses_No,
-          e.Ses_Status,
-          e.Ni_Coa_Submission_Status,
+          e.For_Checking_Purpose_Only_Rashidah,
+          e.Hw_Coa_Received_Date_80,
+          e.Cancel_Column,
+          e.Reference_Loc_Id_1,
+          e.Reff,
         ]);
       }
     }
@@ -1272,8 +1327,8 @@ class MappingHW extends React.Component {
         let e = download_all_A[i];
         ws.addRow([
           e.Deal_Name,
-          e.Hammer,
-          e.Project_Description,
+          this.LookupField(e.Po + "-" + e.Line, "Hammer"),
+          this.LookupField(e.Po + "-" + e.Line, "Project_Description"),
           e.Po_Number,
           e.Reference_Loc_Id,
           e.Line,
@@ -1525,12 +1580,13 @@ class MappingHW extends React.Component {
   };
 
   countheader = (params_field) => {
-    let value = "element." + params_field;
-    let sumheader = this.state.all_data_mapping.filter(
-      (element) => eval(value) !== null && eval(value) !== ""
+    let value = "curr." + params_field;
+    let sumheader = this.state.all_data_mapping.reduce(
+      (acc, curr) => acc + eval(value),
+      0
     );
-    return sumheader.length;
-    // console.log(params_field, sumheader);
+    // console.log(sumheader);
+    return Math.round((sumheader + Number.EPSILON) * 100) / 100;
   };
 
   countheaderNaN = (params_field) => {
@@ -1596,7 +1652,7 @@ class MappingHW extends React.Component {
                           {" "}
                           &nbsp;{" "}
                         </i>{" "}
-                        {role.includes("BAM-IM") === true ||
+                        {role.includes("BAM-ADMIN") === true ||
                         role.includes("BAM-PFM") === true
                           ? "Update"
                           : "New"}
@@ -1656,7 +1712,7 @@ class MappingHW extends React.Component {
                         ) : (
                           ""
                         )}
-                        {role.includes("BAM-IM") === true ? (
+                        {role.includes("BAM-ADMIN") === true ? (
                           <>
                             <DropdownItem onClick={this.download_Admin}>
                               {" "}
@@ -1960,7 +2016,7 @@ class MappingHW extends React.Component {
                             this.state.all_data_true.map((e, i) => (
                               <React.Fragment key={e._id + "frag"}>
                                 <tr align="center" key={e._id}>
-                                  {role.includes("BAM-IM") === true ||
+                                  {role.includes("BAM-ADMIN") === true ||
                                   role.includes("BAM-PFM") === true ? (
                                     <td>
                                       <Link to={"/hw-cpo/" + e._id}>
@@ -2207,7 +2263,7 @@ class MappingHW extends React.Component {
                   <Col xs="12">
                     <FormGroup>
                       <Label>Config</Label>
-                      {role.includes("BAM-IM") === true ? (
+                      {role.includes("BAM-ADMIN") === true ? (
                         <Input
                           type="text"
                           name="Config"
@@ -2230,7 +2286,7 @@ class MappingHW extends React.Component {
                   <Col xs="12">
                     <FormGroup>
                       <Label>QTY</Label>
-                      {role.includes("BAM-IM") === true ? (
+                      {role.includes("BAM-ADMIN") === true ? (
                         <Input
                           readOnly
                           type="number"
@@ -2371,7 +2427,7 @@ class MappingHW extends React.Component {
             </table>
           </div>
           <ModalFooter>
-            {/* {role.includes("BAM-IM") === true ||
+            {/* {role.includes("BAM-ADMIN") === true ||
             role.includes("BAM-PFM") === true ? (
               <Button
                 size="sm"

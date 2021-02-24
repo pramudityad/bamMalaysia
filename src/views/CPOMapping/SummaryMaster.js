@@ -281,7 +281,6 @@ class SVCMaster extends React.Component {
       if (res.data.data.length !== 0) {
         // new Data
         const new_table_header = Object.keys(res.data.data[0]).slice(2, -8);
-        console.log(new_table_header);
         const new_Data = res.data.data;
         let value = "row.";
         const body_new =
@@ -304,7 +303,7 @@ class SVCMaster extends React.Component {
             .join(" ") +
           "</table>";
         // updated Data
-        if (res.data.updateData !== undefined) {
+        if (res.data.updateData.length !== 0) {
           const updated_table_header = Object.keys(
             res.data.updateData[0]
           ).slice(0, -3);
@@ -341,14 +340,26 @@ class SVCMaster extends React.Component {
             body: bodyEmail,
           };
           const sendEmail = await apiSendEmail(dataEmail);
-          console.log(bodyEmail);
+          // console.log(sendEmail);
           this.setState({ action_status: "success" });
           this.toggleLoading();
           // // setTimeout(function () {
           // //   window.location.reload();
           // // }, 1500);
+        } else {
+          const bodyEmail = "<h2>DPM - BAM Notification</h2>" + body_new;
+          let dataEmail = {
+            // "to": creatorEmail,
+            // to: "pramudityad@student.telkomuniversity.ac.id",
+            to: "pramudityad@outlook.com",
+            subject: "[NOTIFY to CPM] " + modul_name,
+            body: bodyEmail,
+          };
+          const sendEmail = await apiSendEmail(dataEmail);
+          // console.log(sendEmail);
+          this.setState({ action_status: "success" });
+          this.toggleLoading();
         }
-        return;
       } else {
         // updated Data
         const updated_table_header = Object.keys(res.data.updateData[0]).slice(
@@ -382,13 +393,13 @@ class SVCMaster extends React.Component {
         const bodyEmail = "<h2>DPM - BAM Notification</h2>" + body_updated;
         let dataEmail = {
           // "to": creatorEmail,
-          to: "pramudityad@student.telkomuniversity.ac.id",
-          // to: "pramudityad@outlook.com",
+          // to: "pramudityad@student.telkomuniversity.ac.id",
+          to: "pramudityad@outlook.com",
           subject: "[NOTIFY to CPM] " + modul_name,
           body: bodyEmail,
         };
-        // const sendEmail = await apiSendEmail(dataEmail);
-        console.log(bodyEmail);
+        const sendEmail = await apiSendEmail(dataEmail);
+        // console.log(sendEmail);
         this.setState({ action_status: "success" });
         this.toggleLoading();
         // setTimeout(function () {
@@ -692,7 +703,8 @@ class SVCMaster extends React.Component {
                   style={{ display: "inline-flex" }}
                 >
                   <div>
-                    {role.includes("BAM-MAT PLANNER") === true ? (
+                    {role.includes("BAM-MAT PLANNER") === true ||
+                    role.includes("BAM-PFM") === true ? (
                       <div>
                         <Button
                           block
