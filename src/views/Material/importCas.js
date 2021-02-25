@@ -74,7 +74,7 @@ class importCas extends React.PureComponent {
         users.push({
           email: row[2],
           enabled: "true",
-          username: row[1],
+          username: row[1].toLowerCase(),
           firstName: row[0].split(" ").slice(0, -1).join(" "),
           lastName: row[0].split(" ").slice(-1).join(" "),
           credentials: [
