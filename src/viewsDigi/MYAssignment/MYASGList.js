@@ -470,7 +470,6 @@ class MYASGList extends Component {
                           <td>{e.lmr_id}</td>
                           <td>{e.header_text}</td>
                           <td>{e.po}</td>
-
                           <td>{e.lmr_issued_by}</td>
                           <td>{e.project_name}</td>
                           <td>{e.vendor_name}</td>

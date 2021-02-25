@@ -1,5 +1,6 @@
 import React, { Component, Fragment } from "react";
 import {
+  Alert,
   Card,
   CardHeader,
   CardBody,
@@ -18,7 +19,6 @@ import Pagination from "react-js-pagination";
 import { Modal, ModalBody, ModalHeader, ModalFooter } from "reactstrap";
 import { convertDateFormat } from "../../helper/basicFunction";
 import ModalCreateNew from "../Component/ModalCreateNew";
-
 import axios from "axios";
 import { Link, Redirect } from "react-router-dom";
 import AsyncSelect from "react-select/async";
@@ -26,6 +26,9 @@ import Select from "react-select";
 import "./LMRMY.css";
 import { getDatafromAPINODE } from "../../helper/asyncFunction";
 import { connect } from "react-redux";
+import { number } from "prop-types";
+import './LMRMY.css';
+
 const DefaultNotif = React.lazy(() =>
   import("../../views/DefaultView/DefaultNotif")
 );
@@ -122,74 +125,67 @@ const fas_reqbody = {
   },
 };
 
-const lmr_child_example = [
-  {
-    activity: "111",
-    currency: "MYR",
-    delivery_date: "2021-02-19",
-    description: "FTK SSO-2Tech-2G/3G/LTE-OKV",
-    item_status: "Submit",
-    key: 1,
-    material: "ECM-FTK-NDO-KV2",
-    material_code_doc: "60112f2feea6d1f700aa55ab",
-    nw: "111",
-    qty: "1",
-    site_id: "SITE001",
-    tax_code: "I0",
-    total_value: 5400,
-    unit_price: 5400,
-    work_status: "Waiting for PR-PO creation"
-  }
-]
-
 const package_example = [
   {
-    package_id: "0001",
-    package_name: "Package123",
-    region: "KV",
-    material_list: [
+    Package_Id: "0001",
+    Package_Name: "Package123",
+    Region: "KV",
+    MM_Data: [
       {
-        mm_code: "ECM-DG-NEW2.1-KV",
-        description: "Description of ECM-DG-NEW2.1-KV",
-        price: 1000,
-        qty: 1
+        MM_Code: "ECM-DG-NEW2.1-KV",
+        Description: "Description of ECM-DG-NEW2.1-KV",
+        Price: 1000,
+        Qty: 1,
+        Transport: "no"
       },
       {
-        mm_code: "ECM-DG-KV-ADD5.1",
-        description: "Description of ECM-DG-KV-ADD5.1",
-        price: 2000,
-        qty: 2
+        MM_Code: "ECM-DG-KV-ADD5.1",
+        Description: "Description of ECM-DG-KV-ADD5.1",
+        Price: 2000,
+        Qty: 2,
+        Transport: "no"
       },
       {
-        mm_code: "ECM-DG-KV-DOCONLY",
-        description: "Description of ECM-DG-KV-DOCONLY",
-        price: 3000,
-        qty: 3
+        MM_Code: "ECM-DG-KV-DOCONLY",
+        Description: "Description of ECM-DG-KV-DOCONLY",
+        Price: 3000,
+        Qty: 3,
+        Transport: "no"
+      },
+      {
+        MM_Code: "Placeholder for transport",
+        Description: "Placeholder for transport",
+        Price: 0,
+        Qty: 0,
+        Transport: "yes"
       }
     ]
   },
   {
-    package_id: "0002",
-    package_name: "Package234",
-    region: "KV",
-    material_list: [
+    Package_Id: "0002",
+    Package_Name: "Package234",
+    Region: "KV",
+    MM_Data: [
       {
-        mm_code: "Material1",
-        description: "Description of Material1",
-        price: 2000,
-        qty: 1
+        MM_Code: "Material1",
+        Description: "Description of Material1",
+        Price: 2000,
+        Qty: 1,
+        Transport: "no"
       },
       {
-        mm_code: "Material2",
-        description: "Description of Material2",
-        price: 4000,
-        qty: 2
+        MM_Code: "Material2",
+        Description: "Description of Material2",
+        Price: 4000,
+        Qty: 2,
+        Transport: "no"
       },
       {
-        mm_code: "Material3",
-        description: "Description of Material3",
-        price: 6000,
-        qty: 3
+        MM_Code: "Material3",
+        Description: "Description of Material3",
+        Price: 6000,
+        Qty: 3,
+        Transport: "no"
       }
     ]
   }
@@ -223,7 +219,6 @@ class MYASGCreation extends Component {
       modal_check_material_package: false,
       list_project: [],
       creation_lmr_child_form: [],
-      // creation_lmr_child_form: lmr_child_example,
       prevPage: 0,
       activePage: 1,
       totalData: 0,
@@ -841,6 +836,7 @@ class MYASGCreation extends Component {
 
   getMaterialList(number_child_form) {
     let filter_array = [];
+    this.state.creation_lmr_child_form[number_child_form].transport === "yes" && filter_array.push('"BB":"Transport"');
     // vendor
     this.state.lmr_form.vendor_code_actual !== "" &&
       filter_array.push(
@@ -1637,10 +1633,38 @@ class MYASGCreation extends Component {
 
   loopSearchBar = () => {
     let searchBar = [];
-    for (let i = 0; i < 7; i++) {
+    for (let i = 0; i < 8; i++) {
       searchBar.push(
         <td>
-          <div className="controls" style={{ width: "150px" }}>
+          <div className="controls" style={{ minWidth: "150px" }}>
+            <InputGroup className="input-prepend">
+              <InputGroupAddon addonType="prepend">
+                <InputGroupText>
+                  <i className="fa fa-search"></i>
+                </InputGroupText>
+              </InputGroupAddon>
+              <Input
+                type="text"
+                placeholder="Search"
+                onChange={this.handleFilterList}
+                value={this.state.filter_list[i]}
+                name={i}
+                size="sm"
+              />
+            </InputGroup>
+          </div>
+        </td>
+      );
+    }
+    return searchBar;
+  };
+
+  loopSearchBarNRO = () => {
+    let searchBar = [];
+    for (let i = 0; i < 8; i++) {
+      searchBar.push(
+        <td>
+          <div className="controls" style={{ minWidth: "150px" }}>
             <InputGroup className="input-prepend">
               <InputGroupAddon addonType="prepend">
                 <InputGroupText>
@@ -1669,7 +1693,7 @@ class MYASGCreation extends Component {
       searchBar.push(
         <td>
           {i !== 2 ? (
-            <div className="controls" style={{ width: "150px" }}>
+            <div className="controls" style={{ minWidth: "150px" }}>
               <InputGroup className="input-prepend">
                 <InputGroupAddon addonType="prepend">
                   <InputGroupText>
@@ -1700,7 +1724,7 @@ class MYASGCreation extends Component {
     for (let i = 0; i < 6; i++) {
       searchBar.push(
         <td>
-          <div className="controls" style={{ width: "150px" }}>
+          <div className="controls" style={{ minWidth: "150px" }}>
             <InputGroup className="input-prepend">
               <InputGroupAddon addonType="prepend">
                 <InputGroupText>
@@ -1878,25 +1902,26 @@ class MYASGCreation extends Component {
 
   handleSelectPackage = (e) => {
     const value = e.target.value;
-    let selectedPackage = this.state.package_list.find((e) => e.package_id === value);
+    let selectedPackage = this.state.package_list.find((e) => e.Package_Id === value);
     let lmrChildAll = [];
-    for (let i = 0; i < selectedPackage.material_list.length; i++) {
+    for (let i = 0; i < selectedPackage.MM_Data.length; i++) {
       let lmrChild = {
         key: i + 1,
         activity: this.state.lmr_child_package.activity,
         currency: this.state.lmr_child_package.currency,
         delivery_date: this.state.lmr_child_package.delivery_date,
-        description: selectedPackage.material_list[i].description,
+        description: selectedPackage.MM_Data[i].Description,
         item_status: "Submit",
-        material: selectedPackage.material_list[i].mm_code,
+        material: selectedPackage.MM_Data[i].MM_Code,
         material_code_doc: "60112f2feea6d1f700aa55ab",
         nw: this.state.lmr_child_package.nw,
-        qty: selectedPackage.material_list[i].qty,
+        qty: selectedPackage.MM_Data[i].Qty,
         site_id: this.state.lmr_child_package.site_id,
         tax_code: this.state.lmr_child_package.tax_code,
-        total_value: selectedPackage.material_list[i].qty * selectedPackage.material_list[i].price,
-        unit_price: selectedPackage.material_list[i].price,
-        work_status: "Waiting for PR-PO creation"
+        total_value: selectedPackage.MM_Data[i].Qty * selectedPackage.MM_Data[i].Price,
+        unit_price: selectedPackage.MM_Data[i].Price,
+        work_status: "Waiting for PR-PO creation",
+        transport: selectedPackage.MM_Data[i].Transport
       }
       lmrChildAll.push(lmrChild);
     }
@@ -1905,22 +1930,22 @@ class MYASGCreation extends Component {
 
   handleCheckMaterialPackage = (e) => {
     const value = e.target.value;
-    let selectedPackage = this.state.package_list.find((e) => e.package_id === value);
+    let selectedPackage = this.state.package_list.find((e) => e.Package_Id === value);
     let allMaterials = [];
-    for (let i = 0; i < selectedPackage.material_list.length; i++) {
+    for (let i = 0; i < selectedPackage.MM_Data.length; i++) {
       let material = {
-        mm_code: selectedPackage.material_list[i].mm_code,
-        description: selectedPackage.material_list[i].description,
-        price: selectedPackage.material_list[i].price,
-        qty: selectedPackage.material_list[i].qty
+        MM_Code: selectedPackage.MM_Data[i].MM_Code,
+        Description: selectedPackage.MM_Data[i].Description,
+        Price: selectedPackage.MM_Data[i].Price,
+        Qty: selectedPackage.MM_Data[i].Qty
       }
       allMaterials.push(material)
     }
     let check_material_package_list = {
-      package_id: selectedPackage.package_id,
-      package_name: selectedPackage.package_name,
-      region: selectedPackage.region,
-      materials: allMaterials
+      Package_Id: selectedPackage.Package_Id,
+      Package_Name: selectedPackage.Package_Name,
+      Region: selectedPackage.Region,
+      Materials: allMaterials
     }
     this.setState({ check_material_package_list: check_material_package_list }, () => this.toggleModalCheckMaterialPackage());
   }
@@ -2373,6 +2398,7 @@ class MYASGCreation extends Component {
                 <Button color="primary" style={{ marginBottom: "16px" }} onClick={this.toggleModalPackage}><i className="fa fa-cubes" style={{ marginRight: "8px" }}></i>Select Package</Button>
                 {this.state.creation_lmr_child_form.map((lmr, i) => (
                   <Form>
+                    {lmr.transport === "yes" && (<Alert color="danger" pill>Please Select Transport Material!</Alert>)}
                     <Row form>
                       <Col md={3}>
                         <FormGroup>
@@ -2430,7 +2456,6 @@ class MYASGCreation extends Component {
                           )} */}
                         </FormGroup>
                       </Col>
-
                       <Col md={2}>
                         <FormGroup>
                           <Label>Site ID / Text ID</Label>
@@ -2626,7 +2651,7 @@ class MYASGCreation extends Component {
                 ))}
                 <div>
                   <Button color="primary" size="sm" onClick={this.addLMR}>
-                    <i className="fa fa-plus">&nbsp;</i> LMR
+                    <i className="fa fa-plus">&nbsp;</i> LMR Child
                   </Button>
                 </div>
               </CardBody>
@@ -2656,6 +2681,7 @@ class MYASGCreation extends Component {
             </Card>
           </Col>
         </Row>
+
         {/* Modal Material Dasboard */}
         <Modal
           isOpen={this.state.modal_material}
@@ -2669,8 +2695,7 @@ class MYASGCreation extends Component {
             }}
           >
             <div style={{ marginLeft: "10px" }}>
-              <Row md={1}>
-                &nbsp;&nbsp;&nbsp;
+              <Row md={2}>
                 {this.state.hide_region !== true ? (
                   <FormGroup>
                     <Label>
@@ -2682,7 +2707,7 @@ class MYASGCreation extends Component {
                       value={matfilter.region}
                       onChange={this.handleMaterialFilter}
                     >
-                      <option value="" disabled selected hidden></option>
+                      <option value="" disabled selected hidden>Select Region</option>
                       <option value="All">All</option>
                       <option value="KV">KV</option>
                       <option value="OKV">OKV</option>
@@ -2696,23 +2721,24 @@ class MYASGCreation extends Component {
               </Row>
             </div>
             <div class="table-container">
-              <Table responsive striped bordered size="sm">
+              <Table responsive striped bordered size="sm" id="asg-detail-table">
                 <thead>
-                  <th></th>
-                  <th>BB</th>
-                  <th>BB Sub</th>
-                  <th>Region</th>
-                  <th>MM Code</th>
-                  <th>MM Description</th>
-                  <th>SoW</th>
-                  <th>UoM</th>
-                  <th>Unit Price</th>
-                </thead>
-                <tbody>
                   <tr>
-                    <td></td>
+                    <th rowSpan="2">Action</th>
+                    <th>BB</th>
+                    <th>BB Sub</th>
+                    <th>Region</th>
+                    <th>MM Code</th>
+                    <th>MM Description</th>
+                    <th>SoW</th>
+                    <th>UoM</th>
+                    <th>Unit Price</th>
+                  </tr>
+                  <tr>
                     {this.loopSearchBar()}
                   </tr>
+                </thead>
+                <tbody>
                   {this.state.material_list !== null &&
                     this.state.material_list !== undefined &&
                     this.state.material_list.map((e) => (
@@ -2784,7 +2810,7 @@ class MYASGCreation extends Component {
                       value={matfilter.region}
                       onChange={this.handleMaterialFilter}
                     >
-                      <option value="" disabled selected hidden></option>
+                      <option value="" disabled selected hidden>Select Region</option>
                       <option value="All">All</option>
                       <option value="KV">KV</option>
                       <option value="OKV">OKV</option>
@@ -2798,23 +2824,24 @@ class MYASGCreation extends Component {
               </Row>
             </div>
             <div class="table-container">
-              <Table responsive striped bordered size="sm">
+              <Table responsive striped bordered size="sm" id="asg-detail-table">
                 <thead>
-                  <th></th>
-                  <th>BB</th>
-                  <th>BB Sub</th>
-                  <th>Region</th>
-                  <th>MM Code</th>
-                  <th>MM Description</th>
-                  <th>SoW</th>
-                  <th>UoM</th>
-                  <th>Unit Price</th>
+                  <tr>
+                    <th rowSpan="2">Action</th>
+                    <th>BB</th>
+                    <th>BB Sub</th>
+                    <th>Region</th>
+                    <th>MM Code</th>
+                    <th>MM Description</th>
+                    <th>SoW</th>
+                    <th>UoM</th>
+                    <th>Unit Price</th>
+                  </tr>
+                  <tr>
+                    {this.loopSearchBarNRO()}
+                  </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td></td>
-                    {this.loopSearchBar()}
-                  </tr>
                   {this.state.material_list !== null &&
                     this.state.material_list !== undefined &&
                     this.state.material_list.map((e) => (
@@ -2876,24 +2903,25 @@ class MYASGCreation extends Component {
               <Row md={1}>&nbsp;&nbsp;&nbsp;</Row>
             </div>
             <div class="table-container">
-              <Table responsive striped bordered size="sm">
+              <Table responsive striped bordered size="sm" id="asg-detail-table">
                 <thead>
-                  <th></th>
-                  <th>MM_Code</th>
-                  <th>UoM</th>
-                  <th>Unit_Price</th>
-                  <th>Currency</th>
-                  <th>Info_Rec</th>
-                  <th>Valid_To</th>
-                  <th>Created_On</th>
-                  <th>Created_By</th>
-                  <th>Status_Price_in_SAP</th>
-                </thead>
-                <tbody>
                   <tr>
-                    <td></td>
+                    <th rowSpan="2">Action</th>
+                    <th>MM_Code</th>
+                    <th>UoM</th>
+                    <th>Unit_Price</th>
+                    <th>Currency</th>
+                    <th>Info_Rec</th>
+                    <th>Valid_To</th>
+                    <th>Created_On</th>
+                    <th>Created_By</th>
+                    <th>Status_Price_in_SAP</th>
+                  </tr>
+                  <tr>
                     {this.loopSearchBarHW()}
                   </tr>
+                </thead>
+                <tbody>
                   {this.state.material_list !== null &&
                     this.state.material_list !== undefined &&
                     this.state.material_list.map((e) => (
@@ -2956,21 +2984,22 @@ class MYASGCreation extends Component {
               <Row md={1}>&nbsp;&nbsp;&nbsp;</Row>
             </div>
             <div class="table-container">
-              <Table responsive striped bordered size="sm">
+              <Table responsive striped bordered size="sm" id="asg-detail-table">
                 <thead>
-                  <th></th>
-                  <th>MM_Code</th>
-                  <th>MM_Description</th>
-                  <th>UoM</th>
-                  <th>Unit_Price</th>
-                  <th>Currency</th>
-                  <th>Remarks</th>
-                </thead>
-                <tbody>
                   <tr>
-                    <td></td>
+                    <th rowSpan="2">Action</th>
+                    <th>MM_Code</th>
+                    <th>MM_Description</th>
+                    <th>UoM</th>
+                    <th>Unit_Price</th>
+                    <th>Currency</th>
+                    <th>Remarks</th>
+                  </tr>
+                  <tr>
                     {this.loopSearchBarARP()}
                   </tr>
+                </thead>
+                <tbody>
                   {this.state.material_list !== null &&
                     this.state.material_list !== undefined &&
                     this.state.material_list.map((e) => (
@@ -3172,7 +3201,7 @@ class MYASGCreation extends Component {
                           <Button
                             color="success"
                             size="sm"
-                            value={e.package_id}
+                            value={e.Package_Id}
                             onClick={this.handleSelectPackage}
                           >
                             <i className="fa fa-check-square" style={{ marginRight: "8px" }}></i>Select
@@ -3180,16 +3209,16 @@ class MYASGCreation extends Component {
                           <Button
                             color="primary"
                             size="sm"
-                            value={e.package_id}
+                            value={e.Package_Id}
                             onClick={this.handleCheckMaterialPackage}
                             style={{ marginLeft: 8 }}
                           >
                             <i className="fa fa-cubes" style={{ marginRight: "8px" }}></i>Check Material
                           </Button>
                         </td>
-                        <td>{e.package_id}</td>
-                        <td>{e.package_name}</td>
-                        <td>{e.region}</td>
+                        <td>{e.Package_Id}</td>
+                        <td>{e.Package_Name}</td>
+                        <td>{e.Region}</td>
                       </tr>
                     ))
                   }
@@ -3223,9 +3252,9 @@ class MYASGCreation extends Component {
           <ModalBody>
             <div class="table-container">
               <div>
-                <strong>Package ID</strong> : {this.state.check_material_package_list.package_id}<br />
-                <strong>Package Name</strong> : {this.state.check_material_package_list.package_name}<br />
-                <strong>Region</strong> : {this.state.check_material_package_list.region}<br /><br />
+                <strong>Package ID</strong> : {this.state.check_material_package_list.Package_Id}<br />
+                <strong>Package Name</strong> : {this.state.check_material_package_list.Package_Name}<br />
+                <strong>Region</strong> : {this.state.check_material_package_list.Region}<br /><br />
               </div>
               <Table responsive striped bordered size="sm">
                 <thead>
@@ -3238,13 +3267,13 @@ class MYASGCreation extends Component {
                 </thead>
                 <tbody>
                   {
-                    this.state.check_material_package_list.materials !== undefined &&
-                    this.state.check_material_package_list.materials.map((e) => (
+                    this.state.check_material_package_list.Materials !== undefined &&
+                    this.state.check_material_package_list.Materials.map((e) => (
                       <tr>
-                        <td>{e.mm_code}</td>
-                        <td>{e.description}</td>
-                        <td>{e.price}</td>
-                        <td>{e.qty}</td>
+                        <td>{e.MM_Code}</td>
+                        <td>{e.Description}</td>
+                        <td>{e.Price}</td>
+                        <td>{e.Qty}</td>
                       </tr>
                     ))
                   }

@@ -27,52 +27,65 @@ import '../MYAssignment/LMRMY.css';
 
 const package_example = [
   {
-    package_id: "0001",
-    package_name: "Package123",
-    region: "KV",
-    material_list: [
+    Package_Id: "0001",
+    Package_Name: "Package123",
+    Region: "KV",
+    MM_Data: [
       {
-        mm_code: "ECM-DG-NEW2.1-KV",
-        description: "Description of ECM-DG-NEW2.1-KV",
-        price: 1000,
-        qty: 1
+        MM_Code: "ECM-DG-NEW2.1-KV",
+        Description: "Description of ECM-DG-NEW2.1-KV",
+        Price: 1000,
+        Qty: 1,
+        Transport: "no"
       },
       {
-        mm_code: "ECM-DG-KV-ADD5.1",
-        description: "Description of ECM-DG-KV-ADD5.1",
-        price: 2000,
-        qty: 2
+        MM_Code: "ECM-DG-KV-ADD5.1",
+        Description: "Description of ECM-DG-KV-ADD5.1",
+        Price: 2000,
+        Qty: 2,
+        Transport: "no"
       },
       {
-        mm_code: "ECM-DG-KV-DOCONLY",
-        description: "Description of ECM-DG-KV-DOCONLY",
-        price: 3000,
-        qty: 3
+        MM_Code: "ECM-DG-KV-DOCONLY",
+        Description: "Description of ECM-DG-KV-DOCONLY",
+        Price: 3000,
+        Qty: 3,
+        Transport: "no"
+      },
+      {
+        MM_Code: "Placeholder for transport",
+        Description: "Placeholder for transport",
+        Price: 0,
+        Qty: 0,
+        Transport: "yes"
       }
     ]
   },
   {
-    package_id: "0002",
-    package_name: "Package234",
-    region: "KV",
-    material_list: [
+    Package_Id: "0002",
+    Package_Name: "Package234",
+    Region: "KV",
+    MM_Data: [
       {
-        mm_code: "Material1",
-        description: "Description of Material1",
-        price: 2000,
-        qty: 1
+        MM_Code: "Material1",
+        Description: "Description of Material1",
+        Price: 2000,
+        Qty: 1,
+        Transport: "no"
       },
       {
-        mm_code: "Material2",
-        description: "Description of Material2",
-        price: 4000,
-        qty: 2
+        MM_Code: "Material2",
+        Description: "Description of Material2",
+        Price: 4000,
+        Qty: 2,
+        Transport: "no"
       },
       {
-        mm_code: "Material3",
-        description: "Description of Material3",
-        price: 6000,
-        qty: 3
+        MM_Code: "Material3",
+        Description: "Description of Material3",
+        Price: 6000,
+        Qty: 3,
+        Transport: "no"
       }
     ]
   }
@@ -117,29 +130,31 @@ class Package extends Component {
 
   handleCheckMaterialPackage = (e) => {
     const value = e.target.value;
-    let selectedPackage = this.state.package_list.find((e) => e.package_id === value);
+    let selectedPackage = this.state.package_list.find((e) => e.Package_Id === value);
     let allMaterials = [];
-    for (let i = 0; i < selectedPackage.material_list.length; i++) {
+    for (let i = 0; i < selectedPackage.MM_Data.length; i++) {
       let material = {
-        mm_code: selectedPackage.material_list[i].mm_code,
-        description: selectedPackage.material_list[i].description,
-        price: selectedPackage.material_list[i].price,
-        qty: selectedPackage.material_list[i].qty
+        MM_Code: selectedPackage.MM_Data[i].MM_Code,
+        Description: selectedPackage.MM_Data[i].Description,
+        Price: selectedPackage.MM_Data[i].Price,
+        Qty: selectedPackage.MM_Data[i].Qty
       }
       allMaterials.push(material)
     }
     let check_material_package_list = {
-      package_id: selectedPackage.package_id,
-      package_name: selectedPackage.package_name,
-      region: selectedPackage.region,
-      materials: allMaterials
+      Package_Id: selectedPackage.Package_Id,
+      Package_Name: selectedPackage.Package_Name,
+      Region: selectedPackage.Region,
+      Materials: allMaterials
     }
     this.setState({ check_material_package_list: check_material_package_list }, () => this.toggleModalCheckMaterialPackage());
   }
 
   addMaterial = () => {
     let material_list = this.state.create_package_child;
-    material_list.push({});
+    material_list.push({
+      duplicate: 'no'
+    });
     this.setState({ create_package_child: material_list });
   }
 
@@ -159,7 +174,7 @@ class Package extends Component {
     this.state.filter_list_material[0] !== "" && (filter_array.push('"MM_Code":{"$regex" : "' + this.state.filter_list_material[0] + '", "$options" : "i"}'));
     this.state.filter_list_material[1] !== "" && (filter_array.push('"MM_Description":{"$regex" : "' + this.state.filter_list_material[1] + '", "$options" : "i"}'));
     this.state.filter_list_material[2] !== "" && (filter_array.push('"Unit_Price":' + this.state.filter_list_material[2]));
-    filter_array.push('"Region":"' + this.state.create_package_parent.region + '"');
+    filter_array.push('"Region":"' + this.state.create_package_parent.Region + '"');
     this.state.filter_list_material[4] !== "" && (filter_array.push('"Material_Type":{"$regex" : "' + this.state.filter_list_material[4] + '", "$options" : "i"}'));
     let whereAnd = "{" + filter_array.join(",") + "}";
     getDatafromAPINODE("/mmCodeDigi/getMm?q=" + whereAnd + "&lmt=" + this.state.perPage_material + "&pg=" + this.state.activePage_material, this.state.tokenUser).then((res) => {
@@ -218,10 +233,10 @@ class Package extends Component {
     const value = e.target.value;
     const data_material = this.state.material_list.find((e) => e.MM_Code === value);
     let create_package_child = this.state.create_package_child;
-    create_package_child[parseInt(this.state.current_material_select)]["mm_code"] = data_material.MM_Code;
-    create_package_child[parseInt(this.state.current_material_select)]["description"] = data_material.MM_Description;
-    create_package_child[parseInt(this.state.current_material_select)]["unit_price"] = data_material.Unit_Price;
-    create_package_child[parseInt(this.state.current_material_select)]["qty"] = 0;
+    create_package_child[parseInt(this.state.current_material_select)]["MM_Code"] = data_material.MM_Code;
+    create_package_child[parseInt(this.state.current_material_select)]["Description"] = data_material.MM_Description;
+    create_package_child[parseInt(this.state.current_material_select)]["Unit_Price"] = data_material.Unit_Price;
+    create_package_child[parseInt(this.state.current_material_select)]["Qty"] = 0;
     this.setState({ create_package_child: create_package_child });
     this.toggleModalMaterial();
   }
@@ -229,14 +244,79 @@ class Package extends Component {
   handleChangeFormPackageChild = (e) => {
     let create_package_child = this.state.create_package_child;
     let idxField = e.target.name.split(" /// ");
-    let value = e.target.value;
+    let value = isNaN(e.target.value) ? e.target.value : Number(e.target.value);
     let idx = idxField[0];
     let field = idxField[1];
 
     create_package_child[parseInt(idx)][field] = value;
+
+    if (field === 'Transport') {
+      let checked = e.target.checked;
+      if (checked === true) {
+        create_package_child[parseInt(idx)]["MM_Code"] = "Placeholder for transport";
+        create_package_child[parseInt(idx)]["Description"] = "Placeholder for transport";
+        create_package_child[parseInt(idx)]["Unit_Price"] = 0;
+        create_package_child[parseInt(idx)]["Qty"] = 0;
+        create_package_child[parseInt(idx)]["Transport"] = "yes";
+      } else {
+        create_package_child[parseInt(idx)]["MM_Code"] = "";
+        create_package_child[parseInt(idx)]["Description"] = "";
+        create_package_child[parseInt(idx)]["Unit_Price"] = 0;
+        create_package_child[parseInt(idx)]["Qty"] = 0;
+        create_package_child[parseInt(idx)]["Transport"] = "no";
+      }
+    }
+
     this.setState({ create_package_child: create_package_child }, () =>
       console.log(this.state.create_package_child)
     );
+  }
+
+  createPackage = () => {
+    let create_package_child = this.state.create_package_child;
+    let check_duplicate = false;
+    for (let i = 0; i < create_package_child.length; i++) {
+      for (let j = i + 1; j < create_package_child.length; j++) {
+        if (create_package_child[i].MM_Code === create_package_child[j].MM_Code) {
+          check_duplicate = true;
+          create_package_child[i].duplicate = 'yes';
+          create_package_child[j].duplicate = 'yes';
+        }
+      }
+    }
+
+    if (check_duplicate) {
+      alert('duplicate');
+      this.setState({ create_package_child: create_package_child }, () =>
+        console.log(this.state.create_package_child)
+      );
+    } else {
+      alert('clear');
+      for (let i = 0; i < create_package_child.length; i++) {
+        create_package_child[i].duplicate = 'no';
+      }
+      this.setState({ create_package_child: create_package_child }, () =>
+        console.log(this.state.create_package_child)
+      );
+    }
+
+    const dataPackageChild = [];
+    for (let i = 0; i < create_package_child.length; i++) {
+      let dataChild = {
+        MM_Code: create_package_child[i].MM_Code,
+        Qty: create_package_child[i].Qty
+      }
+      dataPackageChild.push(dataChild);
+    }
+
+    const dataPackage = {
+      // Package_Id: this.state.create_package_parent.Package_Id,
+      Package_Name: this.state.create_package_parent.Package_Name,
+      Region: this.state.create_package_parent.Region,
+      MM_Data: dataPackageChild
+    }
+
+    console.log('dataPackage', dataPackage)
   }
 
   onChangeDebouncedMaterial(e) {
@@ -346,15 +426,15 @@ class Package extends Component {
                             <Button
                               color="primary"
                               size="sm"
-                              value={e.package_id}
+                              value={e.Package_Id}
                               onClick={this.handleCheckMaterialPackage}
                             >
                               <i className="fa fa-cubes" style={{ marginRight: "8px" }}></i>Check Material
                           </Button>
                           </td>
-                          <td>{e.package_id}</td>
-                          <td>{e.package_name}</td>
-                          <td>{e.region}</td>
+                          <td>{e.Package_Id}</td>
+                          <td>{e.Package_Name}</td>
+                          <td>{e.Region}</td>
                         </tr>
                       ))}
                   </tbody>
@@ -387,9 +467,9 @@ class Package extends Component {
           <ModalBody>
             <div class="table-container">
               <div>
-                <strong>Package ID</strong> : {this.state.check_material_package_list.package_id}<br />
-                <strong>Package Name</strong> : {this.state.check_material_package_list.package_name}<br />
-                <strong>Region</strong> : {this.state.check_material_package_list.region}<br /><br />
+                <strong>Package ID</strong> : {this.state.check_material_package_list.Package_Id}<br />
+                <strong>Package Name</strong> : {this.state.check_material_package_list.Package_Name}<br />
+                <strong>Region</strong> : {this.state.check_material_package_list.Region}<br /><br />
               </div>
               <Table responsive striped bordered size="sm">
                 <thead>
@@ -402,13 +482,13 @@ class Package extends Component {
                 </thead>
                 <tbody>
                   {
-                    this.state.check_material_package_list.materials !== undefined &&
-                    this.state.check_material_package_list.materials.map((e) => (
+                    this.state.check_material_package_list.Materials !== undefined &&
+                    this.state.check_material_package_list.Materials.map((e) => (
                       <tr>
-                        <td>{e.mm_code}</td>
-                        <td>{e.description}</td>
-                        <td>{e.price}</td>
-                        <td>{e.qty}</td>
+                        <td>{e.MM_Code}</td>
+                        <td>{e.Description}</td>
+                        <td>{e.Price}</td>
+                        <td>{e.Qty}</td>
                       </tr>
                     ))
                   }
@@ -449,10 +529,10 @@ class Package extends Component {
                     <Label>Package Name</Label>
                     <Input
                       type="text"
-                      name="package_name"
+                      name="Package_Name"
                       placeholder="Input Package Name"
                       onChange={this.handleChangeFormPackageParent}
-                      value={this.state.create_package_parent.package_name}
+                      value={this.state.create_package_parent.Package_Name}
                       disabled={this.state.create_package_child.length > 0}
                     />
                   </FormGroup>
@@ -462,9 +542,9 @@ class Package extends Component {
                     <Label>Region</Label>
                     <Input
                       type="select"
-                      name="region"
+                      name="Region"
                       onChange={this.handleChangeFormPackageParent}
-                      value={this.state.create_package_parent.region}
+                      value={this.state.create_package_parent.Region}
                       disabled={this.state.create_package_child.length > 0}
                     >
                       <option value="" disabled selected hidden>Select Region</option>
@@ -480,38 +560,54 @@ class Package extends Component {
               <hr className="upload-line--lmr"></hr>
               {this.state.create_package_child.map((mat, i) => (
                 <Row>
+                  <Col md={2}>
+                    <FormGroup>
+                      <Label>Transport</Label><br />
+                      <Input
+                        type="checkbox"
+                        name={i + " /// Transport"}
+                        onChange={this.handleChangeFormPackageChild}
+                        className="checkmark-dash"
+                        style={{ left: "40%" }}
+                        checked={mat.Transport === 'yes'}
+                        disabled={this.state.create_package_child.find(x => x.Transport === 'yes')}
+                      />
+                    </FormGroup>
+                  </Col>
                   <Col md={3}>
                     <FormGroup>
                       <Label>MM Code</Label>
                       <Input
                         type="text"
-                        name={i + " /// mm_code"}
-                        id={i + " /// mm_code"}
-                        value={mat.mm_code}
+                        name={i + " /// MM_Code"}
+                        id={i + " /// MM_Code"}
+                        value={mat.MM_Code}
                         onClick={() => this.toggleModalMaterial(i)}
-                      />
-                    </FormGroup>
-                  </Col>
-                  <Col md={4}>
-                    <FormGroup>
-                      <Label>Description</Label>
-                      <Input
-                        type="text"
-                        name={i + " /// description"}
-                        id={i + " /// description"}
-                        value={mat.description}
-                        readOnly
+                        disabled={mat.Transport === 'yes'}
+                        style={mat.duplicate === 'yes' ? { border: "2px solid red" } : {}}
                       />
                     </FormGroup>
                   </Col>
                   <Col md={3}>
                     <FormGroup>
+                      <Label>Description</Label>
+                      <Input
+                        type="text"
+                        name={i + " /// Description"}
+                        id={i + " /// Description"}
+                        value={mat.Description}
+                        readOnly
+                      />
+                    </FormGroup>
+                  </Col>
+                  <Col md={2}>
+                    <FormGroup>
                       <Label>Price</Label>
                       <Input
                         type="number"
-                        name={i + " /// unit_price"}
-                        id={i + " /// unit_price"}
-                        value={mat.unit_price}
+                        name={i + " /// Unit_Price"}
+                        id={i + " /// Unit_Price"}
+                        value={mat.Unit_Price}
                         readOnly
                       />
                     </FormGroup>
@@ -522,21 +618,25 @@ class Package extends Component {
                       <Input
                         min="0"
                         type="number"
-                        name={i + " /// qty"}
-                        id={i + " /// qty"}
-                        value={mat.qty}
+                        name={i + " /// Qty"}
+                        id={i + " /// Qty"}
+                        value={mat.Qty}
                         onChange={this.handleChangeFormPackageChild}
+                        disabled={mat.Transport === 'yes'}
                       />
                     </FormGroup>
                   </Col>
                 </Row>
               ))}
-              <Button color="primary" size="sm" onClick={this.addMaterial} disabled={this.state.create_package_parent.package_name === undefined || this.state.create_package_parent.package_name === "" || this.state.create_package_parent.region === undefined || this.state.create_package_parent.region === ""}>
+              <Button color="primary" size="sm" onClick={this.addMaterial} disabled={this.state.create_package_parent.Package_Name === undefined || this.state.create_package_parent.Package_Name === "" || this.state.create_package_parent.Region === undefined || this.state.create_package_parent.Region === ""}>
                 <i className="fa fa-plus">&nbsp;</i> Add Material
               </Button>
             </div>
           </ModalBody>
           <ModalFooter>
+            <Button color="success" onClick={this.createPackage}>
+              Create Package
+            </Button>
             <Button color="secondary" onClick={this.toggleModalCreatePackage}>
               Close
             </Button>
