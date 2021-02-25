@@ -199,3 +199,11 @@ All notable changes to BAM https://bam-my.e-dpm.com will be documented in this f
 ### Changed
 
 ### Fixed
+
+## [1.3.12] - 2021-02-23
+
+### Added
+
+### Changed
+- delete po column in lmr list
+### Fixed

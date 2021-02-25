@@ -29,7 +29,6 @@ import { connect } from "react-redux";
 const header_model = [
   "lmr_id",
   "header_text",
-  "po",
   "lmr_issued_by",
   "project_name",
   "vendor_name",
@@ -81,6 +80,7 @@ class MYASGList extends Component {
   }
 
   exportLMR = async () => {
+    this.getPRPO()
     const wb = new Excel.Workbook();
     const ws = wb.addWorksheet();
     const prpo_list = this.state.prpo_all
@@ -169,13 +169,13 @@ class MYASGList extends Component {
           this.state.filter_list["header_text"] +
           '", "$options" : "i"}'
       );
-    this.state.filter_list["po"] !== null &&
-      this.state.filter_list["po"] !== undefined &&
-      filter_array.push(
-        '"po":{"$regex" : "' +
-          this.state.filter_list["po"] +
-          '", "$options" : "i"}'
-      );
+    // this.state.filter_list["po"] !== null &&
+    //   this.state.filter_list["po"] !== undefined &&
+    //   filter_array.push(
+    //     '"po":{"$regex" : "' +
+    //       this.state.filter_list["po"] +
+    //       '", "$options" : "i"}'
+    //   );
     this.state.filter_list["lmr_issued_by"] !== null &&
       this.state.filter_list["lmr_issued_by"] !== undefined &&
       filter_array.push(
@@ -351,7 +351,7 @@ class MYASGList extends Component {
 
   componentDidMount() {
     this.getMRList();
-    this.getPRPO();
+    // this.getPRPO();
     // console.log('token ', this.props.dataLogin.token)
     document.title = "LMR List | BAM";
   }
@@ -381,8 +381,8 @@ class MYASGList extends Component {
 
   loopSearchBar = () => {
     let searchBar = [];
-    for (let i = 0; i < 6; i++) {
-      i === 2 ? (searchBar.push(
+    for (let i = 0; i < 5; i++) {
+      searchBar.push(
         <td>
           <div className="controls" style={{ width: "150px" }}>
             <InputGroup className="input-prepend">
@@ -404,29 +404,7 @@ class MYASGList extends Component {
             </InputGroup>
           </div>
         </td>
-      )):(searchBar.push(
-        <td>
-          <div className="controls" style={{ width: "150px" }}>
-            <InputGroup className="input-prepend">
-              <InputGroupAddon addonType="prepend">
-                <InputGroupText>
-                  <i className="fa fa-search"></i>
-                </InputGroupText>
-              </InputGroupAddon>
-              <Input
-                // className="col-sm-3"
-                type="text"
-                placeholder="Search"
-                onChange={this.handleFilterList}
-                value={this.state.filter_list[header_model[i]]}
-                name={header_model[i]}
-                size="sm"
-              />
-            </InputGroup>
-          </div>
-        </td>
-      ))
-      
+      )           
     }
     return searchBar;
   };
@@ -488,7 +466,7 @@ class MYASGList extends Component {
                       <th>Action</th>
                       <th>LMR ID</th>
                       <th>Header Text</th>
-                      <th>PO</th>
+                      {/* <th>PO</th> */}
                       <th>Requisitioner</th>
                       <th>Project Name</th>
                       <th>Vendor Name</th>
@@ -515,7 +493,7 @@ class MYASGList extends Component {
                           </td>
                           <td>{e.lmr_id}</td>
                           <td>{e.header_text}</td>
-                          <td>{this.getPO(this.state.prpo_all, e.lmr_id)}</td>
+                          {/* <td>{this.getPO(this.state.prpo_all, e.lmr_id)}</td> */}
                           <td>{e.lmr_issued_by}</td>
                           <td>{e.project_name}</td>
                           <td>{e.vendor_name}</td>
