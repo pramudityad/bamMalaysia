@@ -153,6 +153,7 @@ class Package extends Component {
   addMaterial = () => {
     let material_list = this.state.create_package_child;
     material_list.push({
+      Transport: 'no',
       duplicate: 'no'
     });
     this.setState({ create_package_child: material_list });
@@ -304,7 +305,8 @@ class Package extends Component {
     for (let i = 0; i < create_package_child.length; i++) {
       let dataChild = {
         MM_Code: create_package_child[i].MM_Code,
-        Qty: create_package_child[i].Qty
+        Qty: create_package_child[i].Qty,
+        Transport: create_package_child[i].Transport
       }
       dataPackageChild.push(dataChild);
     }
@@ -317,6 +319,12 @@ class Package extends Component {
     }
 
     console.log('dataPackage', dataPackage)
+  }
+
+  handleDeletePackageChild(index) {
+    let create_package_child = this.state.create_package_child;
+    create_package_child.splice(index, 1);
+    this.setState({ create_package_child: create_package_child }, () => console.log(this.state.create_package_child));
   }
 
   onChangeDebouncedMaterial(e) {
@@ -560,7 +568,7 @@ class Package extends Component {
               <hr className="upload-line--lmr"></hr>
               {this.state.create_package_child.map((mat, i) => (
                 <Row>
-                  <Col md={2}>
+                  <Col md={1}>
                     <FormGroup>
                       <Label>Transport</Label><br />
                       <Input
@@ -625,6 +633,9 @@ class Package extends Component {
                         disabled={mat.Transport === 'yes'}
                       />
                     </FormGroup>
+                  </Col>
+                  <Col md="auto">
+                    <Button color="danger" size="sm" onClick={e => this.handleDeletePackageChild(i)} style={{ marginTop: '30px' }}><span className="fa fa-times"></span></Button>
                   </Col>
                 </Row>
               ))}
