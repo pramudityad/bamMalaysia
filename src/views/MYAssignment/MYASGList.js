@@ -393,7 +393,7 @@ class MYASGList extends Component {
               </InputGroupAddon>
               <Input
                 // className="col-sm-3"
-                readOnly
+                
                 type="text"
                 placeholder="Search"
                 onChange={this.handleFilterList}
