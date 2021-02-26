@@ -80,10 +80,15 @@ class MYASGList extends Component {
   }
 
   exportLMR = async () => {
-    this.getPRPO()
+    
     const wb = new Excel.Workbook();
     const ws = wb.addWorksheet();
-    const prpo_list = this.state.prpo_all
+    let prpo_list = []
+    await getDatafromAPIMY('/prpo_bam_report?where={"Customer":"CELCOM"}').then((res => {
+      if(res.data !== undefined){
+        prpo_list = res.data._items.filter(pr => pr.PO_Number !== null)
+      }
+    }))
     // console.log(prpo_list)
     const all_lmr = this.state.lmr_list_filter;
 
