@@ -859,33 +859,57 @@ class MappingHW extends React.Component {
       this.state.tokenUser
     );
     if (res.data !== undefined) {
-      if (res.data.updateData.length !== 0) {
-        const table_header = Object.keys(res.data.updateData[0]);
-        const update_Data = res.data.updateData;
-        const new_table_header = table_header.slice(0, -2);
-        // update_Data.map((row, k) => console.log(row));
-        // console.log(table_header);
-        let value = "row.";
-        const bodyEmail =
-          "<h2>DPM - BAM Notification</h2><br/><span>Please be notified that the following " +
-          modul_name +
-          " data has been updated <br/><br/><table><tr>" +
-          new_table_header.map((tab, i) => "<th>" + tab + "</th>").join(" ") +
-          "</tr>" +
-          update_Data
-            .map(
-              (row, j) =>
-                "<tr key={" +
-                j +
-                "}>" +
-                new_table_header
-                  .map((td) => "<td>" + eval(value + td) + "</td>")
-                  .join(" ") +
-                "</tr>"
-            )
-            .join(" ") +
-          "</table>";
-        if (res.data.warnNotif.length !== 0) {
+      if (roles === 2) {
+        this.setState({ action_status: "success" });
+        this.toggleLoading();
+      } else {
+        if (res.data.updateData.length !== 0) {
+          const table_header = Object.keys(res.data.updateData[0]);
+          const update_Data = res.data.updateData;
+          const new_table_header = table_header.slice(0, -2);
+          // update_Data.map((row, k) => console.log(row));
+          // console.log(table_header);
+          let value = "row.";
+          const bodyEmail =
+            "<h2>DPM - BAM Notification</h2><br/><span>Please be notified that the following " +
+            modul_name +
+            " data has been updated <br/><br/><table><tr>" +
+            new_table_header.map((tab, i) => "<th>" + tab + "</th>").join(" ") +
+            "</tr>" +
+            update_Data
+              .map(
+                (row, j) =>
+                  "<tr key={" +
+                  j +
+                  "}>" +
+                  new_table_header
+                    .map((td) => "<td>" + eval(value + td) + "</td>")
+                    .join(" ") +
+                  "</tr>"
+              )
+              .join(" ") +
+            "</table>";
+          if (res.data.warnNotif.length !== 0) {
+            let dataEmail = {
+              // "to": creatorEmail,
+              // to: "pramudityad@student.telkomuniversity.ac.id",
+              to: "pramudityad@outlook.com",
+              subject: "[NOTIFY to CPM] " + modul_name,
+              body: bodyEmail,
+            };
+            const sendEmail = await apiSendEmail(dataEmail);
+            // console.log(sendEmail);
+            this.setState({
+              action_status: "warning",
+              action_message:
+                "success with warn " + res.data.warnNotif.map((warn) => warn),
+            });
+            this.toggleLoading();
+            return;
+            // setTimeout(function () {
+            //   window.location.reload();
+            // }, 1500);
+          }
           let dataEmail = {
             // "to": creatorEmail,
             // to: "pramudityad@student.telkomuniversity.ac.id",
@@ -894,35 +918,16 @@ class MappingHW extends React.Component {
             body: bodyEmail,
           };
           const sendEmail = await apiSendEmail(dataEmail);
-          console.log(sendEmail);
-          this.setState({
-            action_status: "warning",
-            action_message:
-              "success with warn " + res.data.warnNotif.map((warn) => warn),
-          });
+          // console.log(sendEmail);
+          this.setState({ action_status: "success" });
           this.toggleLoading();
-          return;
           // setTimeout(function () {
           //   window.location.reload();
           // }, 1500);
+        } else {
+          this.setState({ action_status: "success" });
+          this.toggleLoading();
         }
-        let dataEmail = {
-          // "to": creatorEmail,
-          // to: "pramudityad@student.telkomuniversity.ac.id",
-          to: "pramudityad@outlook.com",
-          subject: "[NOTIFY to CPM] " + modul_name,
-          body: bodyEmail,
-        };
-        const sendEmail = await apiSendEmail(dataEmail);
-        console.log(sendEmail);
-        this.setState({ action_status: "success" });
-        this.toggleLoading();
-        // setTimeout(function () {
-        //   window.location.reload();
-        // }, 1500);
-      } else {
-        this.setState({ action_status: "success" });
-        this.toggleLoading();
       }
     } else {
       if (
