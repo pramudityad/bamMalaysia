@@ -906,7 +906,7 @@ class MYASGDetail extends Component {
             () => {
               // this.toggleLoading();
               this.getDataPRPO(dataLMRDetail.lmr_id);
-              console.log(this.state.lmr_detail);
+              this.getAllGR_draft();
             }
           );
         }
@@ -1284,11 +1284,17 @@ class MYASGDetail extends Component {
       this.getLMRDetailData();
     } else {
       this.getLMRDetailData(this.props.match.params.id);
-    }
+    }    
     // this.getMaterialList();
     // this.getDataCD();
     // this.getProjectList();
     document.title = "LMR Detail | BAM";
+  }
+
+   getAllGR_draft(){
+    const state_lmr = this.state.lmr_detail
+    const lmr_id = state_lmr["lmr_id"]
+    state_lmr.detail.map(id => console.log(lmr_id+id.cdid ,JSON.parse(localStorage.getItem(lmr_id + "///" + id.cdid))))
   }
 
   getDataCD() {
@@ -1733,6 +1739,7 @@ class MYASGDetail extends Component {
                   </Button>
                   &nbsp;&nbsp;&nbsp; */}
                   {this.state.roleUser !== "Public" ? (
+                    <>
                     <Link to={"/lmr-edit/" + this.props.match.params.id}>
                       <Button color="warning">
                         <i className="fa fa-wpforms" aria-hidden="true">
@@ -1740,6 +1747,11 @@ class MYASGDetail extends Component {
                         </i>
                       </Button>
                     </Link>
+                    &nbsp;&nbsp;
+                      <Button color="success">
+                          &nbsp; Post GR
+                      </Button>
+                      </>
                   ) : (
                     ""
                   )}

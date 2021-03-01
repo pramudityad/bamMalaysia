@@ -632,7 +632,6 @@ class MYASGDetail extends Component {
 
   saveGRdraf = () => {
     let grContainer = [];
-    const lmr_lvl2 = this.state.lmr_lvl2
     const dataChild = this.state.ChildForm;
     dataChild.map((e) =>
       grContainer.push({
@@ -655,9 +654,9 @@ class MYASGDetail extends Component {
         GR_Document_Qty: null,
       })
     );
-    const params_gr_save = lmr_lvl2["lmr_id"] + "///" + lmr_lvl2["cdid"]
-    localStorage.setItem(params_gr_save, dataChild);
-    console.log(localStorage.getItem(params_gr_save))
+    const params_gr_save = this.state.lmr_lvl2.lmr_id + "///" + this.state.lmr_lvl2.cdid
+    localStorage.setItem(params_gr_save, JSON.stringify(dataChild));
+    console.log(JSON.parse(localStorage.getItem(params_gr_save)))
   }
 
   downloadFormatNewChild = async () => {
@@ -693,8 +692,17 @@ class MYASGDetail extends Component {
     } else {
       this.getLMRDetailData(this.props.match.params.lmr);
       this.getLMRlvl2(this.props.match.params.id);
+      this.checkDraft()
     }
     document.title = "LMR Detail | BAM";
+  }
+
+  checkDraft(){
+    const params_gr_save = this.state.lmr_lvl2.lmr_id + "///" + this.state.lmr_lvl2.cdid
+    const draft_gr = JSON.parse(localStorage.getItem(params_gr_save))
+    this.setState({
+      ChildForm: draft_gr
+    })
   }
 
   handleInput(e) {
@@ -1429,7 +1437,6 @@ class MYASGDetail extends Component {
                                 name="PO_Qty"
                                 id={"PO_Qty"}
                                 value={child_data.PO_Qty}
-                                value={child_data.PO_Qty}
                                 // onChange={this.handleInputchild(idx)}
                                 // style={{ width: "10%" }}
                                 readonly
@@ -1445,7 +1452,6 @@ class MYASGDetail extends Component {
                                 step="0.1"
                                 name="PO_Qty"
                                 id={"PO_Qty"}
-                                value={child_data.PO_Qty}
                                 value={child_data.PO_Qty}
                                 onChange={this.handleInputchild(idx)}
                                 // style={{ width: "10%" }}
