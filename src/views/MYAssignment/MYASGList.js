@@ -239,7 +239,8 @@ class MYASGList extends Component {
     }
     if (
       role.includes("BAM-IM") === true ||
-      role.includes("BAM-IE Lead") === true
+      role.includes("BAM-IE Lead") === true ||
+      role.includes("BAM-NDO IM") === true 
     ) {
       let filterlist = lmr_list.filter((e) => im_ie.includes(e.gl_type));
       this.setState({ lmr_list_filter: filterlist }, () =>
