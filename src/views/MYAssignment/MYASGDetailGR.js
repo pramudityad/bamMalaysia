@@ -354,7 +354,7 @@ class MYASGDetail extends Component {
           // const datalvl2 = res.data.data.detail;
           const datalvl2 = res.data.data.detail.find((e) => e._id === id_lmr);
           // console.log('datalvl2 ', datalvl2);
-          this.setState({ lmr_lvl2: datalvl2 });
+          this.setState({ lmr_lvl2: datalvl2 },() => this.checkDraft());
         }
         console.log("lmr_lvl2", this.state.lmr_lvl2);
         this.getDataPRPO(this.props.match.params.lmr);
@@ -657,6 +657,8 @@ class MYASGDetail extends Component {
     const params_gr_save = this.state.lmr_lvl2.lmr_id + "///" + this.state.lmr_lvl2.cdid
     localStorage.setItem(params_gr_save, JSON.stringify(dataChild));
     console.log(JSON.parse(localStorage.getItem(params_gr_save)))
+    this.setState({ action_status: "success",action_message:"GR "+ params_gr_save +" saved as draft"
+  })
   }
 
   downloadFormatNewChild = async () => {
@@ -692,7 +694,6 @@ class MYASGDetail extends Component {
     } else {
       this.getLMRDetailData(this.props.match.params.lmr);
       this.getLMRlvl2(this.props.match.params.id);
-      this.checkDraft()
     }
     document.title = "LMR Detail | BAM";
   }
@@ -700,9 +701,10 @@ class MYASGDetail extends Component {
   checkDraft(){
     const params_gr_save = this.state.lmr_lvl2.lmr_id + "///" + this.state.lmr_lvl2.cdid
     const draft_gr = JSON.parse(localStorage.getItem(params_gr_save))
+    draft_gr !== null? 
     this.setState({
       ChildForm: draft_gr
-    })
+    }) : this.setState({ChildForm: []})
   }
 
   handleInput(e) {
