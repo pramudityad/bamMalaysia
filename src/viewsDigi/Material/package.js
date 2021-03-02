@@ -17,13 +17,15 @@ import {
   Row,
   Table,
 } from "reactstrap";
-import { Link } from "react-router-dom";
-import axios from "axios";
 import Pagination from "react-js-pagination";
 import { connect } from "react-redux";
-import { getDatafromAPINODE } from "../../helper/asyncFunction";
+import { getDatafromAPINODE, postDatatoAPINODE } from "../../helper/asyncFunction";
 import debounce from 'lodash.debounce';
 import '../MYAssignment/LMRMY.css';
+
+const DefaultNotif = React.lazy(() =>
+  import("../DefaultView/DefaultNotif")
+);
 
 const package_example = [
   {
@@ -108,6 +110,10 @@ class Package extends Component {
       modal_check_material_package: false,
       modal_create_package: false,
       modal_material: false,
+      modal_loading: false,
+      action_status: null,
+      action_message: null,
+      filter_list: new Array(3).fill(""),
       filter_list_material: new Array(5).fill(""),
       material_list: [],
       current_material_select: null,
@@ -121,11 +127,32 @@ class Package extends Component {
       perPage_material: 10,
     }
 
+    this.onChangeDebounced = debounce(this.onChangeDebounced, 500);
     this.onChangeDebouncedMaterial = debounce(this.onChangeDebouncedMaterial, 500);
   }
 
+  toggleLoading = () => {
+    this.setState((prevState) => ({
+      modal_loading: !prevState.modal_loading,
+    }));
+  }
+
   getPackageList() {
-    this.setState({ package_list: package_example });
+    const page = this.state.activePage;
+    const maxPage = this.state.perPage;
+    let filter_array = [];
+    this.state.filter_list[0] !== "" && (filter_array.push('"Package_Id":{"$regex" : "' + this.state.filter_list[0] + '", "$options" : "i"}'));
+    this.state.filter_list[1] !== "" && (filter_array.push('"Package_Name":{"$regex" : "' + this.state.filter_list[1] + '", "$options" : "i"}'));
+    this.state.filter_list[2] !== "" && (filter_array.push('"Region":{"$regex" : "' + this.state.filter_list[2] + '", "$options" : "i"}'));
+    let whereAnd = '{' + filter_array.join(',') + '}';
+    getDatafromAPINODE('/package/getPackage?srt=_id:-1&q=' + whereAnd + '&lmt=' + maxPage + '&pg=' + page, this.state.tokenUser).then(res => {
+      console.log("Package List", res);
+      if (res.data !== undefined) {
+        const items = res.data.data;
+        const totalData = res.data.totalResults;
+        this.setState({ package_list: items, totalData: totalData });
+      }
+    })
   }
 
   handleCheckMaterialPackage = (e) => {
@@ -234,6 +261,7 @@ class Package extends Component {
     const value = e.target.value;
     const data_material = this.state.material_list.find((e) => e.MM_Code === value);
     let create_package_child = this.state.create_package_child;
+    create_package_child[parseInt(this.state.current_material_select)]["MM_Code_Id"] = data_material._id;
     create_package_child[parseInt(this.state.current_material_select)]["MM_Code"] = data_material.MM_Code;
     create_package_child[parseInt(this.state.current_material_select)]["Description"] = data_material.MM_Description;
     create_package_child[parseInt(this.state.current_material_select)]["Unit_Price"] = data_material.Unit_Price;
@@ -254,13 +282,14 @@ class Package extends Component {
     if (field === 'Transport') {
       let checked = e.target.checked;
       if (checked === true) {
+        create_package_child[parseInt(idx)]["MM_Code_Id"] = null;
         create_package_child[parseInt(idx)]["MM_Code"] = "Placeholder for transport";
         create_package_child[parseInt(idx)]["Description"] = "Placeholder for transport";
         create_package_child[parseInt(idx)]["Unit_Price"] = 0;
         create_package_child[parseInt(idx)]["Qty"] = 0;
         create_package_child[parseInt(idx)]["Transport"] = "yes";
       } else {
-        create_package_child[parseInt(idx)]["MM_Code"] = "";
+        create_package_child[parseInt(idx)]["MM_Code_Id"] = "";
         create_package_child[parseInt(idx)]["Description"] = "";
         create_package_child[parseInt(idx)]["Unit_Price"] = 0;
         create_package_child[parseInt(idx)]["Qty"] = 0;
@@ -273,7 +302,7 @@ class Package extends Component {
     );
   }
 
-  createPackage = () => {
+  createPackage = async () => {
     let create_package_child = this.state.create_package_child;
     let check_duplicate = false;
     for (let i = 0; i < create_package_child.length; i++) {
@@ -287,38 +316,63 @@ class Package extends Component {
     }
 
     if (check_duplicate) {
-      alert('duplicate');
+      alert('Material duplication found!');
       this.setState({ create_package_child: create_package_child }, () =>
         console.log(this.state.create_package_child)
       );
     } else {
-      alert('clear');
+      this.toggleLoading();
       for (let i = 0; i < create_package_child.length; i++) {
         create_package_child[i].duplicate = 'no';
       }
       this.setState({ create_package_child: create_package_child }, () =>
         console.log(this.state.create_package_child)
       );
-    }
 
-    const dataPackageChild = [];
-    for (let i = 0; i < create_package_child.length; i++) {
-      let dataChild = {
-        MM_Code: create_package_child[i].MM_Code,
-        Qty: create_package_child[i].Qty,
-        Transport: create_package_child[i].Transport
+      const dataPackageChild = [];
+      for (let i = 0; i < create_package_child.length; i++) {
+        let dataChild = {
+          MM_Code_Id: create_package_child[i].MM_Code_Id,
+          MM_Code: create_package_child[i].MM_Code,
+          Qty: create_package_child[i].Qty,
+          Transport: create_package_child[i].Transport
+        }
+        dataPackageChild.push(dataChild);
       }
-      dataPackageChild.push(dataChild);
-    }
 
-    const dataPackage = {
-      // Package_Id: this.state.create_package_parent.Package_Id,
-      Package_Name: this.state.create_package_parent.Package_Name,
-      Region: this.state.create_package_parent.Region,
-      MM_Data: dataPackageChild
-    }
+      const dataPackage = {
+        Package_Name: this.state.create_package_parent.Package_Name,
+        Region: this.state.create_package_parent.Region,
+        MM_Data: dataPackageChild
+      }
 
-    console.log('dataPackage', dataPackage)
+      console.log('dataPackage', dataPackage)
+
+      const response = await postDatatoAPINODE("/package/createPackage", { package_data: [dataPackage] }, this.state.tokenUser);
+      if (response.data !== undefined && response.status >= 200 && response.status <= 300) {
+        this.toggleLoading();
+        this.setState({ action_status: "success", action_message: "Package has been created, please check in Package List!" });
+      } else {
+        if (response.response !== undefined && response.response.data !== undefined && response.response.data.error !== undefined) {
+          if (response.response.data.error.message !== undefined) {
+            this.toggleLoading();
+            this.setState({
+              action_status: "failed",
+              action_message: response.response.data.error.message,
+            });
+          } else {
+            this.toggleLoading();
+            this.setState({
+              action_status: "failed",
+              action_message: response.response.data.error,
+            });
+          }
+        } else {
+          this.toggleLoading();
+          this.setState({ action_status: "failed" });
+        }
+      }
+    }
   }
 
   handleDeletePackageChild(index) {
@@ -329,6 +383,23 @@ class Package extends Component {
 
   onChangeDebouncedMaterial(e) {
     this.materialSelection();
+  }
+
+  handleFilterList = (e) => {
+    const index = e.target.name;
+    let value = e.target.value;
+    if (value !== "" && value.length === 0) {
+      value = "";
+    }
+    let dataFilter = this.state.filter_list;
+    dataFilter[parseInt(index)] = value;
+    this.setState({ filter_list: dataFilter, activePage: 1 }, () => {
+      this.onChangeDebounced(e);
+    })
+  }
+
+  onChangeDebounced(e) {
+    this.getPackageList();
   }
 
   componentDidMount() {
@@ -352,6 +423,8 @@ class Package extends Component {
                 type="text"
                 placeholder="Search"
                 onChange={this.handleFilterList}
+                value={this.state.filter_list[i]}
+                name={i}
                 size="sm"
               />
             </InputGroup>
@@ -397,6 +470,11 @@ class Package extends Component {
   render() {
     return (
       <div className="animated fadeIn">
+        <DefaultNotif
+          actionMessage={this.state.action_message}
+          actionStatus={this.state.action_status}
+          redirect={this.state.redirect}
+        />
         <Row>
           <Col xs="12" lg="12">
             <Card>
@@ -722,6 +800,27 @@ class Package extends Component {
           </ModalFooter>
         </Modal>
         {/* end Modal Material List */}
+
+        {/* Modal Loading */}
+        <Modal
+          isOpen={this.state.modal_loading}
+          toggle={this.toggleLoading}
+          className={"modal-sm " + this.props.className}
+        >
+          <ModalBody>
+            <div style={{ textAlign: "center" }}>
+              <div className="lds-ring">
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+              </div>
+            </div>
+            <div style={{ textAlign: "center" }}>Loading ...</div>
+            <div style={{ textAlign: "center" }}>System is processing ...</div>
+          </ModalBody>
+        </Modal>
+        {/* end Modal Loading */}
       </div>
     );
   }

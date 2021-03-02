@@ -1,17 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Alert, Card, CardBody, CardHeader, Col, Row } from 'reactstrap';
-
-const propTypes = {
-    actionMessage : PropTypes.string,
-    actionStatus : PropTypes.string,
-  };
-
-  const defaultProps = {
-    actionMessage : null,
-    actionStatus : null,
-  };
-
+import SweetAlert from 'react-bootstrap-sweetalert';
 
 class DefaultNotif extends Component {
     constructor(props) {
@@ -28,36 +18,44 @@ class DefaultNotif extends Component {
         this.setState({ visible: false });
     }
 
-    render(){
-        if(this.props.actionStatus !== undefined && this.props.actionStatus !== null){
-            if(this.props.actionStatus === 'failed'){
+    onConfirm(redirect) {
+        if (redirect === '' || redirect === null || redirect === 'undefined' || typeof redirect === 'undefined') {
+            window.location.reload();
+        } else {
+            window.location.replace(redirect);
+        }
+    }
+
+    render() {
+        if (this.props.actionStatus !== undefined && this.props.actionStatus !== null) {
+            if (this.props.actionStatus === 'failed') {
                 return (
-                    <Alert color="danger" isOpen={this.state.visible} toggle={this.onDismiss}>
-                      {this.props.actionMessage !== null ? JSON.stringify(this.props.actionMessage) : "There is something error, please refresh your page" }
-                    </Alert>
+                    <SweetAlert danger title="Error!" onConfirm={this.onConfirm}>
+                        {this.props.actionMessage !== null ? JSON.stringify(this.props.actionMessage) : "There is something error, please refresh your page"}
+                    </SweetAlert>
                 )
-            }else{
-                if(this.props.actionStatus === 'success'){
+            } else {
+                if (this.props.actionStatus === 'success') {
                     return (
-                        <Alert color="success" isOpen={this.state.visible} toggle={this.onDismiss}>
-                            {this.props.actionMessage !== null ? JSON.stringify(this.props.actionMessage) : "Your action has been successful" }
-                        </Alert>
+                        <SweetAlert success title="Success!" onConfirm={() => this.onConfirm(this.props.redirect)}>
+                            {this.props.actionMessage !== null ? JSON.stringify(this.props.actionMessage) : "Your action has been successful"}
+                        </SweetAlert>
                     )
-                }else{
-                    if(this.props.actionStatus === 'warning'){
+                } else {
+                    if (this.props.actionStatus === 'warning') {
                         return (
-                            <Alert color="warning" isOpen={this.state.visible} toggle={this.onDismiss}>
-                                {this.props.actionMessage !== null ? JSON.stringify(this.props.actionMessage) : "There is some warning" }
-                            </Alert>
+                            <SweetAlert warning title="Warning!" onConfirm={this.onConfirm}>
+                                {this.props.actionMessage !== null ? JSON.stringify(this.props.actionMessage) : "There is some warning"}
+                            </SweetAlert>
                         )
-                    }else{
+                    } else {
                         return (
                             <div></div>
                         )
                     }
                 }
             }
-        }else{
+        } else {
             return (
                 <div></div>
             )
@@ -65,5 +63,16 @@ class DefaultNotif extends Component {
     }
 }
 
+DefaultNotif.propTypes = {
+    actionMessage: PropTypes.string,
+    actionStatus: PropTypes.string,
+    redirect: PropTypes.string
+};
+
+DefaultNotif.defaultProps = {
+    actionMessage: null,
+    actionStatus: null,
+    redirect: ""
+};
 
 export default DefaultNotif;

@@ -27,6 +27,7 @@ import "./LMRMY.css";
 import { getDatafromAPINODE } from "../../helper/asyncFunction";
 import { connect } from "react-redux";
 import { number } from "prop-types";
+import debounce from 'lodash.debounce';
 import './LMRMY.css';
 
 const DefaultNotif = React.lazy(() =>
@@ -233,7 +234,7 @@ class MYASGCreation extends Component {
       vendor_list: [],
       material_list: [],
       project_list: [],
-      package_list: package_example,
+      package_list: [],
       check_material_package_list: {},
       lmr_child_package: {
         currency: "MYR"
@@ -242,6 +243,7 @@ class MYASGCreation extends Component {
       current_material_select: null,
       data_user: this.props.dataUser,
       filter_list: new Array(8).fill(""),
+      filter_list_package: new Array(3).fill(""),
       mm_data_type: "",
       matfilter: {
         mat_type: "",
@@ -279,6 +281,7 @@ class MYASGCreation extends Component {
     this.deleteLMR = this.deleteLMR.bind(this);
     this.handleMaterialFilter = this.handleMaterialFilter.bind(this);
     this.decideFilter = this.decideFilter.bind(this);
+    this.onChangeDebouncedPackage = debounce(this.onChangeDebouncedPackage, 500);
   }
 
   toggleLoading = () => {
@@ -286,6 +289,24 @@ class MYASGCreation extends Component {
       modal_loading: !prevState.modal_loading,
     }));
   };
+
+  getPackageList() {
+    const page = this.state.activePage;
+    const maxPage = this.state.perPage;
+    let filter_array = [];
+    this.state.filter_list_package[0] !== "" && (filter_array.push('"Package_Id":{"$regex" : "' + this.state.filter_list_package[0] + '", "$options" : "i"}'));
+    this.state.filter_list_package[1] !== "" && (filter_array.push('"Package_Name":{"$regex" : "' + this.state.filter_list_package[1] + '", "$options" : "i"}'));
+    this.state.filter_list_package[2] !== "" && (filter_array.push('"Region":{"$regex" : "' + this.state.filter_list_package[2] + '", "$options" : "i"}'));
+    let whereAnd = '{' + filter_array.join(',') + '}';
+    getDatafromAPINODE('/package/getPackage?srt=_id:-1&q=' + whereAnd + '&lmt=' + maxPage + '&pg=' + page, this.state.tokenUser).then(res => {
+      console.log("Package List", res);
+      if (res.data !== undefined) {
+        const items = res.data.data;
+        const totalData = res.data.totalResults;
+        this.setState({ package_list: items, totalData: totalData });
+      }
+    })
+  }
 
   decideToggleMaterial = (number_child_form) => {
     // let Mat_type = this.state.creation_lmr_child_form[number_child_form]
@@ -359,6 +380,7 @@ class MYASGCreation extends Component {
   };
 
   toggleModalPackage = () => {
+    this.getPackageList();
     this.setState((prevState) => ({
       modal_package: !prevState.modal_package,
     }));
@@ -1319,7 +1341,7 @@ class MYASGCreation extends Component {
         this.setState({
           action_status: "failed",
           actionMessage:
-            "There is something error. Don worry, we saved a draft for you. Please refresh page",
+            "There is something error. Don't worry, we saved a draft for you. Please refresh page",
         });
         this.toggleLoading();
       }
@@ -1762,8 +1784,8 @@ class MYASGCreation extends Component {
               <Input
                 type="text"
                 placeholder="Search"
-                onChange={this.handleFilterList}
-                value={this.state.filter_list[i]}
+                onChange={this.handleFilterListPackage}
+                value={this.state.filter_list_package[i]}
                 name={i}
                 size="sm"
               />
@@ -1774,6 +1796,23 @@ class MYASGCreation extends Component {
     }
     return searchBar;
   };
+
+  handleFilterListPackage = (e) => {
+    const index = e.target.name;
+    let value = e.target.value;
+    if (value !== "" && value.length === 0) {
+      value = "";
+    }
+    let dataFilter = this.state.filter_list_package;
+    dataFilter[parseInt(index)] = value;
+    this.setState({ filter_list_package: dataFilter, activePage: 1 }, () => {
+      this.onChangeDebouncedPackage(e);
+    })
+  }
+
+  onChangeDebouncedPackage(e) {
+    this.getPackageList();
+  }
 
   handleDeleteLMRChild(key) {
     console.log(key);
