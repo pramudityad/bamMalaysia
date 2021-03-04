@@ -120,6 +120,7 @@ const header = [
   "ON AIR DATE",
   "MAPPING DATE",
   "REMARKS",
+  "GR NO",
   "PREMR NO.",
   "PROCEED BILLING 100%",
   "CELCOM USER",
@@ -128,6 +129,8 @@ const header = [
   "TOTAL PRICE",
   "DISCOUNTED UNIT PRICE",
   "DISCOUNTED PO PRICE",
+  "NET UNIT PRICE",
+  "INVOICE TOTAL",
   "HAMMER 1 HD TOTAL",
   "SO LINE ITEM DESCRIPTION",
   "sitePCode",
@@ -193,6 +196,7 @@ const header_model = [
   "On_Air_Date",
   "Mapping_Date",
   "Remarks",
+  "Gr_No",
   "Premr_No",
   "Proceed_Billing_100",
   "Celcom_User",
@@ -201,6 +205,8 @@ const header_model = [
   "Total_Price",
   "Discounted_Unit_Price",
   "Discounted_Po_Price",
+  "Net_Unit_Price",
+  "Invoice_Total",
   "Hammer_1_Hd_Total",
   "So_Line_Item_Description",
   "Sitepcode",
@@ -266,6 +272,8 @@ const header_materialmapping = [
   "On_Air_Date",
   "Mapping_Date",
   "Remarks",
+  "Gr_No",
+
   "Premr_No",
   "Proceed_Billing_100",
   "Celcom_User",
@@ -315,6 +323,7 @@ const header_pfm = [
 ];
 
 const header_admin = [
+  "Gr_No",
   "For_Checking_Purpose_Only_Rashidah",
   "Hw_Coa_Received_Date_80",
   "Cancel_Column",

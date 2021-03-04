@@ -90,7 +90,9 @@ class ReportHW extends React.Component {
           item.Not_Required !== true
       )
       .sort((a, b) => a.Line - b.Line);
-    this.setState({ pivot_data1: filter_items }, () =>
+    this.setState(
+      { pivot_data1: filter_items },
+      () => console.log("pivot1", this.state.pivot_data1),
       this.PivotTable2(filter_items)
     );
   };
@@ -108,7 +110,9 @@ class ReportHW extends React.Component {
         }, new Map())
         .values(),
     ];
-    this.setState({ pivot_data2: result });
+    this.setState({ pivot_data2: result }, () =>
+      console.log("pivot2", this.state.pivot_data2)
+    );
   };
 
   loadPOlist = (items) => {
