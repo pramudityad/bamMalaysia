@@ -180,8 +180,11 @@ class Package extends Component {
   addMaterial = () => {
     let material_list = this.state.create_package_child;
     material_list.push({
+      MM_Code: '',
       Transport: 'no',
-      duplicate: 'no'
+      duplicate: 'no',
+      blank_material: 'no',
+      zero_qty: 'no'
     });
     this.setState({ create_package_child: material_list });
   }
@@ -290,6 +293,7 @@ class Package extends Component {
         create_package_child[parseInt(idx)]["Transport"] = "yes";
       } else {
         create_package_child[parseInt(idx)]["MM_Code_Id"] = "";
+        create_package_child[parseInt(idx)]["MM_Code"] = "";
         create_package_child[parseInt(idx)]["Description"] = "";
         create_package_child[parseInt(idx)]["Unit_Price"] = 0;
         create_package_child[parseInt(idx)]["Qty"] = 0;
@@ -304,6 +308,13 @@ class Package extends Component {
 
   createPackage = async () => {
     let create_package_child = this.state.create_package_child;
+
+    for (let i = 0; i < create_package_child.length; i++) {
+      create_package_child[i].duplicate = 'no';
+      create_package_child[i].blank_material = 'no';
+      create_package_child[i].zero_qty = 'no';
+    }
+
     let check_duplicate = false;
     for (let i = 0; i < create_package_child.length; i++) {
       for (let j = i + 1; j < create_package_child.length; j++) {
@@ -315,8 +326,42 @@ class Package extends Component {
       }
     }
 
+    for (let i = 0; i < create_package_child.length; i++) {
+      if (create_package_child[i].MM_Code === '') {
+        create_package_child[i].blank_material = 'yes';
+      }
+    }
+
+    for (let i = 0; i < create_package_child.length; i++) {
+      if (create_package_child[i].Qty === 0 && create_package_child[i].Transport !== 'yes') {
+        create_package_child[i].zero_qty = 'yes';
+      }
+    }
+
     if (check_duplicate) {
       alert('Material duplication found!');
+      for (let i = 0; i < create_package_child.length; i++) {
+        create_package_child[i].blank_material = 'no';
+        create_package_child[i].zero_qty = 'no';
+      }
+      this.setState({ create_package_child: create_package_child }, () =>
+        console.log(this.state.create_package_child)
+      );
+    } else if (create_package_child.some(e => e.blank_material === 'yes')) {
+      alert('Please select a material first!');
+      for (let i = 0; i < create_package_child.length; i++) {
+        create_package_child[i].duplicate = 'no';
+        create_package_child[i].zero_qty = 'no';
+      }
+      this.setState({ create_package_child: create_package_child }, () =>
+        console.log(this.state.create_package_child)
+      );
+    } else if (create_package_child.some(e => e.zero_qty === 'yes')) {
+      alert('Please input the qty to be more than 0!');
+      for (let i = 0; i < create_package_child.length; i++) {
+        create_package_child[i].duplicate = 'no';
+        create_package_child[i].blank_material = 'no';
+      }
       this.setState({ create_package_child: create_package_child }, () =>
         console.log(this.state.create_package_child)
       );
@@ -324,6 +369,8 @@ class Package extends Component {
       this.toggleLoading();
       for (let i = 0; i < create_package_child.length; i++) {
         create_package_child[i].duplicate = 'no';
+        create_package_child[i].blank_material = 'no';
+        create_package_child[i].zero_qty = 'no';
       }
       this.setState({ create_package_child: create_package_child }, () =>
         console.log(this.state.create_package_child)
@@ -670,7 +717,7 @@ class Package extends Component {
                         value={mat.MM_Code}
                         onClick={() => this.toggleModalMaterial(i)}
                         disabled={mat.Transport === 'yes'}
-                        style={mat.duplicate === 'yes' ? { border: "2px solid red" } : {}}
+                        style={mat.duplicate === 'yes' || mat.blank_material === 'yes' ? { border: "2px solid red" } : {}}
                       />
                     </FormGroup>
                   </Col>
@@ -709,6 +756,7 @@ class Package extends Component {
                         value={mat.Qty}
                         onChange={this.handleChangeFormPackageChild}
                         disabled={mat.Transport === 'yes'}
+                        style={mat.zero_qty === 'yes' ? { border: "2px solid red" } : {}}
                       />
                     </FormGroup>
                   </Col>
