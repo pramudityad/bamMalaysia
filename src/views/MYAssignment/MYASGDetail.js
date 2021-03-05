@@ -91,7 +91,7 @@ class MYASGDetail extends PureComponent {
       data_cpo: null,
       data_cpo_db: [],
       modal_postgr: false,
-      dn_no : "",
+      dn_no: "",
       file_upload: null,
       prevPage: 0,
       activePage: 1,
@@ -481,17 +481,17 @@ class MYASGDetail extends PureComponent {
     }
   }
 
-  fileInputHandle = (e) =>{
+  fileInputHandle = (e) => {
     let fileUpload = null;
-      if (
-        e !== undefined &&
-        e.target !== undefined &&
-        e.target.files !== undefined
-      ) {
-        fileUpload = e.target.files[0];
-        this.setState({file_upload: fileUpload})
-      }
-  }
+    if (
+      e !== undefined &&
+      e.target !== undefined &&
+      e.target.files !== undefined
+    ) {
+      fileUpload = e.target.files[0];
+      this.setState({ file_upload: fileUpload });
+    }
+  };
 
   fileHandlerMaterial = (input) => {
     const file = input.target.files[0];
@@ -1305,7 +1305,7 @@ class MYASGDetail extends PureComponent {
       this.getLMRDetailData();
     } else {
       this.getLMRDetailData(this.props.match.params.id);
-    }  
+    }
     // const dataChild = JSON.parse(state_lmr.detail.map(id => localStorage.getItem(lmr_id + "///" + id.cdid)))
     // console.log(dataChild)
     // this.getMaterialList();
@@ -1317,15 +1317,16 @@ class MYASGDetail extends PureComponent {
   postAllGR_draft = async () => {
     this.toggleLoading();
     this.toggleGRPost();
-    const state_lmr = this.state.lmr_detail
-    const lmr_id = state_lmr["lmr_id"]
+    const state_lmr = this.state.lmr_detail;
+    const lmr_id = state_lmr["lmr_id"];
     let fileDocument = new FormData();
-    const dataChild = state_lmr.detail.map(id => JSON.parse(localStorage.getItem(lmr_id + "///" + id.cdid)))
- 
-    console.log(dataChild)
-    const merge_dataChild = [].concat(...dataChild)
-    console.log(merge_dataChild)
+    const dataChild = state_lmr.detail.map((id) =>
+      JSON.parse(localStorage.getItem(lmr_id + "///" + id.cdid))
+    );
 
+    console.log(dataChild);
+    const merge_dataChild = [].concat(...dataChild);
+    console.log(merge_dataChild);
 
     await fileDocument.append("fileDocument", this.state.file_upload);
     await fileDocument.append("dn_no", JSON.stringify(this.state.dn_no));
@@ -1339,7 +1340,7 @@ class MYASGDetail extends PureComponent {
       respondSaveLMRChild.status >= 200 &&
       respondSaveLMRChild.status <= 300
     ) {
-      let remove_gr = state_lmr.detail.map(id => lmr_id + "///" + id.cdid)
+      let remove_gr = state_lmr.detail.map((id) => lmr_id + "///" + id.cdid);
       for (let i = 0; i < remove_gr.length; i++) {
         const element = remove_gr[i];
         localStorage.removeItem(element);
@@ -1374,7 +1375,7 @@ class MYASGDetail extends PureComponent {
     // setTimeout(function () {
     //   window.location.reload();
     // }, 1500);
-  }
+  };
 
   getDataCD() {
     this.getDatafromAPIMY("/cdid_data").then((resCD) => {
@@ -1827,18 +1828,20 @@ class MYASGDetail extends PureComponent {
                   &nbsp;&nbsp;&nbsp; */}
                   {this.state.roleUser !== "Public" ? (
                     <>
-                    <Link to={"/lmr-edit/" + this.props.match.params.id}>
-                      <Button color="warning">
-                        <i className="fa fa-wpforms" aria-hidden="true">
-                          &nbsp; Duplicate
+                      <Link to={"/lmr-edit/" + this.props.match.params.id}>
+                        <Button color="warning">
+                          <i className="fa fa-wpforms" aria-hidden="true">
+                            &nbsp; Duplicate
+                          </i>
+                        </Button>
+                      </Link>
+                      &nbsp;&nbsp;
+                      <Button color="success" onClick={this.toggleGRPost}>
+                        <i class="fa fa-paper-plane" aria-hidden="true">
+                          &nbsp; Post GR
                         </i>
                       </Button>
-                    </Link>
-                    &nbsp;&nbsp;
-                      <Button color="success" onClick={this.toggleGRPost}>
-                          &nbsp; Post GR
-                      </Button>
-                      </>
+                    </>
                   ) : (
                     ""
                   )}
@@ -3027,8 +3030,8 @@ class MYASGDetail extends PureComponent {
         </Modal>
         {/* end Modal Loading */}
 
-          {/* Modal Update */}
-          <Modal
+        {/* Modal Update */}
+        <Modal
           isOpen={this.state.modal_postgr}
           toggle={this.toggleGRPost}
           className="modal--form"
@@ -3042,12 +3045,12 @@ class MYASGDetail extends PureComponent {
                     <FormGroup>
                       <Label>DN No</Label>
                       <Input
-                    type="text"
-                    name=""
-                    placeholder="Input DN No"
-                    value={this.state.dn_no}
-                    onChange={this.handleChangeForm}
-                  />
+                        type="text"
+                        name=""
+                        placeholder="Input DN No"
+                        value={this.state.dn_no}
+                        onChange={this.handleChangeForm}
+                      />
                     </FormGroup>
                   </Col>
                 </FormGroup>
@@ -3058,21 +3061,23 @@ class MYASGDetail extends PureComponent {
                     <FormGroup>
                       <Label>Input File</Label>
                       <input
-                      type="file"
-                      onChange={this.fileInputHandle.bind(this)}
-                      style={{ padding: "10px", visiblity: "hidden" }}
-                    />
+                        type="file"
+                        onChange={this.fileInputHandle.bind(this)}
+                        style={{ padding: "10px", visiblity: "hidden" }}
+                      />
                     </FormGroup>
                   </Col>
                 </FormGroup>
               </Col>
-            </Row>        
+            </Row>
           </ModalBody>
           <ModalFooter>
             <Button
               color="success"
               onClick={this.postAllGR_draft}
-              disabled={this.state.dn_no === "" && this.state.rowsXLS.length === 0}
+              disabled={
+                this.state.dn_no === "" && this.state.rowsXLS.length === 0
+              }
             >
               Submit
             </Button>

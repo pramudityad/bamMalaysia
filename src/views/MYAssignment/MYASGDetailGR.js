@@ -116,14 +116,10 @@ class MYASGDetail extends Component {
             id_child: this.state.lmr_lvl2._id,
             Plant: "2172",
             Request_Type: "Add GR",
-            PO_Number: this.state.list_pr_po[0]
-              .PO_Number,
-            PO_Item: this.state.list_pr_po[0]
-              .PO_Item,
-            PO_Price: this.state.list_pr_po[0]
-              .PO_Price,
-            PO_Qty: this.state.list_pr_po[0]
-              .PO_Qty,
+            PO_Number: this.state.list_pr_po[0].PO_Number,
+            PO_Item: this.state.list_pr_po[0].PO_Item,
+            PO_Price: this.state.list_pr_po[0].PO_Price,
+            PO_Qty: this.state.list_pr_po[0].PO_Qty,
             Required_GR_Qty: "",
             DN_No: "",
             WCN_Link: "https://mas.pdb.e-dpm.com/grmenu/list/",
@@ -356,7 +352,7 @@ class MYASGDetail extends Component {
           // const datalvl2 = res.data.data.detail;
           const datalvl2 = res.data.data.detail.find((e) => e._id === id_lmr);
           // console.log('datalvl2 ', datalvl2);
-          this.setState({ lmr_lvl2: datalvl2 },() => this.checkDraft());
+          this.setState({ lmr_lvl2: datalvl2 }, () => this.checkDraft());
         }
         console.log("lmr_lvl2", this.state.lmr_lvl2);
         this.getDataPRPO(this.props.match.params.lmr);
@@ -370,8 +366,7 @@ class MYASGDetail extends Component {
     ).then((res) => {
       if (res.data !== undefined) {
         const dataLMRDetailPRPO = res.data._items;
-        this.setState({ list_pr_po: dataLMRDetailPRPO }
-        );
+        this.setState({ list_pr_po: dataLMRDetailPRPO });
       }
     });
   }
@@ -657,12 +652,15 @@ class MYASGDetail extends Component {
         GR_Document_Qty: null,
       })
     );
-    const params_gr_save = this.state.lmr_lvl2.lmr_id + "///" + this.state.lmr_lvl2.cdid
+    const params_gr_save =
+      this.state.lmr_lvl2.lmr_id + "///" + this.state.lmr_lvl2.cdid;
     localStorage.setItem(params_gr_save, JSON.stringify(dataChild));
-    console.log(JSON.parse(localStorage.getItem(params_gr_save)))
-    this.setState({ action_status: "success",action_message:"GR "+ params_gr_save +" saved as draft"
-  })
-  }
+    console.log(JSON.parse(localStorage.getItem(params_gr_save)));
+    this.setState({
+      action_status: "success",
+      action_message: "GR " + params_gr_save + " saved as draft",
+    });
+  };
 
   downloadFormatNewChild = async () => {
     const wb = new Excel.Workbook();
@@ -701,13 +699,15 @@ class MYASGDetail extends Component {
     document.title = "LMR Detail | BAM";
   }
 
-  checkDraft(){
-    const params_gr_save = this.state.lmr_lvl2.lmr_id + "///" + this.state.lmr_lvl2.cdid
-    const draft_gr = JSON.parse(localStorage.getItem(params_gr_save))
-    draft_gr !== null? 
-    this.setState({
-      ChildForm: draft_gr
-    }) : this.setState({ChildForm: []})
+  checkDraft() {
+    const params_gr_save =
+      this.state.lmr_lvl2.lmr_id + "///" + this.state.lmr_lvl2.cdid;
+    const draft_gr = JSON.parse(localStorage.getItem(params_gr_save));
+    draft_gr !== null
+      ? this.setState({
+          ChildForm: draft_gr,
+        })
+      : this.setState({ ChildForm: [] });
   }
 
   handleInput(e) {
@@ -1465,9 +1465,9 @@ class MYASGDetail extends Component {
                           )}
                           <td style={{ width: "10%" }}>
                             <input
-                              type="text"   
+                              type="text"
                               disabled
-                              readonly             
+                              readonly
                               name="GR_Document_No"
                               id="GR_Document_No"
                               value={child_data.GR_Document_No}
@@ -1490,6 +1490,8 @@ class MYASGDetail extends Component {
                           </td>
                           <td style={{ width: "10%" }}>
                             <input
+                              disabled
+                              readonly
                               type="text"
                               name="DN_No"
                               id="DN_No"
