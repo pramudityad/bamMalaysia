@@ -1818,7 +1818,7 @@ class MappingHW extends React.Component {
                           <tr align="center">
                             {this.state.tabs_submenu[0] === true ? (
                               <>
-                                <th></th>
+                                {/* <th></th> */}
                                 <th>Not Required</th>
                               </>
                             ) : (
@@ -1831,7 +1831,7 @@ class MappingHW extends React.Component {
                           {this.state.tabs_submenu[0] === true ? (
                             <>
                               <tr align="center">
-                                <th></th>
+                                {/* <th></th> */}
                                 <th></th>
                                 {header_model.map((head, j) =>
                                   head === "Qty" ||
@@ -1856,7 +1856,7 @@ class MappingHW extends React.Component {
                             </>
                           )}
                           <tr align="center">
-                            <td></td>
+                            {/* <td></td> */}
                             <td>
                               {/* <Checkbox1
                                 name={"all"}
@@ -1874,7 +1874,7 @@ class MappingHW extends React.Component {
                             this.state.all_data.map((e, i) => (
                               <React.Fragment key={e._id + "frag"}>
                                 <tr align="center" key={e._id}>
-                                  <td>
+                                  {/* <td>
                                     <Link to={"/hw-cpo/" + e._id}>
                                       <Button
                                         size="sm"
@@ -1887,7 +1887,7 @@ class MappingHW extends React.Component {
                                         ></i>
                                       </Button>
                                     </Link>
-                                  </td>
+                                  </td> */}
 
                                   <td>
                                     <Checkbox1
