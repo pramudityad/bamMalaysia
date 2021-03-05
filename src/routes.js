@@ -16,6 +16,19 @@ const LMRDetailGR = React.lazy(() =>
   import("./views/MYAssignment/MYASGDetailGR")
 );
 const LMRList = React.lazy(() => import("./views/MYAssignment/MYASGList"));
+const ImportCas = React.lazy(() => import("./views/Material/importCas"));
+
+const HWMapping = React.lazy(() => import("./views/CPOMapping/HW"));
+const SVCMapping = React.lazy(() => import("./views/CPOMapping/SVC"));
+const Master = React.lazy(() => import("./views/CPOMapping/SummaryMaster"));
+
+const SVCEdit = React.lazy(() => import("./views/CPOMapping/SVCedit"));
+const HWEdit = React.lazy(() => import("./views/CPOMapping/HWedit"));
+
+const HWDashboard = React.lazy(() => import("./views/CPOMapping/DashboardHW"));
+const SVCDashboard = React.lazy(() =>
+  import("./views/CPOMapping/DashboardSVC")
+);
 
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
 const routes = [
@@ -48,6 +61,48 @@ const routes = [
   },
 
   {
+    path: "/hw-cpo",
+    exact: true,
+    name: "HW CPO Mapping",
+    component: HWMapping,
+  },
+  {
+    path: "/hw-dashboard",
+    exact: true,
+    name: "HW Dashboard",
+    component: HWDashboard,
+  },
+  {
+    path: "/svc-dashboard",
+    exact: true,
+    name: "SVC Dashboard",
+    component: SVCDashboard,
+  },
+  {
+    path: "/svc-cpo",
+    exact: true,
+    name: "SVC CPO Mapping",
+    component: SVCMapping,
+  },
+  {
+    path: "/summary-master",
+    exact: true,
+    name: "HW Summary Master",
+    component: Master,
+  },
+  {
+    path: "/svc-cpo/:id",
+    exact: true,
+    name: "SVC CPO Edit",
+    component: SVCEdit,
+  },
+  {
+    path: "/hw-cpo/:id",
+    exact: true,
+    name: "HW CPO Edit",
+    component: HWEdit,
+  },
+  {
     path: "/lmr-list",
     exact: true,
     name: "Assignment LMR List",
@@ -76,6 +131,12 @@ const routes = [
     exact: true,
     name: "Assignment LMR Detail GR",
     component: LMRDetailGR,
+  },
+  {
+    path: "/importcas",
+    exact: true,
+    name: "Import Cas",
+    component: ImportCas,
   },
 ];
 

@@ -48,7 +48,8 @@ const header_model = [
   "Vendor_ID",
   "Vendor_Name",
 ];
-class MatARP extends React.Component {
+
+class MatARP extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {

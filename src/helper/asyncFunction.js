@@ -1,6 +1,5 @@
 import axios from "axios";
 
-// EXCEL
 export const getDatafromAPIMY = async (url) => {
   try {
     let respond = await axios.get(process.env.REACT_APP_API_URL_MAS + url, {
@@ -40,27 +39,7 @@ export const getDatafromAPINODE = async (url, props) => {
   }
 };
 
-export const getDatafromAPINODEFile = async (url, props, con_type) => {
-  try {
-    let respond = await axios.get(process.env.REACT_APP_API_URL_NODE + url, {
-      responseType: "blob",
-      headers: {
-        // "Content-Type": con_type,
-        Authorization: "Bearer " + props,
-      },
-    });
-    if (respond.status >= 200 && respond.status < 300) {
-      console.log("respond Post Data", respond);
-    }
-    return respond;
-  } catch (err) {
-    let respond = err;
-    console.log("respond Post Data err", err);
-    return respond;
-  }
-};
-
-export const postDatatoAPINODE = async (url, data, props) => {
+export const getDatafromAPINODEFile = async (url, props, data) => {
   try {
     let respond = await axios.post(
       process.env.REACT_APP_API_URL_NODE + url,
@@ -152,10 +131,9 @@ export const deleteDataFromAPINODE2 = async (url, props, data) => {
   try {
     let respond = await axios.delete(process.env.REACT_APP_API_URL_NODE + url, {
       headers: {
-        "Content-Type": "application/json",
         Authorization: "Bearer " + props,
       },
-      data,
+      data: data,
     });
     if (respond.status >= 200 && respond.status < 300) {
       console.log("respond delete Data", respond);
@@ -164,6 +142,22 @@ export const deleteDataFromAPINODE2 = async (url, props, data) => {
   } catch (err) {
     let respond = err;
     console.log("respond delete Data err", err);
+    return respond;
+  }
+};
+
+/**
+ *
+ * @param {data_email} data
+ */
+export const apiSendEmail = async (data) => {
+  try {
+    let respond = await axios.post(process.env.REACT_APP_API_EMAIL, data, {
+      headers: { "Content-Type": "application/json" },
+    });
+    return respond;
+  } catch (err) {
+    let respond = undefined;
     return respond;
   }
 };

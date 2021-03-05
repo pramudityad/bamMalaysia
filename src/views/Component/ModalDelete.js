@@ -7,12 +7,10 @@ const ModalDelete = ({ isOpen, toggle, className, title, children, body }) => {
       <Modal isOpen={isOpen} toggle={toggle} className={className}>
         <ModalHeader toggle={toggle}>{title}</ModalHeader>
         <ModalBody>{body}</ModalBody>
-        <ModalFooter>
-            {children}
-        </ModalFooter>
+        <ModalFooter>{children}</ModalFooter>
       </Modal>
     </div>
   );
-}
+};
 
-export default ModalDelete;
+export default React.memo(ModalDelete);

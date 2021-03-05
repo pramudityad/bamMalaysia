@@ -22,7 +22,7 @@ import {
   convertDateFormatfull,
   convertDateFormat,
   getUniqueListBy,
-  numToSSColumn
+  numToSSColumn,
 } from "../../helper/basicFunction";
 import { connect } from "react-redux";
 
@@ -83,7 +83,7 @@ class MYASGList extends Component {
   exportLMR = async () => {
     const wb = new Excel.Workbook();
     const ws = wb.addWorksheet();
-    const prpo_list = this.state.prpo_all
+    const prpo_list = this.state.prpo_all;
     // console.log(prpo_list)
     const all_lmr = this.state.lmr_list_filter;
 
@@ -100,7 +100,7 @@ class MYASGList extends Component {
       "L2 Approver",
       "L3 Approver",
       "Request Type",
-      "PO"
+      "PO",
     ];
     ws.addRow(headerRow);
     for (let i = 1; i < headerRow.length + 1; i++) {
@@ -128,7 +128,7 @@ class MYASGList extends Component {
         e.l3_approver,
         e.request_type,
         // prpo_list.find(f => f.LMR_No === e.lmr_id)
-        this.getPO(prpo_list, e.lmr_id)
+        this.getPO(prpo_list, e.lmr_id),
       ]);
     }
 
@@ -136,21 +136,25 @@ class MYASGList extends Component {
     saveAs(new Blob([allocexport]), "All LMR.xlsx");
   };
 
-  getPO(list_prpo, key2){
-    const data_prpo = list_prpo.find(a => a.LMR_No === key2)
-    if(data_prpo !== undefined){
-      return data_prpo.PO_Number
+  getPO(list_prpo, key2) {
+    const data_prpo = list_prpo.find((a) => a.LMR_No === key2);
+    if (data_prpo !== undefined) {
+      return data_prpo.PO_Number;
     }
-    return null
+    return null;
   }
 
   async getPRPO() {
-    await getDatafromAPIMY('/prpo_bam_report?where={"Customer":"CELCOM"}').then((res => {
-      if(res.data !== undefined){
-        const prpo_all = res.data._items.filter(pr => pr.PO_Number !== null)
-        this.setState({ prpo_all : prpo_all})
+    await getDatafromAPIMY('/prpo_bam_report?where={"Customer":"CELCOM"}').then(
+      (res) => {
+        if (res.data !== undefined) {
+          const prpo_all = res.data._items.filter(
+            (pr) => pr.PO_Number !== null
+          );
+          this.setState({ prpo_all: prpo_all });
+        }
       }
-    }))
+    );
   }
 
   async getMRList() {
@@ -240,7 +244,7 @@ class MYASGList extends Component {
     if (
       role.includes("BAM-IM") === true ||
       role.includes("BAM-IE Lead") === true ||
-      role.includes("BAM-NDO IM") === true 
+      role.includes("BAM-NDO IM") === true
     ) {
       let filterlist = lmr_list.filter((e) => im_ie.includes(e.gl_type));
       this.setState({ lmr_list_filter: filterlist }, () =>
@@ -383,32 +387,30 @@ class MYASGList extends Component {
   loopSearchBar = () => {
     let searchBar = [];
     for (let i = 0; i < 6; i++) {
-      i === 2 ? (searchBar.push(
-        <td>          
-        </td>
-      )):(searchBar.push(
-        <td>
-          <div className="controls" style={{ width: "150px" }}>
-            <InputGroup className="input-prepend">
-              <InputGroupAddon addonType="prepend">
-                <InputGroupText>
-                  <i className="fa fa-search"></i>
-                </InputGroupText>
-              </InputGroupAddon>
-              <Input
-                // className="col-sm-3"
-                type="text"
-                placeholder="Search"
-                onChange={this.handleFilterList}
-                value={this.state.filter_list[header_model[i]]}
-                name={header_model[i]}
-                size="sm"
-              />
-            </InputGroup>
-          </div>
-        </td>
-      ))
-      
+      i === 2
+        ? searchBar.push(<td></td>)
+        : searchBar.push(
+            <td>
+              <div className="controls" style={{ width: "150px" }}>
+                <InputGroup className="input-prepend">
+                  <InputGroupAddon addonType="prepend">
+                    <InputGroupText>
+                      <i className="fa fa-search"></i>
+                    </InputGroupText>
+                  </InputGroupAddon>
+                  <Input
+                    // className="col-sm-3"
+                    type="text"
+                    placeholder="Search"
+                    onChange={this.handleFilterList}
+                    value={this.state.filter_list[header_model[i]]}
+                    name={header_model[i]}
+                    size="sm"
+                  />
+                </InputGroup>
+              </div>
+            </td>
+          );
     }
     return searchBar;
   };

@@ -51,7 +51,7 @@ const header_model = [
   "Created_On",
 ];
 
-class MatHW extends React.Component {
+class MatHW extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {
@@ -282,14 +282,15 @@ class MatHW extends React.Component {
     }
   };
 
-  saveMatStockWHBulk = async () => {
+  saveBulk = async () => {
     this.toggleLoading();
     this.togglecreateModal();
     const BulkXLSX = this.state.rowsXLS;
     const res = await postDatatoAPINODE(
-      "/mmCode/createMmCode",
+      "/cpoMapping/createCpo",
       {
-        mm_data: BulkXLSX,
+        cpo_type: "hw",
+        cpo_data: this.state.rowsXLS,
       },
       this.state.tokenUser
     );
@@ -814,7 +815,11 @@ class MatHW extends React.Component {
                                     {e.Vendor_ID}
                                   </td>
                                   <td style={{ textAlign: "center" }}>
-                                    {this.findVendorName(e.Vendor_ID)}
+                                    {this.findVendorName(
+                                      e.Vendor_ID,
+                                      "Vendor_Code",
+                                      "Name"
+                                    )}
                                   </td>
                                   <td style={{ textAlign: "center" }}>
                                     {e.MM_Code}
@@ -1087,7 +1092,7 @@ class MatHW extends React.Component {
               color="success"
               className="btn-pill"
               disabled={this.state.rowsXLS.length === 0}
-              onClick={this.saveMatStockWHBulk}
+              onClick={this.saveBulk}
               style={{ height: "30px", width: "100px" }}
             >
               Save
