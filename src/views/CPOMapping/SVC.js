@@ -2127,6 +2127,7 @@ class MappingSVC extends React.PureComponent {
                                   <td>{e.CNI_Date}</td>
                                   <td>{e.Mapping_Date}</td>
                                   <td>{e.Remarks}</td>
+                                  <td>{e.Gr_No}</td>
                                   <td>{e.Premr_No}</td>
                                   <td>{e.Proceed_Billing_100}</td>
                                   <td>{e.Celcom_User}</td>
@@ -2166,6 +2167,8 @@ class MappingSVC extends React.PureComponent {
                                       "Discounted_Po_Price"
                                     )}
                                   </td>
+                                  <td>{e.Net_Unit_Price}</td>
+                                  <td>{e.Invoice_Total}</td>
                                   <td>
                                     {e.Unit_Price *
                                       e.Qty *

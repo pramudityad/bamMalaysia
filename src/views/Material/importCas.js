@@ -54,7 +54,7 @@ class importCas extends React.PureComponent {
           last_name: row[0].split(" ").slice(-1).join(" "),
           username: row[1],
           active: true,
-          email: row[2],
+          email: row[2].toLowerCase(),
           roles: this.state.roleform.map((name) => name.role),
           created_on: {
             $date: "2020-03-17T08:33:25.162Z",
@@ -140,8 +140,8 @@ class importCas extends React.PureComponent {
           this.setState(
             {
               rowsXLS: rest.rows,
-            }
-            // () => this.constructImport(this.state.rowsXLS)
+            },
+            () => this.constructImport(this.state.rowsXLS)
           );
         }
       });
@@ -151,6 +151,18 @@ class importCas extends React.PureComponent {
   render() {
     return (
       <>
+        <div>
+          <label>export type</label>{" "}
+          <select
+            name="type_form"
+            value={this.state.importForm.type_form}
+            onChange={this.changeInput}
+          >
+            <option value={null} selected></option>
+            <option value="PDB">PDB</option>
+            <option value="CAS">CAS</option>
+          </select>
+        </div>
         <div>
           <table>
             <tbody>
@@ -168,18 +180,7 @@ class importCas extends React.PureComponent {
             </tbody>
           </table>
         </div>
-        <div>
-          <label>export type</label>{" "}
-          <select
-            name="type_form"
-            value={this.state.importForm.type_form}
-            onChange={this.changeInput}
-          >
-            <option value={null} selected></option>
-            <option value="PDB">PDB</option>
-            <option value="CAS">CAS</option>
-          </select>
-        </div>
+
         <div>
           {this.state.importForm.type_form === "PDB"
             ? this.state.roleform.map((roles, j) => (
