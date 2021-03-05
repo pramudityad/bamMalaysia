@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from "react";
+import React, { Component, Fragment, PureComponent } from "react";
 import {
   Form,
   FormGroup,
@@ -70,7 +70,7 @@ const MaterialDB = [
   },
 ];
 
-class MYASGDetail extends Component {
+class MYASGDetail extends PureComponent {
   constructor(props) {
     super(props);
 
@@ -90,6 +90,9 @@ class MYASGDetail extends Component {
       modal_material_ARP: false,
       data_cpo: null,
       data_cpo_db: [],
+      modal_postgr: false,
+      dn_no : "",
+      file_upload: null,
       prevPage: 0,
       activePage: 1,
       totalData: 0,
@@ -356,6 +359,12 @@ class MYASGDetail extends Component {
     }));
   }
 
+  toggleGRPost = () => {
+    this.setState({
+      modal_postgr: !this.state.modal_postgr,
+    });
+  };
+
   checkValue(props) {
     // if value undefined return null
     if (typeof props === "undefined") {
@@ -472,11 +481,23 @@ class MYASGDetail extends Component {
     }
   }
 
+  fileInputHandle = (e) =>{
+    let fileUpload = null;
+      if (
+        e !== undefined &&
+        e.target !== undefined &&
+        e.target.files !== undefined
+      ) {
+        fileUpload = e.target.files[0];
+        this.setState({file_upload: fileUpload})
+      }
+  }
+
   fileHandlerMaterial = (input) => {
     const file = input.target.files[0];
     const reader = new FileReader();
     const rABS = !!reader.readAsBinaryString;
-    console.log("rABS");
+    // console.log("rABS");
     reader.onload = (e) => {
       /* Parse data */
       const bstr = e.target.result;
@@ -906,7 +927,7 @@ class MYASGDetail extends Component {
             () => {
               // this.toggleLoading();
               this.getDataPRPO(dataLMRDetail.lmr_id);
-              this.getAllGR_draft();
+              // this.postAllGR_draft();
             }
           );
         }
@@ -1284,17 +1305,75 @@ class MYASGDetail extends Component {
       this.getLMRDetailData();
     } else {
       this.getLMRDetailData(this.props.match.params.id);
-    }    
+    }  
+    // const dataChild = JSON.parse(state_lmr.detail.map(id => localStorage.getItem(lmr_id + "///" + id.cdid)))
+    // console.log(dataChild)
     // this.getMaterialList();
     // this.getDataCD();
     // this.getProjectList();
     document.title = "LMR Detail | BAM";
   }
 
-   getAllGR_draft(){
+  postAllGR_draft = async () => {
+    this.toggleLoading();
+    this.toggleGRPost();
     const state_lmr = this.state.lmr_detail
     const lmr_id = state_lmr["lmr_id"]
-    state_lmr.detail.map(id => console.log(lmr_id+id.cdid ,JSON.parse(localStorage.getItem(lmr_id + "///" + id.cdid))))
+    let fileDocument = new FormData();
+    const dataChild = state_lmr.detail.map(id => JSON.parse(localStorage.getItem(lmr_id + "///" + id.cdid)))
+ 
+    console.log(dataChild)
+    const merge_dataChild = [].concat(...dataChild)
+    console.log(merge_dataChild)
+
+
+    await fileDocument.append("fileDocument", this.state.file_upload);
+    await fileDocument.append("dn_no", JSON.stringify(this.state.dn_no));
+    await fileDocument.append("gr_data", JSON.stringify(merge_dataChild));
+    const respondSaveLMRChild = await this.postDatatoAPINODE(
+      "/aspassignment/createGrForm1/",
+      fileDocument
+    );
+    if (
+      respondSaveLMRChild.data !== undefined &&
+      respondSaveLMRChild.status >= 200 &&
+      respondSaveLMRChild.status <= 300
+    ) {
+      let remove_gr = state_lmr.detail.map(id => lmr_id + "///" + id.cdid)
+      for (let i = 0; i < remove_gr.length; i++) {
+        const element = remove_gr[i];
+        localStorage.removeItem(element);
+      }
+      this.setState({ action_status: "success" });
+    } else {
+      if (
+        respondSaveLMRChild.response !== undefined &&
+        respondSaveLMRChild.response.data !== undefined &&
+        respondSaveLMRChild.response.data.error !== undefined
+      ) {
+        if (respondSaveLMRChild.response.data.error.message !== undefined) {
+          this.setState({
+            action_status: "failed",
+            action_message: JSON.stringify(
+              respondSaveLMRChild.response.data.error.message
+            ),
+          });
+        } else {
+          this.setState({
+            action_status: "failed",
+            action_message: JSON.stringify(
+              respondSaveLMRChild.response.data.error
+            ),
+          });
+        }
+      } else {
+        this.setState({ action_status: "failed" });
+      }
+    }
+    this.toggleLoading();
+    // setTimeout(function () {
+    //   window.location.reload();
+    // }, 1500);
   }
 
   getDataCD() {
@@ -1579,6 +1658,14 @@ class MYASGDetail extends Component {
     );
   }
 
+  handleChangeForm = (e) => {
+    const value = e.target.value;
+    // const index = e.target.name;
+    // let dataForm = this.state.PPForm;
+    // dataForm[parseInt(index)] = value;
+    this.setState({ dn_no: value });
+  };
+
   handleChangeCDFormLMRChild = (e, action) => {
     let dataLMR = this.state.creation_lmr_child_form;
     let dataparentLMR_GL = this.state.lmr_detail.gl_account;
@@ -1748,7 +1835,7 @@ class MYASGDetail extends Component {
                       </Button>
                     </Link>
                     &nbsp;&nbsp;
-                      <Button color="success">
+                      <Button color="success" onClick={this.toggleGRPost}>
                           &nbsp; Post GR
                       </Button>
                       </>
@@ -2939,6 +3026,58 @@ class MYASGDetail extends Component {
           </ModalFooter>
         </Modal>
         {/* end Modal Loading */}
+
+          {/* Modal Update */}
+          <Modal
+          isOpen={this.state.modal_postgr}
+          toggle={this.toggleGRPost}
+          className="modal--form"
+        >
+          <ModalHeader>Form GR</ModalHeader>
+          <ModalBody>
+            <Row>
+              <Col sm="8">
+                <FormGroup row>
+                  <Col xs="8">
+                    <FormGroup>
+                      <Label>DN No</Label>
+                      <Input
+                    type="text"
+                    name=""
+                    placeholder="Input DN No"
+                    value={this.state.dn_no}
+                    onChange={this.handleChangeForm}
+                  />
+                    </FormGroup>
+                  </Col>
+                </FormGroup>
+              </Col>
+              <Col sm="8">
+                <FormGroup row>
+                  <Col xs="8">
+                    <FormGroup>
+                      <Label>Input File</Label>
+                      <input
+                      type="file"
+                      onChange={this.fileInputHandle.bind(this)}
+                      style={{ padding: "10px", visiblity: "hidden" }}
+                    />
+                    </FormGroup>
+                  </Col>
+                </FormGroup>
+              </Col>
+            </Row>        
+          </ModalBody>
+          <ModalFooter>
+            <Button
+              color="success"
+              onClick={this.postAllGR_draft}
+              disabled={this.state.dn_no === "" && this.state.rowsXLS.length === 0}
+            >
+              Submit
+            </Button>
+          </ModalFooter>
+        </Modal>
 
         {/* Modal Material ARP */}
         <Modal

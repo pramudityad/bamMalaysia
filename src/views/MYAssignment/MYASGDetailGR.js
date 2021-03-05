@@ -113,6 +113,7 @@ class MYASGDetail extends Component {
       this.setState({
         ChildForm: this.state.ChildForm.concat([
           {
+            id_child: this.state.lmr_lvl2._id,
             Plant: "2172",
             Request_Type: "Add GR",
             PO_Number: this.state.list_pr_po[0]
@@ -137,6 +138,7 @@ class MYASGDetail extends Component {
       this.setState({
         ChildForm: this.state.ChildForm.concat([
           {
+            id_child: this.state.lmr_lvl2._id,
             Plant: "2172",
             Request_Type: "Add GR",
             PO_Number: "",
@@ -635,6 +637,7 @@ class MYASGDetail extends Component {
     const dataChild = this.state.ChildForm;
     dataChild.map((e) =>
       grContainer.push({
+        id_child: this.state.lmr_lvl2._id,
         Plant: e.Plant,
         Request_Type: e.Request_Type,
         PO_Number: e.PO_Number,
@@ -642,7 +645,7 @@ class MYASGDetail extends Component {
         PO_Price: e.PO_Price,
         PO_Qty: e.PO_Qty,
         Required_GR_Qty: e.Required_GR_Qty,
-        DN_No: e.DN_No,
+        // DN_No: e.DN_No,
         WCN_Link: "https://mas.pdb.e-dpm.com/grmenu/list/",
         created_by_gr: this.props.dataLogin.userName,
         // created_by_gr: "EHAYZUX",
@@ -1497,12 +1500,14 @@ class MYASGDetail extends Component {
                           </td>
                           <td>
                             <input
-                              type="file"
-                              name="fileDocument"
-                              accept="application/msword, application/pdf"
-                              // id="fileDocument"
-                              // value={child_data.fileDocument}
-                              onChange={this.handleInputchild(idx)}
+                              type="text"
+                              disabled
+                              readonly
+                              // name="fileDocument"
+                              // accept="application/msword, application/pdf"
+                              // // id="fileDocument"
+                              // // value={child_data.fileDocument}
+                              // onChange={this.handleInputchild(idx)}
                               // style={{ width: "300" }}
                             />
                           </td>
