@@ -1689,7 +1689,7 @@ class MappingSVC extends React.PureComponent {
                           {" "}
                           &nbsp;{" "}
                         </i>{" "}
-                        {role.includes("BAM-IM") === true ||
+                        {role.includes("BAM-ADMIN") === true ||
                         role.includes("BAM-PFM") === true
                           ? "Update"
                           : "New"}
@@ -1749,7 +1749,7 @@ class MappingSVC extends React.PureComponent {
                         ) : (
                           ""
                         )}
-                        {role.includes("BAM-IM") === true ? (
+                        {role.includes("BAM-ADMIN") === true ? (
                           <>
                             <DropdownItem onClick={this.download_Admin}>
                               {" "}
@@ -2064,7 +2064,7 @@ class MappingSVC extends React.PureComponent {
                             this.state.all_data_true.map((e, i) => (
                               <React.Fragment key={e._id + "frag"}>
                                 <tr align="center" key={e._id}>
-                                  {role.includes("BAM-IM") === true ||
+                                  {role.includes("BAM-ADMIN") === true ||
                                   role.includes("BAM-PFM") === true ? (
                                     <td>
                                       <Link to={"/svc-cpo/" + e._id}>
@@ -2385,7 +2385,7 @@ class MappingSVC extends React.PureComponent {
             </table>
           </div>
           <ModalFooter>
-            {/* {role.includes("BAM-IM") === true ||
+            {/* {role.includes("BAM-ADMIN") === true ||
             role.includes("BAM-PFM") === true ? (
               <Button
                 size="sm"
