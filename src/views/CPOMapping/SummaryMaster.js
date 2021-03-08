@@ -394,7 +394,7 @@ class SVCMaster extends React.Component {
         let dataEmail = {
           // "to": creatorEmail,
           // to: "pramudityad@student.telkomuniversity.ac.id",
-          to: global.config.role.cpm,
+          to: process.env.REACT_APP_NOTIFICATION_CPM,
           subject: "[NOTIFY to CPM] " + modul_name,
           body: bodyEmail,
         };
