@@ -85,9 +85,10 @@ export const postDatatoAPILogin = async (url, data) => {
   }
 };
 
-export const postDatatoAPINODE = async (url, props) => {
+export const postDatatoAPINODE = async (url, data, props) => {
   try {
     let respond = await axios.post(process.env.REACT_APP_API_URL_NODE + url, {
+      data,
       headers: {
         "Content-Type": "application/json",
         Authorization: "Bearer " + props,
