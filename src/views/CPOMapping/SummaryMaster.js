@@ -46,7 +46,7 @@ import "./cpomapping.css";
 const DefaultNotif = React.lazy(() => import("../DefaultView/DefaultNotif"));
 const modul_name = "Summary Master";
 const header = [
-  "",
+  // "",
   "Type",
   "Deal_Name",
   "Hammer",
@@ -334,8 +334,8 @@ class SVCMaster extends React.Component {
             "<h2>DPM - BAM Notification</h2>" + body_new + body_updated;
           let dataEmail = {
             // "to": creatorEmail,
-            to: "pramudityad@student.telkomuniversity.ac.id",
-            // to: global.config.role.cpm,
+            // to: "pramudityad@student.telkomuniversity.ac.id",
+            to: global.config.role.cpm,
             subject: "[NOTIFY to CPM] " + modul_name,
             body: bodyEmail,
           };
@@ -350,8 +350,8 @@ class SVCMaster extends React.Component {
           const bodyEmail = "<h2>DPM - BAM Notification</h2>" + body_new;
           let dataEmail = {
             // "to": creatorEmail,
-            to: "pramudityad@student.telkomuniversity.ac.id",
-            // to: global.config.role.cpm,
+            // to: "pramudityad@student.telkomuniversity.ac.id",
+            to: global.config.role.cpm,
             subject: "[NOTIFY to CPM] " + modul_name,
             body: bodyEmail,
           };
@@ -391,10 +391,11 @@ class SVCMaster extends React.Component {
           "</table>";
 
         const bodyEmail = "<h2>DPM - BAM Notification</h2>" + body_updated;
-        let dataEmail = {
+        const dataEmail = {
           // "to": creatorEmail,
           // to: "pramudityad@student.telkomuniversity.ac.id",
-          to: process.env.REACT_APP_NOTIFICATION_CPM,
+          to: global.config.role.cpm,
+          // to: process.env.REACT_APP_NOTIFICATION_CPM,
           subject: "[NOTIFY to CPM] " + modul_name,
           body: bodyEmail,
         };
@@ -805,7 +806,7 @@ class SVCMaster extends React.Component {
                             ))}
                           </tr>
                           <tr align="center">
-                            <th></th>
+                            {/* <th></th> */}
                             {header_model.map((head, j) =>
                               head === "Qty" ||
                               head === "Used" ||
@@ -821,7 +822,7 @@ class SVCMaster extends React.Component {
                             )}
                           </tr>
                           <tr align="center">
-                            <td></td>
+                            {/* <td></td> */}
                             {this.loopSearchBar()}
                           </tr>
                         </thead>
@@ -830,7 +831,7 @@ class SVCMaster extends React.Component {
                             this.state.all_data.map((e, i) => (
                               <React.Fragment key={e._id + "frag"}>
                                 <tr key={e._id} align="center">
-                                  <td>
+                                  {/* <td>
                                     <Button
                                       size="sm"
                                       color="secondary"
@@ -843,7 +844,7 @@ class SVCMaster extends React.Component {
                                         aria-hidden="true"
                                       ></i>
                                     </Button>
-                                  </td>
+                                  </td> */}
                                   <td>{e.type_summary.toUpperCase()}</td>
                                   <td>{e.Deal_Name}</td>
                                   <td>{e.Hammer}</td>

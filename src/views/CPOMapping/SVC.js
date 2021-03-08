@@ -973,14 +973,14 @@ class MappingSVC extends React.PureComponent {
           .join(" ") +
         "</table>";
       if (res.data.warnNotif.length !== 0) {
-        // let dataEmail = {
-        //   // "to": creatorEmail,
-        //   // to: "pramudityad@student.telkomuniversity.ac.id",
-        //   to: global.config.role.cpm,
-        //   subject: "[NOTIFY to CPM] " + modul_name,
-        //   body: bodyEmail,
-        // };
-        // const sendEmail = await apiSendEmail(dataEmail);
+        let dataEmail = {
+          // "to": creatorEmail,
+          // to: "pramudityad@student.telkomuniversity.ac.id",
+          to: global.config.role.cpm,
+          subject: "[NOTIFY to CPM] " + modul_name,
+          body: bodyEmail,
+        };
+        const sendEmail = await apiSendEmail(dataEmail);
         // console.log(sendEmail);
         this.setState({
           action_status: "warning",
@@ -1001,7 +1001,7 @@ class MappingSVC extends React.PureComponent {
         body: bodyEmail,
       };
       const sendEmail = await apiSendEmail(dataEmail);
-      console.log(sendEmail);
+      // console.log(sendEmail);
       this.setState({ action_status: "success" });
       this.toggleLoading();
       // setTimeout(function () {
