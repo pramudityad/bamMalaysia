@@ -1,6 +1,7 @@
 module.exports = global.config = {
   role: {
-    cpm: "pramudityad@outlook.com;r.hatim.muhammad.amin@outlook.co.id",
+    cpm:
+      "you.siong.hong@ericsson.com;mohd.najmuddin.yusoff@ericsson.com;sey.loy.lee@ericsson.com;",
 
     // "you.siong.hong@ericsson.com",
     // "mohd.najmuddin.yusoff@ericsson.com",

@@ -87,20 +87,23 @@ export const postDatatoAPILogin = async (url, data) => {
 
 export const postDatatoAPINODE = async (url, data, props) => {
   try {
-    let respond = await axios.post(process.env.REACT_APP_API_URL_NODE + url, {
+    let respond = await axios.post(
+      process.env.REACT_APP_API_URL_NODE + url,
       data,
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + props,
-      },
-    });
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + props,
+        },
+      }
+    );
     if (respond.status >= 200 && respond.status < 300) {
-      console.log("respond patch Data", respond);
+      console.log("respond Post Data", respond);
     }
     return respond;
   } catch (err) {
     let respond = err;
-    console.log("respond patch Data err", err);
+    console.log("respond Post Data err", err);
     return respond;
   }
 };
