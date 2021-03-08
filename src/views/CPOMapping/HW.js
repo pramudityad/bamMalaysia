@@ -902,7 +902,7 @@ class MappingHW extends React.Component {
             let dataEmail = {
               // "to": creatorEmail,
               // to: "pramudityad@student.telkomuniversity.ac.id",
-              to: "pramudityad@outlook.com",
+              to: global.config.role.cpm,
               subject: "[NOTIFY to CPM] " + modul_name,
               body: bodyEmail,
             };
@@ -922,7 +922,7 @@ class MappingHW extends React.Component {
           let dataEmail = {
             // "to": creatorEmail,
             // to: "pramudityad@student.telkomuniversity.ac.id",
-            to: "pramudityad@outlook.com",
+            to: global.config.role.cpm,
             subject: "[NOTIFY to CPM] " + modul_name,
             body: bodyEmail,
           };

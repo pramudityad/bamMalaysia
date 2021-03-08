@@ -88,7 +88,7 @@ export default {
             // "BAM-PA",
             // "BAM-Sourcing",
             // "BAM-GR-PA",
-            // "BAM-MAT PLANNER",
+            "BAM-MAT PLANNER",
             "BAM-PFM",
             "BAM-ADMIN",
           ],

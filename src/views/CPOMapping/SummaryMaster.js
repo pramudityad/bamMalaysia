@@ -41,7 +41,7 @@ import { saveAs } from "file-saver";
 import { numToSSColumn } from "../../helper/basicFunction";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
-
+import "../../helper/config";
 import "./cpomapping.css";
 const DefaultNotif = React.lazy(() => import("../DefaultView/DefaultNotif"));
 const modul_name = "Summary Master";
@@ -138,7 +138,6 @@ class SVCMaster extends React.Component {
       perPage: 10,
       CPOForm: {},
       modalEdit: false,
-      modal_loading: false,
       action_status: null,
       action_message: null,
       filter_list: {},
@@ -147,6 +146,7 @@ class SVCMaster extends React.Component {
   }
 
   componentDidMount() {
+    // console.log(global.config.role);
     // console.log("header", header.length);
     // console.log("model_header", header_model.length);
     this.getList();
@@ -334,8 +334,8 @@ class SVCMaster extends React.Component {
             "<h2>DPM - BAM Notification</h2>" + body_new + body_updated;
           let dataEmail = {
             // "to": creatorEmail,
-            // to: "pramudityad@student.telkomuniversity.ac.id",
-            to: "pramudityad@outlook.com",
+            to: "pramudityad@student.telkomuniversity.ac.id",
+            // to: global.config.role.cpm,
             subject: "[NOTIFY to CPM] " + modul_name,
             body: bodyEmail,
           };
@@ -350,8 +350,8 @@ class SVCMaster extends React.Component {
           const bodyEmail = "<h2>DPM - BAM Notification</h2>" + body_new;
           let dataEmail = {
             // "to": creatorEmail,
-            // to: "pramudityad@student.telkomuniversity.ac.id",
-            to: "pramudityad@outlook.com",
+            to: "pramudityad@student.telkomuniversity.ac.id",
+            // to: global.config.role.cpm,
             subject: "[NOTIFY to CPM] " + modul_name,
             body: bodyEmail,
           };
@@ -394,7 +394,7 @@ class SVCMaster extends React.Component {
         let dataEmail = {
           // "to": creatorEmail,
           // to: "pramudityad@student.telkomuniversity.ac.id",
-          to: "pramudityad@outlook.com",
+          to: global.config.role.cpm,
           subject: "[NOTIFY to CPM] " + modul_name,
           body: bodyEmail,
         };
@@ -535,6 +535,11 @@ class SVCMaster extends React.Component {
       for (let i = 0; i < download_all_A.data.data.length; i++) {
         let e = download_all_A.data.data[i];
         ws.addRow([
+          e.type_summary,
+          e.Deal_Name,
+          e.Hammer,
+          e.Project_Description,
+          e.Po_Number,
           e.Po,
           e.Line_Item,
           e.Description,
@@ -543,13 +548,14 @@ class SVCMaster extends React.Component {
           e.Qty - this.countUsed(e.Po, e.Line_Item),
           e.Unit_Price,
           e.Qty * e.Unit_Price,
+          e.Assigned_Price,
+          e.Discounted_Unit_Price,
+          e.Discounted_Po_Price,
+          e.Discounted_Assigned_Price,
           this.countUsed(e.Po, e.Line_Item) * e.Unit_Price,
           e.Pcode,
-          e.Type,
-          e.PSP_Remarks,
-          e.Wbs,
-          e.Qty * e.Unit_Price,
-          e.Remarks,
+          e.Pcode_Used,
+          e.Commodity,
         ]);
       }
     }

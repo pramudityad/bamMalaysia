@@ -976,7 +976,7 @@ class MappingSVC extends React.PureComponent {
         // let dataEmail = {
         //   // "to": creatorEmail,
         //   // to: "pramudityad@student.telkomuniversity.ac.id",
-        //   to: "pramudityad@outlook.com",
+        //   to: global.config.role.cpm,
         //   subject: "[NOTIFY to CPM] " + modul_name,
         //   body: bodyEmail,
         // };
@@ -996,7 +996,7 @@ class MappingSVC extends React.PureComponent {
       let dataEmail = {
         // "to": creatorEmail,
         // to: "pramudityad@student.telkomuniversity.ac.id",
-        to: "pramudityad@outlook.com",
+        to: global.config.role.cpm,
         subject: "[NOTIFY to CPM] " + modul_name,
         body: bodyEmail,
       };
