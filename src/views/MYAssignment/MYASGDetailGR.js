@@ -113,16 +113,13 @@ class MYASGDetail extends Component {
       this.setState({
         ChildForm: this.state.ChildForm.concat([
           {
+            id_child: this.state.lmr_lvl2._id,
             Plant: "2172",
             Request_Type: "Add GR",
-            PO_Number: this.state.list_pr_po[0]
-              .PO_Number,
-            PO_Item: this.state.list_pr_po[0]
-              .PO_Item,
-            PO_Price: this.state.list_pr_po[0]
-              .PO_Price,
-            PO_Qty: this.state.list_pr_po[0]
-              .PO_Qty,
+            PO_Number: this.state.list_pr_po[0].PO_Number,
+            PO_Item: this.state.list_pr_po[0].PO_Item,
+            PO_Price: this.state.list_pr_po[0].PO_Price,
+            PO_Qty: this.state.list_pr_po[0].PO_Qty,
             Required_GR_Qty: "",
             DN_No: "",
             WCN_Link: "https://mas.pdb.e-dpm.com/grmenu/list/",
@@ -137,6 +134,7 @@ class MYASGDetail extends Component {
       this.setState({
         ChildForm: this.state.ChildForm.concat([
           {
+            id_child: this.state.lmr_lvl2._id,
             Plant: "2172",
             Request_Type: "Add GR",
             PO_Number: "",
@@ -354,7 +352,7 @@ class MYASGDetail extends Component {
           // const datalvl2 = res.data.data.detail;
           const datalvl2 = res.data.data.detail.find((e) => e._id === id_lmr);
           // console.log('datalvl2 ', datalvl2);
-          this.setState({ lmr_lvl2: datalvl2 });
+          this.setState({ lmr_lvl2: datalvl2 }, () => this.checkDraft());
         }
         console.log("lmr_lvl2", this.state.lmr_lvl2);
         this.getDataPRPO(this.props.match.params.lmr);
@@ -368,8 +366,7 @@ class MYASGDetail extends Component {
     ).then((res) => {
       if (res.data !== undefined) {
         const dataLMRDetailPRPO = res.data._items;
-        this.setState({ list_pr_po: dataLMRDetailPRPO }
-        );
+        this.setState({ list_pr_po: dataLMRDetailPRPO });
       }
     });
   }
@@ -630,6 +627,41 @@ class MYASGDetail extends Component {
     }, 1500);
   }
 
+  saveGRdraf = () => {
+    let grContainer = [];
+    const dataChild = this.state.ChildForm;
+    dataChild.map((e) =>
+      grContainer.push({
+        id_child: this.state.lmr_lvl2._id,
+        Plant: e.Plant,
+        Request_Type: e.Request_Type,
+        PO_Number: e.PO_Number,
+        PO_Item: e.PO_Item,
+        PO_Price: e.PO_Price,
+        PO_Qty: e.PO_Qty,
+        Required_GR_Qty: e.Required_GR_Qty,
+        // DN_No: e.DN_No,
+        WCN_Link: "https://mas.pdb.e-dpm.com/grmenu/list/",
+        created_by_gr: this.props.dataLogin.userName,
+        // created_by_gr: "EHAYZUX",
+        Work_Status: "Waiting for GR",
+        Item_Status: "Submit",
+        Error_Message: "",
+        Error_Type: "",
+        Total_GR_Qty: null,
+        GR_Document_Qty: null,
+      })
+    );
+    const params_gr_save =
+      this.state.lmr_lvl2.lmr_id + "///" + this.state.lmr_lvl2.cdid;
+    localStorage.setItem(params_gr_save, JSON.stringify(dataChild));
+    console.log(JSON.parse(localStorage.getItem(params_gr_save)));
+    this.setState({
+      action_status: "success",
+      action_message: "GR " + params_gr_save + " saved as draft",
+    });
+  };
+
   downloadFormatNewChild = async () => {
     const wb = new Excel.Workbook();
     const ws = wb.addWorksheet();
@@ -665,6 +697,17 @@ class MYASGDetail extends Component {
       this.getLMRlvl2(this.props.match.params.id);
     }
     document.title = "LMR Detail | BAM";
+  }
+
+  checkDraft() {
+    const params_gr_save =
+      this.state.lmr_lvl2.lmr_id + "///" + this.state.lmr_lvl2.cdid;
+    const draft_gr = JSON.parse(localStorage.getItem(params_gr_save));
+    draft_gr !== null
+      ? this.setState({
+          ChildForm: draft_gr,
+        })
+      : this.setState({ ChildForm: [] });
   }
 
   handleInput(e) {
@@ -1399,7 +1442,6 @@ class MYASGDetail extends Component {
                                 name="PO_Qty"
                                 id={"PO_Qty"}
                                 value={child_data.PO_Qty}
-                                value={child_data.PO_Qty}
                                 // onChange={this.handleInputchild(idx)}
                                 // style={{ width: "10%" }}
                                 readonly
@@ -1416,7 +1458,6 @@ class MYASGDetail extends Component {
                                 name="PO_Qty"
                                 id={"PO_Qty"}
                                 value={child_data.PO_Qty}
-                                value={child_data.PO_Qty}
                                 onChange={this.handleInputchild(idx)}
                                 // style={{ width: "10%" }}
                               />
@@ -1424,9 +1465,9 @@ class MYASGDetail extends Component {
                           )}
                           <td style={{ width: "10%" }}>
                             <input
-                              type="text"   
+                              type="text"
                               disabled
-                              readonly             
+                              readonly
                               name="GR_Document_No"
                               id="GR_Document_No"
                               value={child_data.GR_Document_No}
@@ -1449,6 +1490,8 @@ class MYASGDetail extends Component {
                           </td>
                           <td style={{ width: "10%" }}>
                             <input
+                              disabled
+                              readonly
                               type="text"
                               name="DN_No"
                               id="DN_No"
@@ -1459,12 +1502,14 @@ class MYASGDetail extends Component {
                           </td>
                           <td>
                             <input
-                              type="file"
-                              name="fileDocument"
-                              accept="application/msword, application/pdf"
-                              // id="fileDocument"
-                              // value={child_data.fileDocument}
-                              onChange={this.handleInputchild(idx)}
+                              type="text"
+                              disabled
+                              readonly
+                              // name="fileDocument"
+                              // accept="application/msword, application/pdf"
+                              // // id="fileDocument"
+                              // // value={child_data.fileDocument}
+                              // onChange={this.handleInputchild(idx)}
                               // style={{ width: "300" }}
                             />
                           </td>
@@ -1518,7 +1563,7 @@ class MYASGDetail extends Component {
                     <Button
                       color="success"
                       size="sm"
-                      onClick={this.postGRChild}
+                      onClick={this.saveGRdraf}
                       style={{ float: "right", marginLeft: "10px" }}
                     >
                       <i className="fa fa-plus-square"></i> Save GR Child
