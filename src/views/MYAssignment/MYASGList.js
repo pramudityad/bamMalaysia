@@ -231,6 +231,7 @@ class MYASGList extends Component {
     const mp = ["Hardware"];
     const pa = ["T&M"];
     const grpa = ["NRO Services", "LM", "Transport", "NDO Services"];
+    const ndo_im = ["NDO Services"];
     if (
       role.includes("BAM-CPM") === true ||
       role.includes("BAM-Sourcing") === true ||
@@ -243,8 +244,7 @@ class MYASGList extends Component {
     }
     if (
       role.includes("BAM-IM") === true ||
-      role.includes("BAM-IE Lead") === true ||
-      role.includes("BAM-NDO IM") === true
+      role.includes("BAM-IE Lead") === true
     ) {
       let filterlist = lmr_list.filter((e) => im_ie.includes(e.gl_type));
       this.setState({ lmr_list_filter: filterlist }, () =>
@@ -265,6 +265,12 @@ class MYASGList extends Component {
     }
     if (role.includes("BAM-PA") === true) {
       let filterlist = lmr_list.filter((e) => pa.includes(e.gl_type));
+      this.setState({ lmr_list_filter: filterlist }, () =>
+        this.dataViewPagination(this.state.lmr_list_filter)
+      );
+    }
+    if (role.includes("BAM-NDO IM") === true) {
+      let filterlist = lmr_list.filter((e) => ndo_im.includes(e.gl_type));
       this.setState({ lmr_list_filter: filterlist }, () =>
         this.dataViewPagination(this.state.lmr_list_filter)
       );
