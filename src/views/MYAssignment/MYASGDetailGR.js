@@ -27,6 +27,8 @@ import * as XLSX from "xlsx";
 import { getDatafromAPIMY } from "../../helper/asyncFunction";
 import { connect } from "react-redux";
 import { getDatafromAPINODEFile } from "../../helper/asyncFunction";
+import "./LMRMY.css";
+
 const DefaultNotif = React.lazy(() =>
   import("../../views/DefaultView/DefaultNotif")
 );
@@ -81,6 +83,9 @@ class MYASGDetail extends Component {
       editPO_price: false,
       editPO_qty: false,
       inputFile: [],
+      toggle_draft: false,
+      max_gr_qty: null,
+      prev_gr_qty: null,
     };
     this.toggleAddNew = this.toggleAddNew.bind(this);
     this.handleInput = this.handleInput.bind(this);
@@ -97,6 +102,18 @@ class MYASGDetail extends Component {
       this
     );
     this.addGR = this.addGR.bind(this);
+    this.handlePwdKeyUp = this.keyUpHandler.bind(this, "GRqtyinput");
+  }
+
+  keyUpHandler(refName, e) {
+    let value = e.target.value;
+    let qty_gr_max =
+      this.state.list_pr_po[0] !== undefined ? this.state.list_pr_po[0].Qty : 0;
+    if (value > qty_gr_max) {
+      return null;
+    }
+    console.log(refName, value, e);
+    return value;
   }
 
   toggle(i) {
@@ -337,7 +354,14 @@ class MYASGDetail extends Component {
         // console.log('cpo db id', res.data.data.cpoDetail)
         if (res.data !== undefined) {
           const dataLMRDetail = res.data.data;
-          this.setState({ lmr_detail: dataLMRDetail });
+          let prev_gr_qty = dataLMRDetail.reduce(
+            (n, { Required_GR_Qty }) => n + Required_GR_Qty,
+            0
+          );
+          this.setState(
+            { lmr_detail: dataLMRDetail, prev_gr_qty: prev_gr_qty },
+            () => console.log("prev_gr_qty", prev_gr_qty)
+          );
         }
         // console.log("gr data", this.state.lmr_detail);
       }
@@ -366,7 +390,15 @@ class MYASGDetail extends Component {
     ).then((res) => {
       if (res.data !== undefined) {
         const dataLMRDetailPRPO = res.data._items;
-        this.setState({ list_pr_po: dataLMRDetailPRPO });
+        if (res.data._items.length !== 0) {
+          this.setState(
+            {
+              list_pr_po: dataLMRDetailPRPO,
+              max_gr_qty: dataLMRDetailPRPO[0].Qty,
+            },
+            () => console.log("max_gr_qty", this.state.max_gr_qty)
+          );
+        }
       }
     });
   }
@@ -653,7 +685,11 @@ class MYASGDetail extends Component {
       })
     );
     const params_gr_save =
-      this.state.lmr_lvl2.lmr_id + "///" + this.state.lmr_lvl2.cdid;
+      this.state.lmr_lvl2.lmr_id +
+      " /// " +
+      this.state.lmr_lvl2.cdid +
+      " /// " +
+      this.state.lmr_lvl2._id;
     localStorage.setItem(params_gr_save, JSON.stringify(dataChild));
     console.log(JSON.parse(localStorage.getItem(params_gr_save)));
     this.setState({
@@ -701,12 +737,19 @@ class MYASGDetail extends Component {
 
   checkDraft() {
     const params_gr_save =
-      this.state.lmr_lvl2.lmr_id + "///" + this.state.lmr_lvl2.cdid;
+      this.state.lmr_lvl2.lmr_id +
+      " /// " +
+      this.state.lmr_lvl2.cdid +
+      " /// " +
+      this.state.lmr_lvl2._id;
     const draft_gr = JSON.parse(localStorage.getItem(params_gr_save));
     draft_gr !== null
-      ? this.setState({
-          ChildForm: draft_gr,
-        })
+      ? this.setState(
+          {
+            ChildForm: draft_gr,
+          },
+          () => console.log(this.state.ChildForm)
+        )
       : this.setState({ ChildForm: [] });
   }
 
@@ -724,28 +767,49 @@ class MYASGDetail extends Component {
     );
   }
 
+  checkQTY_GR = () => {
+    let after_gr2 = this.state.ChildForm.map((qty) =>
+      parseFloat(qty.Required_GR_Qty)
+    );
+    let sum_after2 =
+      after_gr2.reduce((a, b) => a + b, 0) + this.state.prev_gr_qty;
+    this.setState({ prev_gr_qty: sum_after2 }, () =>
+      console.log(this.state.prev_gr_qty)
+    );
+  };
+
   handleInputchild = (idx) => (e) => {
     const value = e.target.value;
     const name = e.target.name;
-    if (name === "fileDocument") {
-      let fileUpload = null;
-      if (
-        e !== undefined &&
-        e.target !== undefined &&
-        e.target.files !== undefined
-      ) {
-        fileUpload = e.target.files[0];
-        const newChild2 = this.state.ChildForm.map((child_data, sidx) => {
+
+    if (name === "Required_GR_Qty") {
+      let qty_formula = parseFloat(value) + parseFloat(this.state.prev_gr_qty);
+
+      console.log(
+        "qty_formula",
+        parseFloat(value) + parseFloat(this.state.prev_gr_qty)
+      );
+      if (qty_formula <= this.state.max_gr_qty) {
+        const newChild = this.state.ChildForm.map((child_data, sidx) => {
           if (idx !== sidx) return child_data;
-          return { ...child_data, [name]: fileUpload };
+          return { ...child_data, [name]: value };
         });
+
         this.setState(
           {
-            ChildForm: newChild2,
-          },
-          () => console.log(this.state.ChildForm)
+            ChildForm: newChild,
+            toggle_draft: true,
+          }
+          // ,
+          // () => this.checkQTY_GR()
         );
+      } else {
+        return;
       }
+      // if (value <= qty_gr_max) {
+      // } else {
+      //   this.setState({ toggle_draft: false });
+      // }
     } else {
       const newChild = this.state.ChildForm.map((child_data, sidx) => {
         if (idx !== sidx) return child_data;
@@ -969,10 +1033,14 @@ class MYASGDetail extends Component {
     const Dataform = this.state.Dataform;
     return (
       <div>
-        <DefaultNotif
-          actionMessage={this.state.action_message}
-          actionStatus={this.state.action_status}
-        />
+        <Row className="row-alert-fixed">
+          <Col xs="12" lg="12">
+            <DefaultNotif
+              actionMessage={this.state.action_message}
+              actionStatus={this.state.action_status}
+            />
+          </Col>
+        </Row>
         <Row>
           <Col xl="12">
             <Card>
@@ -1202,43 +1270,43 @@ class MYASGDetail extends Component {
                         <th>Created by</th>
                         <th>
                           PO Number{" "}
-                          {this.state.ChildForm.length !== 0 ? (
+                          {/* {this.state.ChildForm.length !== 0 ? (
                             <Button size="sm" onClick={this.editPO_num}>
                               <i className="fa fa-edit" aria-hidden="true"></i>
                             </Button>
                           ) : (
                             ""
-                          )}
+                          )} */}
                         </th>
                         <th>
                           PO Item{" "}
-                          {this.state.ChildForm.length !== 0 ? (
+                          {/* {this.state.ChildForm.length !== 0 ? (
                             <Button size="sm" onClick={this.editPO_item}>
                               <i className="fa fa-edit" aria-hidden="true"></i>
                             </Button>
                           ) : (
                             ""
-                          )}
+                          )} */}
                         </th>
                         <th>
                           PO Price{" "}
-                          {this.state.ChildForm.length !== 0 ? (
+                          {/* {this.state.ChildForm.length !== 0 ? (
                             <Button size="sm" onClick={this.editPO_price}>
                               <i className="fa fa-edit" aria-hidden="true"></i>
                             </Button>
                           ) : (
                             ""
-                          )}
+                          )} */}
                         </th>
                         <th>
                           PO Qty{" "}
-                          {this.state.ChildForm.length !== 0 ? (
+                          {/* {this.state.ChildForm.length !== 0 ? (
                             <Button size="sm" onClick={this.editPO_qty}>
                               <i className="fa fa-edit" aria-hidden="true"></i>
                             </Button>
                           ) : (
                             ""
-                          )}
+                          )} */}
                         </th>
                         <th>GR_Document_No</th>
                         <th>Required GR Qty</th>
@@ -1325,6 +1393,7 @@ class MYASGDetail extends Component {
                               id="Plant"
                               value={child_data.Plant}
                               readonly
+                              // style={{ backgroundColor: "#bfbfbf" }}
                             />
                           </td>
                           <td>
@@ -1564,6 +1633,7 @@ class MYASGDetail extends Component {
                       color="success"
                       size="sm"
                       onClick={this.saveGRdraf}
+                      // disabled={!this.state.toggle_draft}
                       style={{ float: "right", marginLeft: "10px" }}
                     >
                       <i className="fa fa-plus-square"></i> Save GR Child

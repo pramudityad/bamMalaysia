@@ -1321,11 +1321,13 @@ class MYASGDetail extends PureComponent {
     const lmr_id = state_lmr["lmr_id"];
     let fileDocument = new FormData();
     const dataChild = state_lmr.detail.map((id) =>
-      JSON.parse(localStorage.getItem(lmr_id + "///" + id.cdid))
+      JSON.parse(
+        localStorage.getItem(lmr_id + " /// " + id.cdid + " /// " + id._id)
+      )
     );
 
     console.log(dataChild);
-    const merge_dataChild = [].concat(...dataChild);
+    const merge_dataChild = [].concat(...dataChild).filter((gr) => gr !== null);
     console.log(merge_dataChild);
 
     await fileDocument.append("fileDocument", this.state.file_upload);
@@ -1836,11 +1838,24 @@ class MYASGDetail extends PureComponent {
                         </Button>
                       </Link>
                       &nbsp;&nbsp;
-                      <Button color="success" onClick={this.toggleGRPost}>
-                        <i class="fa fa-paper-plane" aria-hidden="true">
-                          &nbsp; Post GR
-                        </i>
-                      </Button>
+                      {this.state.list_pr_po[0] !== undefined &&
+                      this.state.list_pr_po[0].PO_Number !== null ? (
+                        <Button color="success" onClick={this.toggleGRPost}>
+                          <i class="fa fa-paper-plane" aria-hidden="true">
+                            &nbsp; Post GR
+                          </i>
+                        </Button>
+                      ) : (
+                        <Button
+                          color="success"
+                          onClick={this.toggleGRPost}
+                          disabled
+                        >
+                          <i class="fa fa-paper-plane" aria-hidden="true">
+                            &nbsp; Post GR
+                          </i>
+                        </Button>
+                      )}
                     </>
                   ) : (
                     ""
@@ -2006,7 +2021,13 @@ class MYASGDetail extends PureComponent {
                         </tbody>
                       </table>
                     </Col>
-                    <Col sm="5" md="5">
+                    {/* <Col sm="5" md="5"> */}
+                    <div
+                      style={{
+                        "max-height": "calc(100vh - 210px)",
+                        "overflow-y": "auto",
+                      }}
+                    >
                       <table className="table-header">
                         <tbody>
                           <tr style={{ fontWeight: "425", fontSize: "15px" }}>
@@ -2036,7 +2057,8 @@ class MYASGDetail extends PureComponent {
                           </tr>
                         </tbody>
                       </table>
-                    </Col>
+                    </div>
+                    {/* </Col> */}
                   </Row>
                 </div>
 
@@ -2085,15 +2107,28 @@ class MYASGDetail extends PureComponent {
                             (this.state.roleUser.includes("BAM-PA") === true &&
                               this.state.lmr_detail.mm_data_type === "ARP") ? (
                               <td>
-                                <Link
-                                  to={
-                                    "/lmr-detail/" +
-                                    this.props.match.params.id +
-                                    "/gr-detail/" +
-                                    e._id
-                                  }
-                                >
-                                  <Button color="info" size="sm">
+                                {this.state.list_pr_po[0] !== undefined &&
+                                this.state.list_pr_po[0].PO_Number !== null ? (
+                                  <Link
+                                    to={
+                                      "/lmr-detail/" +
+                                      this.props.match.params.id +
+                                      "/gr-detail/" +
+                                      e._id
+                                    }
+                                  >
+                                    <Button color="info" size="sm">
+                                      <i
+                                        className="fa fa-info-circle"
+                                        aria-hidden="true"
+                                      >
+                                        &nbsp;
+                                      </i>
+                                      &nbsp;GR
+                                    </Button>
+                                  </Link>
+                                ) : (
+                                  <Button color="info" size="sm" disabled>
                                     <i
                                       className="fa fa-info-circle"
                                       aria-hidden="true"
@@ -2102,7 +2137,7 @@ class MYASGDetail extends PureComponent {
                                     </i>
                                     &nbsp;GR
                                   </Button>
-                                </Link>
+                                )}
                               </td>
                             ) : (
                               <td></td>
