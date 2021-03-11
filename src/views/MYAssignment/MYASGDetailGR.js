@@ -83,9 +83,11 @@ class MYASGDetail extends Component {
       editPO_price: false,
       editPO_qty: false,
       inputFile: [],
-      toggle_draft: false,
+      toggle_draft: 0,
       max_gr_qty: null,
       prev_gr_qty: null,
+      sum_gr_qty_child: 0,
+      qty_formula: 0,
     };
     this.toggleAddNew = this.toggleAddNew.bind(this);
     this.handleInput = this.handleInput.bind(this);
@@ -767,14 +769,23 @@ class MYASGDetail extends Component {
     );
   }
 
+  disableGR_save = (qty_formula_) => {
+    if (qty_formula_ > this.state.max_gr_qty) {
+      this.setState({ toggle_draft: 0 });
+    } else {
+      this.setState({ toggle_draft: 1 });
+    }
+  };
+
   checkQTY_GR = () => {
     let after_gr2 = this.state.ChildForm.map((qty) =>
       parseFloat(qty.Required_GR_Qty)
     );
-    let sum_after2 =
-      after_gr2.reduce((a, b) => a + b, 0) + this.state.prev_gr_qty;
-    this.setState({ prev_gr_qty: sum_after2 }, () =>
-      console.log(this.state.prev_gr_qty)
+    let sum_after2 = after_gr2.reduce((a, b) => a + b, 0);
+    this.setState({ sum_gr_qty_child: sum_after2 });
+    let qty_formula = sum_after2 + this.state.prev_gr_qty;
+    this.setState({ qty_formula: qty_formula }, () =>
+      this.disableGR_save(qty_formula)
     );
   };
 
@@ -783,33 +794,29 @@ class MYASGDetail extends Component {
     const name = e.target.name;
 
     if (name === "Required_GR_Qty") {
-      let qty_formula = parseFloat(value) + parseFloat(this.state.prev_gr_qty);
-
-      console.log(
-        "qty_formula",
-        parseFloat(value) + parseFloat(this.state.prev_gr_qty)
+      const newChild = this.state.ChildForm.map((child_data, sidx) => {
+        if (idx !== sidx) return child_data;
+        return { ...child_data, [name]: value };
+      });
+      this.setState(
+        {
+          ChildForm: newChild,
+          // toggle_draft: 2,
+        },
+        () => this.checkQTY_GR()
       );
-      if (qty_formula <= this.state.max_gr_qty) {
-        const newChild = this.state.ChildForm.map((child_data, sidx) => {
-          if (idx !== sidx) return child_data;
-          return { ...child_data, [name]: value };
+      if (this.state.qty_formula < this.state.max_gr_qty) {
+        // console.log("qty_formula", this.state.qty_formula);
+        this.setState({
+          action_status: null,
         });
-
-        this.setState(
-          {
-            ChildForm: newChild,
-            toggle_draft: true,
-          }
-          // ,
-          // () => this.checkQTY_GR()
-        );
       } else {
-        return;
+        this.setState({
+          action_status: "warning",
+          action_message:
+            "Required GR Qty is exceeded GR QTY " + this.state.max_gr_qty,
+        });
       }
-      // if (value <= qty_gr_max) {
-      // } else {
-      //   this.setState({ toggle_draft: false });
-      // }
     } else {
       const newChild = this.state.ChildForm.map((child_data, sidx) => {
         if (idx !== sidx) return child_data;
@@ -1633,7 +1640,7 @@ class MYASGDetail extends Component {
                       color="success"
                       size="sm"
                       onClick={this.saveGRdraf}
-                      // disabled={!this.state.toggle_draft}
+                      disabled={this.state.toggle_draft === 0}
                       style={{ float: "right", marginLeft: "10px" }}
                     >
                       <i className="fa fa-plus-square"></i> Save GR Child

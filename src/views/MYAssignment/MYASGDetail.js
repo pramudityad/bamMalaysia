@@ -1342,7 +1342,9 @@ class MYASGDetail extends PureComponent {
       respondSaveLMRChild.status >= 200 &&
       respondSaveLMRChild.status <= 300
     ) {
-      let remove_gr = state_lmr.detail.map((id) => lmr_id + "///" + id.cdid);
+      let remove_gr = state_lmr.detail.map(
+        (id) => lmr_id + " /// " + id.cdid + " /// " + id._id
+      );
       for (let i = 0; i < remove_gr.length; i++) {
         const element = remove_gr[i];
         localStorage.removeItem(element);
