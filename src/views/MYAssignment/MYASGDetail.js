@@ -2110,7 +2110,8 @@ class MYASGDetail extends PureComponent {
                               this.state.lmr_detail.mm_data_type === "ARP") ? (
                               <td>
                                 {this.state.list_pr_po[0] !== undefined &&
-                                this.state.list_pr_po[0].PO_Number !== null ? (
+                                this.state.list_pr_po[0].PO_Number !== null &&
+                                this.state.list_pr_po[0].PO_Item !== null ? (
                                   <Link
                                     to={
                                       "/lmr-detail/" +
