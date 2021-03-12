@@ -167,7 +167,9 @@ All notable changes to BAM https://bam-my.e-dpm.com will be documented in this f
 ## [1.3.10] - 2021-02-03
 
 ### Added
+
 - GR Document No in GR Detail
+
 ### Changed
 
 ### Fixed
@@ -179,6 +181,7 @@ All notable changes to BAM https://bam-my.e-dpm.com will be documented in this f
 ### Changed
 
 ### Fixed
+
 - selfhost corsanywhere
 
 ## [1.3.11] - 2021-02-19
@@ -188,11 +191,13 @@ All notable changes to BAM https://bam-my.e-dpm.com will be documented in this f
 ### Changed
 
 ### Fixed
+
 - Missing PO details in GR child - DPM (ana issue)
 
 ## [1.3.12] - 2021-02-23
 
 ### Added
+
 - po number in view (not search able)
 - po number in report file
 
@@ -205,5 +210,21 @@ All notable changes to BAM https://bam-my.e-dpm.com will be documented in this f
 ### Added
 
 ### Changed
+
 - delete po column in lmr list
+
 ### Fixed
+
+## [1.3.13] - 2021-03-12
+
+### Added
+
+### Changed
+
+- bulk gr
+- validation qty gr
+- move dn no and file upload gr
+
+### Fixed
+
+- total amount in lmr creation form readOnly

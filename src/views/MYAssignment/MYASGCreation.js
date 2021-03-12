@@ -28,7 +28,7 @@ import { connect } from "react-redux";
 const DefaultNotif = React.lazy(() =>
   import("../../views/DefaultView/DefaultNotif")
 );
-const https = require('https');
+const https = require("https");
 
 const data_raw_dev = {
   query_param: {
@@ -302,12 +302,16 @@ class MYASGCreation extends Component {
 
   async getFASfromACT(url) {
     try {
-      let respond = await axios.post(process.env.REACT_APP_PROXY_URL + url, fas_reqbody, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Basic dXNlcml4dDpYUXJuMzJuNWtxb00=",
-        },
-      });
+      let respond = await axios.post(
+        process.env.REACT_APP_PROXY_URL + url,
+        fas_reqbody,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Basic dXNlcml4dDpYUXJuMzJuNWtxb00=",
+          },
+        }
+      );
       if (respond.status >= 200 && respond.status < 300) {
         console.log("respond Get Data", respond);
       }
@@ -321,16 +325,20 @@ class MYASGCreation extends Component {
 
   async getCDfromACT(url) {
     try {
-      let respond = await axios.post(process.env.REACT_APP_PROXY_URL + url, all_reqbody_raw, {
-        headers: {
-          'X-Requested-With': 'XMLHttpRequest',
-          "Content-Type": "application/json",
-          Authorization: "Basic dXNlcml4dDpYUXJuMzJuNWtxb00=",
-        },
-        httpsAgent: new https.Agent({
-          rejectUnauthorized: false
-        })
-      });
+      let respond = await axios.post(
+        process.env.REACT_APP_PROXY_URL + url,
+        all_reqbody_raw,
+        {
+          headers: {
+            "X-Requested-With": "XMLHttpRequest",
+            "Content-Type": "application/json",
+            Authorization: "Basic dXNlcml4dDpYUXJuMzJuNWtxb00=",
+          },
+          httpsAgent: new https.Agent({
+            rejectUnauthorized: false,
+          }),
+        }
+      );
       if (respond.status >= 200 && respond.status < 300) {
         console.log("respond Get Data", respond);
       }
@@ -344,16 +352,20 @@ class MYASGCreation extends Component {
 
   async getCDfromACTdev(url) {
     try {
-      let respond = await axios.post(process.env.REACT_APP_PROXY_URL + url, data_raw_dev, {
-        headers: {
-          'X-Requested-With': 'XMLHttpRequest',
-          "Content-Type": "application/json",
-          Authorization: "Basic dXNlcml4dDpYUXJuMzJuNWtxb00=",
-        },
-        httpsAgent: new https.Agent({
-          rejectUnauthorized: false
-        })
-      });
+      let respond = await axios.post(
+        process.env.REACT_APP_PROXY_URL + url,
+        data_raw_dev,
+        {
+          headers: {
+            "X-Requested-With": "XMLHttpRequest",
+            "Content-Type": "application/json",
+            Authorization: "Basic dXNlcml4dDpYUXJuMzJuNWtxb00=",
+          },
+          httpsAgent: new https.Agent({
+            rejectUnauthorized: false,
+          }),
+        }
+      );
       if (respond.status >= 200 && respond.status < 300) {
         console.log("respond Get Data", respond);
       }
@@ -608,7 +620,7 @@ class MYASGCreation extends Component {
   };
 
   componentDidMount() {
-    console.log(process.env.REACT_APP_PROXY_URL)
+    console.log(process.env.REACT_APP_PROXY_URL);
     // this.toggleLoading();
     this.getVendorList();
     // this.getProjectList();
@@ -2363,6 +2375,7 @@ class MYASGCreation extends Component {
                             id={i + " /// total_value"}
                             value={lmr.total_value}
                             onChange={this.handleChangeFormLMRChild}
+                            readOnly
                           />
                         </FormGroup>
                       </Col>
