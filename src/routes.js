@@ -23,7 +23,7 @@ const SVCMapping = React.lazy(() => import("./views/CPOMapping/SVC"));
 const Master = React.lazy(() => import("./views/CPOMapping/SummaryMaster"));
 
 const SVCEdit = React.lazy(() => import("./views/CPOMapping/SVCedit"));
-const HWEdit = React.lazy(() => import("./views/CPOMapping/HWedit"));
+const HWEdit = React.lazy(() => import("./views/CPOMapping/Form/HWedit"));
 
 const HWDashboard = React.lazy(() => import("./views/CPOMapping/DashboardHW"));
 const SVCDashboard = React.lazy(() =>

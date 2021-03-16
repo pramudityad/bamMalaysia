@@ -51,7 +51,7 @@ import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 import AsyncSelect from "react-select/async";
 import * as XLSX from "xlsx";
-
+import "../../helper/config"
 import "./cpomapping.css";
 const DefaultNotif = React.lazy(() =>
   import("../../views/DefaultView/DefaultNotif")
@@ -1874,7 +1874,7 @@ class MappingHW extends React.Component {
                             this.state.all_data.map((e, i) => (
                               <React.Fragment key={e._id + "frag"}>
                                 <tr align="center" key={e._id}>
-                                  {/* <td>
+                                  <td>
                                     <Link to={"/hw-cpo/" + e._id}>
                                       <Button
                                         size="sm"
@@ -1887,7 +1887,7 @@ class MappingHW extends React.Component {
                                         ></i>
                                       </Button>
                                     </Link>
-                                  </td> */}
+                                  </td>
 
                                   <td>
                                     <Checkbox1
