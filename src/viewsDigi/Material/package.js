@@ -1,8 +1,9 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import {
   Button,
   Card,
   CardBody,
+  CardFooter,
   CardHeader,
   Col,
   FormGroup,
@@ -19,79 +20,36 @@ import {
 } from "reactstrap";
 import Pagination from "react-js-pagination";
 import { connect } from "react-redux";
-import { getDatafromAPINODE, postDatatoAPINODE } from "../../helper/asyncFunction";
+import { getDatafromAPINODE, postDatatoAPINODE, patchDatatoAPINODE, getDatafromAPIMY } from "../../helper/asyncFunction";
 import debounce from 'lodash.debounce';
 import '../MYAssignment/LMRMY.css';
+import SweetAlert from 'react-bootstrap-sweetalert';
 
 const DefaultNotif = React.lazy(() =>
   import("../DefaultView/DefaultNotif")
 );
 
-const package_example = [
-  {
-    Package_Id: "0001",
-    Package_Name: "Package123",
-    Region: "KV",
-    MM_Data: [
-      {
-        MM_Code: "ECM-DG-NEW2.1-KV",
-        Description: "Description of ECM-DG-NEW2.1-KV",
-        Price: 1000,
-        Qty: 1,
-        Transport: "no"
-      },
-      {
-        MM_Code: "ECM-DG-KV-ADD5.1",
-        Description: "Description of ECM-DG-KV-ADD5.1",
-        Price: 2000,
-        Qty: 2,
-        Transport: "no"
-      },
-      {
-        MM_Code: "ECM-DG-KV-DOCONLY",
-        Description: "Description of ECM-DG-KV-DOCONLY",
-        Price: 3000,
-        Qty: 3,
-        Transport: "no"
-      },
-      {
-        MM_Code: "Placeholder for transport",
-        Description: "Placeholder for transport",
-        Price: 0,
-        Qty: 0,
-        Transport: "yes"
-      }
-    ]
-  },
-  {
-    Package_Id: "0002",
-    Package_Name: "Package234",
-    Region: "KV",
-    MM_Data: [
-      {
-        MM_Code: "Material1",
-        Description: "Description of Material1",
-        Price: 2000,
-        Qty: 1,
-        Transport: "no"
-      },
-      {
-        MM_Code: "Material2",
-        Description: "Description of Material2",
-        Price: 4000,
-        Qty: 2,
-        Transport: "no"
-      },
-      {
-        MM_Code: "Material3",
-        Description: "Description of Material3",
-        Price: 6000,
-        Qty: 3,
-        Transport: "no"
-      }
-    ]
-  }
-]
+const Checkbox = ({
+  type = "checkbox",
+  name,
+  checked = false,
+  onChange,
+  value,
+  id,
+  matId,
+  key,
+}) => (
+  <input
+    key={key}
+    type={type}
+    name={name}
+    checked={checked}
+    onChange={onChange}
+    value={value}
+    id={id}
+    matId={matId}
+  />
+);
 
 class Package extends Component {
   constructor(props) {
@@ -104,19 +62,23 @@ class Package extends Component {
       userEmail: this.props.dataLogin.email,
       tokenUser: this.props.dataLogin.token,
       package_list: [],
+      package_list_all: [],
       check_material_package_list: {},
       create_package_parent: {},
       create_package_child: [],
+      vendor_list: [],
       modal_check_material_package: false,
       modal_create_package: false,
       modal_material: false,
       modal_loading: false,
       action_status: null,
       action_message: null,
-      filter_list: new Array(3).fill(""),
-      filter_list_material: new Array(5).fill(""),
+      filter_list: new Array(4).fill(""),
+      filter_list_material: new Array(6).fill(""),
       material_list: [],
       current_material_select: null,
+      vendorChecked: new Map(),
+      vendorCheckedPage: new Map(),
       prevPage: 0,
       activePage: 1,
       totalData: 0,
@@ -125,6 +87,7 @@ class Package extends Component {
       activePage_material: 1,
       totalData_material: 0,
       perPage_material: 10,
+      sweet_alert: null
     }
 
     this.onChangeDebounced = debounce(this.onChangeDebounced, 500);
@@ -144,6 +107,7 @@ class Package extends Component {
     this.state.filter_list[0] !== "" && (filter_array.push('"Package_Id":{"$regex" : "' + this.state.filter_list[0] + '", "$options" : "i"}'));
     this.state.filter_list[1] !== "" && (filter_array.push('"Package_Name":{"$regex" : "' + this.state.filter_list[1] + '", "$options" : "i"}'));
     this.state.filter_list[2] !== "" && (filter_array.push('"Region":{"$regex" : "' + this.state.filter_list[2] + '", "$options" : "i"}'));
+    this.state.filter_list[3] !== "" && (filter_array.push('"Material_Sub_Type":{"$regex" : "' + this.state.filter_list[3] + '", "$options" : "i"}'));
     let whereAnd = '{' + filter_array.join(',') + '}';
     getDatafromAPINODE('/package/getPackage?srt=_id:-1&q=' + whereAnd + '&lmt=' + maxPage + '&pg=' + page, this.state.tokenUser).then(res => {
       console.log("Package List", res);
@@ -153,6 +117,15 @@ class Package extends Component {
         this.setState({ package_list: items, totalData: totalData });
       }
     })
+  }
+
+  getPackageListAll() {
+    getDatafromAPINODE('/package/getPackage?noPg=1', this.state.tokenUser).then((res) => {
+      if (res.data !== undefined) {
+        const items = res.data.data;
+        this.setState({ package_list_all: items });
+      }
+    });
   }
 
   handleCheckMaterialPackage = (e) => {
@@ -207,8 +180,13 @@ class Package extends Component {
     this.state.filter_list_material[2] !== "" && (filter_array.push('"Unit_Price":' + this.state.filter_list_material[2]));
     filter_array.push('"Region":"' + this.state.create_package_parent.Region + '"');
     this.state.filter_list_material[4] !== "" && (filter_array.push('"Material_Type":{"$regex" : "' + this.state.filter_list_material[4] + '", "$options" : "i"}'));
+    if (this.state.create_package_parent.Material_Sub_Type === 'ITC + NDO + Transport') {
+      filter_array.push('"Material_Sub_Type":{"$in":["ITC","NDO","Transport"]}');
+    } else {
+      filter_array.push('"Material_Sub_Type":{"$in":["' + this.state.create_package_parent.Material_Sub_Type + '"]}');
+    }
     let whereAnd = "{" + filter_array.join(",") + "}";
-    getDatafromAPINODE("/mmCodeDigi/getMm?q=" + whereAnd + "&lmt=" + this.state.perPage_material + "&pg=" + this.state.activePage_material, this.state.tokenUser).then((res) => {
+    getDatafromAPINODE("/mmCode/getMm?q=" + whereAnd + "&lmt=" + this.state.perPage_material + "&pg=" + this.state.activePage_material, this.state.tokenUser).then((res) => {
       if (res.data !== undefined) {
         const items = res.data.data;
         const totalData = res.data.totalResults;
@@ -339,7 +317,20 @@ class Package extends Component {
     }
 
     if (check_duplicate) {
-      alert('Material duplication found!');
+      const getAlert = () => (
+        <SweetAlert
+          danger
+          title="Error!"
+          onConfirm={() => this.hideAlert()}
+        >
+          Material duplication found!
+        </SweetAlert>
+      );
+
+      this.setState({
+        sweet_alert: getAlert()
+      });
+
       for (let i = 0; i < create_package_child.length; i++) {
         create_package_child[i].blank_material = 'no';
         create_package_child[i].zero_qty = 'no';
@@ -348,7 +339,20 @@ class Package extends Component {
         console.log(this.state.create_package_child)
       );
     } else if (create_package_child.some(e => e.blank_material === 'yes')) {
-      alert('Please select a material first!');
+      const getAlert = () => (
+        <SweetAlert
+          danger
+          title="Error!"
+          onConfirm={() => this.hideAlert()}
+        >
+          Please select a material first!
+        </SweetAlert>
+      );
+
+      this.setState({
+        sweet_alert: getAlert()
+      });
+
       for (let i = 0; i < create_package_child.length; i++) {
         create_package_child[i].duplicate = 'no';
         create_package_child[i].zero_qty = 'no';
@@ -357,7 +361,20 @@ class Package extends Component {
         console.log(this.state.create_package_child)
       );
     } else if (create_package_child.some(e => e.zero_qty === 'yes')) {
-      alert('Please input the qty to be more than 0!');
+      const getAlert = () => (
+        <SweetAlert
+          danger
+          title="Error!"
+          onConfirm={() => this.hideAlert()}
+        >
+          Please input the qty to be more than 0!
+        </SweetAlert>
+      );
+
+      this.setState({
+        sweet_alert: getAlert()
+      });
+
       for (let i = 0; i < create_package_child.length; i++) {
         create_package_child[i].duplicate = 'no';
         create_package_child[i].blank_material = 'no';
@@ -390,6 +407,7 @@ class Package extends Component {
       const dataPackage = {
         Package_Name: this.state.create_package_parent.Package_Name,
         Region: this.state.create_package_parent.Region,
+        Material_Sub_Type: this.state.create_package_parent.Material_Sub_Type,
         MM_Data: dataPackageChild
       }
 
@@ -422,6 +440,12 @@ class Package extends Component {
     }
   }
 
+  hideAlert() {
+    this.setState({
+      sweet_alert: null
+    });
+  }
+
   handleDeletePackageChild(index) {
     let create_package_child = this.state.create_package_child;
     create_package_child.splice(index, 1);
@@ -445,18 +469,208 @@ class Package extends Component {
     })
   }
 
+  getVendorList() {
+    getDatafromAPIMY("/vendor_data_non_page?sort=[('Name',1)]").then((res) => {
+      if (res.data !== undefined) {
+        const items = res.data._items;
+        this.setState({ vendor_list: items });
+      }
+    });
+  }
+
+  getVendorRow(material_vendor_data, vendor, mat_id) {
+    const Matdata = material_vendor_data.find(
+      (e) => e.Vendor_Code === vendor.Vendor_Code
+    );
+    if (Matdata !== undefined) {
+      return (
+        <Fragment>
+          <td>
+            <Checkbox
+              checked={this.state.vendorChecked.has(mat_id + " /// " + vendor.Vendor_Code) ? this.state.vendorChecked.get(mat_id + " /// " + vendor.Vendor_Code) : true}
+              onChange={this.handleCheckVendor}
+              name={mat_id + " /// " + vendor.Vendor_Code}
+              value={vendor.Vendor_Code}
+              id={vendor.Vendor_Code}
+              matId={mat_id}
+            />
+          </td>
+        </Fragment>
+      );
+    } else {
+      return (
+        <Fragment>
+          <td>
+            <Checkbox
+              checked={this.state.vendorChecked.get(
+                mat_id + " /// " + vendor.Vendor_Code
+              )}
+              value={vendor.Vendor_Code}
+              id={vendor.Vendor_Code}
+              name={mat_id + " /// " + vendor.Vendor_Code}
+              matId={mat_id}
+              onChange={this.handleCheckVendor}
+            />
+          </td>
+        </Fragment>
+      );
+    }
+  }
+
+  handleCheckVendor = (event) => {
+    const isChecked = event.target.checked;
+    const Identifier = event.target.name;
+    console.log(Identifier);
+
+    this.setState(
+      (prevState) => ({
+        vendorChecked: prevState.vendorChecked.set(Identifier, isChecked),
+      }),
+      () => console.log(this.state.vendorChecked)
+    );
+  };
+
+  handleCheckVendorAll = (event) => {
+    const isChecked = event.target.checked;
+    const identifierAll = event.target.name;
+    let package_list_all = this.state.package_list_all;
+    if (isChecked) {
+      package_list_all = package_list_all.map((e) => e._id);
+      for (let i = 0; i < package_list_all.length; i++) {
+        const Identifier = package_list_all[i] + " /// " + event.target.name;
+        // console.log(Identifier)
+        this.setState((prevState) => ({
+          vendorChecked: prevState.vendorChecked.set(Identifier, isChecked),
+        }));
+      }
+    } else {
+      package_list_all = package_list_all.map((e) => e._id);
+      for (let i = 0; i < package_list_all.length; i++) {
+        const Identifier = package_list_all[i] + " /// " + event.target.name;
+        // console.log(Identifier)
+        this.setState((prevState) => ({
+          vendorChecked: prevState.vendorChecked.set(Identifier, isChecked),
+        }));
+      }
+    }
+
+    console.log(this.state.vendorChecked);
+    this.setState((prevState) => ({
+      vendorCheckedPage: prevState.vendorCheckedPage.set(identifierAll, isChecked),
+    }));
+  };
+
+  updateVendorPackage = async () => {
+    this.toggleLoading();
+    const dataVendor = this.state.vendor_list;
+    const dataPackage = this.state.package_list_all;
+    const vendorChecked = this.state.vendorChecked;
+    let dataVendorPackageUpdate = [];
+    for (const [key, value] of vendorChecked.entries()) {
+      const dataKey = key.split(" /// ");
+      const data_id_mat = dataKey[0];
+      const data_id_vendor = dataKey[1];
+      const matFind = dataPackage.find((mat) => mat._id === data_id_mat);
+      const venFind = dataVendor.find(
+        (ven) => ven.Vendor_Code === data_id_vendor
+      );
+      let dataExistIdx = dataVendorPackageUpdate.findIndex(
+        (exi) => exi._id === matFind._id
+      );
+      if (dataExistIdx !== -1) {
+        if (value === false) {
+          dataVendorPackageUpdate[dataExistIdx][
+            "Vendor_List"
+          ] = dataVendorPackageUpdate[dataExistIdx].Vendor_List.filter(
+            (ven) => ven.Vendor_Code !== data_id_vendor
+          );
+        } else {
+          const dataVendorExist = dataVendorPackageUpdate[
+            dataExistIdx
+          ].Vendor_List.find((ven) => ven.Vendor_Code === data_id_vendor);
+          if (dataVendorExist === undefined) {
+            dataVendorPackageUpdate[dataExistIdx]["Vendor_List"].push({
+              Vendor_Name: venFind.Name,
+              Vendor_Code: venFind.Vendor_Code,
+              _id: venFind._id,
+            });
+          }
+        }
+      } else {
+        dataVendorPackageUpdate.push({
+          _id: data_id_mat,
+          Vendor_List: matFind.Vendor_List,
+        });
+      }
+      if (value === false) {
+        dataVendorPackageUpdate[dataVendorPackageUpdate.length - 1][
+          "Vendor_List"
+        ] = dataVendorPackageUpdate[
+          dataVendorPackageUpdate.length - 1
+        ].Vendor_List.filter((ven) => ven.Vendor_Code !== data_id_vendor);
+        console.log(
+          dataVendorPackageUpdate[
+            dataVendorPackageUpdate.length - 1
+          ].Vendor_List.filter((ven) => ven.Vendor_Code !== data_id_vendor)
+        );
+      } else {
+        const dataVendorExist = dataVendorPackageUpdate[
+          dataVendorPackageUpdate.length - 1
+        ].Vendor_List.find((ven) => ven.Vendor_Code === data_id_vendor);
+        if (dataVendorExist === undefined) {
+          dataVendorPackageUpdate[dataVendorPackageUpdate.length - 1][
+            "Vendor_List"
+          ].push({
+            Vendor_Name: venFind.Name,
+            Vendor_Code: venFind.Vendor_Code,
+            _id: venFind._id,
+          });
+        }
+      }
+    }
+    console.log("dataVendorPackageUpdate", dataVendorPackageUpdate);
+    const res = await patchDatatoAPINODE("/package/updatePackage", { package_data: dataVendorPackageUpdate }, this.state.tokenUser);
+    if (res.data !== undefined) {
+      this.setState({ action_status: "success", action_message: "Vendors have been updated!" });
+      this.toggleLoading();
+    } else {
+      if (
+        res.response !== undefined &&
+        res.response.data !== undefined &&
+        res.response.data.error !== undefined
+      ) {
+        if (res.response.data.error.message !== undefined) {
+          this.setState({
+            action_status: "failed",
+            action_message: res.response.data.error.message,
+          });
+        } else {
+          this.setState({
+            action_status: "failed",
+            action_message: res.response.data.error,
+          });
+        }
+      } else {
+        this.setState({ action_status: "failed" });
+      }
+      this.toggleLoading();
+    }
+  };
+
   onChangeDebounced(e) {
     this.getPackageList();
   }
 
   componentDidMount() {
     this.getPackageList();
+    this.getPackageListAll();
+    this.getVendorList();
     document.title = "Package List | BAM";
   }
 
   loopSearchBar = () => {
     let searchBar = [];
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < 4; i++) {
       searchBar.push(
         <td>
           <div className="controls" style={{ minWidth: "150px" }}>
@@ -484,7 +698,7 @@ class Package extends Component {
 
   loopSearchBarMaterial = () => {
     let searchBar = [];
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 6; i++) {
       searchBar.push(
         <td>
           <div className="controls" style={{ minWidth: "150px" }}>
@@ -523,6 +737,7 @@ class Package extends Component {
           redirect={this.state.redirect}
         />
         <Row>
+          {this.state.sweet_alert}
           <Col xs="12" lg="12">
             <Card>
               <CardHeader>
@@ -542,13 +757,34 @@ class Package extends Component {
                 <Table responsive striped bordered size="sm">
                   <thead className="text-center">
                     <tr>
-                      <th style={{ minWidth: "100px", verticalAlign: "middle" }} rowSpan="2">Action</th>
-                      <th style={{ minWidth: "150px" }}>Package ID</th>
-                      <th style={{ minWidth: "150px" }}>Package Name</th>
-                      <th style={{ minWidth: "150px" }}>Region</th>
+                      <th style={{ minWidth: "150px", verticalAlign: "middle" }} rowSpan="2">Action</th>
+                      <th style={{ minWidth: "150px", verticalAlign: "middle" }}>Package ID</th>
+                      <th style={{ minWidth: "150px", verticalAlign: "middle" }}>Package Name</th>
+                      <th style={{ minWidth: "150px", verticalAlign: "middle" }}>Region</th>
+                      <th style={{ minWidth: "150px", verticalAlign: "middle" }}>MM Type</th>
+                      {this.state.vendor_list.map((vendor) => (
+                        <Fragment key={vendor._id}>
+                          <th style={{ verticalAlign: "middle" }}>{vendor.Name}</th>
+                        </Fragment>
+                      ))}
                     </tr>
                     <tr>
                       {this.loopSearchBar()}
+                      {this.state.vendor_list.map((vendor, i) => (
+                        <Fragment key={vendor._id}>
+                          <th>
+                            {
+                              <Checkbox
+                                checked={this.state.vendorCheckedPage.get(vendor.Vendor_Code)}
+                                value={vendor.Vendor_Code}
+                                id={vendor.Vendor_Code}
+                                name={vendor.Vendor_Code}
+                                onChange={this.handleCheckVendorAll}
+                              />
+                            }
+                          </th>
+                        </Fragment>
+                      ))}
                     </tr>
                   </thead>
                   <tbody className="text-center">
@@ -568,14 +804,16 @@ class Package extends Component {
                           <td>{e.Package_Id}</td>
                           <td>{e.Package_Name}</td>
                           <td>{e.Region}</td>
+                          <td>{e.Material_Sub_Type}</td>
+                          {this.state.vendor_list.map((vendor, i) =>
+                            this.getVendorRow(e.Vendor_List, vendor, e._id)
+                          )}
                         </tr>
                       ))}
                   </tbody>
                 </Table>
                 <div style={{ margin: "8px 0px" }}>
-                  <small>
-                    Showing {this.state.package_list.length} entries
-                  </small>
+                  <small>Showing {this.state.package_list.length} entries</small>
                 </div>
                 <Pagination
                   activePage={this.state.activePage}
@@ -587,6 +825,15 @@ class Package extends Component {
                   linkClass="page-link"
                 />
               </CardBody>
+              <CardFooter>
+                <Button
+                  color="primary"
+                  size="sm"
+                  onClick={this.updateVendorPackage}
+                >
+                  Update Vendor
+                </Button>
+              </CardFooter>
             </Card>
           </Col>
         </Row>
@@ -650,7 +897,7 @@ class Package extends Component {
         <Modal
           isOpen={this.state.modal_create_package}
           toggle={this.toggleModalCreatePackage}
-          className={"modal-lg"}
+          className={"modal-xl"}
         >
           <ModalBody>
             <div>
@@ -685,6 +932,23 @@ class Package extends Component {
                       <option value="OKV">OKV</option>
                       <option value="ER">ER</option>
                       <option value="EM">EM</option>
+                    </Input>
+                  </FormGroup>
+                </Col>
+                <Col md={4}>
+                  <FormGroup>
+                    <Label>MM Type</Label>
+                    <Input
+                      type="select"
+                      name="Material_Sub_Type"
+                      onChange={this.handleChangeFormPackageParent}
+                      value={this.state.create_package_parent.Material_Sub_Type}
+                      disabled={this.state.create_package_child.length > 0}
+                    >
+                      <option value="" disabled selected hidden>Select MM Type</option>
+                      <option value="ITC + NDO + Transport">ITC + NDO + Transport</option>
+                      <option value="Survey">Survey</option>
+                      <option value="Integration">Integration</option>
                     </Input>
                   </FormGroup>
                 </Col>
@@ -803,6 +1067,7 @@ class Package extends Component {
                     <th>Unit Price</th>
                     <th>Region</th>
                     <th>Material Type</th>
+                    <th>Material Sub Type</th>
                   </tr>
                   <tr>
                     {this.loopSearchBarMaterial()}
@@ -828,6 +1093,7 @@ class Package extends Component {
                         <td>{e.Unit_Price}</td>
                         <td>{e.Region}</td>
                         <td>{e.Material_Type}</td>
+                        <td>{e.Material_Sub_Type}</td>
                       </tr>
                     ))}
                 </tbody>

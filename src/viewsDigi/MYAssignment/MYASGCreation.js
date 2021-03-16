@@ -28,6 +28,7 @@ import { getDatafromAPINODE } from "../../helper/asyncFunction";
 import { connect } from "react-redux";
 import { number } from "prop-types";
 import debounce from 'lodash.debounce';
+import SweetAlert from 'react-bootstrap-sweetalert';
 import './LMRMY.css';
 
 const DefaultNotif = React.lazy(() =>
@@ -196,6 +197,9 @@ class MYASGCreation extends Component {
   constructor(props) {
     super(props);
 
+    let date = new Date();
+    date.setDate(date.getDate() + 7);
+
     this.state = {
       roleUser: this.props.dataLogin.role,
       tokenUser: this.props.dataLogin.token,
@@ -237,7 +241,12 @@ class MYASGCreation extends Component {
       package_list: [],
       check_material_package_list: {},
       lmr_child_package: {
-        currency: "MYR"
+        activity: "5640",
+        nw: "",
+        site_id: "",
+        currency: "MYR",
+        tax_code: "I0",
+        delivery_date: convertDateFormat(date)
       },
       validation_form: {},
       current_material_select: null,
@@ -265,6 +274,7 @@ class MYASGCreation extends Component {
       header_data: {},
       child_data: {},
       check_draft: false,
+      sweet_alert: null
     };
     this.handleChangeCD = this.handleChangeCD.bind(this);
     this.loadOptionsCDID = this.loadOptionsCDID.bind(this);
@@ -380,10 +390,32 @@ class MYASGCreation extends Component {
   };
 
   toggleModalPackage = () => {
-    this.getPackageList();
-    this.setState((prevState) => ({
-      modal_package: !prevState.modal_package,
-    }));
+    if (this.state.count_form_validate.length === 0) {
+      this.getPackageList();
+      this.setState((prevState) => ({
+        modal_package: !prevState.modal_package,
+      }));
+    } else {
+      const getAlert = () => (
+        <SweetAlert
+          danger
+          title="Error!"
+          onConfirm={() => this.hideAlert()}
+        >
+          Please fill all required fields first!
+        </SweetAlert>
+      );
+
+      this.setState({
+        sweet_alert: getAlert()
+      });
+    }
+  }
+
+  hideAlert() {
+    this.setState({
+      sweet_alert: null
+    });
   }
 
   toggleModalCheckMaterialPackage = () => {
@@ -620,42 +652,35 @@ class MYASGCreation extends Component {
       ) {
         return (
           <>
-            <option value="" selected></option>
+            <option value="" disabled selected hidden>Select GL Account</option>
             <option value="NRO service - 402603">NRO service - 402603</option>
             <option value="NDO service - 402603">NDO service - 402603</option>
-            <option value="NRO local material - 402201">
-              NRO local material - 402201
-            </option>
-            {/* <option value="3PP Hardware - 402201">3PP Hardware - 402201</option> */}
+            <option value="NRO local material - 402201">NRO local material - 402201</option>
           </>
         );
       }
       if (role.includes("BAM-IM") === true) {
         return (
           <>
-            <option value="" selected></option>
+            <option value="" disabled selected hidden>Select GL Account</option>
             <option value="NRO service - 402603">NRO service - 402603</option>
-            <option value="NRO local material - 402201">
-              NRO local material - 402201
-            </option>{" "}
+            <option value="NRO local material - 402201">NRO local material - 402201</option>
           </>
         );
       }
       if (role.includes("BAM-IE Lead") === true) {
         return (
           <>
-            <option value="" selected></option>
+            <option value="" disabled selected hidden>Select GL Account</option>
             <option value="NRO service - 402603">NRO service - 402603</option>
-            <option value="NRO local material - 402201">
-              NRO local material - 402201
-            </option>
+            <option value="NRO local material - 402201">NRO local material - 402201</option>
           </>
         );
       }
       if (role.includes("BAM-NDO IM") === true) {
         return (
           <>
-            <option value="" selected></option>
+            <option value="" disabled selected hidden>Select GL Account</option>
             <option value="NDO service - 402603">NDO service - 402603</option>
           </>
         );
@@ -671,7 +696,7 @@ class MYASGCreation extends Component {
       ) {
         return (
           <>
-            <option value="" selected></option>
+            <option value="" disabled selected hidden>Select GL Account</option>
             <option value="NRO">NRO</option>
             <option value="NDO">NDO</option>
             <option value="HW">HW</option>
@@ -682,7 +707,7 @@ class MYASGCreation extends Component {
       if (role.includes("BAM-IM") === true) {
         return (
           <>
-            <option value="" selected></option>
+            <option value="" disabled selected hidden>Select GL Account</option>
             <option value="NRO">NRO</option>
           </>
         );
@@ -690,8 +715,7 @@ class MYASGCreation extends Component {
       if (role.includes("BAM-IE Lead") === true) {
         return (
           <>
-            <option value="" selected></option>
-
+            <option value="" disabled selected hidden>Select GL Account</option>
             <option value="NRO Service">NRO Service</option>
             <option value="NRO LM">NRO LM</option>
           </>
@@ -700,8 +724,7 @@ class MYASGCreation extends Component {
       if (role.includes("BAM-MP") === true) {
         return (
           <>
-            <option value="" selected></option>
-
+            <option value="" disabled selected hidden>Select GL Account</option>
             <option value="HW">HW</option>
           </>
         );
@@ -709,7 +732,7 @@ class MYASGCreation extends Component {
       if (role.includes("BAM-PA") === true) {
         return (
           <>
-            <option value="" selected></option>
+            <option value="" disabled selected hidden>Select GL Account</option>
             <option value="ARP">ARP</option>
           </>
         );
@@ -725,7 +748,7 @@ class MYASGCreation extends Component {
       ) {
         return (
           <>
-            <option value="" selected></option>
+            <option value="" disabled selected hidden>Select GL Account</option>
             <option value="Transport - 402102">Transport - 402102</option>
             <option value="ARP - 402693">ARP - 402693</option>
             <option value="3PP Hardware - 402201">3PP Hardware - 402201</option>
@@ -735,7 +758,7 @@ class MYASGCreation extends Component {
       if (role.includes("BAM-IM") === true) {
         return (
           <>
-            <option value="" selected></option>
+            <option value="" disabled selected hidden>Select GL Account</option>
             <option value="Transport - 402102">Transport - 402102</option>
           </>
         );
@@ -743,7 +766,7 @@ class MYASGCreation extends Component {
       if (role.includes("BAM-PA") === true) {
         return (
           <>
-            <option value="" selected></option>
+            <option value="" disabled selected hidden>Select GL Account</option>
             <option value="ARP - 402693">ARP - 402693</option>
           </>
         );
@@ -751,7 +774,7 @@ class MYASGCreation extends Component {
       if (role.includes("BAM-MP") === true) {
         return (
           <>
-            <option value="" selected></option>
+            <option value="" disabled selected hidden>Select GL Account</option>
             <option value="3PP Hardware - 402201">3PP Hardware - 402201</option>
           </>
         );
@@ -759,11 +782,9 @@ class MYASGCreation extends Component {
       if (role.includes("BAM-GR-PA") === true) {
         return (
           <>
-            <option value="" selected></option>
+            <option value="" disabled selected hidden>Select GL Account</option>
             <option value="NRO service - 402603">NRO service - 402603</option>
-            <option value="NRO local material - 402201">
-              NRO local material - 402201
-            </option>{" "}
+            <option value="NRO local material - 402201">NRO local material - 402201</option>
             <option value="Transport - 402102">Transport - 402102</option>
           </>
         );
@@ -923,7 +944,7 @@ class MYASGCreation extends Component {
       );
     let whereAnd = "{" + filter_array.join(",") + "}";
     getDatafromAPINODE(
-      "/mmCodeDigi/getMm?q=" +
+      "/mmCode/getMm?q=" +
       whereAnd +
       "&lmt=" +
       this.state.perPage +
@@ -999,7 +1020,7 @@ class MYASGCreation extends Component {
       );
     let whereAnd = "{" + filter_array.join(",") + "}";
     getDatafromAPINODE(
-      "/mmCodeDigi/getMm?q=" +
+      "/mmCode/getMm?q=" +
       whereAnd +
       "&lmt=" +
       this.state.perPage +
@@ -1069,7 +1090,7 @@ class MYASGCreation extends Component {
       );
     let whereAnd = "{" + filter_array.join(",") + "}";
     getDatafromAPINODE(
-      "/mmCodeDigi/getMm?q=" +
+      "/mmCode/getMm?q=" +
       whereAnd +
       "&lmt=" +
       this.state.perPage +
@@ -1155,7 +1176,7 @@ class MYASGCreation extends Component {
       );
     let whereAnd = "{" + filter_array.join(",") + "}";
     getDatafromAPINODE(
-      "/mmCodeDigi/getMm?q=" +
+      "/mmCode/getMm?q=" +
       whereAnd +
       "&lmt=" +
       this.state.perPage +
@@ -1429,6 +1450,8 @@ class MYASGCreation extends Component {
 
   addChildLMR = () => {
     const key = this.state.key_child + 1;
+    let date = new Date();
+    date.setDate(date.getDate() + 7);
     if (this.state.count_form_validate.length === 0) {
       let dataLMR = this.state.creation_lmr_child_form;
       dataLMR.push({
@@ -1439,11 +1462,27 @@ class MYASGCreation extends Component {
         work_status: "Waiting for PR-PO creation",
         site_id: "",
         nw: "",
-        activity: "",
+        activity: "5640",
+        qty: 0,
+        unit_price: 0,
+        total_value: 0,
+        delivery_date: convertDateFormat(date)
       });
       this.setState({ creation_lmr_child_form: dataLMR, key_child: key });
     } else {
-      return;
+      const getAlert = () => (
+        <SweetAlert
+          danger
+          title="Error!"
+          onConfirm={() => this.hideAlert()}
+        >
+          Please fill all required fields first!
+        </SweetAlert>
+      );
+
+      this.setState({
+        sweet_alert: getAlert()
+      });
     }
   };
 
@@ -1465,19 +1504,19 @@ class MYASGCreation extends Component {
     if (value !== (null && undefined)) {
       value = value.toString();
     }
-    if (name === "item_category" && value === "3PP") {
-      lmr_form["pgr"] = "MY1";
+    if (name === "item_category") {
+      if (value === "3PP") {
+        lmr_form["pgr"] = "MY1";
+      } else if (value === "Service") {
+        lmr_form["pgr"] = "MY3";
+      }
     }
-    if (name === "item_category" && value === "Service") {
-      lmr_form["pgr"] = "MY3";
-    }
-    if (name === "lmr_type" && value !== "Per Site") {
-      lmr_form["plan_cost_reduction"] = "Yes";
-      this.setState({ lmr_edit: false });
-    }
-    if (name === "lmr_type" && value !== "Cost Collector") {
-      lmr_form["plan_cost_reduction"] = "No";
-      // this.setState({ lmr_edit: false });
+    if (name === "lmr_type") {
+      if (value === "Per Site") {
+        lmr_form["plan_cost_reduction"] = "No";
+      } else {
+        lmr_form["plan_cost_reduction"] = "Yes";
+      }
     }
     if (name === "gl_account") {
       let selected_options = e.target.options[e.target.selectedIndex].text;
@@ -1487,35 +1526,35 @@ class MYASGCreation extends Component {
         mm_data_type = "NRO";
         lmr_form["gl_type"] = "Transport";
         lmr_form["mm_data_type"] = mm_data_type;
-      }
-      if (selected_options === "ARP - 402693") {
+      } else if (selected_options === "ARP - 402693") {
         lmr_form["gl_account_actual"] = selected_options;
         mm_data_type = "ARP";
         lmr_form["gl_type"] = "T&M";
         lmr_form["mm_data_type"] = mm_data_type;
-      }
-      if (selected_options === "NRO service - 402603") {
+      } else if (selected_options === "NRO service - 402603") {
         lmr_form["gl_account_actual"] = selected_options;
         mm_data_type = "NRO";
         lmr_form["gl_type"] = "NRO Services";
         lmr_form["mm_data_type"] = mm_data_type;
-      }
-      if (selected_options === "NDO service - 402603") {
+      } else if (selected_options === "NDO service - 402603") {
         lmr_form["gl_account_actual"] = selected_options;
         mm_data_type = "NDO";
         lmr_form["gl_type"] = "NDO Services";
         lmr_form["mm_data_type"] = mm_data_type;
-      }
-      if (selected_options === "NRO local material - 402201") {
+      } else if (selected_options === "NRO local material - 402201") {
         lmr_form["gl_account_actual"] = selected_options;
         mm_data_type = "NRO";
         lmr_form["gl_type"] = "LM";
         lmr_form["mm_data_type"] = mm_data_type;
-      }
-      if (selected_options === "3PP Hardware - 402201") {
+      } else if (selected_options === "3PP Hardware - 402201") {
         lmr_form["gl_account_actual"] = selected_options;
         mm_data_type = "HW";
         lmr_form["gl_type"] = "Hardware";
+        lmr_form["mm_data_type"] = mm_data_type;
+      } else {
+        lmr_form["gl_account_actual"] = selected_options;
+        mm_data_type = "NDO";
+        lmr_form["gl_type"] = "NDO Services";
         lmr_form["mm_data_type"] = mm_data_type;
       }
       this.setState({
@@ -1524,7 +1563,7 @@ class MYASGCreation extends Component {
       });
     }
     if (name === "gl_account" && value !== null) {
-      lmr_form[name.toString()] = this.getnumberGL(value);
+      lmr_form[name.toString()] = value.split(" - ")[1];
     } else {
       lmr_form[name.toString()] = value;
     }
@@ -1532,10 +1571,6 @@ class MYASGCreation extends Component {
       console.log(this.state.lmr_form)
     );
   }
-
-  getnumberGL = (str) => {
-    return str.split("-")[1];
-  };
 
   sumTotalPrice = () => {
     let dataLMR = this.state.creation_lmr_child_form;
@@ -1733,8 +1768,8 @@ class MYASGCreation extends Component {
               </InputGroup>
             </div>
           ) : (
-              ""
-            )}
+            ""
+          )}
         </td>
       );
     }
@@ -1906,7 +1941,7 @@ class MYASGCreation extends Component {
     }
   };
 
-  handleCheckForm = () => {
+  handleCheckForm = (param) => {
     const lmr_header = this.state.lmr_form;
     let error = [];
     let dataValidate = {};
@@ -1933,10 +1968,11 @@ class MYASGCreation extends Component {
         error.slice(0, this.state.count_form_validate.length - 1);
       }
     }
-    this.setState(
-      { formvalidate: dataValidate, count_form_validate: error },
-      () => this.addChildLMR()
-    );
+    if (param === 'select_package') {
+      this.setState({ formvalidate: dataValidate, count_form_validate: error }, () => this.toggleModalPackage());
+    } else {
+      this.setState({ formvalidate: dataValidate, count_form_validate: error }, () => this.addChildLMR());
+    }
   };
 
   handleSelectPackage = (e) => {
@@ -1952,7 +1988,7 @@ class MYASGCreation extends Component {
         description: selectedPackage.MM_Data[i].Description,
         item_status: "Submit",
         material: selectedPackage.MM_Data[i].MM_Code,
-        material_code_doc: "60112f2feea6d1f700aa55ab",
+        material_code_doc: selectedPackage.MM_Data[i].MM_Code_Id,
         nw: this.state.lmr_child_package.nw,
         qty: selectedPackage.MM_Data[i].Qty,
         site_id: this.state.lmr_child_package.site_id,
@@ -2050,6 +2086,7 @@ class MYASGCreation extends Component {
           </Col>
         </Row>
         <Row>
+          {this.state.sweet_alert}
           <Col xl="12">
             <Card>
               <CardHeader>
@@ -2132,11 +2169,7 @@ class MYASGCreation extends Component {
                           id="lmr_type"
                           value={this.state.lmr_form.lmr_type}
                           onChange={this.handleChangeFormLMR}
-                          style={
-                            this.state.formvalidate.lmr_type === false
-                              ? { borderColor: "red" }
-                              : {}
-                          }
+                          style={this.state.formvalidate.lmr_type === false ? { borderColor: "red" } : {}}
                         >
                           <option value="" disabled selected hidden>
                             Select LMR Type
@@ -2193,38 +2226,23 @@ class MYASGCreation extends Component {
                     <Col md={4}>
                       <FormGroup>
                         <Label>GL Account</Label>
-
-                        {this.state.lmr_form.lmr_type === "Cost Collector" ? (
-                          <Input
-                            type="select"
-                            name="gl_account"
-                            id="gl_account"
-                            value={this.state.lmr_form.gl_account_actual}
-                            onChange={this.handleChangeFormLMR}
-                            style={
-                              this.state.formvalidate.gl_account === false
-                                ? { borderColor: "red" }
-                                : {}
-                            }
-                          >
-                            {this.getOptionbyRole3(this.state.roleUser)}
-                          </Input>
-                        ) : (
-                            <Input
-                              type="select"
-                              name="gl_account"
-                              id="gl_account"
-                              value={this.state.lmr_form.gl_account_actual}
-                              onChange={this.handleChangeFormLMR}
-                              style={
-                                this.state.formvalidate.gl_account === false
-                                  ? { borderColor: "red" }
-                                  : {}
-                              }
-                            >
-                              {this.getOptionbyRole1(this.state.roleUser)}
-                            </Input>
+                        <Input
+                          type="select"
+                          name="gl_account"
+                          id="gl_account"
+                          value={this.state.lmr_form.gl_account_actual}
+                          onChange={this.handleChangeFormLMR}
+                          style={this.state.formvalidate.gl_account === false ? { borderColor: "red" } : {}}
+                        >
+                          <option value="" disabled selected hidden>Select GL Account</option>
+                          {this.state.lmr_form.lmr_type === 'Per Site' && (
+                            <>
+                              <option value="ITC + NDO + transport - 402603">ITC + NDO + transport - 402603</option>
+                              <option value="Survey - 402603">Survey - 402603</option>
+                              <option value="Integration - 402603">Integration - 402603</option>
+                            </>
                           )}
+                        </Input>
                       </FormGroup>
                     </Col>
                   </Row>
@@ -2238,15 +2256,9 @@ class MYASGCreation extends Component {
                           id="fas_id"
                           value={this.state.lmr_form.fas_id}
                           onChange={this.handleChangeFormLMR}
-                          style={
-                            this.state.formvalidate.fas_id === false
-                              ? { borderColor: "red" }
-                              : {}
-                          }
+                          style={this.state.formvalidate.fas_id === false ? { borderColor: "red" } : {}}
                         >
-                          <option value="" disabled selected hidden>
-                            Select Fas
-                          </option>
+                          <option value="" disabled selected hidden>Select Fas</option>
                           {this.state.list_fas.map((fas) => (
                             <option value={fas}>{fas}</option>
                           ))}
@@ -2262,11 +2274,7 @@ class MYASGCreation extends Component {
                           id="header_text"
                           value={this.state.lmr_form.header_text}
                           onChange={this.handleChangeFormLMR}
-                          style={
-                            this.state.formvalidate.header_text === false
-                              ? { borderColor: "red" }
-                              : {}
-                          }
+                          style={this.state.formvalidate.header_text === false ? { borderColor: "red" } : {}}
                         />
                       </FormGroup>
                     </Col>
@@ -2279,11 +2287,7 @@ class MYASGCreation extends Component {
                           id="vendor_name"
                           value={this.state.lmr_form.vendor_code_actual}
                           onChange={this.handleChangeVendor}
-                          style={
-                            this.state.formvalidate.vendor_name === false
-                              ? { borderColor: "red" }
-                              : {}
-                          }
+                          style={this.state.formvalidate.vendor_name === false ? { borderColor: "red" } : {}}
                         >
                           <option value="" disabled selected hidden>
                             Select Vendor Name
@@ -2434,7 +2438,7 @@ class MYASGCreation extends Component {
                 <hr className="upload-line--lmr"></hr>
                 <h5 style={{ marginTop: "16px" }}>LMR Child</h5>
                 <hr className="upload-line--lmr"></hr>
-                <Button color="primary" style={{ marginBottom: "16px" }} onClick={this.toggleModalPackage}><i className="fa fa-cubes" style={{ marginRight: "8px" }}></i>Select Package</Button>
+                <Button color="primary" style={{ marginBottom: "16px" }} onClick={() => this.handleCheckForm('select_package')}><i className="fa fa-cubes" style={{ marginRight: "8px" }}></i>Select Package</Button>
                 {this.state.creation_lmr_child_form.map((lmr, i) => (
                   <Form>
                     {lmr.transport === "yes" && (<Alert color="danger" pill>Please Select Transport Material!</Alert>)}
@@ -2452,9 +2456,7 @@ class MYASGCreation extends Component {
                             // onMenuOpen={this.onMenuOpen}
                             loadOptions={this.seachCDList}
                             onChange={this.handleChangeCDFormLMRChild}
-                            isDisabled={
-                              this.state.lmr_form.lmr_type === "Cost Collector"
-                            }
+                            disabled={this.state.lmr_form.lmr_type === "Cost Collector"}
                           />
                         </FormGroup>
                       </Col>
@@ -2641,6 +2643,7 @@ class MYASGCreation extends Component {
                             id={i + " /// total_value"}
                             value={lmr.total_value}
                             onChange={this.handleChangeFormLMRChild}
+                            readOnly
                           />
                         </FormGroup>
                       </Col>
@@ -2654,9 +2657,7 @@ class MYASGCreation extends Component {
                             value={lmr.currency}
                             onChange={this.handleChangeFormLMRChild}
                           >
-                            <option value="MYR" selected>
-                              MYR
-                            </option>
+                            <option value="MYR" selected>MYR</option>
                             <option value="USD">USD</option>
                             <option value="EUR">EUR</option>
                           </Input>
@@ -2755,8 +2756,8 @@ class MYASGCreation extends Component {
                     </Input>
                   </FormGroup>
                 ) : (
-                    ""
-                  )}
+                  ""
+                )}
               </Row>
             </div>
             <div class="table-container">
@@ -2858,8 +2859,8 @@ class MYASGCreation extends Component {
                     </Input>
                   </FormGroup>
                 ) : (
-                    ""
-                  )}
+                  ""
+                )}
               </Row>
             </div>
             <div class="table-container">
@@ -3125,9 +3126,7 @@ class MYASGCreation extends Component {
                       defaultOptions
                       loadOptions={this.seachCDList}
                       onChange={this.handleChangeCDFormLMRChild}
-                      isDisabled={
-                        this.state.lmr_form.lmr_type === "Cost Collector"
-                      }
+                      disabled={this.state.lmr_form.lmr_type === "Cost Collector"}
                     />
                   </FormGroup>
                 </Col>

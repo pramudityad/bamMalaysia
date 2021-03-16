@@ -51,7 +51,7 @@ class SSOLogin extends Component {
 
   async getDataLogin(keycloak, account_id) {
     const dataReq = {
-      account_id: "1", // please change back to account_id once pdb is available
+      account_id: account_id, // please change back to account_id once pdb is available
       cas_id: keycloak.sub,
       data: {
         first_name: keycloak.given_name,

@@ -37,26 +37,20 @@ export default {
       roles: ["BAM-Sourcing"],
       children: [
         {
-          name: "NDO",
-          url: "/mm-data-ndo",
-          icon: "icon-list",
-          roles: ["BAM-Sourcing"],
-        },
-        {
           name: "NRO",
           url: "/mm-data-nro",
           icon: "icon-list",
           roles: ["BAM-Sourcing"],
         },
         {
-          name: "HW",
-          url: "/mm-data-hw",
+          name: "NDO",
+          url: "/mm-data-ndo",
           icon: "icon-list",
           roles: ["BAM-Sourcing"],
         },
         {
-          name: "ARP",
-          url: "/mm-data-arp",
+          name: "Integration",
+          url: "/mm-data-integration",
           icon: "icon-list",
           roles: ["BAM-Sourcing"],
         },

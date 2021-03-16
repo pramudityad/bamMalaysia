@@ -2,8 +2,9 @@ import React from "react";
 
 const Dashboard = React.lazy(() => import("./viewsDigi/Dashboard"));
 
-const MatNDO = React.lazy(() => import("./viewsDigi/Material/matlibNDO"));
 const MatNRO = React.lazy(() => import("./viewsDigi/Material/matlibNRO"));
+const MatNDO = React.lazy(() => import("./viewsDigi/Material/matlibNDO"));
+const MatIntegration = React.lazy(() => import("./viewsDigi/Material/matlibIntegration"));
 const MatHW = React.lazy(() => import("./viewsDigi/Material/matlibHW"));
 const MatARP = React.lazy(() => import("./viewsDigi/Material/matlibARP"));
 const Package = React.lazy(() => import("./viewsDigi/Material/package"));
@@ -19,10 +20,11 @@ const routes = [
   { path: "/", exact: true, name: "Home" },
   { path: "/dashboard", name: "Dashboard", component: Dashboard },
 
-  { path: "/mm-data-ndo", exact: true, name: "MM Code Data NDO", component: MatNDO },
-  { path: "/mm-data-nro", exact: true, name: "MM Code Data NRO", component: MatNRO },
-  { path: "/mm-data-hw", exact: true, name: "MM Code Data HW", component: MatHW },
-  { path: "/mm-data-arp", exact: true, name: "MM Code Data ARP", component: MatARP },
+  { path: "/mm-data-nro", exact: true, name: "MM Data NRO", component: MatNRO },
+  { path: "/mm-data-ndo", exact: true, name: "MM Data NDO", component: MatNDO },
+  { path: "/mm-data-integration", exact: true, name: "MM Data Integration", component: MatIntegration },
+  { path: "/mm-data-hw", exact: true, name: "MM Data HW", component: MatHW },
+  { path: "/mm-data-arp", exact: true, name: "MM Data ARP", component: MatARP },
   { path: "/package", exact: true, name: "Package List", component: Package },
 
   { path: "/lmr-list", exact: true, name: "Assignment LMR List", component: LMRList },

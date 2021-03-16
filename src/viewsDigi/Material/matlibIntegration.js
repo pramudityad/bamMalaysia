@@ -21,47 +21,55 @@ import { saveAs } from "file-saver";
 import Excel from "exceljs";
 import * as XLSX from "xlsx";
 import ModalCreateNew from "../Component/ModalCreateNew";
+import ModalDelete from "../Component/ModalDelete";
+import { connect } from "react-redux";
+
 import Loading from "../Component/Loading";
 import { ExcelRenderer } from "react-excel-renderer";
 import {
   getDatafromAPIMY,
-  postDatatoAPINODE,
-  patchDatatoAPINODE,
-  deleteDataFromAPINODE2,
   getDatafromAPINODE,
+  postDatatoAPINODE,
+  deleteDataFromAPINODE2,
+  patchDatatoAPINODE,
 } from "../../helper/asyncFunction";
-import ModalDelete from "../Component/ModalDelete";
 import { numToSSColumn } from "../../helper/basicFunction";
-import { connect } from "react-redux";
 import '../MYAssignment/LMRMY.css';
 
 const DefaultNotif = React.lazy(() =>
-  import("../../views/DefaultView/DefaultNotif")
+  import("../DefaultView/DefaultNotif")
 );
 
-const module_name = "ARP";
+const module_name = "Integration";
+
 const header_model = [
+  "BB",
+  "BB_Sub",
+  "SoW_Description_or_Site_Type",
+  "Sla",
+  "UoM",
+  "Unit_Price",
+  "Region",
   "MM_Code",
   "MM_Description",
-  "Unit_Price",
-  "Currency",
-  "Remarks_or_Acceptance",
   "Vendor_ID",
   "Vendor_Name",
+  "Remarks",
 ];
-class MatARP extends React.Component {
+
+class MatIntegration extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       tokenUser: this.props.dataLogin.token,
       dropdownOpen: new Array(3).fill(false),
-      PPForm: new Array(11).fill(""),
       createModal: false,
       modal_loading: false,
       action_status: null,
       action_message: null,
       rowsXLS: [],
       vendor_list: [],
+      PPForm: new Array(11).fill(""),
       danger: false,
       selected_id: "",
       selected_name: "",
@@ -72,14 +80,12 @@ class MatARP extends React.Component {
       modalEdit: false,
       material_list: [],
       material_list_all: [],
-      selected_vendor: "",
       filter_list: {},
     };
     this.toggle = this.toggle.bind(this);
     this.toggleLoading = this.toggleLoading.bind(this);
     this.togglecreateModal = this.togglecreateModal.bind(this);
     this.resettogglecreateModal = this.resettogglecreateModal.bind(this);
-    this.togglePPForm = this.togglePPForm.bind(this);
   }
 
   componentDidMount() {
@@ -92,17 +98,13 @@ class MatARP extends React.Component {
     getDatafromAPIMY("/vendor_data_non_page?sort=[('Name',-1)]").then((res) => {
       if (res.data !== undefined) {
         const items = res.data._items;
-        // const vendor_data = items.map((a) => a.Name);
         this.setState({ vendor_list: items });
       }
     });
   }
 
   getMaterialListAll() {
-    getDatafromAPINODE(
-      '/mmCode/getMm?q={"Material_Type": "' + module_name + '"}' + "&noPg=1",
-      this.state.tokenUser
-    ).then((res) => {
+    getDatafromAPINODE('/mmCode/getMm?srt=_id:-1&q={"Material_Type": "' + module_name + '"}' + "&noPg=1", this.state.tokenUser).then((res) => {
       if (res.data !== undefined) {
         const items = res.data.data;
         this.setState({ material_list_all: items });
@@ -115,6 +117,55 @@ class MatARP extends React.Component {
     filter_array.push(
       '"Material_Type":{"$regex" : "' + module_name + '", "$options" : "i"}'
     );
+    this.state.filter_list["BB"] !== null &&
+      this.state.filter_list["BB"] !== undefined &&
+      filter_array.push(
+        '"BB":{"$regex" : "' +
+        this.state.filter_list["BB"] +
+        '", "$options" : "i"}'
+      );
+    this.state.filter_list["BB_Sub"] !== null &&
+      this.state.filter_list["BB_Sub"] !== undefined &&
+      filter_array.push(
+        '"BB_Sub":{"$regex" : "' +
+        this.state.filter_list["BB_Sub"] +
+        '", "$options" : "i"}'
+      );
+    this.state.filter_list["SoW_Description_or_Site_Type"] !== null &&
+      this.state.filter_list["SoW_Description_or_Site_Type"] !== undefined &&
+      filter_array.push(
+        '"SoW_Description_or_Site_Type":{"$regex" : "' +
+        this.state.filter_list["SoW_Description_or_Site_Type"] +
+        '", "$options" : "i"}'
+      );
+    this.state.filter_list["sla"] !== null &&
+      this.state.filter_list["sla"] !== undefined &&
+      filter_array.push(
+        '"sla":{"$regex" : "' +
+        this.state.filter_list["sla"] +
+        '", "$options" : "i"}'
+      );
+    this.state.filter_list["UoM"] !== null &&
+      this.state.filter_list["UoM"] !== undefined &&
+      filter_array.push(
+        '"UoM":{"$regex" : "' +
+        this.state.filter_list["UoM"] +
+        '", "$options" : "i"}'
+      );
+    this.state.filter_list["Unit_Price"] !== null &&
+      this.state.filter_list["Unit_Price"] !== undefined &&
+      filter_array.push(
+        '"Unit_Price":{"$regex" : "' +
+        this.state.filter_list["Unit_Price"] +
+        '", "$options" : "i"}'
+      );
+    this.state.filter_list["Region"] !== null &&
+      this.state.filter_list["Region"] !== undefined &&
+      filter_array.push(
+        '"Region":{"$regex" : "' +
+        this.state.filter_list["Region"] +
+        '", "$options" : "i"}'
+      );
     this.state.filter_list["MM_Code"] !== null &&
       this.state.filter_list["MM_Code"] !== undefined &&
       filter_array.push(
@@ -127,27 +178,6 @@ class MatARP extends React.Component {
       filter_array.push(
         '"MM_Description":{"$regex" : "' +
         this.state.filter_list["MM_Description"] +
-        '", "$options" : "i"}'
-      );
-    this.state.filter_list["Unit_Price"] !== null &&
-      this.state.filter_list["Unit_Price"] !== undefined &&
-      filter_array.push(
-        '"Unit_Price":{"$regex" : "' +
-        this.state.filter_list["Unit_Price"] +
-        '", "$options" : "i"}'
-      );
-    this.state.filter_list["Currency"] !== null &&
-      this.state.filter_list["Currency"] !== undefined &&
-      filter_array.push(
-        '"Currency":{"$regex" : "' +
-        this.state.filter_list["Currency"] +
-        '", "$options" : "i"}'
-      );
-    this.state.filter_list["Remarks_or_Acceptance"] !== null &&
-      this.state.filter_list["Remarks_or_Acceptance"] !== undefined &&
-      filter_array.push(
-        '"Remarks_or_Acceptance":{"$regex" : "' +
-        this.state.filter_list["Remarks_or_Acceptance"] +
         '", "$options" : "i"}'
       );
     this.state.filter_list["Vendor_ID"] !== null &&
@@ -164,15 +194,21 @@ class MatARP extends React.Component {
         this.state.filter_list["Vendor_Name"] +
         '", "$options" : "i"}'
       );
-
+    this.state.filter_list["Remarks"] !== null &&
+      this.state.filter_list["Remarks"] !== undefined &&
+      filter_array.push(
+        '"Remarks":{"$regex" : "' +
+        this.state.filter_list["Remarks"] +
+        '", "$options" : "i"}'
+      );
     let whereAnd = "{" + filter_array.join(",") + "}";
 
     getDatafromAPINODE(
-      "/mmCode/getMm?q=" +
+      "/mmCode/getMm?srt=_id:-1&q=" +
       whereAnd +
-      "&max_results=" +
+      "&lmt=" +
       this.state.perPage +
-      "&page=" +
+      "&pg=" +
       this.state.activePage,
       this.state.tokenUser
     ).then((res) => {
@@ -184,7 +220,7 @@ class MatARP extends React.Component {
             material_list: items,
             totalData: totalData
           },
-          () => console.log(items.map((e) => e._id))
+          () => console.log(items.map((e) => e.SLA))
         );
       }
     });
@@ -196,13 +232,18 @@ class MatARP extends React.Component {
 
     let header = [
       "Material_Type",
+      "Material_Sub_Type",
+      "BB",
+      "BB_Sub",
+      "SoW_Description_or_Site_Type",
+      "SLA",
+      "UoM",
+      "Unit_Price",
+      "Region",
       "MM_Code",
       "MM_Description",
       "Vendor_ID",
       "Vendor_Name",
-      "Unit_Price",
-      "Currency",
-      "UoM",
       "Remarks",
     ];
 
@@ -214,9 +255,12 @@ class MatARP extends React.Component {
         fgColor: { argb: "FFFFFF00" },
         bgColor: { argb: "A9A9A9" },
       };
+      ws.getCell(numToSSColumn(i) + "1").font = {
+        bold: true
+      };
     }
 
-    ws.addRow([module_name]);
+    ws.addRow([module_name, module_name]);
 
     const PPFormat = await wb.xlsx.writeBuffer();
     saveAs(new Blob([PPFormat]), "Material " + module_name + " Template.xlsx");
@@ -256,7 +300,7 @@ class MatARP extends React.Component {
         if (err) {
           console.log(err);
         } else {
-          console.log("rest.rows", JSON.stringify(rest.rows));
+          console.log("rest.rows", rest.rows);
           this.setState({
             rowsXLS: rest.rows,
           });
@@ -277,11 +321,8 @@ class MatARP extends React.Component {
       this.state.tokenUser
     );
     if (res.data !== undefined) {
-      this.setState({ action_status: "success" });
+      this.setState({ action_status: "success", action_message: "Materials have been uploaded!" });
       this.toggleLoading();
-      setTimeout(function () {
-        window.location.reload();
-      }, 1500);
     } else {
       if (
         res.response !== undefined &&
@@ -312,34 +353,35 @@ class MatARP extends React.Component {
     let dataForm = [
       [
         "Material_Type",
+        "Material_Sub_Type",
         "MM_Code",
+        "BB",
+        "BB_Sub",
         "MM_Description",
         "UoM",
         "Unit_Price",
-        "BB",
-        "BB_Sub",
         "Region",
-        "FTV_or_SSO_SLA_or_SSO_Lite_SLA_or_CBO",
-        "Remarks",
+        "SLA",
+        "SoW_Description_or_Site_Type",
         "Vendor_ID",
         "Vendor_Name",
+        "Note",
       ],
       [
         module_name,
-        this.state.PPForm[1],
+        module_name,
+        this.state.PPForm[7],
         this.state.PPForm[2],
         this.state.PPForm[3],
         this.state.PPForm[4],
         this.state.PPForm[5],
         this.state.PPForm[6],
-        this.state.PPForm[7],
         this.state.PPForm[8],
         this.state.PPForm[9],
         this.state.PPForm[10],
-        this.findVendorName(this.state.PPForm[10]),
         this.state.PPForm[11],
+        this.findVendorName(this.state.PPForm[11]),
         this.state.PPForm[12],
-        this.state.PPForm[13],
       ],
     ];
     const res = await postDatatoAPINODE(
@@ -350,29 +392,27 @@ class MatARP extends React.Component {
       this.state.tokenUser
     );
     if (res.data !== undefined) {
-      this.setState({ action_status: "success" });
       this.toggleLoading();
+      this.setState({ action_status: "success", action_message: "Material has been created, please check in Material List!" });
     } else {
-      if (
-        res.response !== undefined &&
-        res.response.data !== undefined &&
-        res.response.data.error !== undefined
-      ) {
+      if (res.response !== undefined && res.response.data !== undefined && res.response.data.error !== undefined) {
         if (res.response.data.error.message !== undefined) {
+          this.toggleLoading();
           this.setState({
             action_status: "failed",
             action_message: res.response.data.error.message,
           });
         } else {
+          this.toggleLoading();
           this.setState({
             action_status: "failed",
             action_message: res.response.data.error,
           });
         }
       } else {
+        this.toggleLoading();
         this.setState({ action_status: "failed" });
       }
-      this.toggleLoading();
     }
   };
 
@@ -384,11 +424,11 @@ class MatARP extends React.Component {
     this.setState({ PPForm: dataForm }, () => console.log(this.state.PPForm));
   };
 
-  togglePPForm() {
+  togglePPForm = () => {
     this.setState((prevState) => ({
       modalPPForm: !prevState.modalPPForm,
     }));
-  }
+  };
 
   downloadAll = async () => {
     let download_all = [];
@@ -401,18 +441,22 @@ class MatARP extends React.Component {
     const wb = new Excel.Workbook();
     const ws = wb.addWorksheet();
 
-    let header = [
+    let headerRow = [
+      "BB",
+      "BB_Sub",
+      "SoW_Description_or_Site_Type",
+      "SLA",
+      "UoM",
+      "Unit_Price",
+      "Region",
       "MM_Code",
       "MM_Description",
       "Vendor_ID",
-      "Unit_Price",
-      "Currency",
-      "UoM",
+      "Vendor_Name",
       "Remarks",
     ];
-
-    ws.addRow(header);
-    for (let i = 1; i < header.length + 1; i++) {
+    ws.addRow(headerRow);
+    for (let i = 1; i < headerRow.length + 1; i++) {
       ws.getCell(numToSSColumn(i) + "1").fill = {
         type: "pattern",
         pattern: "solid",
@@ -424,15 +468,16 @@ class MatARP extends React.Component {
     for (let i = 0; i < download_all.length; i++) {
       let e = download_all[i];
       ws.addRow([
+        e.BB,
+        e.BB_Sub,
+        e.SoW_Description_or_Site_Type,
+        e.SLA,
+        e.UoM,
+        e.Unit_Price,
+        e.Region,
         e.MM_Code,
         e.MM_Description,
         e.Vendor_ID,
-        e.Unit_Price,
-        e.Currency,
-        e.UoM,
-        e.Remarks,
-        e.ZERV_18,
-        e.ZEXT_40,
         e.Note,
       ]);
     }
@@ -505,17 +550,18 @@ class MatARP extends React.Component {
       const value = e.currentTarget.value;
       const aEdit = this.state.material_list.find((e) => e._id === value);
       let dataForm = this.state.PPForm;
-      dataForm[1] = aEdit.MM_Code;
-      dataForm[2] = aEdit.MM_Description;
-      dataForm[3] = aEdit.UoM;
-      dataForm[4] = aEdit.Unit_Price;
-      dataForm[5] = aEdit.Currency;
-      dataForm[6] = aEdit.Remarks;
-      dataForm[7] = aEdit.Vendor_ID;
-      dataForm[8] = aEdit.Vendor_Name;
-      dataForm[9] = aEdit.ZERV_18;
-      dataForm[10] = aEdit.ZEXT_40;
-      dataForm[11] = aEdit.Note;
+
+      dataForm[2] = aEdit.BB;
+      dataForm[3] = aEdit.BB_Sub;
+      dataForm[4] = aEdit.MM_Description;
+      dataForm[5] = aEdit.UoM;
+      dataForm[6] = aEdit.Unit_Price;
+      dataForm[7] = aEdit.MM_Code;
+      dataForm[8] = aEdit.Region;
+      dataForm[9] = aEdit.SLA;
+      dataForm[10] = aEdit.SoW_Description_or_Site_Type;
+      dataForm[11] = aEdit.Vendor_ID;
+      dataForm[12] = aEdit.Note;
       this.setState({ PPForm: dataForm, selected_id: value });
     } else {
       this.setState({ PPForm: new Array(11).fill("") });
@@ -530,17 +576,18 @@ class MatARP extends React.Component {
     this.toggleLoading();
     let dataForm = {
       _id: this.state.selected_id,
-      MM_Description: this.state.PPForm[2],
-      UoM: this.state.PPForm[3],
-      Unit_Price: this.state.PPForm[4],
-      Currency: this.state.PPForm[5],
-      Info_Rec: this.state.PPForm[6],
-      Vendor_ID: this.state.PPForm[7],
-      Vendor_Name: this.findVendorName(this.state.PPForm[7]),
-      Valid_To: this.state.PPForm[8],
-      Created_On: this.state.PPForm[9],
-      Status_Price_in_SAP: this.state.PPForm[10],
-      Note: this.state.PPForm[11],
+      BB: this.state.PPForm[2],
+      BB_Sub: this.state.PPForm[3],
+      MM_Description: this.state.PPForm[4],
+      UoM: this.state.PPForm[5],
+      Unit_Price: this.state.PPForm[6],
+      MM_Code: this.state.PPForm[7],
+      Region: this.state.PPForm[8],
+      SLA: this.state.PPForm[9],
+      SoW_Description_or_Site_Type: this.state.PPForm[10],
+      Vendor_ID: this.state.PPForm[11],
+      Vendor_Name: this.findVendorName(this.state.PPForm[11]),
+      Note: this.state.PPForm[12],
     };
     const res = await patchDatatoAPINODE(
       "/mmCode/updateMmCode",
@@ -578,7 +625,7 @@ class MatARP extends React.Component {
 
   loopSearchBar = () => {
     let searchBar = [];
-    for (let i = 0; i < 7; i++) {
+    for (let i = 0; i < 12; i++) {
       searchBar.push(
         <td>
           <div className="controls" style={{ minWidth: "150px" }}>
@@ -623,12 +670,12 @@ class MatARP extends React.Component {
   }
 
   render() {
-    const NROForm = this.state.NROForm;
     return (
       <div className="animated fadeIn">
         <DefaultNotif
           actionMessage={this.state.action_message}
           actionStatus={this.state.action_status}
+          redirect={this.state.redirect}
         />
         <Row>
           <Col xl="12">
@@ -677,22 +724,11 @@ class MatARP extends React.Component {
                         this.toggle(1);
                       }}
                     >
-                      <DropdownToggle block color="warning" size="sm">
-                        <i className="fa fa-download" aria-hidden="true">
-                          {" "}
-                          &nbsp;{" "}
-                        </i>{" "}
-                        Export
-                      </DropdownToggle>
+                      <DropdownToggle block color="warning" size="sm"><i className="fa fa-download" aria-hidden="true" style={{ marginRight: 4 }}></i>Export</DropdownToggle>
                       <DropdownMenu>
                         <DropdownItem header>Uploader Template</DropdownItem>
-                        <DropdownItem onClick={this.exportMatStatus}>
-                          {" "}
-                          Material Template
-                        </DropdownItem>
-                        <DropdownItem onClick={this.downloadAll}>
-                          Download All{" "}
-                        </DropdownItem>
+                        <DropdownItem onClick={this.exportMatStatus}>Material Template</DropdownItem>
+                        <DropdownItem onClick={this.downloadAll}>Download All</DropdownItem>
                       </DropdownMenu>
                     </Dropdown>
                   </div>
@@ -744,108 +780,103 @@ class MatARP extends React.Component {
                 </Row>
                 <Row>
                   <Col>
-                    <div>
-                      <Table striped hover bordered responsive size="sm">
-                        <thead
-                        // style={{ backgroundColor: "#73818f" }}
-                        // className="fixed-matlib"
-                        >
-                          <tr align="center">
-                            <th>MM_Code</th>
-                            <th>MM_Description</th>
-                            {/* <th>UoM</th> */}
-                            <th>Unit_Price</th>
-                            <th>Currency</th>
-                            <th>Remarks</th>
-                            <th>Vendor_ID</th>
-                            <th>Vendor_Name</th>
-                            {/* <th>ZERV_(18)</th>
-                            <th>ZEXT_(40)</th>
-                            <th>Note</th> */}
-                            <th colSpan="2" rowSpan="2" style={{ verticalAlign: "middle" }}>Action</th>
-                          </tr>
-                          <tr>
-                            {this.loopSearchBar()}
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {this.state.material_list !== undefined &&
-                            this.state.material_list !== null &&
-                            this.state.material_list.map((e) => (
-                              <React.Fragment key={e._id + "frag"}>
-                                <tr
-                                  // style={{ backgroundColor: "#d3d9e7" }}
-                                  // className="fixbody"
-                                  key={e._id}
-                                >
-                                  <td style={{ textAlign: "center" }}>
-                                    {e.MM_Code}
-                                  </td>
-                                  <td style={{ textAlign: "center" }}>
-                                    {e.MM_Description}
-                                  </td>
-                                  {/* <td style={{ textAlign: "center" }}>
-                                    {e.UoM}
-                                  </td> */}
-                                  <td style={{ textAlign: "center" }}>
-                                    {e.Unit_Price}
-                                  </td>
-                                  <td style={{ textAlign: "center" }}>
-                                    {e.Currency}
-                                  </td>
-                                  <td style={{ textAlign: "center" }}>
-                                    {e.Remarks}
-                                  </td>
-                                  <td style={{ textAlign: "center" }}>
-                                    {e.Vendor_ID}
-                                  </td>
-                                  <td style={{ textAlign: "center" }}>
-                                    {this.findVendorName(e.Vendor_ID)}
-                                  </td>
-                                  {/* <td style={{ textAlign: "center" }}>
-                                    {e["ZERV_(18)"]}
-                                  </td>
-                                  <td style={{ textAlign: "center" }}>
-                                    {e["ZEXT_(40)"]}
-                                  </td>
-                                  <td style={{ textAlign: "center" }}>
-                                    {e.Note}
-                                  </td> */}
-                                  <td>
-                                    <Button
-                                      size="sm"
-                                      color="secondary"
-                                      value={e._id}
-                                      onClick={this.toggleEdit}
-                                      title="Edit"
-                                    >
-                                      <i
-                                        className="fa fa-edit"
-                                        aria-hidden="true"
-                                      ></i>
-                                    </Button>
-                                  </td>
-                                  <td>
-                                    <Button
-                                      size="sm"
-                                      color="danger"
-                                      value={e._id}
-                                      name={e.MM_Code}
-                                      onClick={this.toggleDelete}
-                                      title="Delete"
-                                    >
-                                      <i
-                                        className="fa fa-trash"
-                                        aria-hidden="true"
-                                      ></i>
-                                    </Button>
-                                  </td>
-                                </tr>
-                              </React.Fragment>
-                            ))}
-                        </tbody>
-                      </Table>
-                    </div>
+                    <Table striped hover bordered responsive size="sm">
+                      <thead>
+                        <tr align="center">
+                          <th>BB</th>
+                          <th>BB_Sub</th>
+                          <th>SoW_Description_or_Site_Type</th>
+                          <th>SLA</th>
+                          <th>UoM</th>
+                          <th>Unit_Price</th>
+                          <th>Region</th>
+                          <th>MM_Code</th>
+                          <th>MM_Description</th>
+                          <th>Vendor_ID</th>
+                          <th>Vendor_Name</th>
+                          <th>Remarks</th>
+                          <th colSpan="2" rowSpan="2" style={{ verticalAlign: "middle" }}>Action</th>
+                        </tr>
+                        <tr>
+                          {this.loopSearchBar()}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {this.state.material_list !== undefined &&
+                          this.state.material_list !== null &&
+                          this.state.material_list.map((e) => (
+                            <React.Fragment key={e._id + "frag"}>
+                              <tr key={e._id}>
+                                <td style={{ textAlign: "center" }}>
+                                  {e.BB}
+                                </td>
+                                <td style={{ textAlign: "center" }}>
+                                  {e.BB_Sub}
+                                </td>
+                                <td style={{ textAlign: "center" }}>
+                                  {e.SoW_Description_or_Site_Type}
+                                </td>
+                                <td style={{ textAlign: "center" }}>
+                                  {e.SLA}
+                                </td>
+                                <td style={{ textAlign: "center" }}>
+                                  {e.UoM}
+                                </td>
+                                <td style={{ textAlign: "center" }}>
+                                  {e.Unit_Price}
+                                </td>
+                                <td style={{ textAlign: "center" }}>
+                                  {e.Region}
+                                </td>
+                                <td style={{ textAlign: "center" }}>
+                                  {e.MM_Code}
+                                </td>
+                                <td style={{ textAlign: "center" }}>
+                                  {e.MM_Description}
+                                </td>
+                                <td style={{ textAlign: "center" }}>
+                                  {e.Vendor_ID}
+                                </td>
+                                <td style={{ textAlign: "center" }}>
+                                  {this.findVendorName(e.Vendor_ID)}
+                                </td>
+                                <td style={{ textAlign: "center" }}>
+                                  {e.Remarks}
+                                </td>
+                                <td>
+                                  <Button
+                                    size="sm"
+                                    color="secondary"
+                                    value={e._id}
+                                    onClick={this.toggleEdit}
+                                    title="Edit"
+                                  >
+                                    <i
+                                      className="fa fa-edit"
+                                      aria-hidden="true"
+                                    ></i>
+                                  </Button>
+                                </td>
+                                <td>
+                                  <Button
+                                    size="sm"
+                                    color="danger"
+                                    value={e._id}
+                                    name={e.MM_Code}
+                                    onClick={this.toggleDelete}
+                                    title="Delete"
+                                  >
+                                    <i
+                                      className="fa fa-trash"
+                                      aria-hidden="true"
+                                    ></i>
+                                  </Button>
+                                </td>
+                              </tr>
+                            </React.Fragment>
+                          ))}
+                      </tbody>
+                    </Table>
                   </Col>
                 </Row>
                 <div style={{ margin: "8px 0px" }}>
@@ -879,35 +910,47 @@ class MatARP extends React.Component {
           <ModalBody>
             <Row>
               <Col sm="12">
-                {/* <FormGroup>
-                  <Label>Material_Type</Label>
+                <FormGroup>
+                  <Label>BB</Label>
                   <Input
                     type="text"
-                    name="0"
+                    name="2"
                     placeholder=""
-                    value={this.state.PPForm[0]}
+                    value={this.state.PPForm[2]}
                     onChange={this.handleChangeForm}
                   />
-                </FormGroup> */}
+                </FormGroup>
                 <FormGroup>
-                  <Label>MM_Code</Label>
+                  <Label>BB_Sub</Label>
                   <Input
                     type="text"
-                    name="1"
+                    name="3"
                     placeholder=""
-                    value={this.state.PPForm[1]}
+                    value={this.state.PPForm[3]}
                     onChange={this.handleChangeForm}
                   />
                 </FormGroup>
                 <FormGroup row>
                   <Col xs="12">
                     <FormGroup>
+                      <Label>MM_Code</Label>
+                      <Input
+                        type="text"
+                        name="7"
+                        placeholder=""
+                        value={this.state.PPForm[7]}
+                        onChange={this.handleChangeForm}
+                      />
+                    </FormGroup>
+                  </Col>
+                  <Col xs="12">
+                    <FormGroup>
                       <Label>MM_Description</Label>
                       <Input
                         type="text"
-                        name="2"
+                        name="4"
                         placeholder=""
-                        value={this.state.PPForm[2]}
+                        value={this.state.PPForm[4]}
                         onChange={this.handleChangeForm}
                       />
                     </FormGroup>
@@ -917,9 +960,9 @@ class MatARP extends React.Component {
                       <Label>UoM</Label>
                       <Input
                         type="text"
-                        name="3"
+                        name="5"
                         placeholder=""
-                        value={this.state.PPForm[3]}
+                        value={this.state.PPForm[5]}
                         onChange={this.handleChangeForm}
                       />
                     </FormGroup>
@@ -929,45 +972,51 @@ class MatARP extends React.Component {
                       <Label>Unit_Price</Label>
                       <Input
                         type="number"
-                        name="4"
+                        name="6"
                         placeholder=""
-                        value={this.state.PPForm[4]}
-                        onChange={this.handleChangeForm}
-                      />
-                    </FormGroup>
-                  </Col>
-                </FormGroup>
-                <FormGroup row>
-                  <Col xs="12">
-                    <FormGroup>
-                      <Label>Currency</Label>
-                      <Input
-                        type="text"
-                        name="5"
-                        placeholder=""
-                        value={this.state.PPForm[5]}
+                        value={this.state.PPForm[6]}
                         onChange={this.handleChangeForm}
                       />
                     </FormGroup>
                   </Col>
                 </FormGroup>
                 <FormGroup>
-                  <Label>Remarks</Label>
+                  <Label>Region</Label>
                   <Input
                     type="text"
-                    name="6"
+                    name="8"
                     placeholder=""
-                    value={this.state.PPForm[6]}
+                    value={this.state.PPForm[8]}
                     onChange={this.handleChangeForm}
                   />
                 </FormGroup>
                 <FormGroup>
-                  <Label>Vendor_ID</Label>
+                  <Label>SLA</Label>
+                  <Input
+                    type="text"
+                    name="9"
+                    placeholder=""
+                    value={this.state.PPForm[9]}
+                    onChange={this.handleChangeForm}
+                  />
+                </FormGroup>
+                <FormGroup>
+                  <Label>SoW_Description_or_Site_Type</Label>
+                  <Input
+                    type="text"
+                    name="10"
+                    placeholder=""
+                    value={this.state.PPForm[10]}
+                    onChange={this.handleChangeForm}
+                  />
+                </FormGroup>
+                <FormGroup>
+                  <Label>Vendor</Label>
                   <Input
                     type="select"
-                    name="7"
+                    name="11"
                     placeholder=""
-                    value={this.state.PPForm[7]}
+                    value={this.state.PPForm[11]}
                     onChange={this.handleChangeForm}
                   >
                     <option selected="true" disabled="disabled">
@@ -981,32 +1030,12 @@ class MatARP extends React.Component {
                   </Input>
                 </FormGroup>
                 <FormGroup>
-                  <Label>ZERV_(18)</Label>
-                  <Input
-                    type="text"
-                    name="9"
-                    placeholder=""
-                    value={this.state.PPForm[9]}
-                    onChange={this.handleChangeForm}
-                  />
-                </FormGroup>
-                <FormGroup>
-                  <Label>ZEXT_(40)</Label>
-                  <Input
-                    type="text"
-                    name="10"
-                    placeholder=""
-                    value={this.state.PPForm[10]}
-                    onChange={this.handleChangeForm}
-                  />
-                </FormGroup>
-                <FormGroup>
                   <Label>Note</Label>
                   <Input
                     type="text"
-                    name="11"
+                    name="12"
                     placeholder=""
-                    value={this.state.PPForm[11]}
+                    value={this.state.PPForm[12]}
                     onChange={this.handleChangeForm}
                   />
                 </FormGroup>
@@ -1016,6 +1045,155 @@ class MatARP extends React.Component {
           <ModalFooter>
             <Button color="success" onClick={this.saveNew}>
               Submit
+            </Button>
+          </ModalFooter>
+        </Modal>
+        {/*  Modal New PP*/}
+
+        {/* Modal Update */}
+        <Modal
+          isOpen={this.state.modalEdit}
+          toggle={this.toggleEdit}
+          className="modal--form"
+        >
+          <ModalHeader>Form {module_name}</ModalHeader>
+          <ModalBody>
+            <Row>
+              <Col sm="12">
+                <FormGroup>
+                  <Label>BB</Label>
+                  <Input
+                    type="text"
+                    name="2"
+                    placeholder=""
+                    value={this.state.PPForm[2]}
+                    onChange={this.handleChangeForm}
+                  />
+                </FormGroup>
+                <FormGroup>
+                  <Label>BB_Sub</Label>
+                  <Input
+                    type="text"
+                    name="3"
+                    placeholder=""
+                    value={this.state.PPForm[3]}
+                    onChange={this.handleChangeForm}
+                  />
+                </FormGroup>
+                <FormGroup row>
+                  <Col xs="12">
+                    <FormGroup>
+                      <Label>MM_Description</Label>
+                      <Input
+                        type="text"
+                        name="4"
+                        placeholder=""
+                        value={this.state.PPForm[4]}
+                        onChange={this.handleChangeForm}
+                      />
+                    </FormGroup>
+                  </Col>
+                  <Col xs="12">
+                    <FormGroup>
+                      <Label>MM_Code</Label>
+                      <Input
+                        readOnly
+                        type="text"
+                        name="7"
+                        placeholder=""
+                        value={this.state.PPForm[7]}
+                        onChange={this.handleChangeForm}
+                      />
+                    </FormGroup>
+                  </Col>
+                  <Col xs="12">
+                    <FormGroup>
+                      <Label>UoM</Label>
+                      <Input
+                        type="text"
+                        name="5"
+                        placeholder=""
+                        value={this.state.PPForm[5]}
+                        onChange={this.handleChangeForm}
+                      />
+                    </FormGroup>
+                  </Col>
+                  <Col xs="12">
+                    <FormGroup>
+                      <Label>Unit_Price</Label>
+                      <Input
+                        type="number"
+                        name="6"
+                        placeholder=""
+                        value={this.state.PPForm[6]}
+                        onChange={this.handleChangeForm}
+                      />
+                    </FormGroup>
+                  </Col>
+                </FormGroup>
+                <FormGroup>
+                  <Label>Region</Label>
+                  <Input
+                    type="text"
+                    name="8"
+                    placeholder=""
+                    value={this.state.PPForm[8]}
+                    onChange={this.handleChangeForm}
+                  />
+                </FormGroup>
+                <FormGroup>
+                  <Label>SLA</Label>
+                  <Input
+                    type="text"
+                    name="9"
+                    placeholder=""
+                    value={this.state.PPForm[9]}
+                    onChange={this.handleChangeForm}
+                  />
+                </FormGroup>
+                <FormGroup>
+                  <Label>SoW_Description_or_Site_Type</Label>
+                  <Input
+                    type="text"
+                    name="10"
+                    placeholder=""
+                    value={this.state.PPForm[10]}
+                    onChange={this.handleChangeForm}
+                  />
+                </FormGroup>
+                <FormGroup>
+                  <Label>Vendor</Label>
+                  <Input
+                    type="select"
+                    name="11"
+                    placeholder=""
+                    value={this.state.PPForm[11]}
+                    onChange={this.handleChangeForm}
+                  >
+                    <option selected="true" disabled="disabled">
+                      Select Vendor
+                    </option>
+                    {this.state.vendor_list.map((asp) => (
+                      <option value={asp.Vendor_Code}>{asp.Name}</option>
+                    ))}
+                  </Input>
+                </FormGroup>
+                <FormGroup>
+                  <Label>Note</Label>
+                  <Input
+                    type="text"
+                    name="12"
+                    placeholder=""
+                    value={this.state.PPForm[12]}
+                    onChange={this.handleChangeForm}
+                  />
+                </FormGroup>
+              </Col>
+            </Row>
+          </ModalBody>
+          <ModalFooter>
+            <Button color="success" onClick={this.saveUpdate}>
+              Update
             </Button>
           </ModalFooter>
         </Modal>
@@ -1069,151 +1247,6 @@ class MatARP extends React.Component {
         ></Loading>
         {/* end Modal Loading */}
 
-        {/* Modal Update */}
-        <Modal
-          isOpen={this.state.modalEdit}
-          toggle={this.toggleEdit}
-          className="modal--form"
-        >
-          <ModalHeader>Form {module_name}</ModalHeader>
-          <ModalBody>
-            <Row>
-              <Col sm="12">
-                <FormGroup row>
-                  <Col xs="12">
-                    <FormGroup>
-                      <Label>MM_Code</Label>
-                      <Input
-                        readOnly
-                        type="text"
-                        name="1"
-                        placeholder=""
-                        value={this.state.PPForm[1]}
-                        onChange={this.handleChangeForm}
-                      />
-                    </FormGroup>
-                  </Col>
-                  <Col xs="12">
-                    <FormGroup>
-                      <Label>MM_Description</Label>
-                      <Input
-                        type="text"
-                        name="2"
-                        placeholder=""
-                        value={this.state.PPForm[2]}
-                        onChange={this.handleChangeForm}
-                      />
-                    </FormGroup>
-                  </Col>
-                  <Col xs="12">
-                    <FormGroup>
-                      <Label>UoM</Label>
-                      <Input
-                        type="text"
-                        name="3"
-                        placeholder=""
-                        value={this.state.PPForm[3]}
-                        onChange={this.handleChangeForm}
-                      />
-                    </FormGroup>
-                  </Col>
-                  <Col xs="12">
-                    <FormGroup>
-                      <Label>Unit_Price</Label>
-                      <Input
-                        type="number"
-                        name="4"
-                        placeholder=""
-                        value={this.state.PPForm[4]}
-                        onChange={this.handleChangeForm}
-                      />
-                    </FormGroup>
-                  </Col>
-                </FormGroup>
-                <FormGroup row>
-                  <Col xs="12">
-                    <FormGroup>
-                      <Label>Currency</Label>
-                      <Input
-                        type="text"
-                        name="5"
-                        placeholder=""
-                        value={this.state.PPForm[5]}
-                        onChange={this.handleChangeForm}
-                      />
-                    </FormGroup>
-                  </Col>
-                </FormGroup>
-                <FormGroup>
-                  <Label>Remarks</Label>
-                  <Input
-                    type="text"
-                    name="6"
-                    placeholder=""
-                    value={this.state.PPForm[6]}
-                    onChange={this.handleChangeForm}
-                  />
-                </FormGroup>
-                <FormGroup>
-                  <Label>Vendor_ID</Label>
-                  <Input
-                    type="select"
-                    name="7"
-                    placeholder=""
-                    value={this.state.PPForm[7]}
-                    onChange={this.handleChangeForm}
-                  >
-                    <option selected="true" disabled="disabled">
-                      Select Vendor
-                    </option>
-                    {this.state.vendor_list.map((asp) => (
-                      <option value={asp.Vendor_Code}>
-                        {asp.Vendor_Code}-{asp.Name}
-                      </option>
-                    ))}
-                  </Input>
-                </FormGroup>
-                <FormGroup>
-                  <Label>ZERV_(18)</Label>
-                  <Input
-                    type="text"
-                    name="9"
-                    placeholder=""
-                    value={this.state.PPForm[9]}
-                    onChange={this.handleChangeForm}
-                  />
-                </FormGroup>
-                <FormGroup>
-                  <Label>ZEXT_(40)</Label>
-                  <Input
-                    type="text"
-                    name="10"
-                    placeholder=""
-                    value={this.state.PPForm[10]}
-                    onChange={this.handleChangeForm}
-                  />
-                </FormGroup>
-                <FormGroup>
-                  <Label>Note</Label>
-                  <Input
-                    type="text"
-                    name="11"
-                    placeholder=""
-                    value={this.state.PPForm[11]}
-                    onChange={this.handleChangeForm}
-                  />
-                </FormGroup>
-              </Col>
-            </Row>
-          </ModalBody>
-          <ModalFooter>
-            <Button color="success" onClick={this.saveUpdate}>
-              Update
-            </Button>
-          </ModalFooter>
-        </Modal>
-        {/*  Modal New PP*/}
-
         {/* Modal confirmation delete */}
         <ModalDelete
           isOpen={this.state.danger}
@@ -1246,4 +1279,4 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps)(MatARP);
+export default connect(mapStateToProps)(MatIntegration);

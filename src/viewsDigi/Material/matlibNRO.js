@@ -60,12 +60,12 @@ const Checkbox = ({
 );
 const module_name = "NRO";
 const header_model = [
+  "Material_Sub_Type",
   "BB",
   "BB_Sub",
   "SoW_Description_or_Site_Type",
   "UoM",
   "Region",
-
   "Unit_Price",
   "MM_Code",
   "MM_Description",
@@ -83,13 +83,7 @@ class TabelNRO extends React.Component {
             <Checkbox
               // checked={!this.props.CheckVendor}
               checked={
-                this.props.vendorChecked.has(
-                  mat_id + " /// " + vendor.Vendor_Code
-                )
-                  ? this.props.vendorChecked.get(
-                    mat_id + " /// " + vendor.Vendor_Code
-                  )
-                  : true
+                this.props.vendorChecked.has(mat_id + " /// " + vendor.Vendor_Code) ? this.props.vendorChecked.get(mat_id + " /// " + vendor.Vendor_Code) : true
               }
               onChange={this.props.handleCheckVendor}
               name={mat_id + " /// " + vendor.Vendor_Code}
@@ -124,7 +118,7 @@ class TabelNRO extends React.Component {
 
   loopSearchBar = () => {
     let searchBar = [];
-    for (let i = 0; i < 8; i++) {
+    for (let i = 0; i < 9; i++) {
       searchBar.push(
         <td>
           <div className="controls" style={{ minWidth: "150px" }}>
@@ -159,44 +153,30 @@ class TabelNRO extends React.Component {
       <Table striped hover bordered responsive size="sm">
         <thead>
           <tr>
-            <th rowSpan="2" style={{ verticalAlign: "middle" }}>
-              <b>BB</b>
-            </th>
-            <th rowSpan="2" style={{ verticalAlign: "middle" }}>
-              <b>BB_Sub</b>
-            </th>
-            <th rowSpan="2" style={{ verticalAlign: "middle" }}>
-              <b>SoW_Description</b>
-            </th>
-            <th rowSpan="2" style={{ verticalAlign: "middle" }}>
-              <b>UoM</b>
-            </th>
-            <th rowSpan="2" style={{ verticalAlign: "middle" }}>
-              <b>Region</b>
-            </th>
-            <th rowSpan="2" style={{ verticalAlign: "middle" }}>
-              <b>Unit_Price</b>
-            </th>
-            <th rowSpan="2" style={{ verticalAlign: "middle" }}>
-              <b>MM Code</b>
-            </th>
-            <th rowSpan="2" style={{ verticalAlign: "middle" }}>
-              <b>MM_Description</b>
-            </th>
+            <th style={{ verticalAlign: "middle" }}><b>MM_Sub_Type</b></th>
+            <th style={{ verticalAlign: "middle" }}><b>BB</b></th>
+            <th style={{ verticalAlign: "middle" }}><b>BB_Sub</b></th>
+            <th style={{ verticalAlign: "middle" }}><b>SoW_Description</b></th>
+            <th style={{ verticalAlign: "middle" }}><b>UoM</b></th>
+            <th style={{ verticalAlign: "middle" }}><b>Region</b></th>
+            <th style={{ verticalAlign: "middle" }}><b>Unit_Price</b></th>
+            <th style={{ verticalAlign: "middle" }}><b>MM Code</b></th>
+            <th style={{ verticalAlign: "middle" }}><b>MM_Description</b></th>
             {this.props.Vendor_header.map((vendor) => (
               <Fragment key={vendor._id}>
                 <th style={{ verticalAlign: "middle" }}>{vendor.Name}</th>
               </Fragment>
             ))}
-            <th colspan="3"></th>
+            <th colSpan="2" rowSpan="2" style={{ verticalAlign: "middle" }}>Action</th>
           </tr>
           <tr>
+            {this.loopSearchBar()}
             {this.props.Vendor_header.map((vendor, i) => (
               <Fragment key={vendor._id}>
                 <th>
                   {
                     <Checkbox
-                      checked={this.props.vendorCheckedPage}
+                      checked={this.props.vendorCheckedPage.get(vendor.Vendor_Code)}
                       value={vendor.Vendor_Code}
                       id={vendor.Vendor_Code}
                       // name={MatIdcol[i]+" /// "+vendor.Vendor_Code}
@@ -208,18 +188,14 @@ class TabelNRO extends React.Component {
               </Fragment>
             ))}
           </tr>
-          <tr>
-            {this.loopSearchBar()}
-          </tr>
         </thead>
         <tbody>
           {this.props.DataMaterial.map((e) => (
             <tr>
+              <td style={{ textAlign: "center" }}>{e.Material_Sub_Type}</td>
               <td style={{ textAlign: "center" }}>{e.BB}</td>
               <td style={{ textAlign: "center" }}>{e.BB_Sub}</td>
-              <td style={{ textAlign: "center" }}>
-                {e.SoW_Description_or_Site_Type}
-              </td>
+              <td style={{ textAlign: "center" }}>{e.SoW_Description_or_Site_Type}</td>
               <td style={{ textAlign: "center" }}>{e.UoM}</td>
               <td style={{ textAlign: "center" }}>{e.Region}</td>
               <td style={{ textAlign: "center" }}>{e.Unit_Price}</td>
@@ -267,7 +243,7 @@ class MatNRO extends React.Component {
       dropdownOpen: new Array(3).fill(false),
       PPForm: new Array(13).fill(""),
       vendorChecked: new Map(),
-      vendorCheckedPage: false,
+      vendorCheckedPage: new Map(),
       createModal: false,
       modal_loading: false,
       vendor_check: false,
@@ -324,6 +300,13 @@ class MatNRO extends React.Component {
     filter_array.push(
       '"Material_Type":{"$regex" : "' + module_name + '", "$options" : "i"}'
     );
+    this.state.filter_list["Material_Sub_Type"] !== null &&
+      this.state.filter_list["Material_Sub_Type"] !== undefined &&
+      filter_array.push(
+        '"Material_Sub_Type":{"$regex" : "' +
+        this.state.filter_list["Material_Sub_Type"] +
+        '", "$options" : "i"}'
+      );
     this.state.filter_list["BB"] !== null &&
       this.state.filter_list["BB"] !== undefined &&
       filter_array.push(
@@ -336,6 +319,13 @@ class MatNRO extends React.Component {
       filter_array.push(
         '"BB_Sub":{"$regex" : "' +
         this.state.filter_list["BB_Sub"] +
+        '", "$options" : "i"}'
+      );
+    this.state.filter_list["SoW_Description_or_Site_Type"] !== null &&
+      this.state.filter_list["SoW_Description_or_Site_Type"] !== undefined &&
+      filter_array.push(
+        '"SoW_Description_or_Site_Type":{"$regex" : "' +
+        this.state.filter_list["SoW_Description_or_Site_Type"] +
         '", "$options" : "i"}'
       );
     this.state.filter_list["UoM"] !== null &&
@@ -376,7 +366,7 @@ class MatNRO extends React.Component {
     let whereAnd = "{" + filter_array.join(",") + "}";
 
     getDatafromAPINODE(
-      "/mmCodeDigi/getMm?q=" +
+      "/mmCode/getMm?q=" +
       whereAnd +
       "&max_results=" +
       this.state.perPage +
@@ -400,7 +390,7 @@ class MatNRO extends React.Component {
 
   getMaterialListAll() {
     getDatafromAPINODE(
-      '/mmCodeDigi/getMm?q={"Material_Type": "' + module_name + '"}' + "&noPg=1",
+      '/mmCode/getMm?q={"Material_Type": "' + module_name + '"}' + "&noPg=1",
       this.state.tokenUser
     ).then((res) => {
       if (res.data !== undefined) {
@@ -414,18 +404,19 @@ class MatNRO extends React.Component {
     const wb = new Excel.Workbook();
     const ws = wb.addWorksheet();
 
-    const vendorName = this.state.vendor_list.map((a) => a.Name);
+    // const vendorName = this.state.vendor_list.map((a) => a.Name);
     let header = [
       "Material_Type",
-      "BB",
-      "BB_Sub",
-      "SoW_Description_or_Site_Type",
-      "UoM",
-      "Region",
-      "Unit_Price",
+      "Material_Sub_Type",
       "MM_Code",
       "MM_Description",
+      "UoM",
+      "Unit_Price",
+      "BB",
+      "BB_Sub",
+      "Region",
       "SLA",
+      "SoW_Description_or_Site_Type",
       "Remarks",
     ];
     // header = header.concat(vendorName);
@@ -437,6 +428,9 @@ class MatNRO extends React.Component {
         pattern: "solid",
         fgColor: { argb: "FFFFFF00" },
         bgColor: { argb: "A9A9A9" },
+      };
+      ws.getCell(numToSSColumn(i) + "1").font = {
+        bold: true
       };
     }
 
@@ -481,9 +475,7 @@ class MatNRO extends React.Component {
           console.log(err);
         } else {
           console.log("rest.rows", JSON.stringify(rest.rows));
-          this.setState({
-            rowsXLS: rest.rows,
-          });
+          this.setState({ rowsXLS: rest.rows }, () => console.log('isi excel material', this.state.rowsXLS));
         }
       });
     }
@@ -494,7 +486,7 @@ class MatNRO extends React.Component {
     this.togglecreateModal();
     const BulkXLSX = this.state.rowsXLS;
     const res = await postDatatoAPINODE(
-      "/mmCodeDigi/createMmCode",
+      "/mmCode/createMmCode",
       {
         mm_data: BulkXLSX,
       },
@@ -600,12 +592,12 @@ class MatNRO extends React.Component {
     }
     console.log("dataVendorMatUpdate", dataVendorMatUpdate);
     const res = await patchDatatoAPINODE(
-      "/mmCodeDigi/updateMmCode",
+      "/mmCode/updateMmCode",
       { data: dataVendorMatUpdate },
       this.state.tokenUser
     );
     if (res.data !== undefined) {
-      this.setState({ action_status: "success" });
+      this.setState({ action_status: "success", action_message: "Vendors have been updated!" });
       this.toggleLoading();
     } else {
       if (
@@ -647,6 +639,7 @@ class MatNRO extends React.Component {
 
   handleCheckVendorAll = (event) => {
     const isChecked = event.target.checked;
+    const identifierAll = event.target.name;
     let getMaterialId = this.state.material_list_all;
     if (isChecked) {
       getMaterialId = getMaterialId.map((e) => e._id);
@@ -671,10 +664,13 @@ class MatNRO extends React.Component {
     }
 
     console.log(this.state.vendorChecked);
-    this.setState(
-      (prevState) => ({ vendorCheckedPage: !prevState.vendorCheckedPage }),
-      () => console.log(this.state.vendorCheckedPage)
-    );
+    this.setState((prevState) => ({
+      vendorCheckedPage: prevState.vendorCheckedPage.set(identifierAll, isChecked),
+    }));
+    // this.setState(
+    //   (prevState) => ({ vendorCheckedPage: !prevState.vendorCheckedPage }),
+    //   () => console.log(this.state.vendorCheckedPage)
+    // );
   };
 
   saveNew = async () => {
@@ -683,6 +679,7 @@ class MatNRO extends React.Component {
     let dataForm = [
       [
         "Material_Type",
+        "Material_Sub_Type",
         "MM_Code",
         "MM_Description",
         "UoM",
@@ -695,6 +692,7 @@ class MatNRO extends React.Component {
       ],
       [
         module_name,
+        this.state.PPForm[14],
         this.state.PPForm[1],
         this.state.PPForm[2],
         this.state.PPForm[3],
@@ -711,7 +709,7 @@ class MatNRO extends React.Component {
       ],
     ];
     const res = await postDatatoAPINODE(
-      "/mmCodeDigi/createMmCode",
+      "/mmCode/createMmCode",
       {
         mm_data: dataForm,
       },
@@ -843,7 +841,7 @@ class MatNRO extends React.Component {
     this.toggleLoading();
     this.toggleDelete();
     const DelData = deleteDataFromAPINODE2(
-      "/mmCodeDigi/deleteMmCode",
+      "/mmCode/deleteMmCode",
       this.state.tokenUser,
       { data: [objData] }
     ).then((res) => {
@@ -909,7 +907,7 @@ class MatNRO extends React.Component {
       Note: this.state.PPForm[12],
     };
     const res = await patchDatatoAPINODE(
-      "/mmCodeDigi/updateMmCode",
+      "/mmCode/updateMmCode",
       {
         data: [dataForm],
       },
@@ -992,21 +990,10 @@ class MatNRO extends React.Component {
                           this.toggle(2);
                         }}
                       >
-                        <DropdownToggle block color="success" size="sm">
-                          <i className="fa fa-plus-square" aria-hidden="true">
-                            {" "}
-                            &nbsp;{" "}
-                          </i>{" "}
-                          New
-                        </DropdownToggle>
+                        <DropdownToggle block color="success" size="sm"><i className="fa fa-plus-square" aria-hidden="true" style={{ marginRight: 4 }}></i>New</DropdownToggle>
                         <DropdownMenu>
-                          <DropdownItem onClick={this.togglecreateModal}>
-                            {" "}
-                            Bulk
-                          </DropdownItem>
-                          <DropdownItem onClick={this.togglePPForm}>
-                            Form{" "}
-                          </DropdownItem>
+                          <DropdownItem onClick={this.togglecreateModal}>Bulk</DropdownItem>
+                          <DropdownItem onClick={this.togglePPForm}>Form</DropdownItem>
                         </DropdownMenu>
                       </Dropdown>
                     </div>
@@ -1019,22 +1006,11 @@ class MatNRO extends React.Component {
                         this.toggle(1);
                       }}
                     >
-                      <DropdownToggle block color="warning" size="sm">
-                        <i className="fa fa-download" aria-hidden="true">
-                          {" "}
-                          &nbsp;{" "}
-                        </i>{" "}
-                        Export
-                      </DropdownToggle>
+                      <DropdownToggle block color="warning" size="sm"><i className="fa fa-download" aria-hidden="true" style={{ marginRight: 4 }}></i>Export</DropdownToggle>
                       <DropdownMenu>
                         <DropdownItem header>Uploader Template</DropdownItem>
-                        <DropdownItem onClick={this.exportMatStatus}>
-                          {" "}
-                          Material Template
-                        </DropdownItem>
-                        <DropdownItem onClick={this.downloadAll}>
-                          Download All{" "}
-                        </DropdownItem>
+                        <DropdownItem onClick={this.exportMatStatus}>Material Template</DropdownItem>
+                        <DropdownItem onClick={this.downloadAll}>Download All</DropdownItem>
                       </DropdownMenu>
                     </Dropdown>
                   </div>
@@ -1052,6 +1028,7 @@ class MatNRO extends React.Component {
                         Vendor_header={this.sortVendor(this.state.vendor_list)}
                         DataMaterial={this.state.material_list}
                         vendorChecked={this.state.vendorChecked}
+                        vendorCheckedPage={this.state.vendorCheckedPage}
                         handleCheckVendorAll={this.handleCheckVendorAll}
                         toggleEdit={this.toggleEdit}
                         toggleDelete={this.toggleDelete}
@@ -1080,7 +1057,7 @@ class MatNRO extends React.Component {
               </CardBody>
               <CardFooter>
                 <Button
-                  color="info"
+                  color="primary"
                   size="sm"
                   onClick={this.saveUpdateNROVendorData}
                 >
@@ -1101,6 +1078,22 @@ class MatNRO extends React.Component {
           <ModalBody>
             <Row>
               <Col sm="12">
+                <FormGroup>
+                  <Label>MM_Sub_Type</Label>
+                  <Input
+                    type="select"
+                    name="14"
+                    placeholder=""
+                    value={this.state.PPForm[14]}
+                    onChange={this.handleChangeForm}
+                  >
+                    <option value="" disabled selected hidden>Select MM Sub Type</option>
+                    <option value="Survey">Survey</option>
+                    <option value="ITC">ITC</option>
+                    <option value="Transport">Transport</option>
+                    <option value="Special Transport">Special Transport</option>
+                  </Input>
+                </FormGroup>
                 <FormGroup>
                   <Label>MM_Code</Label>
                   <Input

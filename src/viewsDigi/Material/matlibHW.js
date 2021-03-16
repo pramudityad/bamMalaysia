@@ -103,7 +103,7 @@ class MatHW extends React.Component {
 
   getMaterialListAll() {
     getDatafromAPINODE(
-      '/mmCodeDigi/getMm?q={"Material_Type": "' + module_name + '"}' + "&noPg=1",
+      '/mmCode/getMm?q={"Material_Type": "' + module_name + '"}' + "&noPg=1",
       this.state.tokenUser
     ).then((res) => {
       if (res.data !== undefined) {
@@ -178,7 +178,7 @@ class MatHW extends React.Component {
     let whereAnd = "{" + filter_array.join(",") + "}";
 
     getDatafromAPINODE(
-      "/mmCodeDigi/getMm?q=" +
+      "/mmCode/getMm?q=" +
       whereAnd +
       "&max_results=" +
       this.state.perPage +
@@ -284,7 +284,7 @@ class MatHW extends React.Component {
     this.togglecreateModal();
     const BulkXLSX = this.state.rowsXLS;
     const res = await postDatatoAPINODE(
-      "/mmCodeDigi/createMmCode",
+      "/mmCode/createMmCode",
       {
         mm_data: BulkXLSX,
       },
@@ -363,7 +363,7 @@ class MatHW extends React.Component {
       ],
     ];
     const res = await postDatatoAPINODE(
-      "/mmCodeDigi/createMmCode",
+      "/mmCode/createMmCode",
       {
         mm_data: dataForm,
       },
@@ -504,7 +504,7 @@ class MatHW extends React.Component {
     this.toggleLoading();
     this.toggleDelete();
     const DelData = deleteDataFromAPINODE2(
-      "/mmCodeDigi/deleteMmCode",
+      "/mmCode/deleteMmCode",
       this.state.tokenUser,
       { data: [objData] }
     ).then((res) => {
@@ -569,7 +569,7 @@ class MatHW extends React.Component {
       Note: this.state.PPForm[11],
     };
     const res = await patchDatatoAPINODE(
-      "/mmCodeDigi/updateMmCode",
+      "/mmCode/updateMmCode",
       {
         data: [dataForm],
       },

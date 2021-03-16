@@ -37,7 +37,7 @@ import { numToSSColumn } from "../../helper/basicFunction";
 import '../MYAssignment/LMRMY.css';
 
 const DefaultNotif = React.lazy(() =>
-  import("../../views/DefaultView/DefaultNotif")
+  import("../DefaultView/DefaultNotif")
 );
 
 const module_name = "NDO";
@@ -104,7 +104,7 @@ class MatNDO extends React.Component {
   }
 
   getMaterialListAll() {
-    getDatafromAPINODE('/mmCodeDigi/getMm?srt=_id:-1&q={"Material_Type": "' + module_name + '"}' + "&noPg=1", this.state.tokenUser).then((res) => {
+    getDatafromAPINODE('/mmCode/getMm?srt=_id:-1&q={"Material_Type": "' + module_name + '"}' + "&noPg=1", this.state.tokenUser).then((res) => {
       if (res.data !== undefined) {
         const items = res.data.data;
         this.setState({ material_list_all: items });
@@ -204,7 +204,7 @@ class MatNDO extends React.Component {
     let whereAnd = "{" + filter_array.join(",") + "}";
 
     getDatafromAPINODE(
-      "/mmCodeDigi/getMm?srt=_id:-1&q=" +
+      "/mmCode/getMm?srt=_id:-1&q=" +
       whereAnd +
       "&lmt=" +
       this.state.perPage +
@@ -232,6 +232,7 @@ class MatNDO extends React.Component {
 
     let header = [
       "Material_Type",
+      "Material_Sub_Type",
       "BB",
       "BB_Sub",
       "SoW_Description_or_Site_Type",
@@ -254,9 +255,12 @@ class MatNDO extends React.Component {
         fgColor: { argb: "FFFFFF00" },
         bgColor: { argb: "A9A9A9" },
       };
+      ws.getCell(numToSSColumn(i) + "1").font = {
+        bold: true
+      };
     }
 
-    ws.addRow([module_name]);
+    ws.addRow([module_name, module_name]);
 
     const PPFormat = await wb.xlsx.writeBuffer();
     saveAs(new Blob([PPFormat]), "Material " + module_name + " Template.xlsx");
@@ -296,7 +300,7 @@ class MatNDO extends React.Component {
         if (err) {
           console.log(err);
         } else {
-          console.log("rest.rows", JSON.stringify(rest.rows));
+          console.log("rest.rows", rest.rows);
           this.setState({
             rowsXLS: rest.rows,
           });
@@ -310,18 +314,15 @@ class MatNDO extends React.Component {
     this.togglecreateModal();
     const BulkXLSX = this.state.rowsXLS;
     const res = await postDatatoAPINODE(
-      "/mmCodeDigi/createMmCode",
+      "/mmCode/createMmCode",
       {
         mm_data: BulkXLSX,
       },
       this.state.tokenUser
     );
     if (res.data !== undefined) {
-      this.setState({ action_status: "success" });
+      this.setState({ action_status: "success", action_message: "Materials have been uploaded!" });
       this.toggleLoading();
-      setTimeout(function () {
-        window.location.reload();
-      }, 1500);
     } else {
       if (
         res.response !== undefined &&
@@ -352,13 +353,13 @@ class MatNDO extends React.Component {
     let dataForm = [
       [
         "Material_Type",
+        "Material_Sub_Type",
         "MM_Code",
         "BB",
         "BB_Sub",
         "MM_Description",
         "UoM",
         "Unit_Price",
-
         "Region",
         "SLA",
         "SoW_Description_or_Site_Type",
@@ -367,6 +368,7 @@ class MatNDO extends React.Component {
         "Note",
       ],
       [
+        module_name,
         module_name,
         this.state.PPForm[7],
         this.state.PPForm[2],
@@ -383,36 +385,34 @@ class MatNDO extends React.Component {
       ],
     ];
     const res = await postDatatoAPINODE(
-      "/mmCodeDigi/createMmCode",
+      "/mmCode/createMmCode",
       {
         mm_data: dataForm,
       },
       this.state.tokenUser
     );
     if (res.data !== undefined) {
-      this.setState({ action_status: "success" });
       this.toggleLoading();
+      this.setState({ action_status: "success", action_message: "Material has been created, please check in Material List!" });
     } else {
-      if (
-        res.response !== undefined &&
-        res.response.data !== undefined &&
-        res.response.data.error !== undefined
-      ) {
+      if (res.response !== undefined && res.response.data !== undefined && res.response.data.error !== undefined) {
         if (res.response.data.error.message !== undefined) {
+          this.toggleLoading();
           this.setState({
             action_status: "failed",
             action_message: res.response.data.error.message,
           });
         } else {
+          this.toggleLoading();
           this.setState({
             action_status: "failed",
             action_message: res.response.data.error,
           });
         }
       } else {
+        this.toggleLoading();
         this.setState({ action_status: "failed" });
       }
-      this.toggleLoading();
     }
   };
 
@@ -523,7 +523,7 @@ class MatNDO extends React.Component {
     this.toggleLoading();
     this.toggleDelete();
     const DelData = deleteDataFromAPINODE2(
-      "/mmCodeDigi/deleteMmCode",
+      "/mmCode/deleteMmCode",
       this.state.tokenUser,
       { data: [objData] }
     ).then((res) => {
@@ -590,7 +590,7 @@ class MatNDO extends React.Component {
       Note: this.state.PPForm[12],
     };
     const res = await patchDatatoAPINODE(
-      "/mmCodeDigi/updateMmCode",
+      "/mmCode/updateMmCode",
       {
         data: [dataForm],
       },
@@ -675,6 +675,7 @@ class MatNDO extends React.Component {
         <DefaultNotif
           actionMessage={this.state.action_message}
           actionStatus={this.state.action_status}
+          redirect={this.state.redirect}
         />
         <Row>
           <Col xl="12">
@@ -723,22 +724,11 @@ class MatNDO extends React.Component {
                         this.toggle(1);
                       }}
                     >
-                      <DropdownToggle block color="warning" size="sm">
-                        <i className="fa fa-download" aria-hidden="true">
-                          {" "}
-                          &nbsp;{" "}
-                        </i>{" "}
-                        Export
-                      </DropdownToggle>
+                      <DropdownToggle block color="warning" size="sm"><i className="fa fa-download" aria-hidden="true" style={{ marginRight: 4 }}></i>Export</DropdownToggle>
                       <DropdownMenu>
                         <DropdownItem header>Uploader Template</DropdownItem>
-                        <DropdownItem onClick={this.exportMatStatus}>
-                          {" "}
-                          Material Template
-                        </DropdownItem>
-                        <DropdownItem onClick={this.downloadAll}>
-                          Download All{" "}
-                        </DropdownItem>
+                        <DropdownItem onClick={this.exportMatStatus}>Material Template</DropdownItem>
+                        <DropdownItem onClick={this.downloadAll}>Download All</DropdownItem>
                       </DropdownMenu>
                     </Dropdown>
                   </div>
