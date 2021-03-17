@@ -343,9 +343,9 @@ class SVCMaster extends React.Component {
           // console.log(sendEmail);
           this.setState({ action_status: "success" });
           this.toggleLoading();
-          // // setTimeout(function () {
-          // //   window.location.reload();
-          // // }, 1500);
+          setTimeout(function () {
+            window.location.reload();
+          }, 1500);
         } else {
           const bodyEmail = "<h2>DPM - BAM Notification</h2>" + body_new;
           let dataEmail = {
@@ -359,6 +359,9 @@ class SVCMaster extends React.Component {
           // console.log(sendEmail);
           this.setState({ action_status: "success" });
           this.toggleLoading();
+          setTimeout(function () {
+            window.location.reload();
+          }, 1500);
         }
       } else {
         // updated Data
@@ -403,9 +406,9 @@ class SVCMaster extends React.Component {
         // console.log(sendEmail);
         this.setState({ action_status: "success" });
         this.toggleLoading();
-        // setTimeout(function () {
-        //   window.location.reload();
-        // }, 1500);
+        setTimeout(function () {
+          window.location.reload();
+        }, 1500);
       }
     } else {
       if (
@@ -801,12 +804,13 @@ class SVCMaster extends React.Component {
                       <table class="table table-hover">
                         <thead class="thead-dark">
                           <tr align="center">
+                            <th></th>
                             {header.map((head) => (
                               <th>{head}</th>
                             ))}
                           </tr>
                           <tr align="center">
-                            {/* <th></th> */}
+                            <th></th>
                             {header_model.map((head, j) =>
                               head === "Qty" ||
                               head === "Used" ||
@@ -822,7 +826,7 @@ class SVCMaster extends React.Component {
                             )}
                           </tr>
                           <tr align="center">
-                            {/* <td></td> */}
+                            <td></td>
                             {this.loopSearchBar()}
                           </tr>
                         </thead>
@@ -831,20 +835,22 @@ class SVCMaster extends React.Component {
                             this.state.all_data.map((e, i) => (
                               <React.Fragment key={e._id + "frag"}>
                                 <tr key={e._id} align="center">
-                                  {/* <td>
-                                    <Button
-                                      size="sm"
-                                      color="secondary"
-                                      title="Edit"
-                                      value={e._id}
-                                      onClick={this.toggleEdit}
-                                    >
-                                      <i
-                                        className="fa fa-edit"
-                                        aria-hidden="true"
-                                      ></i>
-                                    </Button>
-                                  </td> */}
+                                  <td>
+                                    <Link to={"/summary-master/" + e._id}>
+                                      <Button
+                                        size="sm"
+                                        color="secondary"
+                                        title="Edit"
+                                        // value={e._id}
+                                        // onClick={this.toggleEdit}
+                                      >
+                                        <i
+                                          className="fa fa-edit"
+                                          aria-hidden="true"
+                                        ></i>
+                                      </Button>
+                                    </Link>
+                                  </td>
                                   <td>{e.type_summary.toUpperCase()}</td>
                                   <td>{e.Deal_Name}</td>
                                   <td>{e.Hammer}</td>

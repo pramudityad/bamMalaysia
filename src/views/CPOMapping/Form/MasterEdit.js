@@ -6,23 +6,12 @@ import {
   Row,
   Table,
   Input,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
   Card,
   CardBody,
   CardHeader,
   CardFooter,
   Button,
-  Dropdown,
-  DropdownItem,
-  DropdownMenu,
-  DropdownToggle,
-  Collapse,
-  InputGroup,
-  InputGroupAddon,
-  InputGroupText,
+  Form,
 } from "reactstrap";
 import Loading from "../../Component/Loading";
 import {
@@ -38,9 +27,9 @@ import "../cpomapping.css";
 const DefaultNotif = React.lazy(() =>
   import("../../../views/DefaultView/DefaultNotif")
 );
-const modul_name = "HW";
+const modul_name = "Summary Master";
 
-class HWEdit extends React.PureComponent {
+class SummaryMaster extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {
@@ -59,7 +48,7 @@ class HWEdit extends React.PureComponent {
 
   getListID(_id) {
     getDatafromAPINODE(
-      "/cpoMapping/getCpo/hw/" + _id,
+      "/summaryMaster/getSummaryMaster/" + _id,
       this.state.tokenUser
     ).then((res) => {
       if (res.data !== undefined) {
@@ -147,20 +136,26 @@ class HWEdit extends React.PureComponent {
               </CardHeader>
               <CardBody>
                 <Row>
-                  {global.config.cpo_mapping.hw.map((label, j) => (
-                    <Col sm="12">
-                      <FormGroup row>
-                        <Label>{label}</Label>
-                        <Input
-                        // type="text"
-                        // name="Internal_Po"
-                        // placeholder=""
-                        // value={CPOForm.Internal_Po}
-                        // onChange={this.handleChangeForm}
-                        />
-                      </FormGroup>
-                    </Col>
-                  ))}
+                  {global.config.cpo_mapping.master.header_model.map(
+                    (head_model, j) => (
+                      <Col sm="12">
+                        <Form>
+                          <FormGroup row>
+                            <Label sm={4}>{head_model}</Label>
+                            <Col sm={8}>
+                              <Input
+                                type="text"
+                                name={head_model}
+                                placeholder={head_model}
+                                value={head_model}
+                                onChange={this.handleChangeForm}
+                              />
+                            </Col>
+                          </FormGroup>
+                        </Form>
+                      </Col>
+                    )
+                  )}
                 </Row>
               </CardBody>
               <CardFooter>
@@ -191,4 +186,4 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps)(HWEdit);
+export default connect(mapStateToProps)(SummaryMaster);

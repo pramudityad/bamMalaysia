@@ -22,6 +22,9 @@ const HWMapping = React.lazy(() => import("./views/CPOMapping/HW"));
 const SVCMapping = React.lazy(() => import("./views/CPOMapping/SVC"));
 const Master = React.lazy(() => import("./views/CPOMapping/SummaryMaster"));
 
+const MasterEdit = React.lazy(() =>
+  import("./views/CPOMapping/Form/MasterEdit")
+);
 const SVCEdit = React.lazy(() => import("./views/CPOMapping/SVCedit"));
 const HWEdit = React.lazy(() => import("./views/CPOMapping/Form/HWedit"));
 
@@ -87,8 +90,14 @@ const routes = [
   {
     path: "/summary-master",
     exact: true,
-    name: "HW Summary Master",
+    name: "Summary Master",
     component: Master,
+  },
+  {
+    path: "/summary-master/:id",
+    exact: true,
+    name: "Summary Master Edit",
+    component: MasterEdit,
   },
   {
     path: "/svc-cpo/:id",
