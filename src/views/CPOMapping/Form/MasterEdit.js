@@ -20,6 +20,7 @@ import {
   patchDatatoAPINODE,
   deleteDataFromAPINODE2,
   getDatafromAPINODE,
+  apiSendEmail,
 } from "../../../helper/asyncFunction";
 import "../../../helper/config";
 import { connect } from "react-redux";
@@ -74,20 +75,136 @@ class SummaryMaster extends React.PureComponent {
 
   saveUpdate = async () => {
     this.toggleLoading();
-    const res = await patchDatatoAPINODE(
-      "/cpoMapping/updateCpo",
+    const res = await postDatatoAPINODE(
+      "/summaryMaster/createSummaryMaster",
       {
-        cpo_type: "hw",
-        data: [this.state.CPOForm],
+        line_item_data: [this.state.CPOForm],
       },
       this.state.tokenUser
     );
     if (res.data !== undefined) {
-      this.setState({ action_status: "success" });
-      this.toggleLoading();
-      setTimeout(function () {
-        window.location.reload();
-      }, 1500);
+      if (res.data.data.length !== 0) {
+        // new Data
+        const new_table_header = Object.keys(res.data.data[0]).slice(2, -8);
+        const new_Data = res.data.data;
+        let value = "row.";
+        const body_new =
+          "<br/><span>The following " +
+          modul_name +
+          " data has been successfully created </span><br/><br/><table><tr>" +
+          new_table_header.map((tab, i) => "<th>" + tab + "</th>").join(" ") +
+          "</tr>" +
+          new_Data
+            .map(
+              (row, j) =>
+                "<tr key={" +
+                j +
+                "}>" +
+                new_table_header
+                  .map((td) => "<td>" + eval(value + td) + "</td>")
+                  .join(" ") +
+                "</tr>"
+            )
+            .join(" ") +
+          "</table>";
+        // updated Data
+        if (res.data.updateData.length !== 0) {
+          const updated_table_header = Object.keys(
+            res.data.updateData[0]
+          ).slice(0, -3);
+          const update_Data = res.data.updateData;
+          const body_updated =
+            "<br/><span>Please be notified that the following " +
+            modul_name +
+            " data has been updated </span><br/><br/><table><tr>" +
+            updated_table_header
+              .map((tab, i) => "<th>" + tab + "</th>")
+              .join(" ") +
+            "</tr>" +
+            update_Data
+              .map(
+                (row, j) =>
+                  "<tr key={" +
+                  j +
+                  "}>" +
+                  updated_table_header
+                    .map((td) => "<td>" + eval(value + td) + "</td>")
+                    .join(" ") +
+                  "</tr>"
+              )
+              .join(" ") +
+            "</table>";
+
+          const bodyEmail =
+            "<h2>DPM - BAM Notification</h2>" + body_new + body_updated;
+          let dataEmail = {
+            to: global.config.role.cpm,
+            subject: "[NOTIFY to CPM] " + modul_name,
+            body: bodyEmail,
+          };
+          const sendEmail = await apiSendEmail(dataEmail);
+          this.setState({ action_status: "success" });
+          this.toggleLoading();
+          setTimeout(function () {
+            window.location.reload();
+          }, 1500);
+        } else {
+          const bodyEmail = "<h2>DPM - BAM Notification</h2>" + body_new;
+          let dataEmail = {
+            to: global.config.role.cpm,
+            subject: "[NOTIFY to CPM] " + modul_name,
+            body: bodyEmail,
+          };
+          const sendEmail = await apiSendEmail(dataEmail);
+          this.setState({ action_status: "success" });
+          this.toggleLoading();
+          setTimeout(function () {
+            window.location.reload();
+          }, 1500);
+        }
+      } else {
+        // updated Data
+        const updated_table_header = Object.keys(res.data.updateData[0]).slice(
+          0,
+          -3
+        );
+        const update_Data = res.data.updateData;
+        let value = "row.";
+        const body_updated =
+          "<br/><span>Please be notified that the following " +
+          modul_name +
+          " data has been updated </span><br/><br/><table><tr>" +
+          updated_table_header
+            .map((tab, i) => "<th>" + tab + "</th>")
+            .join(" ") +
+          "</tr>" +
+          update_Data
+            .map(
+              (row, j) =>
+                "<tr key={" +
+                j +
+                "}>" +
+                updated_table_header
+                  .map((td) => "<td>" + eval(value + td) + "</td>")
+                  .join(" ") +
+                "</tr>"
+            )
+            .join(" ") +
+          "</table>";
+
+        const bodyEmail = "<h2>DPM - BAM Notification</h2>" + body_updated;
+        const dataEmail = {
+          to: global.config.role.cpm,
+          subject: "[NOTIFY to CPM] " + modul_name,
+          body: bodyEmail,
+        };
+        const sendEmail = await apiSendEmail(dataEmail);
+        this.setState({ action_status: "success" });
+        this.toggleLoading();
+        setTimeout(function () {
+          window.location.reload();
+        }, 1500);
+      }
     } else {
       if (
         res.response !== undefined &&
@@ -147,7 +264,7 @@ class SummaryMaster extends React.PureComponent {
                                 type="text"
                                 name={head_model}
                                 placeholder={head_model}
-                                value={head_model}
+                                value={eval("CPOForm." + head_model)}
                                 onChange={this.handleChangeForm}
                               />
                             </Col>

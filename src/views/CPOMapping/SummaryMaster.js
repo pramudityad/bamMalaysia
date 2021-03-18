@@ -41,6 +41,8 @@ import { saveAs } from "file-saver";
 import { numToSSColumn } from "../../helper/basicFunction";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
+import ModalDelete from "../Component/ModalDelete";
+
 import "../../helper/config";
 import "./cpomapping.css";
 const DefaultNotif = React.lazy(() => import("../DefaultView/DefaultNotif"));
@@ -142,6 +144,10 @@ class SVCMaster extends React.Component {
       action_message: null,
       filter_list: {},
       all_data_mapping: [],
+      selected_id: null,
+      selected_name: null,
+      selected_vendor: null,
+      danger: false,
     };
   }
 
@@ -333,14 +339,11 @@ class SVCMaster extends React.Component {
           const bodyEmail =
             "<h2>DPM - BAM Notification</h2>" + body_new + body_updated;
           let dataEmail = {
-            // "to": creatorEmail,
-            // to: "pramudityad@student.telkomuniversity.ac.id",
             to: global.config.role.cpm,
             subject: "[NOTIFY to CPM] " + modul_name,
             body: bodyEmail,
           };
           const sendEmail = await apiSendEmail(dataEmail);
-          // console.log(sendEmail);
           this.setState({ action_status: "success" });
           this.toggleLoading();
           setTimeout(function () {
@@ -349,14 +352,11 @@ class SVCMaster extends React.Component {
         } else {
           const bodyEmail = "<h2>DPM - BAM Notification</h2>" + body_new;
           let dataEmail = {
-            // "to": creatorEmail,
-            // to: "pramudityad@student.telkomuniversity.ac.id",
             to: global.config.role.cpm,
             subject: "[NOTIFY to CPM] " + modul_name,
             body: bodyEmail,
           };
           const sendEmail = await apiSendEmail(dataEmail);
-          // console.log(sendEmail);
           this.setState({ action_status: "success" });
           this.toggleLoading();
           setTimeout(function () {
@@ -395,15 +395,11 @@ class SVCMaster extends React.Component {
 
         const bodyEmail = "<h2>DPM - BAM Notification</h2>" + body_updated;
         const dataEmail = {
-          // "to": creatorEmail,
-          // to: "pramudityad@student.telkomuniversity.ac.id",
           to: global.config.role.cpm,
-          // to: process.env.REACT_APP_NOTIFICATION_CPM,
           subject: "[NOTIFY to CPM] " + modul_name,
           body: bodyEmail,
         };
         const sendEmail = await apiSendEmail(dataEmail);
-        // console.log(sendEmail);
         this.setState({ action_status: "success" });
         this.toggleLoading();
         setTimeout(function () {
@@ -691,6 +687,47 @@ class SVCMaster extends React.Component {
     return Math.round((sumheader + Number.EPSILON) * 100) / 100;
   };
 
+  toggleDelete = (e) => {
+    const modalDelete = this.state.danger;
+    if (modalDelete === false) {
+      const _id = e.currentTarget.value;
+      const name = this.state.all_data.find((e) => e._id === _id);
+      this.setState({
+        danger: !this.state.danger,
+        selected_id: _id,
+        selected_name: name.unique_code,
+        // selected_vendor: name.Vendor_ID,
+      });
+    } else {
+      this.setState({
+        danger: false,
+      });
+    }
+    this.setState((prevState) => ({
+      modalDelete: !prevState.modalDelete,
+    }));
+  };
+
+  DeleteData = async () => {
+    const objData = this.state.selected_id;
+    this.toggleLoading();
+    this.toggleDelete();
+    const DelData = deleteDataFromAPINODE2(
+      "/mmCode/deleteMmCode",
+      this.state.tokenUser,
+      { data: [objData] }
+    ).then((res) => {
+      if (res.data !== undefined) {
+        this.setState({ action_status: "success" });
+        this.toggleLoading();
+      } else {
+        this.setState({ action_status: "failed" }, () => {
+          this.toggleLoading();
+        });
+      }
+    });
+  };
+
   render() {
     const CPOForm = this.state.CPOForm;
     const role = this.state.roleUser;
@@ -849,7 +886,20 @@ class SVCMaster extends React.Component {
                                           aria-hidden="true"
                                         ></i>
                                       </Button>
-                                    </Link>
+                                    </Link>{" "}
+                                    <Button
+                                      size="sm"
+                                      color="danger"
+                                      value={e._id}
+                                      name={e.unique_code}
+                                      onClick={this.toggleDelete}
+                                      title="Delete"
+                                    >
+                                      <i
+                                        className="fa fa-trash"
+                                        aria-hidden="true"
+                                      ></i>
+                                    </Button>
                                   </td>
                                   <td>{e.type_summary.toUpperCase()}</td>
                                   <td>{e.Deal_Name}</td>
@@ -901,171 +951,21 @@ class SVCMaster extends React.Component {
           </Col>
         </Row>
 
-        {/* Modal Update */}
-        <Modal
-          isOpen={this.state.modalEdit}
-          toggle={this.toggleEdit}
-          className="modal--form"
-          size="lg"
+        {/* Modal confirmation delete */}
+        <ModalDelete
+          isOpen={this.state.danger}
+          toggle={this.toggleDelete}
+          className={"modal-danger " + this.props.className}
+          title={"Delete " + this.state.selected_name}
+          body={"Are you sure ?"}
         >
-          <ModalHeader>Form Update {CPOForm.unique_code}</ModalHeader>
-          <ModalBody>
-            <Row>
-              <Col sm="12">
-                <FormGroup row>
-                  <Col>
-                    <FormGroup>
-                      <Label>Po</Label>
-                      <Input
-                        readOnly
-                        type="text"
-                        name="Po"
-                        placeholder=""
-                        value={CPOForm.Po}
-                        onChange={this.handleChangeForm}
-                      />
-                    </FormGroup>
-                  </Col>
-                  <Col>
-                    <FormGroup>
-                      <Label>Line_Item</Label>
-                      <Input
-                        readOnly
-                        type="text"
-                        name="Line_Item"
-                        placeholder=""
-                        value={CPOForm.Line_Item}
-                        onChange={this.handleChangeForm}
-                      />
-                    </FormGroup>
-                  </Col>
-                  <Col>
-                    <FormGroup>
-                      <Label>Description</Label>
-                      <Input
-                        readOnly
-                        type="text"
-                        name="Description"
-                        placeholder=""
-                        value={CPOForm.Description}
-                        onChange={this.handleChangeForm}
-                      />
-                    </FormGroup>
-                  </Col>
-                  <Col>
-                    <FormGroup>
-                      <Label>Qty</Label>
-                      <Input
-                        type="number"
-                        name="Qty"
-                        placeholder=""
-                        value={CPOForm.Qty}
-                        onChange={this.handleChangeForm}
-                      />
-                    </FormGroup>
-                  </Col>
-                  <Col>
-                    <FormGroup>
-                      <Label>Unit_Price</Label>
-                      <Input
-                        type="number"
-                        name="Unit_Price"
-                        placeholder=""
-                        value={CPOForm.Unit_Price}
-                        onChange={this.handleChangeForm}
-                      />
-                    </FormGroup>
-                  </Col>
-                  <Col>
-                    <FormGroup>
-                      <Label>Assigned_Price</Label>
-                      <Input
-                        type="number"
-                        name="Assigned_Price"
-                        placeholder=""
-                        value={CPOForm.Assigned_Price}
-                        onChange={this.handleChangeForm}
-                      />
-                    </FormGroup>
-                  </Col>
-                </FormGroup>
-              </Col>
-            </Row>
-
-            <Row>
-              <Col sm="12">
-                <FormGroup row>
-                  <Col>
-                    <FormGroup>
-                      <Label>Pcode</Label>
-                      <Input
-                        type="text"
-                        name="Pcode"
-                        placeholder=""
-                        value={CPOForm.Pcode}
-                        onChange={this.handleChangeForm}
-                      />
-                    </FormGroup>
-                  </Col>
-                  <Col>
-                    <FormGroup>
-                      <Label>Type</Label>
-                      <Input
-                        type="text"
-                        name="Type"
-                        placeholder=""
-                        value={CPOForm.Type}
-                        onChange={this.handleChangeForm}
-                      />
-                    </FormGroup>
-                  </Col>
-                  <Col>
-                    <FormGroup>
-                      <Label>PSP_Remarks</Label>
-                      <Input
-                        type="text"
-                        name="PSP_Remarks"
-                        placeholder=""
-                        value={CPOForm.PSP_Remarks}
-                        onChange={this.handleChangeForm}
-                      />
-                    </FormGroup>
-                  </Col>
-
-                  <Col>
-                    <FormGroup>
-                      <Label>Wbs</Label>
-                      <Input
-                        type="text"
-                        name="Wbs"
-                        placeholder=""
-                        value={CPOForm.Wbs}
-                        onChange={this.handleChangeForm}
-                      />
-                    </FormGroup>
-                  </Col>
-                  <Col>
-                    <FormGroup>
-                      <Label>Remarks</Label>
-                      <Input
-                        type="text"
-                        name="Remarks"
-                        placeholder=""
-                        value={CPOForm.Remarks}
-                        onChange={this.handleChangeForm}
-                      />
-                    </FormGroup>
-                  </Col>
-                </FormGroup>
-              </Col>
-            </Row>
-          </ModalBody>
-          <ModalFooter>
-            <Button color="success" onClick={this.saveUpdate}>
-              Update
-            </Button>
-          </ModalFooter>
-        </Modal>
+          <Button color="danger" onClick={this.DeleteData}>
+            Delete
+          </Button>
+          <Button color="secondary" onClick={this.toggleDelete}>
+            Cancel
+          </Button>
+        </ModalDelete>
 
         {/* Modal create New */}
         <ModalCreateNew
