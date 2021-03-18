@@ -20,10 +20,12 @@ import {
 } from "reactstrap";
 import Pagination from "react-js-pagination";
 import { connect } from "react-redux";
-import { getDatafromAPINODE, postDatatoAPINODE, patchDatatoAPINODE, getDatafromAPIMY } from "../../helper/asyncFunction";
+import { getDatafromAPINODE, postDatatoAPINODE, patchDatatoAPINODE, deleteDataFromAPINODE, getDatafromAPIMY } from "../../helper/asyncFunction";
 import debounce from 'lodash.debounce';
 import '../MYAssignment/LMRMY.css';
 import SweetAlert from 'react-bootstrap-sweetalert';
+import ModalDelete from "../Component/ModalDelete";
+import axios from "axios";
 
 const DefaultNotif = React.lazy(() =>
   import("../DefaultView/DefaultNotif")
@@ -79,6 +81,8 @@ class Package extends Component {
       current_material_select: null,
       vendorChecked: new Map(),
       vendorCheckedPage: new Map(),
+      modal_delete_package: false,
+      package_to_be_deleted: null,
       prevPage: 0,
       activePage: 1,
       totalData: 0,
@@ -128,26 +132,54 @@ class Package extends Component {
     });
   }
 
-  handleCheckMaterialPackage = (e) => {
+  handleCheckMaterialPackage = async (e) => {
     const value = e.target.value;
-    let selectedPackage = this.state.package_list.find((e) => e.Package_Id === value);
-    let allMaterials = [];
-    for (let i = 0; i < selectedPackage.MM_Data.length; i++) {
-      let material = {
-        MM_Code: selectedPackage.MM_Data[i].MM_Code,
-        Description: selectedPackage.MM_Data[i].Description,
-        Price: selectedPackage.MM_Data[i].Price,
-        Qty: selectedPackage.MM_Data[i].Qty
+    const response = await postDatatoAPINODE("/package/getManyPackagebyId", { package_data: [value] }, this.state.tokenUser);
+    if (response.data !== undefined && response.status >= 200 && response.status <= 300) {
+      let selectedPackage = response.data.data;
+      let allMaterials = [];
+      for (let i = 0; i < selectedPackage.MM_Data.length; i++) {
+        let vendors = [];
+        if (selectedPackage.MM_Data[i].Vendor_ID !== null) {
+          vendors.push(selectedPackage.MM_Data[i].Vendor_Name);
+        } else {
+          for (let x = 0; x < selectedPackage.MM_Data[i].Vendor_List.length; x++) {
+            vendors.push(selectedPackage.MM_Data[i].Vendor_List[x].Vendor_Name);
+          }
+        }
+        let material = {
+          MM_Code: selectedPackage.MM_Data[i].MM_Code,
+          Description: selectedPackage.MM_Data[i].Description,
+          Price: selectedPackage.MM_Data[i].Price,
+          Qty: selectedPackage.MM_Data[i].Qty,
+          Vendors: vendors.join(', ')
+        }
+        allMaterials.push(material)
       }
-      allMaterials.push(material)
+      let check_material_package_list = {
+        Package_Id: selectedPackage.Package_Id,
+        Package_Name: selectedPackage.Package_Name,
+        Region: selectedPackage.Region,
+        Materials: allMaterials
+      }
+      this.setState({ check_material_package_list: check_material_package_list }, () => this.toggleModalCheckMaterialPackage());
+    } else {
+      if (response.response !== undefined && response.response.data !== undefined && response.response.data.error !== undefined) {
+        if (response.response.data.error.message !== undefined) {
+          this.setState({
+            action_status: "failed",
+            action_message: response.response.data.error.message,
+          });
+        } else {
+          this.setState({
+            action_status: "failed",
+            action_message: response.response.data.error,
+          });
+        }
+      } else {
+        this.setState({ action_status: "failed" });
+      }
     }
-    let check_material_package_list = {
-      Package_Id: selectedPackage.Package_Id,
-      Package_Name: selectedPackage.Package_Name,
-      Region: selectedPackage.Region,
-      Materials: allMaterials
-    }
-    this.setState({ check_material_package_list: check_material_package_list }, () => this.toggleModalCheckMaterialPackage());
   }
 
   addMaterial = () => {
@@ -180,8 +212,8 @@ class Package extends Component {
     this.state.filter_list_material[2] !== "" && (filter_array.push('"Unit_Price":' + this.state.filter_list_material[2]));
     filter_array.push('"Region":"' + this.state.create_package_parent.Region + '"');
     this.state.filter_list_material[4] !== "" && (filter_array.push('"Material_Type":{"$regex" : "' + this.state.filter_list_material[4] + '", "$options" : "i"}'));
-    if (this.state.create_package_parent.Material_Sub_Type === 'ITC + NDO + Transport') {
-      filter_array.push('"Material_Sub_Type":{"$in":["ITC","NDO","Transport"]}');
+    if (this.state.create_package_parent.Material_Sub_Type === 'ITC + Transport') {
+      filter_array.push('"Material_Sub_Type":{"$in":["ITC","Transport"]}');
     } else {
       filter_array.push('"Material_Sub_Type":{"$in":["' + this.state.create_package_parent.Material_Sub_Type + '"]}');
     }
@@ -657,6 +689,65 @@ class Package extends Component {
     }
   };
 
+  toggleDeletePackage = (package_id) => {
+    this.setState((prevState) => ({
+      modal_delete_package: !prevState.modal_delete_package,
+    }));
+    this.setState({ package_to_be_deleted: package_id });
+  }
+
+  deleteDataFromAPINODE = async (url, id, props) => {
+    try {
+      let respond = await axios.delete(process.env.REACT_APP_API_URL_NODE + url, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + props,
+        },
+        data: {
+          "package_data": [
+            id
+          ]
+        }
+      });
+      if (respond.status >= 200 && respond.status < 300) {
+        console.log("respond delete Data", respond);
+      }
+      return respond;
+    } catch (err) {
+      let respond = err;
+      console.log("respond delete Data err", err);
+      return respond;
+    }
+  }
+
+  async removePackage(package_id) {
+    this.toggleLoading();
+    const respondRemovePackage = await this.deleteDataFromAPINODE("/package/deletePackage", package_id, this.state.tokenUser);
+    if (respondRemovePackage.data !== undefined && respondRemovePackage.status >= 200 && respondRemovePackage.status <= 300) {
+      this.toggleLoading();
+      this.setState({ action_status: "success", action_message: "Package has been deleted!" });
+    } else {
+      if (respondRemovePackage.response !== undefined && respondRemovePackage.response.data !== undefined && respondRemovePackage.response.data.error !== undefined) {
+        if (respondRemovePackage.response.data.error.message !== undefined) {
+          this.toggleLoading();
+          this.setState({
+            action_status: "failed",
+            action_message: respondRemovePackage.response.data.error.message,
+          });
+        } else {
+          this.toggleLoading();
+          this.setState({
+            action_status: "failed",
+            action_message: respondRemovePackage.response.data.error,
+          });
+        }
+      } else {
+        this.toggleLoading();
+        this.setState({ action_status: "failed" });
+      }
+    }
+  }
+
   onChangeDebounced(e) {
     this.getPackageList();
   }
@@ -664,7 +755,7 @@ class Package extends Component {
   componentDidMount() {
     this.getPackageList();
     this.getPackageListAll();
-    this.getVendorList();
+    // this.getVendorList();
     document.title = "Package List | BAM";
   }
 
@@ -762,15 +853,16 @@ class Package extends Component {
                       <th style={{ minWidth: "150px", verticalAlign: "middle" }}>Package Name</th>
                       <th style={{ minWidth: "150px", verticalAlign: "middle" }}>Region</th>
                       <th style={{ minWidth: "150px", verticalAlign: "middle" }}>MM Type</th>
-                      {this.state.vendor_list.map((vendor) => (
+                      <th rowSpan="2" style={{ verticalAlign: "middle" }}>Action</th>
+                      {/* {this.state.vendor_list.map((vendor) => (
                         <Fragment key={vendor._id}>
                           <th style={{ verticalAlign: "middle" }}>{vendor.Name}</th>
                         </Fragment>
-                      ))}
+                      ))} */}
                     </tr>
                     <tr>
                       {this.loopSearchBar()}
-                      {this.state.vendor_list.map((vendor, i) => (
+                      {/* {this.state.vendor_list.map((vendor, i) => (
                         <Fragment key={vendor._id}>
                           <th>
                             {
@@ -784,7 +876,7 @@ class Package extends Component {
                             }
                           </th>
                         </Fragment>
-                      ))}
+                      ))} */}
                     </tr>
                   </thead>
                   <tbody className="text-center">
@@ -795,7 +887,7 @@ class Package extends Component {
                             <Button
                               color="primary"
                               size="sm"
-                              value={e.Package_Id}
+                              value={e._id}
                               onClick={this.handleCheckMaterialPackage}
                             >
                               <i className="fa fa-cubes" style={{ marginRight: "8px" }}></i>Check Material
@@ -805,9 +897,14 @@ class Package extends Component {
                           <td>{e.Package_Name}</td>
                           <td>{e.Region}</td>
                           <td>{e.Material_Sub_Type}</td>
-                          {this.state.vendor_list.map((vendor, i) =>
+                          <td>
+                            <Button color="danger" style={{ width: "100%" }} className="hvr-icon-grow" onClick={() => this.toggleDeletePackage(e._id)}>
+                              <i className="fa fa-trash hvr-icon"></i>
+                            </Button>
+                          </td>
+                          {/* {this.state.vendor_list.map((vendor, i) =>
                             this.getVendorRow(e.Vendor_List, vendor, e._id)
-                          )}
+                          )} */}
                         </tr>
                       ))}
                   </tbody>
@@ -825,7 +922,7 @@ class Package extends Component {
                   linkClass="page-link"
                 />
               </CardBody>
-              <CardFooter>
+              {/* <CardFooter>
                 <Button
                   color="primary"
                   size="sm"
@@ -833,7 +930,7 @@ class Package extends Component {
                 >
                   Update Vendor
                 </Button>
-              </CardFooter>
+              </CardFooter> */}
             </Card>
           </Col>
         </Row>
@@ -929,7 +1026,7 @@ class Package extends Component {
                     >
                       <option value="" disabled selected hidden>Select Region</option>
                       <option value="KV">KV</option>
-                      <option value="OKV">OKV</option>
+                      <option value="SN">SN</option>
                       <option value="ER">ER</option>
                       <option value="EM">EM</option>
                     </Input>
@@ -946,7 +1043,8 @@ class Package extends Component {
                       disabled={this.state.create_package_child.length > 0}
                     >
                       <option value="" disabled selected hidden>Select MM Type</option>
-                      <option value="ITC + NDO + Transport">ITC + NDO + Transport</option>
+                      <option value="ITC + Transport">ITC + Transport</option>
+                      <option value="NDO">NDO</option>
                       <option value="Survey">Survey</option>
                       <option value="Integration">Integration</option>
                     </Input>
@@ -1114,6 +1212,22 @@ class Package extends Component {
           </ModalFooter>
         </Modal>
         {/* end Modal Material List */}
+
+        {/* Modal confirmation delete Package */}
+        <ModalDelete
+          isOpen={this.state.modal_delete_package}
+          toggle={this.toggleDeletePackage}
+          className={"modal-danger " + this.props.className}
+          title={`Delete Package?`}
+          body={"Are you sure? This action cannot be undone"}
+        >
+          <Button color="danger" onClick={() => this.removePackage(this.state.package_to_be_deleted)}>
+            Delete
+          </Button>
+          <Button color="secondary" onClick={() => this.toggleDeletePackage(null)}>
+            Cancel
+          </Button>
+        </ModalDelete>
 
         {/* Modal Loading */}
         <Modal
