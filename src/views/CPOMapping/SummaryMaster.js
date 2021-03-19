@@ -713,7 +713,7 @@ class SVCMaster extends React.Component {
     this.toggleLoading();
     this.toggleDelete();
     const DelData = deleteDataFromAPINODE2(
-      "/mmCode/deleteMmCode",
+      "/summaryMaster/deleteSummaryMaster",
       this.state.tokenUser,
       { data: [objData] }
     ).then((res) => {
@@ -727,6 +727,13 @@ class SVCMaster extends React.Component {
       }
     });
   };
+
+  Logic_Price(num) {
+    if (num === null || num === 0) {
+      return "-";
+    }
+    return Math.round((num + Number.EPSILON) * 100) / 100;
+  }
 
   render() {
     const CPOForm = this.state.CPOForm;
@@ -912,12 +919,20 @@ class SVCMaster extends React.Component {
                                   <td>{e.Qty}</td>
                                   <td>{e.Used}</td>
                                   <td>{e.Balance}</td>
-                                  <td>{e.Unit_Price}</td>
-                                  <td>{e.Total_Price}</td>
-                                  <td>{e.Assigned_Price}</td>
-                                  <td>{e.Discounted_Unit_Price}</td>
-                                  <td>{e.Discounted_Po_Price}</td>
-                                  <td>{e.Discounted_Assigned_Price}</td>
+                                  <td>{this.Logic_Price(e.Unit_Price)}</td>
+                                  <td>{this.Logic_Price(e.Total_Price)}</td>
+                                  <td>{this.Logic_Price(e.Assigned_Price)}</td>
+                                  <td>
+                                    {this.Logic_Price(e.Discounted_Unit_Price)}
+                                  </td>
+                                  <td>
+                                    {this.Logic_Price(e.Discounted_Po_Price)}
+                                  </td>
+                                  <td>
+                                    {this.Logic_Price(
+                                      e.Discounted_Assigned_Price
+                                    )}
+                                  </td>
                                   <td>{e.Hammer_1_Hd}</td>
                                   <td>{e.Pcode}</td>
                                   <td>{e.Pcode_Used}</td>
