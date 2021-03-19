@@ -368,9 +368,9 @@ class MatNRO extends React.Component {
     getDatafromAPINODE(
       "/mmCode/getMm?q=" +
       whereAnd +
-      "&max_results=" +
+      "&lmt=" +
       this.state.perPage +
-      "&page=" +
+      "&pg=" +
       this.state.activePage,
       this.state.tokenUser
     ).then((res) => {

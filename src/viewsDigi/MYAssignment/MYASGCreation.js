@@ -49,72 +49,6 @@ const fas_reqbody = {
   },
 };
 
-const package_example = [
-  {
-    Package_Id: "0001",
-    Package_Name: "Package123",
-    Region: "KV",
-    MM_Data: [
-      {
-        MM_Code: "ECM-DG-NEW2.1-KV",
-        Description: "Description of ECM-DG-NEW2.1-KV",
-        Price: 1000,
-        Qty: 1,
-        Transport: "no"
-      },
-      {
-        MM_Code: "ECM-DG-KV-ADD5.1",
-        Description: "Description of ECM-DG-KV-ADD5.1",
-        Price: 2000,
-        Qty: 2,
-        Transport: "no"
-      },
-      {
-        MM_Code: "ECM-DG-KV-DOCONLY",
-        Description: "Description of ECM-DG-KV-DOCONLY",
-        Price: 3000,
-        Qty: 3,
-        Transport: "no"
-      },
-      {
-        MM_Code: "Placeholder for transport",
-        Description: "Placeholder for transport",
-        Price: 0,
-        Qty: 0,
-        Transport: "yes"
-      }
-    ]
-  },
-  {
-    Package_Id: "0002",
-    Package_Name: "Package234",
-    Region: "KV",
-    MM_Data: [
-      {
-        MM_Code: "Material1",
-        Description: "Description of Material1",
-        Price: 2000,
-        Qty: 1,
-        Transport: "no"
-      },
-      {
-        MM_Code: "Material2",
-        Description: "Description of Material2",
-        Price: 4000,
-        Qty: 2,
-        Transport: "no"
-      },
-      {
-        MM_Code: "Material3",
-        Description: "Description of Material3",
-        Price: 6000,
-        Qty: 3,
-        Transport: "no"
-      }
-    ]
-  }
-]
-
 class MYASGCreation extends Component {
   constructor(props) {
     super(props);
@@ -129,6 +63,8 @@ class MYASGCreation extends Component {
         // pgr: "MP2",
         gl_account: "",
         lmr_issued_by: this.props.dataLogin.userName,
+        item_category: "Service",
+        pgr: "MY3",
         // lmr_issued_by: "EHAYZUX",
         total_price: 0,
         plant: "2172",
@@ -215,7 +151,6 @@ class MYASGCreation extends Component {
     this.handleChangeFormLMRChild = this.handleChangeFormLMRChild.bind(this);
     this.toggleMaterial = this.toggleMaterial.bind(this);
     this.handleChangeMaterial = this.handleChangeMaterial.bind(this);
-    this.handleDeleteLMRChild = this.handleDeleteLMRChild.bind(this);
     this.deleteLMR = this.deleteLMR.bind(this);
     this.handleMaterialFilter = this.handleMaterialFilter.bind(this);
     this.decideFilter = this.decideFilter.bind(this);
@@ -478,6 +413,56 @@ class MYASGCreation extends Component {
     }
   }
 
+  async findByWPfromACT(proxyurl, url) {
+    try {
+      let respond = await axios.get(proxyurl + url, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + this.state.access_token,
+        },
+      });
+      if (respond.status >= 200 && respond.status < 300) {
+        console.log("respond find WP", respond);
+      }
+      return respond;
+    } catch (err) {
+      let respond = err;
+      console.log("respond find WP", err);
+      return respond;
+    }
+  }
+
+  async updateLMRtoACT(proxyurl, url, m_id, lmr_id) {
+    try {
+      let param = '';
+      if (this.state.lmr_form.gl_account_actual === 'ITC + transport - 402603') {
+        param = 'lmr_ti_number';
+      } else if (this.state.lmr_form.gl_account_actual === 'Survey - 402603') {
+        param = 'lmr_survey_number';
+      }
+      let body = {
+        "m_id": m_id,
+        "query_param": {
+          [param]: lmr_id
+        }
+      }
+      let respond = await axios.patch(proxyurl + url, body, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + this.state.access_token,
+        },
+      });
+      if (respond.status >= 200 && respond.status < 300) {
+        console.log("respond update", respond);
+      }
+      return respond;
+    } catch (err) {
+      let respond = err;
+      console.log("respond update", err);
+      return respond;
+    }
+  }
+
   searchWPID = async (inputValue) => {
     if (inputValue === '' || inputValue.length < 3) {
       return [];
@@ -495,7 +480,7 @@ class MYASGCreation extends Component {
     }
   }
 
-  handleChangeWP = (e, action) => {
+  handleChangeWP = async (e, action) => {
     let dataLMR = this.state.creation_lmr_child_form;
     let idxField = action.name.split(" /// ");
     let value = e.value;
@@ -517,12 +502,20 @@ class MYASGCreation extends Component {
     dataLMR[parseInt(idx)]["site_id"] = value !== "" ? list_wp_id[list_wp_id.findIndex(x => x.workplan_id === value)].site_id : "";
     dataLMR[parseInt(idx)]["site_name"] = value !== "" ? list_wp_id[list_wp_id.findIndex(x => x.workplan_id === value)].site_name : "";
     dataLMR[parseInt(idx)]["nw"] = value !== "" ? list_wp_id[list_wp_id.findIndex(x => x.workplan_id === value)].lmr_ti_nw_number : "";
+
+    let findWPID = await this.getWPfromACT("https://dev-corsanywhere.e-dpm.com/", "https://act.e-dpm.com/api/find_by_wpid?wp_id=" + value);
+    if (findWPID !== undefined && findWPID.data !== undefined && findWPID.data.result !== undefined && findWPID.data.result.status >= 200 && findWPID.data.result.status <= 300) {
+      dataLMR[parseInt(idx)]["m_id_wp"] = findWPID.data.result.m_id;
+    } else {
+      dataLMR[parseInt(idx)]["m_id_wp"] = "";
+    }
+
     this.setState({ creation_lmr_child_form: dataLMR }, () =>
       console.log(this.state.creation_lmr_child_form)
     );
   }
 
-  handleChangeWPPackage = (e, action) => {
+  handleChangeWPPackage = async (e, action) => {
     let dataLMR = this.state.lmr_child_package;
     let value = e.value;
     let field = action.name;
@@ -546,6 +539,14 @@ class MYASGCreation extends Component {
     dataLMR["site_id"] = value !== "" ? list_wp_id[list_wp_id.findIndex(x => x.workplan_id === value)].site_id : "";
     dataLMR["site_name"] = value !== "" ? list_wp_id[list_wp_id.findIndex(x => x.workplan_id === value)].site_name : "";
     dataLMR["nw"] = value !== "" ? list_wp_id[list_wp_id.findIndex(x => x.workplan_id === value)].lmr_ti_nw_number : "";
+
+    let findWPID = await this.getWPfromACT("https://dev-corsanywhere.e-dpm.com/", "https://act.e-dpm.com/api/find_by_wpid?wp_id=" + value);
+    if (findWPID !== undefined && findWPID.data !== undefined && findWPID.data.result !== undefined && findWPID.data.result.status >= 200 && findWPID.data.result.status <= 300) {
+      dataLMR["m_id_wp"] = findWPID.data.result.m_id;
+    } else {
+      dataLMR["m_id_wp"] = "";
+    }
+
     this.setState({ lmr_child_package: dataLMR }, () =>
       console.log(this.state.lmr_child_package)
     );
@@ -572,10 +573,7 @@ class MYASGCreation extends Component {
 
   getDataCDACT_Fas() {
     this.toggleLoading();
-    this.getFASfromACT(
-      "https://cors-anywhere.herokuapp.com/",
-      "https://act.e-dpm.com/index.php/android/get_data_new"
-    ).then((resCD) => {
+    this.getFASfromACT("https://dev-corsanywhere.e-dpm.com/", "https://act.e-dpm.com/index.php/android/get_data_new").then((resCD) => {
       if (resCD.data !== undefined) {
         if (resCD.data.result !== undefined) {
           const list_fas = resCD.data.result.raw_data;
@@ -755,11 +753,11 @@ class MYASGCreation extends Component {
   async componentDidMount() {
     this.toggleLoading();
     this.getVendorList();
+    this.getDataCDACT_Fas();
     this.setState({ access_token: await generateTokenACT() }, () => this.toggleLoading());
     // this.getProjectList();
     // this.getMaterialList();
     // this.getDataCDACT(); enable this again later
-    // this.getDataCDACT_Fas();
     // this.getDataCD();
     // this.toggleLoading();
     document.title = "LMR Creation | BAM";
@@ -1170,6 +1168,7 @@ class MYASGCreation extends Component {
     this.toggleLoading();
     const dataForm = this.state.lmr_form;
     const dataChildForm = this.state.creation_lmr_child_form;
+
     console.log("lmr child ", this.state.creation_lmr_child_form);
     const dataLMR = {
       plant: this.state.lmr_form.plant,
@@ -1200,8 +1199,39 @@ class MYASGCreation extends Component {
       fas_id: this.state.lmr_form.fas_id,
       total_price: this.state.lmr_form.total_price,
     };
-    let dataLMRCHild = [];
+    let dataLMRChild = [], empty_nw = false, check_duplicate = false;
+
     for (let i = 0; i < dataChildForm.length; i++) {
+      dataChildForm[i].duplicate = 'no';
+      dataChildForm[i].blank_material = 'no';
+      dataChildForm[i].zero_qty = 'no';
+    }
+
+    for (let i = 0; i < dataChildForm.length; i++) {
+      if (dataChildForm[i].material === '') {
+        dataChildForm[i].blank_material = 'yes';
+      }
+    }
+
+    for (let i = 0; i < dataChildForm.length; i++) {
+      if (dataChildForm[i].qty === 0) {
+        dataChildForm[i].zero_qty = 'yes';
+      }
+    }
+
+    for (let i = 0; i < dataChildForm.length; i++) {
+      for (let j = i + 1; j < dataChildForm.length; j++) {
+        if (dataChildForm[i].material === dataChildForm[j].material) {
+          check_duplicate = true;
+          dataChildForm[i].duplicate = 'yes';
+          dataChildForm[j].duplicate = 'yes';
+        }
+      }
+
+      if (dataChildForm[i].nw === '' || dataChildForm[i].nw === null || dataChildForm[i].cdid === '' || dataChildForm[i].cdid === null) {
+        empty_nw = true;
+      }
+
       const dataChild = {
         project_name: dataChildForm[i].project_name,
         nw: dataChildForm[i].nw,
@@ -1237,55 +1267,147 @@ class MYASGCreation extends Component {
       //   dataChildForm[i].site_id === undefined ||
       //   dataChildForm[i].site_id === null
       // ) {
-      dataLMRCHild.push(dataChild);
+      dataLMRChild.push(dataChild);
       // }
     }
-    console.log("dataLMR", dataLMR);
-    console.log("dataLMRChild", dataLMRCHild);
-    const respondSaveLMR = await this.postDatatoAPINODE(
-      "/aspassignment/createOneAspAssignment",
-      { asp_data: dataLMR, asp_data_child: dataLMRCHild }
-    );
-    if (
-      respondSaveLMR.data !== undefined &&
-      respondSaveLMR.status >= 200 &&
-      respondSaveLMR.status <= 300
-    ) {
-      localStorage.removeItem("asp_data");
-      localStorage.removeItem("asp_data_child");
+
+    if (empty_nw) {
+      const getAlert = () => (
+        <SweetAlert
+          danger
+          title="Error!"
+          onConfirm={() => this.hideAlert()}
+        >
+          Empty CD ID and SO / NW cannot be allowed!
+        </SweetAlert>
+      );
+
       this.setState({
-        action_status: "success",
-        redirectSign: respondSaveLMR.data.parent._id,
+        sweet_alert: getAlert()
       });
       this.toggleLoading();
+    } else if (check_duplicate) {
+      const getAlert = () => (
+        <SweetAlert
+          danger
+          title="Error!"
+          onConfirm={() => this.hideAlert()}
+        >
+          Material duplication found!
+        </SweetAlert>
+      );
+
+      this.setState({
+        sweet_alert: getAlert()
+      });
+
+      for (let i = 0; i < dataChildForm.length; i++) {
+        dataChildForm[i].blank_material = 'no';
+        dataChildForm[i].zero_qty = 'no';
+      }
+      this.toggleLoading();
+    } else if (dataChildForm.some(e => e.blank_material === 'yes')) {
+      const getAlert = () => (
+        <SweetAlert
+          danger
+          title="Error!"
+          onConfirm={() => this.hideAlert()}
+        >
+          Please select a material first!
+        </SweetAlert>
+      );
+
+      this.setState({
+        sweet_alert: getAlert()
+      });
+
+      for (let i = 0; i < dataChildForm.length; i++) {
+        dataChildForm[i].duplicate = 'no';
+        dataChildForm[i].zero_qty = 'no';
+      }
+      this.toggleLoading();
+    } else if (dataChildForm.some(e => e.zero_qty === 'yes')) {
+      const getAlert = () => (
+        <SweetAlert
+          danger
+          title="Error!"
+          onConfirm={() => this.hideAlert()}
+        >
+          Please input the qty to be more than 0!
+        </SweetAlert>
+      );
+
+      this.setState({
+        sweet_alert: getAlert()
+      });
+
+      for (let i = 0; i < dataChildForm.length; i++) {
+        dataChildForm[i].duplicate = 'no';
+        dataChildForm[i].blank_material = 'no';
+      }
+      this.toggleLoading();
     } else {
-      localStorage.setItem("asp_data", JSON.stringify(dataLMR));
-      localStorage.setItem("asp_data_child", JSON.stringify(dataLMRCHild));
-      if (
-        respondSaveLMR.response !== undefined &&
-        respondSaveLMR.response.data !== undefined &&
-        respondSaveLMR.response.data.error !== undefined
-      ) {
-        if (respondSaveLMR.response.data.error.message !== undefined) {
+      console.log("dataLMR", dataLMR);
+      console.log("dataLMRChild", dataLMRChild);
+      const respondSaveLMR = await this.postDatatoAPINODE("/aspassignment/createOneAspAssignment", { asp_data: dataLMR, asp_data_child: dataLMRChild });
+      if (respondSaveLMR.data !== undefined && respondSaveLMR.status >= 200 && respondSaveLMR.status <= 300) {
+        localStorage.removeItem("asp_data");
+        localStorage.removeItem("asp_data_child");
+
+        let failed_update_wp = [];
+
+        for (let i = 0; i < dataChildForm.length; i++) {
+          let updateLMRtoACT = await this.updateLMRtoACT("https://dev-corsanywhere.e-dpm.com/", "https://api.act.e-dpm.com/api/update_site_data", dataChildForm[i].m_id_wp, respondSaveLMR.data.parent.lmr_id);
+          if (updateLMRtoACT !== undefined && updateLMRtoACT.data !== undefined && updateLMRtoACT.data.result.status >= 200 && updateLMRtoACT.data.result.status <= 300) {
+            console.log('success update WP', dataChildForm[i].wp_id);
+          } else {
+            failed_update_wp.push(dataChildForm[i].wp_id);
+          }
+        }
+
+        if (failed_update_wp.length === 0) {
+          this.setState({ action_status: "success", action_message: "LMR has been created!", redirect: "lmr-detail/" + respondSaveLMR.data.parent._id });
+        } else {
+          const getAlert = () => (
+            <SweetAlert
+              danger
+              title="Successfully created LMR but failed to update to Erisite!"
+              onConfirm={() => this.hideAlert()}
+            >
+              WP ID: {failed_update_wp.join(', ')}
+            </SweetAlert>
+          );
+
           this.setState({
-            action_status: "failed",
-            action_message: respondSaveLMR.response.data.error.message,
+            sweet_alert: getAlert()
           });
-          this.toggleLoading();
+        }
+
+        this.toggleLoading();
+      } else {
+        localStorage.setItem("asp_data", JSON.stringify(dataLMR));
+        localStorage.setItem("asp_data_child", JSON.stringify(dataLMRChild));
+        if (respondSaveLMR.response !== undefined && respondSaveLMR.response.data !== undefined && respondSaveLMR.response.data.error !== undefined) {
+          if (respondSaveLMR.response.data.error.message !== undefined) {
+            this.setState({
+              action_status: "failed",
+              action_message: respondSaveLMR.response.data.error.message,
+            });
+            this.toggleLoading();
+          } else {
+            this.setState({
+              action_status: "failed",
+              action_message: respondSaveLMR.response.data.error,
+            });
+            this.toggleLoading();
+          }
         } else {
           this.setState({
             action_status: "failed",
-            action_message: respondSaveLMR.response.data.error,
+            action_message: "There is something error. Don't worry, we saved a draft for you. Please refresh the page"
           });
           this.toggleLoading();
         }
-      } else {
-        this.setState({
-          action_status: "failed",
-          actionMessage:
-            "There is something error. Don't worry, we saved a draft for you. Please refresh page",
-        });
-        this.toggleLoading();
       }
     }
   }
@@ -1382,7 +1504,9 @@ class MYASGCreation extends Component {
         item_status: "Submit",
         work_status: "Waiting for PR-PO creation",
         site_id: "",
+        cdid: "",
         nw: "",
+        material: "",
         activity: "5640",
         qty: 0,
         unit_price: 0,
@@ -1755,12 +1879,19 @@ class MYASGCreation extends Component {
     this.getPackageList();
   }
 
-  handleDeleteLMRChild(key) {
-    console.log(key);
+  handleDeleteLMRChild = (index) => {
+    // console.log(key);
+    // let LMRChild = this.state.creation_lmr_child_form;
+    // let after_delete = LMRChild.filter((i) => i.key !== key);
+    // console.log(after_delete);
+    // this.setState({ creation_lmr_child_form: after_delete });
+
     let LMRChild = this.state.creation_lmr_child_form;
-    let after_delete = LMRChild.filter((i) => i.key !== key);
-    console.log(after_delete);
-    this.setState({ creation_lmr_child_form: after_delete });
+    let lmr_form = this.state.lmr_form;
+    lmr_form['total_price'] = lmr_form['total_price'] - LMRChild[index]['total_value'];
+    LMRChild.splice(index, 1);
+    this.setState({ creation_lmr_child_form: LMRChild }, () => console.log(this.state.creation_lmr_child_form));
+    this.setState({ lmr_form: lmr_form }, () => console.log(this.state.lmr_form));
   }
 
   handleMaterialFilter(e) {
@@ -1853,9 +1984,10 @@ class MYASGCreation extends Component {
     let dataValidate = {};
 
     const form_to_validate = [
+      "item_category",
       "lmr_type",
       "gl_account",
-      // "fas_id",
+      "fas_id",
       "vendor_name",
       "header_text",
     ];
@@ -1882,11 +2014,12 @@ class MYASGCreation extends Component {
   };
 
   handleSelectPackage = async (e) => {
+    this.toggleLoading();
     const value = e.target.value;
     const response = await postDatatoAPINODE("/package/getManyPackagebyId", { package_data: [value] }, this.state.tokenUser);
     if (response.data !== undefined && response.status >= 200 && response.status <= 300) {
       let selectedPackage = response.data.data;
-      let lmrChildAll = this.state.creation_lmr_child_form;
+      let lmrChildAll = [...this.state.creation_lmr_child_form];
       let materialsNotAssignedToVendor = [];
       for (let i = 0; i < selectedPackage.MM_Data.length; i++) {
         if (selectedPackage.MM_Data[i].Transport === 'no') {
@@ -1916,6 +2049,7 @@ class MYASGCreation extends Component {
           cdid: this.state.lmr_child_package.cdid,
           region: this.state.lmr_child_package.region,
           wp_id: this.state.lmr_child_package.wp_id,
+          m_id_wp: this.state.lmr_child_package.m_id_wp,
           project_name: this.state.lmr_child_package.project_name,
           tax_code: this.state.lmr_child_package.tax_code,
           total_value: selectedPackage.MM_Data[i].Qty * selectedPackage.MM_Data[i].Price,
@@ -1926,7 +2060,7 @@ class MYASGCreation extends Component {
         lmrChildAll.push(lmrChild);
       }
       if (materialsNotAssignedToVendor.length === 0) {
-        this.setState({ creation_lmr_child_form: lmrChildAll }, () => this.toggleModalPackage());
+        this.setState({ creation_lmr_child_form: lmrChildAll }, () => { this.toggleModalPackage(); this.sumTotalPrice(); });
       } else {
         let list_material = materialsNotAssignedToVendor.join(', ');
         const getAlert = () => (
@@ -1959,6 +2093,7 @@ class MYASGCreation extends Component {
         this.setState({ action_status: "failed" });
       }
     }
+    this.toggleLoading();
   }
 
   handleCheckMaterialPackage = async (e) => {
@@ -2139,9 +2274,7 @@ class MYASGCreation extends Component {
                           value={this.state.lmr_form.item_category}
                           onChange={this.handleChangeFormLMR}
                         >
-                          <option value="" disabled selected hidden>
-                            Select Item Category
-                          </option>
+                          <option value="" disabled selected hidden>Select Item Category</option>
                           <option value="Service">Service</option>
                           <option value="3PP">3PP</option>
                         </Input>
@@ -2220,6 +2353,7 @@ class MYASGCreation extends Component {
                           value={this.state.lmr_form.gl_account_actual}
                           onChange={this.handleChangeFormLMR}
                           style={this.state.formvalidate.gl_account === false ? { borderColor: "red" } : {}}
+                          disabled={this.state.creation_lmr_child_form.length > 0}
                         >
                           <option value="" disabled selected hidden>Select GL Account</option>
                           {this.state.lmr_form.lmr_type === 'Per Site' && (
@@ -2276,6 +2410,7 @@ class MYASGCreation extends Component {
                           value={this.state.lmr_form.vendor_code_actual}
                           onChange={this.handleChangeVendor}
                           style={this.state.formvalidate.vendor_name === false ? { borderColor: "red" } : {}}
+                          disabled={this.state.creation_lmr_child_form.length > 0}
                         >
                           <option value="" disabled selected hidden>
                             Select Vendor Name
@@ -2351,7 +2486,7 @@ class MYASGCreation extends Component {
                           value={this.state.lmr_form.l1_approver}
                           onChange={this.handleChangeFormLMR}
                         >
-                          <option value={null} selected></option>
+                          <option disabled selected hidden>Select L1 Approver</option>
                           <option value="EZYUSMO">EZYUSMO</option>
                           <option value="EYAUHON">EYAUHON</option>
                         </Input>
@@ -2367,7 +2502,7 @@ class MYASGCreation extends Component {
                           value={this.state.lmr_form.l2_approver}
                           onChange={this.handleChangeFormLMR}
                         >
-                          <option value={null} selected></option>
+                          <option disabled selected hidden>Select L2 Approver</option>
                           <option value="EZSETMA">EZSETMA</option>
                           {/* <option value="EYAUHON">EYAUHON</option> */}
                         </Input>
@@ -2383,7 +2518,7 @@ class MYASGCreation extends Component {
                           value={this.state.lmr_form.l3_approver}
                           onChange={this.handleChangeFormLMR}
                         >
-                          <option value={null} selected></option>
+                          <option disabled selected hidden>Select L3 Approver</option>
                           <option value="ERAMANN">ERAMANN</option>
                           {/* <option value="EYAUHON">EYAUHON</option> */}
                         </Input>
@@ -2399,7 +2534,7 @@ class MYASGCreation extends Component {
                           value={this.state.lmr_form.l4_approver}
                           onChange={this.handleChangeFormLMR}
                         >
-                          <option value={null} selected></option>
+                          <option disabled selected hidden>Select L4 Approver</option>
                           <option value="QDAVHAG">QDAVHAG</option>
                           {/* <option value="EYAUHON">EYAUHON</option> */}
                         </Input>
@@ -2415,7 +2550,7 @@ class MYASGCreation extends Component {
                           value={this.state.lmr_form.l5_approver}
                           onChange={this.handleChangeFormLMR}
                         >
-                          <option value={null} selected></option>
+                          <option disabled selected hidden>Select L5 Approver</option>
                           <option value="TEIMIR">TEIMIR</option>
                           {/* <option value="EYAUHON">EYAUHON</option> */}
                         </Input>
@@ -2454,6 +2589,7 @@ class MYASGCreation extends Component {
                             value={lmr.cdid}
                             onChange={this.handleChangeFormLMRChild}
                             disabled
+                            style={lmr.cdid === '' ? { border: "2px solid red" } : {}}
                           />
                         </FormGroup>
                       </Col>
@@ -2519,6 +2655,7 @@ class MYASGCreation extends Component {
                             value={lmr.nw}
                             onChange={this.handleChangeFormLMRChild}
                             disabled
+                            style={lmr.nw === '' ? { border: "2px solid red" } : {}}
                           />
                         </FormGroup>
                       </Col>
@@ -2586,6 +2723,7 @@ class MYASGCreation extends Component {
                             id={i + " /// material"}
                             value={lmr.material}
                             onClick={() => this.decideToggleMaterial(i)}
+                            style={lmr.duplicate === 'yes' || lmr.blank_material === 'yes' ? { border: "2px solid red" } : {}}
                           // onChange={this.handleChangeFormLMRChild}
                           />
                         </FormGroup>
@@ -2626,6 +2764,7 @@ class MYASGCreation extends Component {
                             id={i + " /// qty"}
                             value={lmr.qty}
                             onChange={this.handleChangeFormLMRChild}
+                            style={lmr.zero_qty === 'yes' ? { border: "2px solid red" } : {}}
                           />
                         </FormGroup>
                       </Col>
@@ -2674,7 +2813,7 @@ class MYASGCreation extends Component {
                         <Button
                           color="danger"
                           size="sm"
-                          onClick={(e) => this.handleDeleteLMRChild(lmr.key)}
+                          onClick={(e) => this.handleDeleteLMRChild(i)}
                           style={{ float: "right", marginTop: "30px" }}
                         >
                           <span className="fa fa-times"></span>

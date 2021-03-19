@@ -20,7 +20,7 @@ import {
 } from "reactstrap";
 import Pagination from "react-js-pagination";
 import { connect } from "react-redux";
-import { getDatafromAPINODE, postDatatoAPINODE, patchDatatoAPINODE, deleteDataFromAPINODE, getDatafromAPIMY } from "../../helper/asyncFunction";
+import { getDatafromAPINODE, postDatatoAPINODE, patchDatatoAPINODE, getDatafromAPIMY } from "../../helper/asyncFunction";
 import debounce from 'lodash.debounce';
 import '../MYAssignment/LMRMY.css';
 import SweetAlert from 'react-bootstrap-sweetalert';
@@ -955,6 +955,7 @@ class Package extends Component {
                     <th>Description</th>
                     <th>Price</th>
                     <th>Qty</th>
+                    <th>Vendors</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -966,6 +967,7 @@ class Package extends Component {
                         <td>{e.Description}</td>
                         <td>{e.Price}</td>
                         <td>{e.Qty}</td>
+                        <td>{e.Vendors}</td>
                       </tr>
                     ))
                   }
@@ -1065,7 +1067,7 @@ class Package extends Component {
                         className="checkmark-dash"
                         style={{ left: "40%" }}
                         checked={mat.Transport === 'yes'}
-                        disabled={this.state.create_package_child.find(x => x.Transport === 'yes')}
+                        disabled={this.state.create_package_child.find(x => x.Transport === 'yes') || this.state.create_package_parent.Material_Sub_Type !== 'ITC + Transport'}
                       />
                     </FormGroup>
                   </Col>

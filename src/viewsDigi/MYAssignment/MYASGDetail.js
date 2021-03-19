@@ -1739,8 +1739,8 @@ class MYASGDetail extends Component {
                       </Button>
                     </Link>
                   ) : (
-                      ""
-                    )}
+                    ""
+                  )}
                 </div>
               </CardHeader>
               <Collapse isOpen={this.state.collapse_add_child}>
@@ -1980,23 +1980,23 @@ class MYASGDetail extends Component {
                                   "NRO")) ||
                               (this.state.roleUser.includes("BAM-PA") === true &&
                                 this.state.lmr_detail.mm_data_type === "ARP") ? (
-                                <td>
-                                  <Link
-                                    to={
-                                      "/lmr-detail/" +
-                                      this.props.match.params.id +
-                                      "/gr-detail/" +
-                                      e._id
-                                    }
-                                  >
-                                    <Button color="info" style={{ width: "100%" }}>
-                                      <i className="fa fa-info-circle" aria-hidden="true"></i>&nbsp;&nbsp;GR
+                              <td>
+                                <Link
+                                  to={
+                                    "/lmr-detail/" +
+                                    this.props.match.params.id +
+                                    "/gr-detail/" +
+                                    e._id
+                                  }
+                                >
+                                  <Button color="info" style={{ width: "100%" }}>
+                                    <i className="fa fa-info-circle" aria-hidden="true"></i>&nbsp;&nbsp;GR
                                     </Button>
-                                  </Link>
-                                </td>
-                              ) : (
-                                <td></td>
-                              )}
+                                </Link>
+                              </td>
+                            ) : (
+                              <td></td>
+                            )}
                             <td>{e.request_type}</td>
                             <td>{e.project_name}</td>
                             <td>{e.cdid}</td>
@@ -2014,73 +2014,73 @@ class MYASGDetail extends Component {
                             {this.state.list_pr_po.find(
                               (f) => f.id_child_doc === e._id
                             ) !== undefined ? (
-                                <React.Fragment>
-                                  <td>
-                                    {
-                                      this.state.list_pr_po.find(
-                                        (f) => f.id_child_doc === e._id
-                                      ).Item_Status
-                                    }
-                                  </td>
-                                  <td>
-                                    {
-                                      this.state.list_pr_po.find(
-                                        (f) => f.id_child_doc === e._id
-                                      ).Work_Status
-                                    }
-                                  </td>
-                                  <td>
-                                    {
-                                      this.state.list_pr_po.find(
-                                        (f) => f.id_child_doc === e._id
-                                      ).PO_Number
-                                    }
-                                  </td>
-                                  <td>
-                                    {
-                                      this.state.list_pr_po.find(
-                                        (f) => f.id_child_doc === e._id
-                                      ).PO_Item
-                                    }
-                                  </td>
-                                  <td>
-                                    {
-                                      this.state.list_pr_po.find(
-                                        (f) => f.id_child_doc === e._id
-                                      ).PO_Qty
-                                    }
-                                  </td>
-                                  <td>
-                                    {
-                                      this.state.list_pr_po.find(
-                                        (f) => f.id_child_doc === e._id
-                                      ).Error_Message
-                                    }
-                                  </td>
-                                  <td>
-                                    {
-                                      this.state.list_pr_po.find(
-                                        (f) => f.id_child_doc === e._id
-                                      ).Error_Type
-                                    }
-                                  </td>
-                                </React.Fragment>
-                              ) : (
-                                <React.Fragment>
-                                  <td></td>
-                                  <td></td>
-                                  <td></td>
-                                  <td></td>
-                                  <td></td>
-                                  <td></td>
-                                  <td></td>
-                                </React.Fragment>
-                              )}
+                              <React.Fragment>
+                                <td>
+                                  {
+                                    this.state.list_pr_po.find(
+                                      (f) => f.id_child_doc === e._id
+                                    ).Item_Status
+                                  }
+                                </td>
+                                <td>
+                                  {
+                                    this.state.list_pr_po.find(
+                                      (f) => f.id_child_doc === e._id
+                                    ).Work_Status
+                                  }
+                                </td>
+                                <td>
+                                  {
+                                    this.state.list_pr_po.find(
+                                      (f) => f.id_child_doc === e._id
+                                    ).PO_Number
+                                  }
+                                </td>
+                                <td>
+                                  {
+                                    this.state.list_pr_po.find(
+                                      (f) => f.id_child_doc === e._id
+                                    ).PO_Item
+                                  }
+                                </td>
+                                <td>
+                                  {
+                                    this.state.list_pr_po.find(
+                                      (f) => f.id_child_doc === e._id
+                                    ).PO_Qty
+                                  }
+                                </td>
+                                <td>
+                                  {
+                                    this.state.list_pr_po.find(
+                                      (f) => f.id_child_doc === e._id
+                                    ).Error_Message
+                                  }
+                                </td>
+                                <td>
+                                  {
+                                    this.state.list_pr_po.find(
+                                      (f) => f.id_child_doc === e._id
+                                    ).Error_Type
+                                  }
+                                </td>
+                              </React.Fragment>
+                            ) : (
+                              <React.Fragment>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                              </React.Fragment>
+                            )}
                             {this.state.change_lmr !== true ? (
                               <td></td>
                             ) : (
-                                <td>
-                                  {/* <Button
+                              <td>
+                                {/* <Button
                                 color="danger"
                                 size="sm"
                                 value={e._id}
@@ -2088,13 +2088,13 @@ class MYASGDetail extends Component {
                               >
                                 <i className="fa fa-eraser"></i>
                               </Button> */}
-                                </td>
-                              )}
+                              </td>
+                            )}
                           </tr>
                         ))
                       ) : (
-                          <Fragment></Fragment>
-                        )}
+                        <Fragment></Fragment>
+                      )}
                       <tr>
                         {/* <td colSpan="22" style={{ textAlign: "left" }}>
                           {this.state.check_prpo.PO_Number === null ||
@@ -2173,29 +2173,29 @@ class MYASGDetail extends Component {
                           <td>
                             {this.state.lmr_detail.LMR_Type ===
                               "Cost Collector" ? (
-                                <Input
-                                  type="select"
-                                  name={i + " /// project_name"}
-                                  id={i + " /// project_name"}
-                                  value={lmr.project_name}
-                                  onChange={this.handleChangeFormLMRChildMultiple}
-                                >
-                                  <option value="" disabled selected hidden>
-                                    Select Project Name
+                              <Input
+                                type="select"
+                                name={i + " /// project_name"}
+                                id={i + " /// project_name"}
+                                value={lmr.project_name}
+                                onChange={this.handleChangeFormLMRChildMultiple}
+                              >
+                                <option value="" disabled selected hidden>
+                                  Select Project Name
                                 </option>
-                                  {this.state.list_project.map((e) => (
-                                    <option value={e.Project}>{e.Project}</option>
-                                  ))}
-                                </Input>
-                              ) : (
-                                <Input
-                                  type="text"
-                                  name={i + " /// project_name"}
-                                  id={i + " /// project_name"}
-                                  value={lmr.project_name}
-                                  readOnly
-                                />
-                              )}
+                                {this.state.list_project.map((e) => (
+                                  <option value={e.Project}>{e.Project}</option>
+                                ))}
+                              </Input>
+                            ) : (
+                              <Input
+                                type="text"
+                                name={i + " /// project_name"}
+                                id={i + " /// project_name"}
+                                value={lmr.project_name}
+                                readOnly
+                              />
+                            )}
                             {/* <Input
                               type="select"
                               name={i + " /// project_name"}
@@ -2671,8 +2671,8 @@ class MYASGDetail extends Component {
                     </Input>
                   </FormGroup>
                 ) : (
-                    ""
-                  )}
+                  ""
+                )}
               </Row>
             </div>
             <div class="table-container">
@@ -2773,8 +2773,8 @@ class MYASGDetail extends Component {
                     </Input>
                   </FormGroup>
                 ) : (
-                    ""
-                  )}
+                  ""
+                )}
               </Row>
             </div>
             <div class="table-container">
