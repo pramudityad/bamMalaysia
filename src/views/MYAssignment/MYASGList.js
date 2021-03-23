@@ -17,10 +17,12 @@ import axios from "axios";
 import Pagination from "react-js-pagination";
 import Excel from "exceljs";
 import { saveAs } from "file-saver";
-import { numToSSColumn } from "../../helper/basicFunction";
+import { getDatafromAPIMY } from "../../helper/asyncFunction";
 import {
   convertDateFormatfull,
   convertDateFormat,
+  getUniqueListBy,
+  numToSSColumn,
 } from "../../helper/basicFunction";
 import { connect } from "react-redux";
 
@@ -47,7 +49,7 @@ class MYASGList extends Component {
       totalData: 0,
       perPage: 10,
       filter_list: {},
-      mr_all: [],
+      prpo_all: [],
       lmr_list_filter: [],
       lmr_list_pagination: [],
     };
@@ -81,7 +83,8 @@ class MYASGList extends Component {
   exportLMR = async () => {
     const wb = new Excel.Workbook();
     const ws = wb.addWorksheet();
-
+    const prpo_list = this.state.prpo_all;
+    // console.log(prpo_list)
     const all_lmr = this.state.lmr_list_filter;
 
     let headerRow = [
@@ -97,6 +100,7 @@ class MYASGList extends Component {
       "L2 Approver",
       "L3 Approver",
       "Request Type",
+      "PO",
     ];
     ws.addRow(headerRow);
     for (let i = 1; i < headerRow.length + 1; i++) {
@@ -123,6 +127,8 @@ class MYASGList extends Component {
         e.l2_approver,
         e.l3_approver,
         e.request_type,
+        // prpo_list.find(f => f.LMR_No === e.lmr_id)
+        this.getPO(prpo_list, e.lmr_id),
       ]);
     }
 
@@ -130,7 +136,28 @@ class MYASGList extends Component {
     saveAs(new Blob([allocexport]), "All LMR.xlsx");
   };
 
-  getMRList() {
+  getPO(list_prpo, key2) {
+    const data_prpo = list_prpo.find((a) => a.LMR_No === key2);
+    if (data_prpo !== undefined) {
+      return data_prpo.PO_Number;
+    }
+    return null;
+  }
+
+  async getPRPO() {
+    await getDatafromAPIMY('/prpo_bam_report?where={"Customer":"CELCOM"}').then(
+      (res) => {
+        if (res.data !== undefined) {
+          const prpo_all = res.data._items.filter(
+            (pr) => pr.PO_Number !== null
+          );
+          this.setState({ prpo_all: prpo_all });
+        }
+      }
+    );
+  }
+
+  async getMRList() {
     let filter_array = [];
     this.state.filter_list["lmr_id"] !== null &&
       this.state.filter_list["lmr_id"] !== undefined &&
@@ -175,7 +202,7 @@ class MYASGList extends Component {
           '", "$options" : "i"}'
       );
     let whereAnd = "{" + filter_array.join(",") + "}";
-    this.getDataFromAPINODE(
+    await this.getDataFromAPINODE(
       "/aspassignment/getAspAssignment?q=" + whereAnd + "&srt=_id:-1&noPg=1"
     ).then((res) => {
       console.log("MR List Sorted", res);
@@ -204,6 +231,7 @@ class MYASGList extends Component {
     const mp = ["Hardware"];
     const pa = ["T&M"];
     const grpa = ["NRO Services", "LM", "Transport", "NDO Services"];
+    const ndo_im = ["NDO Services"];
     if (
       role.includes("BAM-CPM") === true ||
       role.includes("BAM-Sourcing") === true ||
@@ -237,6 +265,12 @@ class MYASGList extends Component {
     }
     if (role.includes("BAM-PA") === true) {
       let filterlist = lmr_list.filter((e) => pa.includes(e.gl_type));
+      this.setState({ lmr_list_filter: filterlist }, () =>
+        this.dataViewPagination(this.state.lmr_list_filter)
+      );
+    }
+    if (role.includes("BAM-NDO IM") === true) {
+      let filterlist = lmr_list.filter((e) => ndo_im.includes(e.gl_type));
       this.setState({ lmr_list_filter: filterlist }, () =>
         this.dataViewPagination(this.state.lmr_list_filter)
       );
@@ -328,7 +362,7 @@ class MYASGList extends Component {
 
   componentDidMount() {
     this.getMRList();
-    // this.getAllMR();
+    this.getPRPO();
     // console.log('token ', this.props.dataLogin.token)
     document.title = "LMR List | BAM";
   }
@@ -359,28 +393,30 @@ class MYASGList extends Component {
   loopSearchBar = () => {
     let searchBar = [];
     for (let i = 0; i < 6; i++) {
-      searchBar.push(
-        <td>
-          <div className="controls" style={{ width: "150px" }}>
-            <InputGroup className="input-prepend">
-              <InputGroupAddon addonType="prepend">
-                <InputGroupText>
-                  <i className="fa fa-search"></i>
-                </InputGroupText>
-              </InputGroupAddon>
-              <Input
-                // className="col-sm-3"
-                type="text"
-                placeholder="Search"
-                onChange={this.handleFilterList}
-                value={this.state.filter_list[header_model[i]]}
-                name={header_model[i]}
-                size="sm"
-              />
-            </InputGroup>
-          </div>
-        </td>
-      );
+      i === 2
+        ? searchBar.push(<td></td>)
+        : searchBar.push(
+            <td>
+              <div className="controls" style={{ width: "150px" }}>
+                <InputGroup className="input-prepend">
+                  <InputGroupAddon addonType="prepend">
+                    <InputGroupText>
+                      <i className="fa fa-search"></i>
+                    </InputGroupText>
+                  </InputGroupAddon>
+                  <Input
+                    // className="col-sm-3"
+                    type="text"
+                    placeholder="Search"
+                    onChange={this.handleFilterList}
+                    value={this.state.filter_list[header_model[i]]}
+                    name={header_model[i]}
+                    size="sm"
+                  />
+                </InputGroup>
+              </div>
+            </td>
+          );
     }
     return searchBar;
   };
@@ -469,8 +505,7 @@ class MYASGList extends Component {
                           </td>
                           <td>{e.lmr_id}</td>
                           <td>{e.header_text}</td>
-                          <td>{e.po}</td>
-
+                          <td>{this.getPO(this.state.prpo_all, e.lmr_id)}</td>
                           <td>{e.lmr_issued_by}</td>
                           <td>{e.project_name}</td>
                           <td>{e.vendor_name}</td>

@@ -1,6 +1,5 @@
 import axios from "axios";
 
-// EXCEL
 export const getDatafromAPIMY = async (url) => {
   try {
     let respond = await axios.get(process.env.REACT_APP_API_URL_MAS + url, {
@@ -40,27 +39,7 @@ export const getDatafromAPINODE = async (url, props) => {
   }
 };
 
-export const getDatafromAPINODEFile = async (url, props, con_type) => {
-  try {
-    let respond = await axios.get(process.env.REACT_APP_API_URL_NODE + url, {
-      responseType: "blob",
-      headers: {
-        // "Content-Type": con_type,
-        Authorization: "Bearer " + props,
-      },
-    });
-    if (respond.status >= 200 && respond.status < 300) {
-      console.log("respond Post Data", respond);
-    }
-    return respond;
-  } catch (err) {
-    let respond = err;
-    console.log("respond Post Data err", err);
-    return respond;
-  }
-};
-
-export const postDatatoAPINODE = async (url, data, props) => {
+export const getDatafromAPINODEFile = async (url, props, data) => {
   try {
     let respond = await axios.post(
       process.env.REACT_APP_API_URL_NODE + url,
@@ -102,6 +81,29 @@ export const postDatatoAPILogin = async (url, data) => {
   } catch (err) {
     let respond = err;
     console.log("respond Post Data", err);
+    return respond;
+  }
+};
+
+export const postDatatoAPINODE = async (url, data, props) => {
+  try {
+    let respond = await axios.post(
+      process.env.REACT_APP_API_URL_NODE + url,
+      data,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + props,
+        },
+      }
+    );
+    if (respond.status >= 200 && respond.status < 300) {
+      console.log("respond Post Data", respond);
+    }
+    return respond;
+  } catch (err) {
+    let respond = err;
+    console.log("respond Post Data err", err);
     return respond;
   }
 };
@@ -152,10 +154,9 @@ export const deleteDataFromAPINODE2 = async (url, props, data) => {
   try {
     let respond = await axios.delete(process.env.REACT_APP_API_URL_NODE + url, {
       headers: {
-        "Content-Type": "application/json",
         Authorization: "Bearer " + props,
       },
-      data,
+      data: data,
     });
     if (respond.status >= 200 && respond.status < 300) {
       console.log("respond delete Data", respond);
@@ -168,21 +169,36 @@ export const deleteDataFromAPINODE2 = async (url, props, data) => {
   }
 };
 
+/**
+ *
+ * @param {data_email} data
+ */
+export const apiSendEmail = async (data) => {
+  try {
+    let respond = await axios.post(process.env.REACT_APP_API_EMAIL, data, {
+      headers: { "Content-Type": "application/json" },
+    });
+    return respond;
+  } catch (err) {
+    let respond = undefined;
+    return respond;
+  }
+};
 export const generateTokenACT = async () => {
   const proxyurl = "https://dev-corsanywhere.e-dpm.com/";
   const url = "https://api.act.e-dpm.com/api/get_token_auth";
   try {
     let body = {
-      "email": "a.fariz.mursyidan@ericsson.com",
-      "user_cu_id": "MYSLBD",
-      "user_cust_id": "All",
-      "user_type_parent": 1,
-      "user_type_child": "2",
-      "cu_id": "MYSLBD",
-      "account_id": "digi",
-      "project_id": "madd",
-      "project_type": "dynamic"
-    }
+      email: "a.fariz.mursyidan@ericsson.com",
+      user_cu_id: "MYSLBD",
+      user_cust_id: "All",
+      user_type_parent: 1,
+      user_type_child: "2",
+      cu_id: "MYSLBD",
+      account_id: "digi",
+      project_id: "madd",
+      project_type: "dynamic",
+    };
     let respond = await axios.post(proxyurl + url, body, {
       headers: {
         "Content-Type": "application/json",
@@ -198,4 +214,4 @@ export const generateTokenACT = async () => {
     console.log("respond token", err);
     return respond;
   }
-}
+};

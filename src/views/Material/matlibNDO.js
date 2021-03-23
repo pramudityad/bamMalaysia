@@ -55,7 +55,7 @@ const header_model = [
   "Remarks",
 ];
 
-class MatNDO extends React.Component {
+class MatNDO extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {

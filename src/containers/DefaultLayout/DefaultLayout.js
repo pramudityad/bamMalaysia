@@ -117,6 +117,7 @@ class DefaultLayout extends Component {
   }
 
   render() {
+    const role = this.state.userRole;
     console.log("this.props", this.props);
     return (
       <div className="app">
@@ -163,7 +164,13 @@ class DefaultLayout extends Component {
                       />
                     ) : null;
                   })}
-                  <Redirect from="/" to="/lmr-list" />
+                  {role.includes("BAM-MAT PLANNER") === true ||
+                  role.includes("BAM-PFM") === true ||
+                  role.includes("BAM-ADMIN") === true ? (
+                    <Redirect from="/" to="/summary-master" />
+                  ) : (
+                    <Redirect from="/" to="/lmr-list" />
+                  )}
                 </Switch>
               </Suspense>
             </Container>

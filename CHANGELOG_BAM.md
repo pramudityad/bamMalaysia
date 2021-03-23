@@ -141,3 +141,90 @@ All notable changes to BAM https://bam-my.e-dpm.com will be documented in this f
 ### Changed
 
 ### Fixed
+
+## [1.3.10] - 2021-01-25
+
+### Added
+
+- new data from project 2021 (fas id, cd id, etc)
+
+### Changed
+
+### Fixed
+
+- validation item_category in lmr creation
+
+## [1.3.10] - 2021-01-27
+
+### Added
+
+### Changed
+
+### Fixed
+
+- Filter Project & Sub project based on fas id
+
+## [1.3.10] - 2021-02-03
+
+### Added
+
+- GR Document No in GR Detail
+
+### Changed
+
+### Fixed
+
+## [1.3.10] - 2021-02-08
+
+### Added
+
+### Changed
+
+### Fixed
+
+- selfhost corsanywhere
+
+## [1.3.11] - 2021-02-19
+
+### Added
+
+### Changed
+
+### Fixed
+
+- Missing PO details in GR child - DPM (ana issue)
+
+## [1.3.12] - 2021-02-23
+
+### Added
+
+- po number in view (not search able)
+- po number in report file
+
+### Changed
+
+### Fixed
+
+## [1.3.12] - 2021-02-23
+
+### Added
+
+### Changed
+
+- delete po column in lmr list
+
+### Fixed
+
+## [1.3.13] - 2021-03-12
+
+### Added
+
+### Changed
+
+- bulk gr
+- validation qty gr
+- move dn no and file upload gr
+
+### Fixed
+
+- total amount in lmr creation form readOnly

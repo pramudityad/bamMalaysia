@@ -70,7 +70,7 @@ const header_model = [
   "MM_Description",
 ];
 
-class TabelNRO extends React.Component {
+class TabelNRO extends React.PureComponent {
   getVendorRow(material_vendor_data, vendor, mat_id) {
     const Matdata = material_vendor_data.find(
       (e) => e.Vendor_Code === vendor.Vendor_Code
