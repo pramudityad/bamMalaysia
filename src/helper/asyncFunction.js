@@ -184,3 +184,34 @@ export const apiSendEmail = async (data) => {
     return respond;
   }
 };
+export const generateTokenACT = async () => {
+  const proxyurl = "https://dev-corsanywhere.e-dpm.com/";
+  const url = "https://api.act.e-dpm.com/api/get_token_auth";
+  try {
+    let body = {
+      email: "a.fariz.mursyidan@ericsson.com",
+      user_cu_id: "MYSLBD",
+      user_cust_id: "All",
+      user_type_parent: 1,
+      user_type_child: "2",
+      cu_id: "MYSLBD",
+      account_id: "digi",
+      project_id: "madd",
+      project_type: "dynamic",
+    };
+    let respond = await axios.post(proxyurl + url, body, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Basic YWRtaW50YWJsZWF1OlRhYmxlYXUhMTIz",
+      },
+    });
+    if (respond.status >= 200 && respond.status < 300) {
+      console.log("respond token", respond.data.access_token);
+    }
+    return respond.data.access_token;
+  } catch (err) {
+    let respond = err;
+    console.log("respond token", err);
+    return respond;
+  }
+};
