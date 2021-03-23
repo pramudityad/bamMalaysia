@@ -24,9 +24,9 @@ import { saveAs } from "file-saver";
 import Excel from "exceljs";
 import { Modal, ModalBody, ModalHeader, ModalFooter } from "reactstrap";
 import * as XLSX from "xlsx";
-import { getDatafromAPIMY } from "../../helper/asyncFunction";
+import { getDatafromAPIMY } from "../../helper/asyncFunctionDigi";
 import { connect } from "react-redux";
-import { getDatafromAPINODEFile } from "../../helper/asyncFunction";
+import { getDatafromAPINODEFile } from "../../helper/asyncFunctionDigi";
 import "./LMRMY.css";
 const DefaultNotif = React.lazy(() =>
   import("../../views/DefaultView/DefaultNotif")
@@ -198,7 +198,7 @@ class MYASGDetail extends Component {
 
   async getDatafromAPINODE(url) {
     try {
-      let respond = await axios.get(process.env.REACT_APP_API_URL_NODE + url, {
+      let respond = await axios.get(process.env.REACT_APP_API_URL_NODE_Digi + url, {
         headers: {
           "Content-Type": "application/json",
           Authorization: "Bearer " + this.state.tokenUser,
@@ -218,7 +218,7 @@ class MYASGDetail extends Component {
   async postDatatoAPINODE(url, data) {
     try {
       let respond = await axios.post(
-        process.env.REACT_APP_API_URL_NODE + url,
+        process.env.REACT_APP_API_URL_NODE_Digi + url,
         data,
         {
           headers: {
@@ -241,7 +241,7 @@ class MYASGDetail extends Component {
   async patchDatatoAPINODE(url, data) {
     try {
       let respond = await axios.patch(
-        process.env.REACT_APP_API_URL_NODE + url,
+        process.env.REACT_APP_API_URL_NODE_Digi + url,
         data,
         {
           headers: {
@@ -264,7 +264,7 @@ class MYASGDetail extends Component {
   async deleteDatafromAPINODE(url) {
     try {
       let respond = await axios.delete(
-        process.env.REACT_APP_API_URL_NODE + url,
+        process.env.REACT_APP_API_URL_NODE_Digi + url,
         {
           headers: {
             "Content-Type": "application/json",
@@ -1167,8 +1167,8 @@ class MYASGDetail extends Component {
                               <i className="fa fa-edit" aria-hidden="true"></i>
                             </Button>
                           ) : (
-                              ""
-                            )}
+                            ""
+                          )}
                         </th>
                         <th>
                           PO Item{" "}
@@ -1177,8 +1177,8 @@ class MYASGDetail extends Component {
                               <i className="fa fa-edit" aria-hidden="true"></i>
                             </Button>
                           ) : (
-                              ""
-                            )}
+                            ""
+                          )}
                         </th>
                         <th>
                           PO Price{" "}
@@ -1187,8 +1187,8 @@ class MYASGDetail extends Component {
                               <i className="fa fa-edit" aria-hidden="true"></i>
                             </Button>
                           ) : (
-                              ""
-                            )}
+                            ""
+                          )}
                         </th>
                         <th>
                           PO Qty{" "}
@@ -1197,8 +1197,8 @@ class MYASGDetail extends Component {
                               <i className="fa fa-edit" aria-hidden="true"></i>
                             </Button>
                           ) : (
-                              ""
-                            )}
+                            ""
+                          )}
                         </th>
                         <th>Required GR Qty</th>
                         <th>DN No</th>
@@ -1224,8 +1224,8 @@ class MYASGDetail extends Component {
                                 </Button>
                               </td>
                             ) : (
-                                ""
-                              )}
+                              ""
+                            )}
                             {this.state.ChildForm.length !== 0 ? <td></td> : ""}
                             <td>{e.Plant}</td>
                             {/* {this.state.change_gr !== false ? <td>Edit GR</td>: <td>{e.Request_Type}</td>} */}
@@ -1256,8 +1256,8 @@ class MYASGDetail extends Component {
                           </tr>
                         ))
                       ) : (
-                          <Fragment></Fragment>
-                        )}
+                        <Fragment></Fragment>
+                      )}
                       {this.state.ChildForm.map((child_data, idx) => (
                         <tr>
                           <td>
@@ -1322,18 +1322,18 @@ class MYASGDetail extends Component {
                               />
                             </td>
                           ) : (
-                              <td style={{ width: "10%" }}>
-                                <input
-                                  // key={prpo._id}
-                                  type="text"
-                                  name="PO_Number"
-                                  id={"PO_Number"}
-                                  value={child_data.PO_Number}
-                                  onChange={this.handleInputchild(idx)}
-                                // style={{ width: "10%" }}
-                                />
-                              </td>
-                            )}
+                            <td style={{ width: "10%" }}>
+                              <input
+                                // key={prpo._id}
+                                type="text"
+                                name="PO_Number"
+                                id={"PO_Number"}
+                                value={child_data.PO_Number}
+                                onChange={this.handleInputchild(idx)}
+                              // style={{ width: "10%" }}
+                              />
+                            </td>
+                          )}
                           {this.state.editPO_item === false ? (
                             <td>
                               <input
@@ -1348,18 +1348,18 @@ class MYASGDetail extends Component {
                               />
                             </td>
                           ) : (
-                              <td style={{ width: "10%" }}>
-                                <input
-                                  // key={prpo._id}
-                                  type="text"
-                                  name="PO_Item"
-                                  id={"PO_Item"}
-                                  value={child_data.PO_Item}
-                                  onChange={this.handleInputchild(idx)}
-                                // style={{ width: "10%" }}
-                                />
-                              </td>
-                            )}
+                            <td style={{ width: "10%" }}>
+                              <input
+                                // key={prpo._id}
+                                type="text"
+                                name="PO_Item"
+                                id={"PO_Item"}
+                                value={child_data.PO_Item}
+                                onChange={this.handleInputchild(idx)}
+                              // style={{ width: "10%" }}
+                              />
+                            </td>
+                          )}
                           {this.state.editPO_price === false ? (
                             <td>
                               <input
@@ -1374,17 +1374,17 @@ class MYASGDetail extends Component {
                               />
                             </td>
                           ) : (
-                              <td style={{ width: "10%" }}>
-                                <input
-                                  type="text"
-                                  name="PO_Price"
-                                  id="PO_Price"
-                                  onChange={this.handleInputchild(idx)}
-                                  value={child_data.PO_Price}
-                                // style={{ width: "10%" }}
-                                />
-                              </td>
-                            )}
+                            <td style={{ width: "10%" }}>
+                              <input
+                                type="text"
+                                name="PO_Price"
+                                id="PO_Price"
+                                onChange={this.handleInputchild(idx)}
+                                value={child_data.PO_Price}
+                              // style={{ width: "10%" }}
+                              />
+                            </td>
+                          )}
                           {this.state.editPO_qty === false ? (
                             <td>
                               <input
@@ -1401,22 +1401,22 @@ class MYASGDetail extends Component {
                               />
                             </td>
                           ) : (
-                              <td style={{ width: "10%" }}>
-                                <input
-                                  // key={prpo._id}
-                                  type="number"
-                                  min="0"
-                                  max="10"
-                                  step="0.1"
-                                  name="PO_Qty"
-                                  id={"PO_Qty"}
-                                  value={child_data.PO_Qty}
-                                  value={child_data.PO_Qty}
-                                  onChange={this.handleInputchild(idx)}
-                                // style={{ width: "10%" }}
-                                />
-                              </td>
-                            )}
+                            <td style={{ width: "10%" }}>
+                              <input
+                                // key={prpo._id}
+                                type="number"
+                                min="0"
+                                max="10"
+                                step="0.1"
+                                name="PO_Qty"
+                                id={"PO_Qty"}
+                                value={child_data.PO_Qty}
+                                value={child_data.PO_Qty}
+                                onChange={this.handleInputchild(idx)}
+                              // style={{ width: "10%" }}
+                              />
+                            </td>
+                          )}
                           <td style={{ width: "10%" }}>
                             <input
                               type="number"

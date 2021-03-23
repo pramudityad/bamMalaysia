@@ -33,19 +33,19 @@ const Checkbox = ({
   onChange,
   value,
 }) => (
-    <input
-      type={type}
-      name={name}
-      checked={checked}
-      onChange={onChange}
-      value={value}
-      className="checkmark-dash"
-    />
-  );
+  <input
+    type={type}
+    name={name}
+    checked={checked}
+    onChange={onChange}
+    value={value}
+    className="checkmark-dash"
+  />
+);
 
 // const DefaultNotif = React.lazy(() => import("../../DefaultView/DefaultNotif"));
 
-const process.env.REACT_APP_API_URL_NODE = "https://api2-dev.bam-id.e-dpm.com/bamidapi";
+// const process.env.REACT_APP_API_URL_NODE_Digi = "https://api2-dev.bam-id.e-dpm.com/bamidapi";
 
 class DRMDetail extends React.Component {
   constructor(props) {
@@ -79,7 +79,7 @@ class DRMDetail extends React.Component {
       activeItemName: "",
       activeItemId: null,
       createModal: false,
-      filter_list : {},
+      filter_list: {},
     };
     this.toggleMatStockForm = this.toggleMatStockForm.bind(this);
     this.toggleLoading = this.toggleLoading.bind(this);
@@ -160,7 +160,7 @@ class DRMDetail extends React.Component {
 
   async getDatafromAPINODE(url) {
     try {
-      let respond = await axios.get(process.env.REACT_APP_API_URL_NODE + url, {
+      let respond = await axios.get(process.env.REACT_APP_API_URL_NODE_Digi + url, {
         headers: {
           "Content-Type": "application/json",
           Authorization: "Bearer " + this.state.tokenUser,
@@ -179,7 +179,7 @@ class DRMDetail extends React.Component {
 
   async postDatatoAPINODE(url, data) {
     try {
-      let respond = await axios.post(process.env.REACT_APP_API_URL_NODE + url, data, {
+      let respond = await axios.post(process.env.REACT_APP_API_URL_NODE_Digi + url, data, {
         headers: {
           "Content-Type": "application/json",
           Authorization: "Bearer " + this.state.tokenUser,
@@ -198,7 +198,7 @@ class DRMDetail extends React.Component {
 
   async patchDatatoAPINODE(url, data) {
     try {
-      let respond = await axios.patch(process.env.REACT_APP_API_URL_NODE + url, data, {
+      let respond = await axios.patch(process.env.REACT_APP_API_URL_NODE_Digi + url, data, {
         headers: {
           "Content-Type": "application/json",
           Authorization: "Bearer " + this.state.tokenUser,
@@ -217,7 +217,7 @@ class DRMDetail extends React.Component {
 
   async deleteDataFromAPINODE(url) {
     try {
-      let respond = await axios.delete(process.env.REACT_APP_API_URL_NODE + url, {
+      let respond = await axios.delete(process.env.REACT_APP_API_URL_NODE_Digi + url, {
         headers: {
           "Content-Type": "application/json",
           Authorization: "Bearer " + this.state.tokenUser,
@@ -361,11 +361,11 @@ class DRMDetail extends React.Component {
   }
 
   getDRMDataList() {
-    let project_name_filter = this.state.filter_list.project_name === null || this.state.filter_list.project_name ===  undefined ? '"project_name" : {"$exists" : 1}' : '"project_name" : {"$regex" : "'+this.state.filter_list.project_name+'", "$options" : "i"}';
-    let tower_id_filter = this.state.filter_list.tower_id === null || this.state.filter_list.tower_id ===  undefined ? '"tower_id" : {"$exists" : 1}' : '"tower_id" : {"$regex" : "'+this.state.filter_list.tower_id+'", "$options" : "i"}';
-    let program_filter = this.state.filter_list.program === null || this.state.filter_list.program ===  undefined ? '"program" : {"$exists" : 1}' : '"program" : {"$regex" : "'+this.state.filter_list.program+'", "$options" : "i"}';
-    let whereAnd = 'q={'+project_name_filter+','+tower_id_filter+','+program_filter+'}'
-    this.getDatafromAPINODE("/drm/getDrm?lmt=" + this.state.perPage + '&pg=' + this.state.activePage+'&'+whereAnd).then((res) => {
+    let project_name_filter = this.state.filter_list.project_name === null || this.state.filter_list.project_name === undefined ? '"project_name" : {"$exists" : 1}' : '"project_name" : {"$regex" : "' + this.state.filter_list.project_name + '", "$options" : "i"}';
+    let tower_id_filter = this.state.filter_list.tower_id === null || this.state.filter_list.tower_id === undefined ? '"tower_id" : {"$exists" : 1}' : '"tower_id" : {"$regex" : "' + this.state.filter_list.tower_id + '", "$options" : "i"}';
+    let program_filter = this.state.filter_list.program === null || this.state.filter_list.program === undefined ? '"program" : {"$exists" : 1}' : '"program" : {"$regex" : "' + this.state.filter_list.program + '", "$options" : "i"}';
+    let whereAnd = 'q={' + project_name_filter + ',' + tower_id_filter + ',' + program_filter + '}'
+    this.getDatafromAPINODE("/drm/getDrm?lmt=" + this.state.perPage + '&pg=' + this.state.activePage + '&' + whereAnd).then((res) => {
       if (res.data !== undefined) {
         this.setState({
           all_data: res.data.data,
@@ -562,7 +562,7 @@ class DRMDetail extends React.Component {
       this.setState({ action_status: "success" }, () => {
         this.toggleLoading();
         setTimeout(function () {
-          setTimeout(function(){ window.location.reload(); }, 1500);
+          setTimeout(function () { window.location.reload(); }, 1500);
         }, 2000);
       });
     } else {
@@ -661,8 +661,8 @@ class DRMDetail extends React.Component {
 
     ws.addRow(["tower_id", "project_name", "program", "actual_rbs_data", "actual_du", "ru_b0_900", "ru_b1_2100", "ru_b3_1800", "ru_b8_900", "ru_b1b3", "ru_band_agnostic", "remarks_need_cr_go_as_sow_original", "existing_antenna_type", "antenna_height", "scenario_ran", "dismantle_antenna", "dismantle_ru", "dismantle_accessories", "dismantle_du", "dismantle_rbs_encl", "existing_dan_scenario_implementasi_rbs", "drm_final_module", "drm_final_radio", "drm_final_sow_cabinet", "drm_final_sow_g9_u9_l9", "drm_final_sow_g18_l18", "drm_final_sow_u21_l21", "drm_final_antenna_type", "plan_antenna_azimuth", "plan_antenna_et_mt", "module", "cabinet", "radio", "power_rru", "antenna", "dismantle", "system", "optic_rru", "area", "verification_date", "verification_status", "verification_pic", "issued_detail", "cr_flag_engineering"]);
 
-    ws.addRow(["JWT-BBS-0001","XL BAM DEMO 2020","Capacity"]);
-		ws.addRow(["JWT-BBS-0002","XL BAM DEMO 2020","Coverage"]);
+    ws.addRow(["JWT-BBS-0001", "XL BAM DEMO 2020", "Capacity"]);
+    ws.addRow(["JWT-BBS-0002", "XL BAM DEMO 2020", "Coverage"]);
 
     const PPFormat = await wb.xlsx.writeBuffer();
     saveAs(new Blob([PPFormat]), "DRM Template.xlsx");
@@ -671,12 +671,12 @@ class DRMDetail extends React.Component {
   handleFilterList(e) {
     const index = e.target.name;
     let value = e.target.value;
-    if(value !== "" && value.length === 0) {
+    if (value !== "" && value.length === 0) {
       value = null;
     }
     let dataFilter = this.state.filter_list;
     dataFilter[index] = value;
-    this.setState({filter_list : dataFilter, activePage: 1}, () => {
+    this.setState({ filter_list: dataFilter, activePage: 1 }, () => {
       this.onChangeDebounced(e);
     })
   }
@@ -706,7 +706,7 @@ class DRMDetail extends React.Component {
                   </Button>
                   </div>
                   <div style={{ marginRight: "10px" }}>
-                    <Dropdown isOpen={this.state.dropdownOpen[0]} toggle={() => {this.toggle(0);}} size="sm">
+                    <Dropdown isOpen={this.state.dropdownOpen[0]} toggle={() => { this.toggle(0); }} size="sm">
                       <DropdownToggle caret color="light">
                         Download Template
                       </DropdownToggle>
@@ -829,31 +829,31 @@ class DRMDetail extends React.Component {
                           <tr>
                             <th>
                               <div className="controls">
-                                <InputGroup className="input-prepend" style={{width : '150px'}}>
+                                <InputGroup className="input-prepend" style={{ width: '150px' }}>
                                   <InputGroupAddon addonType="prepend">
                                     <InputGroupText><i className="fa fa-search"></i></InputGroupText>
                                   </InputGroupAddon>
-                                  <Input type="text" placeholder="Search" onChange={this.handleFilterList} value={this.state.filter_list.tower_id} name="tower_id" size="sm"/>
+                                  <Input type="text" placeholder="Search" onChange={this.handleFilterList} value={this.state.filter_list.tower_id} name="tower_id" size="sm" />
                                 </InputGroup>
                               </div>
                             </th>
                             <th>
                               <div className="controls">
-                                <InputGroup className="input-prepend" style={{width : '150px'}}>
+                                <InputGroup className="input-prepend" style={{ width: '150px' }}>
                                   <InputGroupAddon addonType="prepend">
                                     <InputGroupText><i className="fa fa-search"></i></InputGroupText>
                                   </InputGroupAddon>
-                                  <Input type="text" placeholder="Search" onChange={this.handleFilterList} value={this.state.filter_list.project_name} name="project_name" size="sm"/>
+                                  <Input type="text" placeholder="Search" onChange={this.handleFilterList} value={this.state.filter_list.project_name} name="project_name" size="sm" />
                                 </InputGroup>
                               </div>
                             </th>
                             <th>
                               <div className="controls">
-                                <InputGroup className="input-prepend" style={{width : '100px'}}>
+                                <InputGroup className="input-prepend" style={{ width: '100px' }}>
                                   <InputGroupAddon addonType="prepend">
                                     <InputGroupText><i className="fa fa-search"></i></InputGroupText>
                                   </InputGroupAddon>
-                                  <Input type="text" placeholder="Search" onChange={this.handleFilterList} value={this.state.filter_list.program} name="program" size="sm"/>
+                                  <Input type="text" placeholder="Search" onChange={this.handleFilterList} value={this.state.filter_list.program} name="program" size="sm" />
                                 </InputGroup>
                               </div>
                             </th>
@@ -862,54 +862,54 @@ class DRMDetail extends React.Component {
                           </tr>
                         </thead>
                         <tbody>
-                        {this.state.all_data.map(drm =>
-                          <tr>
-                            <td>{drm.tower_id}</td>
-                            <td>{drm.project_name}</td>
-                            <td>{drm.program}</td>
-                            <td>{drm.actual_rbs_data}</td>
-                            <td>{drm.actual_du}</td>
-                            <td>{drm.ru_b0_900}</td>
-                            <td>{drm.ru_b1_2100}</td>
-                            <td>{drm.ru_b3_1800}</td>
-                            <td>{drm.ru_b8_900}</td>
-                            <td>{drm.ru_b1b3}</td>
-                            <td>{drm.ru_band_agnostic}</td>
-                            <td>{drm.remarks_need_cr_go_as_sow_original}</td>
-                            <td>{drm.existing_antenna_type}</td>
-                            <td>{drm.antenna_height}</td>
-                            <td>{drm.scenario_ran}</td>
-                            <td>{drm.dismantle_antenna}</td>
-                            <td>{drm.dismantle_ru}</td>
-                            <td>{drm.dismantle_accessories}</td>
-                            <td>{drm.dismantle_du}</td>
-                            <td>{drm.dismantle_rbs_encl}</td>
-                            <td>{drm.existing_dan_scenario_implementasi_rbs}</td>
-                            <td>{drm.drm_final_module}</td>
-                            <td>{drm.drm_final_radio}</td>
-                            <td>{drm.drm_final_sow_cabinet}</td>
-                            <td>{drm.drm_final_sow_g9_u9_l9}</td>
-                            <td>{drm.drm_final_sow_g18_l18}</td>
-                            <td>{drm.drm_final_sow_u21_l21}</td>
-                            <td>{drm.drm_final_antenna_type}</td>
-                            <td>{drm.plan_antenna_azimuth}</td>
-                            <td>{drm.plan_antenna_et_mt}</td>
-                            <td>{drm.module}</td>
-                            <td>{drm.cabinet}</td>
-                            <td>{drm.radio}</td>
-                            <td>{drm.power_rru}</td>
-                            <td>{drm.antenna}</td>
-                            <td>{drm.dismantle}</td>
-                            <td>{drm.system}</td>
-                            <td>{drm.optic_rru}</td>
-                            <td>{drm.area}</td>
-                            <td>{drm.verification_date}</td>
-                            <td>{drm.verification_status}</td>
-                            <td>{drm.verification_pic}</td>
-                            <td>{drm.issued_detail}</td>
-                            <td>{drm.cr_flag_engineering}</td>
-                          </tr>
-                        )}
+                          {this.state.all_data.map(drm =>
+                            <tr>
+                              <td>{drm.tower_id}</td>
+                              <td>{drm.project_name}</td>
+                              <td>{drm.program}</td>
+                              <td>{drm.actual_rbs_data}</td>
+                              <td>{drm.actual_du}</td>
+                              <td>{drm.ru_b0_900}</td>
+                              <td>{drm.ru_b1_2100}</td>
+                              <td>{drm.ru_b3_1800}</td>
+                              <td>{drm.ru_b8_900}</td>
+                              <td>{drm.ru_b1b3}</td>
+                              <td>{drm.ru_band_agnostic}</td>
+                              <td>{drm.remarks_need_cr_go_as_sow_original}</td>
+                              <td>{drm.existing_antenna_type}</td>
+                              <td>{drm.antenna_height}</td>
+                              <td>{drm.scenario_ran}</td>
+                              <td>{drm.dismantle_antenna}</td>
+                              <td>{drm.dismantle_ru}</td>
+                              <td>{drm.dismantle_accessories}</td>
+                              <td>{drm.dismantle_du}</td>
+                              <td>{drm.dismantle_rbs_encl}</td>
+                              <td>{drm.existing_dan_scenario_implementasi_rbs}</td>
+                              <td>{drm.drm_final_module}</td>
+                              <td>{drm.drm_final_radio}</td>
+                              <td>{drm.drm_final_sow_cabinet}</td>
+                              <td>{drm.drm_final_sow_g9_u9_l9}</td>
+                              <td>{drm.drm_final_sow_g18_l18}</td>
+                              <td>{drm.drm_final_sow_u21_l21}</td>
+                              <td>{drm.drm_final_antenna_type}</td>
+                              <td>{drm.plan_antenna_azimuth}</td>
+                              <td>{drm.plan_antenna_et_mt}</td>
+                              <td>{drm.module}</td>
+                              <td>{drm.cabinet}</td>
+                              <td>{drm.radio}</td>
+                              <td>{drm.power_rru}</td>
+                              <td>{drm.antenna}</td>
+                              <td>{drm.dismantle}</td>
+                              <td>{drm.system}</td>
+                              <td>{drm.optic_rru}</td>
+                              <td>{drm.area}</td>
+                              <td>{drm.verification_date}</td>
+                              <td>{drm.verification_status}</td>
+                              <td>{drm.verification_pic}</td>
+                              <td>{drm.issued_detail}</td>
+                              <td>{drm.cr_flag_engineering}</td>
+                            </tr>
+                          )}
 
                         </tbody>
                       </Table>
@@ -1129,35 +1129,35 @@ class DRMDetail extends React.Component {
           </ModalFooter>
         </Modal>
 
-         {/* Modal create New */}
-         <Modal isOpen={this.state.createModal} toggle={this.togglecreateModal} className={this.props.className}>
-         <ModalHeader toggle={this.togglecreateModal}>Create New Material Library</ModalHeader>
-         <ModalBody>
-           <CardBody>
-             <div>
-               <table>
-                 <tbody>
-                   <tr>
-                     <td>Upload File</td>
-                     <td>:</td>
-                     <td>
-                       <input
-                         type="file"
-                         onChange={this.fileHandlerMaterial.bind(this)}
-                         style={{ padding: "10px", visiblity: "hidden" }}
-                       />
-                     </td>
-                   </tr>
-                 </tbody>
-               </table>
-             </div>
-           </CardBody>
-         </ModalBody>
-         <ModalFooter>
-           <Button block color="success" className="btn-pill" disabled={this.state.rowsXLS.length === 0} onClick={this.saveDRMBulk}>Save</Button>{' '}
-           {/* }<Button block color="secondary" className="btn-pill" disabled={this.state.rowsXLS.length === 0} onClick={this.saveTruncateBulk}>Truncate</Button> */}
-         </ModalFooter>
-       </Modal>
+        {/* Modal create New */}
+        <Modal isOpen={this.state.createModal} toggle={this.togglecreateModal} className={this.props.className}>
+          <ModalHeader toggle={this.togglecreateModal}>Create New Material Library</ModalHeader>
+          <ModalBody>
+            <CardBody>
+              <div>
+                <table>
+                  <tbody>
+                    <tr>
+                      <td>Upload File</td>
+                      <td>:</td>
+                      <td>
+                        <input
+                          type="file"
+                          onChange={this.fileHandlerMaterial.bind(this)}
+                          style={{ padding: "10px", visiblity: "hidden" }}
+                        />
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </CardBody>
+          </ModalBody>
+          <ModalFooter>
+            <Button block color="success" className="btn-pill" disabled={this.state.rowsXLS.length === 0} onClick={this.saveDRMBulk}>Save</Button>{' '}
+            {/* }<Button block color="secondary" className="btn-pill" disabled={this.state.rowsXLS.length === 0} onClick={this.saveTruncateBulk}>Truncate</Button> */}
+          </ModalFooter>
+        </Modal>
 
 
         {/* Modal Loading */}

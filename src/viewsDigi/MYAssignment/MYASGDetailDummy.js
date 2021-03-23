@@ -14,7 +14,7 @@ const API_URL_XL = 'https://api-dev.xl.pdb.e-dpm.com/xlpdbapi';
 const usernameBAM = 'adminbamidsuper';
 const passwordBAM = 'F760qbAg2sml';
 
-const process.env.REACT_APP_API_URL_NODE = 'https://api2-dev.bam-id.e-dpm.com/bamidapi';
+const process.env.REACT_APP_API_URL_NODE_Digi = 'https://api2-dev.bam-id.e-dpm.com/bamidapi';
 
 class MYASGDetailDummy extends Component {
   constructor(props) {
@@ -27,21 +27,21 @@ class MYASGDetailDummy extends Component {
       userName: this.props.dataLogin.userName,
       userEmail: this.props.dataLogin.email,
       tokenUser: this.props.dataLogin.token,
-      lmr_child_form : {},
-      modal_loading : false,
-      modalAddChild : false,
+      lmr_child_form: {},
+      modal_loading: false,
+      modalAddChild: false,
 
-      data_cpo : null,
-      data_cpo_db : [],
+      data_cpo: null,
+      data_cpo_db: [],
       rowsXLS: [],
       modal_loading: false,
       dropdownOpen: new Array(6).fill(false),
       modalPOForm: false,
       POForm: new Array(5).fill(null),
       collapse: false,
-      action_message : null,
-      action_status : null,
-      collapse_add_child : false,
+      action_message: null,
+      action_status: null,
+      collapse_add_child: false,
     }
     this.toggleAddNew = this.toggleAddNew.bind(this);
     this.handleChangeFormLMRChild = this.handleChangeFormLMRChild.bind(this);
@@ -92,7 +92,7 @@ class MYASGDetailDummy extends Component {
 
   async getDatafromAPINODE(url) {
     try {
-      let respond = await axios.get(process.env.REACT_APP_API_URL_NODE + url, {
+      let respond = await axios.get(process.env.REACT_APP_API_URL_NODE_Digi + url, {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer ' + this.state.tokenUser
@@ -111,7 +111,7 @@ class MYASGDetailDummy extends Component {
 
   async postDatatoAPINODE(url, data) {
     try {
-      let respond = await axios.post(process.env.REACT_APP_API_URL_NODE + url, data, {
+      let respond = await axios.post(process.env.REACT_APP_API_URL_NODE_Digi + url, data, {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer ' + this.state.tokenUser
@@ -130,7 +130,7 @@ class MYASGDetailDummy extends Component {
 
   async patchDatatoAPINODE(url, data) {
     try {
-      let respond = await axios.patch(process.env.REACT_APP_API_URL_NODE + url, data, {
+      let respond = await axios.patch(process.env.REACT_APP_API_URL_NODE_Digi + url, data, {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer ' + this.state.tokenUser
@@ -155,30 +155,30 @@ class MYASGDetailDummy extends Component {
     reader.onload = (e) => {
       /* Parse data */
       const bstr = e.target.result;
-      const wb = XLSX.read(bstr, {type:rABS ? 'binary' : 'array', cellDates:true});
+      const wb = XLSX.read(bstr, { type: rABS ? 'binary' : 'array', cellDates: true });
       /* Get first worksheet */
       const wsname = wb.SheetNames[0];
       const ws = wb.Sheets[wsname];
       /* Convert array of arrays */
-      const data = XLSX.utils.sheet_to_json(ws, {header:1, devfal : null});
+      const data = XLSX.utils.sheet_to_json(ws, { header: 1, devfal: null });
       /* Update state */
       this.ArrayEmptytoNull(data);
     };
-    if(rABS) reader.readAsBinaryString(file); else reader.readAsArrayBuffer(file);
+    if (rABS) reader.readAsBinaryString(file); else reader.readAsArrayBuffer(file);
   }
 
-  ArrayEmptytoNull(dataXLS){
+  ArrayEmptytoNull(dataXLS) {
     let newDataXLS = [];
-    for(let i = 0; i < dataXLS.length; i++){
+    for (let i = 0; i < dataXLS.length; i++) {
       let col = [];
-      for(let j = 0; j < dataXLS[0].length; j++){
-        if(typeof dataXLS[i][j] === "object"){
+      for (let j = 0; j < dataXLS[0].length; j++) {
+        if (typeof dataXLS[i][j] === "object") {
           let dataObject = this.checkValue(JSON.stringify(dataXLS[i][j]));
-          if(dataObject !== null){
+          if (dataObject !== null) {
             dataObject = dataObject.replace(/"/g, "");
           }
           col.push(dataObject);
-        }else{
+        } else {
           col.push(this.checkValue(dataXLS[i][j]));
         }
       }
@@ -190,15 +190,15 @@ class MYASGDetailDummy extends Component {
   }
 
   getPODataList(_id) {
-    this.getDatafromAPINODE('/cpodb/getCpoDb/'+_id)
+    this.getDatafromAPINODE('/cpodb/getCpoDb/' + _id)
       .then(res => {
-      // console.log('cpo db id', res.data.data.cpoDetail)
-      if (res.data !== undefined) {
-        const dataCPO = res.data.data;
-        const dataCPOdet = res.data.data.cpoDetail;
-        this.setState({ data_cpo_db: dataCPOdet, data_cpo: dataCPO});
-      }
-    })
+        // console.log('cpo db id', res.data.data.cpoDetail)
+        if (res.data !== undefined) {
+          const dataCPO = res.data.data;
+          const dataCPOdet = res.data.data.cpoDetail;
+          this.setState({ data_cpo_db: dataCPOdet, data_cpo: dataCPO });
+        }
+      })
   }
 
   getCPO2Format = async (dataImport) => {
@@ -238,9 +238,9 @@ class MYASGDetailDummy extends Component {
     this.toggleLoading();
     const cpobulkXLS = this.state.rowsXLS;
     const _id = this.props.match.params.id;
-    const res = await this.postDatatoAPINODE('/cpodb/createCpoDbDetail/'+_id, { 'detailData': cpobulkXLS })
+    const res = await this.postDatatoAPINODE('/cpodb/createCpoDbDetail/' + _id, { 'detailData': cpobulkXLS })
     if (res.data !== undefined) {
-      this.setState({ action_status: 'success', action_message : null });
+      this.setState({ action_status: 'success', action_message: null });
       this.toggleLoading();
     } else {
       if (res.response !== undefined && res.response.data !== undefined && res.response.data.error !== undefined) {
@@ -260,9 +260,9 @@ class MYASGDetailDummy extends Component {
     this.toggleLoading();
     const cpobulkXLS = this.state.rowsXLS;
     const _id = this.props.match.params.id;
-    const res = await this.patchDatatoAPINODE('/cpodb/UpdateCpoDbDetail/'+_id, { 'data': cpobulkXLS })
+    const res = await this.patchDatatoAPINODE('/cpodb/UpdateCpoDbDetail/' + _id, { 'data': cpobulkXLS })
     if (res.data !== undefined) {
-      this.setState({ action_status: 'success', action_message : null });
+      this.setState({ action_status: 'success', action_message: null });
       this.toggleLoading();
     } else {
       if (res.response !== undefined && res.response.data !== undefined && res.response.data.error !== undefined) {
@@ -298,7 +298,7 @@ class MYASGDetailDummy extends Component {
     )
 
     const PPFormat = await wb.xlsx.writeBuffer();
-    saveAs(new Blob([PPFormat]), 'CPO '+dataCPO.po_number+' Detail.xlsx');
+    saveAs(new Blob([PPFormat]), 'CPO ' + dataCPO.po_number + ' Detail.xlsx');
   }
 
 
@@ -307,8 +307,8 @@ class MYASGDetailDummy extends Component {
     const ws = wb.addWorksheet();
 
     ws.addRow(["config_id", "description", "mm_id", "need_by_date", "qty", "unit", "price"]);
-    ws.addRow(["INSTALL:CONFIG SERVICE 11_1105A","3416315 |  INSTALL:CONFIG SERVICE 11_1105A  | YYYY:2019 | MM:12","desc","2020-08-21",1,"Performance Unit",1000000]);
-		ws.addRow(["Cov_2020_Config-4a","330111 | Cov_2020_Config-4a | YYYY : 2020 | MM : 04","desc","2020-12-12",200,"Performance Unit",15000000]);
+    ws.addRow(["INSTALL:CONFIG SERVICE 11_1105A", "3416315 |  INSTALL:CONFIG SERVICE 11_1105A  | YYYY:2019 | MM:12", "desc", "2020-08-21", 1, "Performance Unit", 1000000]);
+    ws.addRow(["Cov_2020_Config-4a", "330111 | Cov_2020_Config-4a | YYYY : 2020 | MM : 04", "desc", "2020-12-12", 200, "Performance Unit", 15000000]);
 
     const PPFormat = await wb.xlsx.writeBuffer();
     saveAs(new Blob([PPFormat]), 'CPO Level 2 Template.xlsx');
@@ -319,8 +319,8 @@ class MYASGDetailDummy extends Component {
     const ws = wb.addWorksheet();
 
     ws.addRow(["config_id", "description", "mm_id", "need_by_date", "qty", "unit", "price"]);
-    ws.addRow(["INSTALL:CONFIG SERVICE 11_1105A","3416315 |  INSTALL:CONFIG SERVICE 11_1105A  | YYYY:2019 | MM:12","desc","2020-08-21",1,"Performance Unit",1000000]);
-		ws.addRow(["Cov_2020_Config-4a","330111 | Cov_2020_Config-4a | YYYY : 2020 | MM : 04","desc","2020-12-12",200,"Performance Unit",15000000]);
+    ws.addRow(["INSTALL:CONFIG SERVICE 11_1105A", "3416315 |  INSTALL:CONFIG SERVICE 11_1105A  | YYYY:2019 | MM:12", "desc", "2020-08-21", 1, "Performance Unit", 1000000]);
+    ws.addRow(["Cov_2020_Config-4a", "330111 | Cov_2020_Config-4a | YYYY : 2020 | MM : 04", "desc", "2020-12-12", 200, "Performance Unit", 15000000]);
 
     const PPFormat = await wb.xlsx.writeBuffer();
     saveAs(new Blob([PPFormat]), 'CPO Level 2 Template.xlsx');
@@ -339,33 +339,33 @@ class MYASGDetailDummy extends Component {
     saveAs(new Blob([PPFormat]), 'CPO Level 2 Template.xlsx');
   }
 
-  addLMRChildForm(){
+  addLMRChildForm() {
     const dataChildForm = this.state.lmr_child_form;
     const dataChild = {
-            "nw": dataChildForm.so_or_nw,
-            "activity": dataChildForm.activity,
-            "material": dataChildForm.material,
-            "description": dataChildForm.description,
-            "site_id": dataChildForm.site_id,
-            "qty": dataChildForm.quantity,
-            "unit_price": dataChildForm.price,
-            "tax_code": dataChildForm.tax_code,
-            "delivery_date": dataChildForm.delivery_date,
-            "total_price": dataChildForm.total_price,
-            "total_value": dataChildForm.total_value,
-            "currency": dataChildForm.currency,
-            "item": dataChildForm.item,
-        }
+      "nw": dataChildForm.so_or_nw,
+      "activity": dataChildForm.activity,
+      "material": dataChildForm.material,
+      "description": dataChildForm.description,
+      "site_id": dataChildForm.site_id,
+      "qty": dataChildForm.quantity,
+      "unit_price": dataChildForm.price,
+      "tax_code": dataChildForm.tax_code,
+      "delivery_date": dataChildForm.delivery_date,
+      "total_price": dataChildForm.total_price,
+      "total_value": dataChildForm.total_value,
+      "currency": dataChildForm.currency,
+      "item": dataChildForm.item,
+    }
     console.log("dataChild", dataChild);
   }
 
-  downloadFormatNewChild= async () => {
+  downloadFormatNewChild = async () => {
     const wb = new Excel.Workbook();
     const ws = wb.addWorksheet();
 
     const dataCPO = this.state.cpo_all;
 
-    let headerRow = ["nw","activity","material","description","site_id","qty","unit_price","tax_code", "delivery_date", "total_price", "total_value", "currency", "item"];
+    let headerRow = ["nw", "activity", "material", "description", "site_id", "qty", "unit_price", "tax_code", "delivery_date", "total_price", "total_value", "currency", "item"];
     ws.addRow(headerRow);
 
     const allocexport = await wb.xlsx.writeBuffer();
@@ -438,7 +438,7 @@ class MYASGDetailDummy extends Component {
                   </CardBody>
                   <CardFooter>
                     <Button color="success" size="sm" disabled={this.state.rowsXLS.length === 0} onClick={this.updateCPODetailBulk}> <i className="fa fa-save" aria-hidden="true"> </i> &nbsp;Add Child </Button>
-                    <Button color="success" size="sm" style={{float : 'right'}} onClick={this.toggleAddChild}> <i className="fa fa-wpforms" aria-hidden="true"> </i> &nbsp;Form </Button>
+                    <Button color="success" size="sm" style={{ float: 'right' }} onClick={this.toggleAddChild}> <i className="fa fa-wpforms" aria-hidden="true"> </i> &nbsp;Form </Button>
                   </CardFooter>
                 </Card>
               </Collapse>
@@ -455,7 +455,7 @@ class MYASGDetailDummy extends Component {
                         {this.state.data_cpo !== null && (
                           <tr style={{ fontWeight: '425', fontSize: '15px' }}>
                             <td colSpan="2" style={{ textAlign: 'center', marginBottom: '10px', fontWeight: '500' }}>
-                               PO Number : {this.state.data_cpo.po_number}
+                              PO Number : {this.state.data_cpo.po_number}
                             </td>
                           </tr>
                         )}
@@ -523,26 +523,26 @@ class MYASGDetailDummy extends Component {
                       </tr>
                     </thead>
                     <tbody>
-                    {this.state.data_cpo_db.map(e =>
-                      <tr>
-                        <td>SO # /NW #</td>
-                        <td>Activity</td>
-                        <td>Material #</td>
-                        <td>Description</td>
-                        <td>Site ID</td>
-                        <td>Quantity</td>
-                        <td>Unit</td>
-                        <td>Price</td>
-                        <td>Tax Code</td>
-                        <td>Delivery Date</td>
-                        <td>Total price</td>
-                        <td>Total Value</td>
-                        <td>Currency</td>
-                        <td>PR</td>
-                        <td>PO</td>
-                        <td>Item</td>
-                      </tr>
-                    )}
+                      {this.state.data_cpo_db.map(e =>
+                        <tr>
+                          <td>SO # /NW #</td>
+                          <td>Activity</td>
+                          <td>Material #</td>
+                          <td>Description</td>
+                          <td>Site ID</td>
+                          <td>Quantity</td>
+                          <td>Unit</td>
+                          <td>Price</td>
+                          <td>Tax Code</td>
+                          <td>Delivery Date</td>
+                          <td>Total price</td>
+                          <td>Total Value</td>
+                          <td>Currency</td>
+                          <td>PR</td>
+                          <td>PO</td>
+                          <td>Item</td>
+                        </tr>
+                      )}
                     </tbody>
                   </Table>
                 </div>
@@ -603,13 +603,13 @@ class MYASGDetailDummy extends Component {
                   <Col md={6}>
                     <FormGroup>
                       <Label>SO / NW</Label>
-                      <Input type="text" name="so_or_nw" id="so_or_nw" value={this.state.lmr_child_form.so_or_nw} onChange={this.handleChangeFormLMRChild}/>
+                      <Input type="text" name="so_or_nw" id="so_or_nw" value={this.state.lmr_child_form.so_or_nw} onChange={this.handleChangeFormLMRChild} />
                     </FormGroup>
                   </Col>
                   <Col md={6}>
                     <FormGroup>
                       <Label>Activity</Label>
-                      <Input type="text" name="activity" id="activity" value={this.state.lmr_child_form.activity} onChange={this.handleChangeFormLMRChild}/>
+                      <Input type="text" name="activity" id="activity" value={this.state.lmr_child_form.activity} onChange={this.handleChangeFormLMRChild} />
                     </FormGroup>
                   </Col>
                 </Row>
@@ -617,7 +617,7 @@ class MYASGDetailDummy extends Component {
                   <Col md={6}>
                     <FormGroup>
                       <Label>Material</Label>
-                      <Input type="text" name="material" id="material" value={this.state.lmr_child_form.material} onChange={this.handleChangeFormLMRChild}/>
+                      <Input type="text" name="material" id="material" value={this.state.lmr_child_form.material} onChange={this.handleChangeFormLMRChild} />
                     </FormGroup>
                   </Col>
                 </Row>
@@ -625,7 +625,7 @@ class MYASGDetailDummy extends Component {
                   <Col md={6}>
                     <FormGroup>
                       <Label>Description</Label>
-                      <Input type="text" name="description" id="description" value={this.state.lmr_child_form.description} onChange={this.handleChangeFormLMRChild}/>
+                      <Input type="text" name="description" id="description" value={this.state.lmr_child_form.description} onChange={this.handleChangeFormLMRChild} />
                     </FormGroup>
                   </Col>
                 </Row>
@@ -633,7 +633,7 @@ class MYASGDetailDummy extends Component {
                   <Col md={6}>
                     <FormGroup>
                       <Label>Site ID</Label>
-                      <Input type="text" name="site_id" id="site_id" value={this.state.lmr_child_form.site_id} onChange={this.handleChangeFormLMRChild}/>
+                      <Input type="text" name="site_id" id="site_id" value={this.state.lmr_child_form.site_id} onChange={this.handleChangeFormLMRChild} />
                     </FormGroup>
                   </Col>
                 </Row>
@@ -641,13 +641,13 @@ class MYASGDetailDummy extends Component {
                   <Col md={6}>
                     <FormGroup>
                       <Label>Quantity</Label>
-                      <Input type="number" name="quantity" id="quantity" value={this.state.lmr_child_form.quantity} onChange={this.handleChangeFormLMRChild}/>
+                      <Input type="number" name="quantity" id="quantity" value={this.state.lmr_child_form.quantity} onChange={this.handleChangeFormLMRChild} />
                     </FormGroup>
                   </Col>
                   <Col md={6}>
                     <FormGroup>
                       <Label>Unit</Label>
-                      <Input type="text" name="item" id="item" value={this.state.lmr_child_form.item} onChange={this.handleChangeFormLMRChild}/>
+                      <Input type="text" name="item" id="item" value={this.state.lmr_child_form.item} onChange={this.handleChangeFormLMRChild} />
                     </FormGroup>
                   </Col>
                 </Row>
@@ -655,7 +655,7 @@ class MYASGDetailDummy extends Component {
                   <Col md={6}>
                     <FormGroup>
                       <Label>Price</Label>
-                      <Input type="number" name="price" id="price" value={this.state.lmr_child_form.price} onChange={this.handleChangeFormLMRChild}/>
+                      <Input type="number" name="price" id="price" value={this.state.lmr_child_form.price} onChange={this.handleChangeFormLMRChild} />
                     </FormGroup>
                   </Col>
                 </Row>
@@ -663,7 +663,7 @@ class MYASGDetailDummy extends Component {
                   <Col md={6}>
                     <FormGroup>
                       <Label>Tax Code</Label>
-                      <Input type="text" name="tax_code" id="tax_code" value={this.state.lmr_child_form.tax_code} onChange={this.handleChangeFormLMRChild}/>
+                      <Input type="text" name="tax_code" id="tax_code" value={this.state.lmr_child_form.tax_code} onChange={this.handleChangeFormLMRChild} />
                     </FormGroup>
                   </Col>
                 </Row>
@@ -671,7 +671,7 @@ class MYASGDetailDummy extends Component {
                   <Col md={6}>
                     <FormGroup>
                       <Label>Delivery Date</Label>
-                      <Input type="text" name="delivery_date" id="delivery_date" value={this.state.lmr_child_form.delivery_date} onChange={this.handleChangeFormLMRChild}/>
+                      <Input type="text" name="delivery_date" id="delivery_date" value={this.state.lmr_child_form.delivery_date} onChange={this.handleChangeFormLMRChild} />
                     </FormGroup>
                   </Col>
                 </Row>
@@ -679,19 +679,19 @@ class MYASGDetailDummy extends Component {
                   <Col md={4}>
                     <FormGroup>
                       <Label>Total Price</Label>
-                      <Input type="number" name="total_price" id="total_price" value={this.state.lmr_child_form.total_price} onChange={this.handleChangeFormLMRChild}/>
+                      <Input type="number" name="total_price" id="total_price" value={this.state.lmr_child_form.total_price} onChange={this.handleChangeFormLMRChild} />
                     </FormGroup>
                   </Col>
                   <Col md={4}>
                     <FormGroup>
                       <Label>Total Value</Label>
-                      <Input type="number" name="total_value" id="total_value" value={this.state.lmr_child_form.total_value} onChange={this.handleChangeFormLMRChild}/>
+                      <Input type="number" name="total_value" id="total_value" value={this.state.lmr_child_form.total_value} onChange={this.handleChangeFormLMRChild} />
                     </FormGroup>
                   </Col>
                   <Col md={4}>
                     <FormGroup>
                       <Label>Currency</Label>
-                      <Input type="text" name="currency" id="currency" value={this.state.lmr_child_form.currency} onChange={this.handleChangeFormLMRChild}/>
+                      <Input type="text" name="currency" id="currency" value={this.state.lmr_child_form.currency} onChange={this.handleChangeFormLMRChild} />
                     </FormGroup>
                   </Col>
                 </Row>

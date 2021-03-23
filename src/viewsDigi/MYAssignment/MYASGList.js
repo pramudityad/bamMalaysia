@@ -22,7 +22,7 @@ import {
   convertDateFormatfull,
   convertDateFormat,
 } from "../../helper/basicFunction";
-import { getDatafromAPINODE } from "../../helper/asyncFunction";
+import { getDatafromAPINODE } from "../../helper/asyncFunctionDigi";
 import { connect } from "react-redux";
 import './LMRMY.css';
 
@@ -63,7 +63,7 @@ class MYASGList extends Component {
 
   async getDataFromAPINODE(url) {
     try {
-      let respond = await axios.get(process.env.REACT_APP_API_URL_NODE + url, {
+      let respond = await axios.get(process.env.REACT_APP_API_URL_NODE_Digi + url, {
         headers: {
           "Content-Type": "application/json",
           Authorization: "Bearer " + this.state.tokenUser,

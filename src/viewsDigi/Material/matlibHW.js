@@ -31,7 +31,7 @@ import {
   patchDatatoAPINODE,
   deleteDataFromAPINODE2,
   getDatafromAPINODE,
-} from "../../helper/asyncFunction";
+} from "../../helper/asyncFunctionDigi";
 import { numToSSColumn } from "../../helper/basicFunction";
 import { connect } from "react-redux";
 import '../MYAssignment/LMRMY.css';

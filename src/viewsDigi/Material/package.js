@@ -20,7 +20,7 @@ import {
 } from "reactstrap";
 import Pagination from "react-js-pagination";
 import { connect } from "react-redux";
-import { getDatafromAPINODE, postDatatoAPINODE, patchDatatoAPINODE, getDatafromAPIMY } from "../../helper/asyncFunction";
+import { getDatafromAPINODE, postDatatoAPINODE, patchDatatoAPINODE, getDatafromAPIMY } from "../../helper/asyncFunctionDigi";
 import debounce from 'lodash.debounce';
 import '../MYAssignment/LMRMY.css';
 import SweetAlert from 'react-bootstrap-sweetalert';
@@ -698,7 +698,7 @@ class Package extends Component {
 
   deleteDataFromAPINODE = async (url, id, props) => {
     try {
-      let respond = await axios.delete(process.env.REACT_APP_API_URL_NODE + url, {
+      let respond = await axios.delete(process.env.REACT_APP_API_URL_NODE_Digi + url, {
         headers: {
           "Content-Type": "application/json",
           Authorization: "Bearer " + props,
