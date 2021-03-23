@@ -32,7 +32,7 @@ import {
   getDatafromAPINODE,
   patchDatatoAPINODE,
   deleteDataFromAPINODE2,
-} from "../../helper/asyncFunction";
+} from "../../helper/asyncFunctionDigi";
 import { numToSSColumn } from "../../helper/basicFunction";
 import '../MYAssignment/LMRMY.css';
 

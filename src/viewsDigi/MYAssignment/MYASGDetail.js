@@ -30,7 +30,7 @@ import { Modal, ModalBody, ModalHeader, ModalFooter } from "reactstrap";
 import * as XLSX from "xlsx";
 import { Link } from "react-router-dom";
 import "./LMRMY.css";
-import { getDatafromAPINODE } from "../../helper/asyncFunction";
+import { getDatafromAPINODE } from "../../helper/asyncFunctionDigi";
 import { connect } from "react-redux";
 import Select from "react-select";
 import './LMRMY.css';
@@ -368,7 +368,7 @@ class MYASGDetail extends Component {
 
   async getDatafromAPIMY(url) {
     try {
-      let respond = await axios.get(process.env.REACT_APP_API_URL_MAS + url, {
+      let respond = await axios.get(process.env.REACT_APP_API_URL_Digi + url, {
         headers: { "Content-Type": "application/json" },
         auth: {
           username: process.env.REACT_APP_usernameMAS,
@@ -388,7 +388,7 @@ class MYASGDetail extends Component {
 
   async getDatafromAPINODE(url) {
     try {
-      let respond = await axios.get(process.env.REACT_APP_API_URL_NODE + url, {
+      let respond = await axios.get(process.env.REACT_APP_API_URL_NODE_Digi + url, {
         headers: {
           "Content-Type": "application/json",
           Authorization: "Bearer " + this.state.tokenUser,
@@ -408,7 +408,7 @@ class MYASGDetail extends Component {
   async postDatatoAPINODE(url, data) {
     try {
       let respond = await axios.post(
-        process.env.REACT_APP_API_URL_NODE + url,
+        process.env.REACT_APP_API_URL_NODE_Digi + url,
         data,
         {
           headers: {
@@ -431,7 +431,7 @@ class MYASGDetail extends Component {
   async patchDatatoAPINODE(url, data) {
     try {
       let respond = await axios.patch(
-        process.env.REACT_APP_API_URL_NODE + url,
+        process.env.REACT_APP_API_URL_NODE_Digi + url,
         data,
         {
           headers: {
@@ -454,7 +454,7 @@ class MYASGDetail extends Component {
   async deleteDatafromAPINODE(url) {
     try {
       let respond = await axios.delete(
-        process.env.REACT_APP_API_URL_NODE + url,
+        process.env.REACT_APP_API_URL_NODE_Digi + url,
         {
           headers: {
             "Content-Type": "application/json",

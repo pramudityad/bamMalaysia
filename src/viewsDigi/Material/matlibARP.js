@@ -29,7 +29,7 @@ import {
   patchDatatoAPINODE,
   deleteDataFromAPINODE2,
   getDatafromAPINODE,
-} from "../../helper/asyncFunction";
+} from "../../helper/asyncFunctionDigi";
 import ModalDelete from "../Component/ModalDelete";
 import { numToSSColumn } from "../../helper/basicFunction";
 import { connect } from "react-redux";

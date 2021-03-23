@@ -24,7 +24,7 @@ import { Link, Redirect } from "react-router-dom";
 import AsyncSelect from "react-select/async";
 import Select from "react-select";
 import "./LMRMY.css";
-import { getDatafromAPINODE, postDatatoAPINODE, generateTokenACT } from "../../helper/asyncFunction";
+import { getDatafromAPINODE, postDatatoAPINODE, generateTokenACT } from "../../helper/asyncFunctionDigi";
 import { connect } from "react-redux";
 import { number } from "prop-types";
 import debounce from 'lodash.debounce';
@@ -292,7 +292,7 @@ class MYASGCreation extends Component {
   async postDatatoAPINODE(url, data) {
     try {
       let respond = await axios.post(
-        process.env.REACT_APP_API_URL_NODE + url,
+        process.env.REACT_APP_API_URL_NODE_Digi + url,
         data,
         {
           headers: {
@@ -319,7 +319,7 @@ class MYASGCreation extends Component {
 
   async getDatafromAPIMY(url) {
     try {
-      let respond = await axios.get(process.env.REACT_APP_API_URL_MAS + url, {
+      let respond = await axios.get(process.env.REACT_APP_API_URL_Digi + url, {
         headers: { "Content-Type": "application/json" },
         auth: {
           username: process.env.REACT_APP_usernameMAS,
@@ -567,7 +567,7 @@ class MYASGCreation extends Component {
 
   async getDataFromAPINODE(url) {
     try {
-      let respond = await axios.get(process.env.REACT_APP_API_URL_NODE + url, {
+      let respond = await axios.get(process.env.REACT_APP_API_URL_NODE_Digi + url, {
         headers: {
           "Content-Type": "application/json",
           Authorization: "Bearer " + this.state.tokenUser,

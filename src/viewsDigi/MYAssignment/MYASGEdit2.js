@@ -23,7 +23,7 @@ import { Link, Redirect } from "react-router-dom";
 import AsyncSelect from "react-select/async";
 import Select from "react-select";
 import "./LMRMY.css";
-import { getDatafromAPINODE } from "../../helper/asyncFunction";
+import { getDatafromAPINODE } from "../../helper/asyncFunctionDigi";
 import { connect } from "react-redux";
 const DefaultNotif = React.lazy(() =>
   import("../../views/DefaultView/DefaultNotif")
@@ -307,7 +307,7 @@ class MYASGEdit extends Component {
   async postDatatoAPINODE(url, data) {
     try {
       let respond = await axios.post(
-        process.env.REACT_APP_API_URL_NODE + url,
+        process.env.REACT_APP_API_URL_NODE_Digi + url,
         data,
         {
           headers: {
@@ -334,7 +334,7 @@ class MYASGEdit extends Component {
 
   async getDatafromAPIMY(url) {
     try {
-      let respond = await axios.get(process.env.REACT_APP_API_URL_MAS + url, {
+      let respond = await axios.get(process.env.REACT_APP_API_URL_Digi + url, {
         headers: { "Content-Type": "application/json" },
         auth: {
           username: process.env.REACT_APP_usernameMAS,
@@ -392,7 +392,7 @@ class MYASGEdit extends Component {
 
   async getDataFromAPINODE(url) {
     try {
-      let respond = await axios.get(process.env.REACT_APP_API_URL_NODE + url, {
+      let respond = await axios.get(process.env.REACT_APP_API_URL_NODE_Digi + url, {
         headers: {
           "Content-Type": "application/json",
           Authorization: "Bearer " + this.state.tokenUser,
@@ -737,20 +737,20 @@ class MYASGEdit extends Component {
     this.state.mm_data_type !== "" &&
       filter_array.push(
         '"Material_Type":{"$regex" : "' +
-          this.state.mm_data_type +
-          '", "$options" : "i"}'
+        this.state.mm_data_type +
+        '", "$options" : "i"}'
       );
     this.state.filter_list[0] !== "" &&
       filter_array.push(
         '"BB":{"$regex" : "' +
-          this.state.filter_list[0] +
-          '", "$options" : "i"}'
+        this.state.filter_list[0] +
+        '", "$options" : "i"}'
       );
     this.state.filter_list[1] !== "" &&
       filter_array.push(
         '"BB_Sub":{"$regex" : "' +
-          this.state.filter_list[1] +
-          '", "$options" : "i"}'
+        this.state.filter_list[1] +
+        '", "$options" : "i"}'
       );
     // this.state.filter_list[2] !== "" &&
     //   filter_array.push(
@@ -761,20 +761,20 @@ class MYASGEdit extends Component {
     this.state.filter_list[3] !== "" &&
       filter_array.push(
         '"Material_Type":{"$regex" : "' +
-          this.state.filter_list[3] +
-          '", "$options" : "i"}'
+        this.state.filter_list[3] +
+        '", "$options" : "i"}'
       );
     this.state.filter_list[4] !== "" &&
       filter_array.push(
         '"SoW_Description":{"$regex" : "' +
-          this.state.filter_list[4] +
-          '", "$options" : "i"}'
+        this.state.filter_list[4] +
+        '", "$options" : "i"}'
       );
     this.state.filter_list[6] !== "" &&
       filter_array.push(
         '"UoM":{"$regex" : "' +
-          this.state.filter_list[6] +
-          '", "$options" : "i"}'
+        this.state.filter_list[6] +
+        '", "$options" : "i"}'
       );
     this.state.matfilter.region === "All" &&
       filter_array.push('"Region": {"$exists" : 1}');
@@ -782,23 +782,23 @@ class MYASGEdit extends Component {
       this.state.matfilter.region !== "All" &&
       filter_array.push(
         '"Region":{"$regex" : "' +
-          this.state.matfilter.region +
-          '", "$options" : "i"}'
+        this.state.matfilter.region +
+        '", "$options" : "i"}'
       );
     this.state.filter_list[2] !== "" &&
       filter_array.push(
         '"Region":{"$regex" : "' +
-          this.state.filter_list[2] +
-          '", "$options" : "i"}'
+        this.state.filter_list[2] +
+        '", "$options" : "i"}'
       );
     let whereAnd = "{" + filter_array.join(",") + "}";
     getDatafromAPINODE(
       "/mmCode/getMm?q=" +
-        whereAnd +
-        "&lmt=" +
-        this.state.perPage +
-        "&pg=" +
-        this.state.activePage,
+      whereAnd +
+      "&lmt=" +
+      this.state.perPage +
+      "&pg=" +
+      this.state.activePage,
       this.state.tokenUser
     ).then((res) => {
       if (res.data !== undefined) {
@@ -821,60 +821,60 @@ class MYASGEdit extends Component {
     this.state.mm_data_type !== "" &&
       filter_array.push(
         '"Material_Type":{"$regex" : "' +
-          this.state.mm_data_type +
-          '", "$options" : "i"}'
+        this.state.mm_data_type +
+        '", "$options" : "i"}'
       );
 
     this.state.filter_list[0] !== "" &&
       filter_array.push(
         '"MM_Code":{"$regex" : "' +
-          this.state.filter_list[0] +
-          '", "$options" : "i"}'
+        this.state.filter_list[0] +
+        '", "$options" : "i"}'
       );
     this.state.filter_list[1] !== "" &&
       filter_array.push(
         '"UoM":{"$regex" : "' +
-          this.state.filter_list[1] +
-          '", "$options" : "i"}'
+        this.state.filter_list[1] +
+        '", "$options" : "i"}'
       );
     this.state.filter_list[2] !== "" &&
       filter_array.push(
         '"Unit_Price":{"$regex" : "' +
-          this.state.filter_list[2] +
-          '", "$options" : "i"}'
+        this.state.filter_list[2] +
+        '", "$options" : "i"}'
       );
     this.state.filter_list[3] !== "" &&
       filter_array.push(
         '"Currency":{"$regex" : "' +
-          this.state.filter_list[3] +
-          '", "$options" : "i"}'
+        this.state.filter_list[3] +
+        '", "$options" : "i"}'
       );
     this.state.filter_list[4] !== "" &&
       filter_array.push(
         '"Info_Rec":{"$regex" : "' +
-          this.state.filter_list[4] +
-          '", "$options" : "i"}'
+        this.state.filter_list[4] +
+        '", "$options" : "i"}'
       );
     this.state.filter_list[5] !== "" &&
       filter_array.push(
         '"Valid_To":{"$regex" : "' +
-          this.state.filter_list[5] +
-          '", "$options" : "i"}'
+        this.state.filter_list[5] +
+        '", "$options" : "i"}'
       );
     this.state.filter_list[6] !== "" &&
       filter_array.push(
         '"Created_On":{"$regex" : "' +
-          this.state.filter_list[6] +
-          '", "$options" : "i"}'
+        this.state.filter_list[6] +
+        '", "$options" : "i"}'
       );
     let whereAnd = "{" + filter_array.join(",") + "}";
     getDatafromAPINODE(
       "/mmCode/getMm?q=" +
-        whereAnd +
-        "&lmt=" +
-        this.state.perPage +
-        "&pg=" +
-        this.state.activePage,
+      whereAnd +
+      "&lmt=" +
+      this.state.perPage +
+      "&pg=" +
+      this.state.activePage,
       this.state.tokenUser
     ).then((res) => {
       if (res.data !== undefined) {
@@ -897,54 +897,54 @@ class MYASGEdit extends Component {
     this.state.mm_data_type !== "" &&
       filter_array.push(
         '"Material_Type":{"$regex" : "' +
-          this.state.mm_data_type +
-          '", "$options" : "i"}'
+        this.state.mm_data_type +
+        '", "$options" : "i"}'
       );
 
     this.state.filter_list[0] !== "" &&
       filter_array.push(
         '"MM_Code":{"$regex" : "' +
-          this.state.filter_list[0] +
-          '", "$options" : "i"}'
+        this.state.filter_list[0] +
+        '", "$options" : "i"}'
       );
     this.state.filter_list[1] !== "" &&
       filter_array.push(
         '"MM_Description":{"$regex" : "' +
-          this.state.filter_list[1] +
-          '", "$options" : "i"}'
+        this.state.filter_list[1] +
+        '", "$options" : "i"}'
       );
     this.state.filter_list[2] !== "" &&
       filter_array.push(
         '"UoM":{"$regex" : "' +
-          this.state.filter_list[2] +
-          '", "$options" : "i"}'
+        this.state.filter_list[2] +
+        '", "$options" : "i"}'
       );
     this.state.filter_list[3] !== "" &&
       filter_array.push(
         '"Unit_Price":{"$regex" : "' +
-          this.state.filter_list[3] +
-          '", "$options" : "i"}'
+        this.state.filter_list[3] +
+        '", "$options" : "i"}'
       );
     this.state.filter_list[4] !== "" &&
       filter_array.push(
         '"Currency":{"$regex" : "' +
-          this.state.filter_list[4] +
-          '", "$options" : "i"}'
+        this.state.filter_list[4] +
+        '", "$options" : "i"}'
       );
     this.state.filter_list[5] !== "" &&
       filter_array.push(
         '"Remarks":{"$regex" : "' +
-          this.state.filter_list[5] +
-          '", "$options" : "i"}'
+        this.state.filter_list[5] +
+        '", "$options" : "i"}'
       );
     let whereAnd = "{" + filter_array.join(",") + "}";
     getDatafromAPINODE(
       "/mmCode/getMm?q=" +
-        whereAnd +
-        "&lmt=" +
-        this.state.perPage +
-        "&pg=" +
-        this.state.activePage,
+      whereAnd +
+      "&lmt=" +
+      this.state.perPage +
+      "&pg=" +
+      this.state.activePage,
       this.state.tokenUser
     ).then((res) => {
       if (res.data !== undefined) {
@@ -963,50 +963,50 @@ class MYASGEdit extends Component {
     this.state.lmr_form.vendor_code_actual !== "" &&
       filter_array.push(
         '"Vendor_List.Vendor_Code":"' +
-          this.state.lmr_form.vendor_code_actual +
-          '"'
+        this.state.lmr_form.vendor_code_actual +
+        '"'
       );
     this.state.mm_data_type !== "" &&
       filter_array.push(
         '"Material_Type":{"$regex" : "' +
-          this.state.mm_data_type +
-          '", "$options" : "i"}'
+        this.state.mm_data_type +
+        '", "$options" : "i"}'
       );
     this.state.filter_list[0] !== "" &&
       filter_array.push(
         '"BB":{"$regex" : "' +
-          this.state.filter_list[0] +
-          '", "$options" : "i"}'
+        this.state.filter_list[0] +
+        '", "$options" : "i"}'
       );
     this.state.filter_list[1] !== "" &&
       filter_array.push(
         '"BB_Sub":{"$regex" : "' +
-          this.state.filter_list[1] +
-          '", "$options" : "i"}'
+        this.state.filter_list[1] +
+        '", "$options" : "i"}'
       );
     this.state.filter_list[2] !== "" &&
       filter_array.push(
         '"MM_Code":{"$regex" : "' +
-          this.state.filter_list[2] +
-          '", "$options" : "i"}'
+        this.state.filter_list[2] +
+        '", "$options" : "i"}'
       );
     this.state.filter_list[3] !== "" &&
       filter_array.push(
         '"MM_Code":{"$regex" : "' +
-          this.state.filter_list[3] +
-          '", "$options" : "i"}'
+        this.state.filter_list[3] +
+        '", "$options" : "i"}'
       );
     this.state.filter_list[4] !== "" &&
       filter_array.push(
         '"MM_Description":{"$regex" : "' +
-          this.state.filter_list[4] +
-          '", "$options" : "i"}'
+        this.state.filter_list[4] +
+        '", "$options" : "i"}'
       );
     this.state.filter_list[6] !== "" &&
       filter_array.push(
         '"UoM":{"$regex" : "' +
-          this.state.filter_list[6] +
-          '", "$options" : "i"}'
+        this.state.filter_list[6] +
+        '", "$options" : "i"}'
       );
     this.state.matfilter.region === "All" &&
       filter_array.push('"Region": {"$exists" : 1}');
@@ -1014,23 +1014,23 @@ class MYASGEdit extends Component {
       this.state.matfilter.region !== "All" &&
       filter_array.push(
         '"Region":{"$regex" : "' +
-          this.state.matfilter.region +
-          '", "$options" : "i"}'
+        this.state.matfilter.region +
+        '", "$options" : "i"}'
       );
     this.state.filter_list[5] !== "" &&
       filter_array.push(
         '"SoW_Description_or_Site_Type":{"$regex" : "' +
-          this.state.filter_list[5] +
-          '", "$options" : "i"}'
+        this.state.filter_list[5] +
+        '", "$options" : "i"}'
       );
     let whereAnd = "{" + filter_array.join(",") + "}";
     getDatafromAPINODE(
       "/mmCode/getMm?q=" +
-        whereAnd +
-        "&lmt=" +
-        this.state.perPage +
-        "&pg=" +
-        this.state.activePage,
+      whereAnd +
+      "&lmt=" +
+      this.state.perPage +
+      "&pg=" +
+      this.state.activePage,
       this.state.tokenUser
     ).then((res) => {
       if (res.data !== undefined) {
@@ -1079,8 +1079,8 @@ class MYASGEdit extends Component {
       // const getSSOWID = await this.getDatafromAPIMY('/ssow_sorted_nonpage?where={"ssow_id":{"$regex":"'+inputValue+'", "$options":"i"}, "sow_type":"'+this.state.list_activity_selected.CD_Info_SOW_Type +'"}');
       const getWPID = await this.getDatafromAPIMY(
         '/custdel_sorted_non_page?where={"WP_ID":{"$regex":"' +
-          inputValue +
-          '", "$options":"i"}}'
+        inputValue +
+        '", "$options":"i"}}'
       );
       if (getWPID !== undefined && getWPID.data !== undefined) {
         getWPID.data._items.map((wp) =>
@@ -2211,9 +2211,9 @@ class MYASGEdit extends Component {
                               id={i + " /// site_id"}
                               value={lmr.site_id}
                               onChange={this.handleChangeFormLMRChild}
-                              // disabled={
-                              //   this.state.lmr_form.LMR_Type === "Cost Collector"
-                              // }
+                            // disabled={
+                            //   this.state.lmr_form.LMR_Type === "Cost Collector"
+                            // }
                             />
                           </FormGroup>
                         </Col>
@@ -2226,9 +2226,9 @@ class MYASGEdit extends Component {
                               id={i + " /// nw"}
                               value={lmr.nw}
                               onChange={this.handleChangeFormLMRChild}
-                              // disabled={
-                              //   this.state.lmr_form.LMR_Type === "Cost Collector"
-                              // }
+                            // disabled={
+                            //   this.state.lmr_form.LMR_Type === "Cost Collector"
+                            // }
                             />
                           </FormGroup>
                         </Col>
@@ -2241,9 +2241,9 @@ class MYASGEdit extends Component {
                               id={i + " /// activity"}
                               value={lmr.activity}
                               onChange={this.handleChangeFormLMRChild}
-                              // disabled={
-                              //   this.state.lmr_form.LMR_Type === "Cost Collector"
-                              // }
+                            // disabled={
+                            //   this.state.lmr_form.LMR_Type === "Cost Collector"
+                            // }
                             />
                           </FormGroup>
                         </Col>
@@ -2297,7 +2297,7 @@ class MYASGEdit extends Component {
                                 onClick={() =>
                                   this.decideToggleMaterialexist(i)
                                 }
-                                // onChange={this.handleChangeFormLMRChild}
+                              // onChange={this.handleChangeFormLMRChild}
                               />
                             ) : (
                               <Input
@@ -2306,7 +2306,7 @@ class MYASGEdit extends Component {
                                 id={i + " /// material"}
                                 value={lmr.material}
                                 onClick={() => this.decideToggleMaterial(i)}
-                                // onChange={this.handleChangeFormLMRChild}
+                              // onChange={this.handleChangeFormLMRChild}
                               />
                             )}
                           </FormGroup>
