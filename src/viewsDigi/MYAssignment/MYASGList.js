@@ -22,6 +22,7 @@ import {
   convertDateFormatfull,
   convertDateFormat,
 } from "../../helper/basicFunction";
+import { getDatafromAPINODE } from "../../helper/asyncFunction";
 import { connect } from "react-redux";
 import './LMRMY.css';
 
@@ -132,6 +133,8 @@ class MYASGList extends Component {
   };
 
   getMRList() {
+    const page = this.state.activePage;
+    const maxPage = this.state.perPage;
     let filter_array = [];
     this.state.filter_list["lmr_id"] !== null &&
       this.state.filter_list["lmr_id"] !== undefined &&
@@ -175,17 +178,19 @@ class MYASGList extends Component {
         this.state.filter_list["vendor_name"] +
         '", "$options" : "i"}'
       );
+    if (this.state.roleUser.includes('BAM-IE Lead')) {
+      filter_array.push('"gl_type":{"$nin":["NDO"]}');
+    }
     let whereAnd = "{" + filter_array.join(",") + "}";
-    this.getDataFromAPINODE(
-      "/aspassignment/getAspAssignment?q=" + whereAnd + "&srt=_id:-1&noPg=1"
-    ).then((res) => {
+    getDatafromAPINODE('/aspassignment/getAspAssignment?srt=_id:-1&q=' + whereAnd + '&lmt=' + maxPage + '&pg=' + page, this.state.tokenUser).then((res) => {
       console.log("MR List Sorted", res);
       if (res.data !== undefined) {
         const items = res.data.data;
         const totalData = res.data.totalResults;
-        this.setState({ lmr_list: items, totalData: totalData }, () =>
-          this.filterbyService(this.state.lmr_list, this.state.roleUser)
-        );
+        // this.setState({ lmr_list: items, totalData: totalData }, () =>
+        //   this.filterbyService(this.state.lmr_list, this.state.roleUser)
+        // );
+        this.setState({ lmr_list: items, totalData: totalData });
       }
     });
   }
@@ -193,52 +198,16 @@ class MYASGList extends Component {
   filterbyService(lmr_list, role) {
     console.log("role ", this.state.roleUser[1]);
     // const filter_list = this.state.lmr_list_filter
-    const cpm_sourcing = [
-      "Hardware",
-      "NRO Services",
-      "LM",
-      "Transport",
-      "NDO Services",
-      "T&M",
-    ];
-    const im_ie = ["NRO Services", "LM", "Transport"];
-    const mp = ["Hardware"];
-    const pa = ["T&M"];
-    const grpa = ["NRO Services", "LM", "Transport", "NDO Services"];
-    if (
-      role.includes("BAM-CPM") === true ||
-      role.includes("BAM-Sourcing") === true ||
-      role.includes("BAM-EPC") === true
-    ) {
-      lmr_list.filter((e) => cpm_sourcing.includes(e.gl_type));
+    const not_ie_lead = ["ITC + transport", "NDO", "Survey", "Integration"];
+    const ie_lead = ["ITC + transport", "Survey", "Integration"];
+    if (role.includes("BAM-IE Lead") === true) {
+      lmr_list.filter((e) => ie_lead.includes(e.gl_type));
       this.setState({ lmr_list_filter: lmr_list }, () =>
         this.dataViewPagination(this.state.lmr_list_filter)
       );
-    }
-    if (
-      role.includes("BAM-IM") === true ||
-      role.includes("BAM-IE Lead") === true
-    ) {
-      let filterlist = lmr_list.filter((e) => im_ie.includes(e.gl_type));
-      this.setState({ lmr_list_filter: filterlist }, () =>
-        this.dataViewPagination(this.state.lmr_list_filter)
-      );
-    }
-    if (role.includes("BAM-GR-PA") === true) {
-      let filterlist = lmr_list.filter((e) => grpa.includes(e.gl_type));
-      this.setState({ lmr_list_filter: filterlist }, () =>
-        this.dataViewPagination(this.state.lmr_list_filter)
-      );
-    }
-    if (role.includes("BAM-MP") === true) {
-      let filterlist = lmr_list.filter((e) => mp.includes(e.gl_type));
-      this.setState({ lmr_list_filter: filterlist }, () =>
-        this.dataViewPagination(this.state.lmr_list_filter)
-      );
-    }
-    if (role.includes("BAM-PA") === true) {
-      let filterlist = lmr_list.filter((e) => pa.includes(e.gl_type));
-      this.setState({ lmr_list_filter: filterlist }, () =>
+    } else {
+      lmr_list.filter((e) => not_ie_lead.includes(e.gl_type));
+      this.setState({ lmr_list_filter: lmr_list }, () =>
         this.dataViewPagination(this.state.lmr_list_filter)
       );
     }
@@ -453,8 +422,8 @@ class MYASGList extends Component {
                     </tr>
                   </thead>
                   <tbody className="text-center">
-                    {this.state.lmr_list_pagination !== undefined &&
-                      this.state.lmr_list_pagination.map((e) => (
+                    {this.state.lmr_list !== undefined &&
+                      this.state.lmr_list.map((e) => (
                         <tr>
                           <td>
                             <Link to={"/lmr-detail/" + e._id}>
@@ -479,13 +448,13 @@ class MYASGList extends Component {
                 </Table>
                 <div style={{ margin: "8px 0px" }}>
                   <small>
-                    Showing {this.state.lmr_list_filter.length} entries
+                    Showing {this.state.totalData} entries
                   </small>
                 </div>
                 <Pagination
                   activePage={this.state.activePage}
                   itemsCountPerPage={this.state.perPage}
-                  totalItemsCount={this.state.lmr_list_filter.length}
+                  totalItemsCount={this.state.totalData}
                   pageRangeDisplayed={5}
                   onChange={this.handlePageChange}
                   itemClass="page-item"

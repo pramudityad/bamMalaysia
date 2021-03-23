@@ -1972,14 +1972,7 @@ class MYASGDetail extends Component {
                       {this.state.lmr_detail.detail !== undefined ? (
                         this.state.lmr_detail.detail.map((e) => (
                           <tr>
-                            {this.state.roleUser.includes("BAM-CPM") === true ||
-                              (this.state.roleUser.includes("BAM-GR-PA") ===
-                                true &&
-                                (this.state.lmr_detail.mm_data_type === "NDO" ||
-                                  this.state.lmr_detail.mm_data_type ===
-                                  "NRO")) ||
-                              (this.state.roleUser.includes("BAM-PA") === true &&
-                                this.state.lmr_detail.mm_data_type === "ARP") ? (
+                            {this.state.roleUser.includes("BAM-CPM") === true || this.state.roleUser.includes("BAM-GR PA") === true ? (
                               <td>
                                 <Link
                                   to={
@@ -1991,7 +1984,7 @@ class MYASGDetail extends Component {
                                 >
                                   <Button color="info" style={{ width: "100%" }}>
                                     <i className="fa fa-info-circle" aria-hidden="true"></i>&nbsp;&nbsp;GR
-                                    </Button>
+                                  </Button>
                                 </Link>
                               </td>
                             ) : (

@@ -35,20 +35,6 @@ const DefaultNotif = React.lazy(() =>
   import("../DefaultView/DefaultNotif")
 );
 
-const fas_reqbody = {
-  query_param: {
-    table: "p_celc_apim1_m_site_data",
-    columns: [
-      'JSON_UNQUOTE(JSON_EXTRACT(custom_property, \'$."6dfb6b35-d14e-11ea-b481-000d3aa2f57d"."value"\')) as fas_id',
-    ],
-    join: {},
-    condition: {},
-    pagination: "all",
-    page_target: 1,
-    length_per_page: 10,
-  },
-};
-
 class MYASGCreation extends Component {
   constructor(props) {
     super(props);
@@ -352,11 +338,24 @@ class MYASGCreation extends Component {
   }
 
   async getFASfromACT(proxyurl, url) {
+    const fas_reqbody = {
+      query_param: {
+        table: "p_digi_madd_m_site_data",
+        columns: [
+          "JSON_UNQUOTE(JSON_EXTRACT(p_digi_madd_m_site_data.custom_property, '$.\"70b54a94-8b77-11eb-8bb2-000d3aa2f57d\".\"value\"')) as fas_id"
+        ],
+        join: {},
+        condition: {},
+        pagination: "all",
+        page_target: 1,
+        length_per_page: 10,
+      },
+    };
     try {
       let respond = await axios.post(proxyurl + url, fas_reqbody, {
         headers: {
           "Content-Type": "application/json",
-          Authorization: "Basic dXNlcml4dDpYUXJuMzJuNWtxb00=",
+          Authorization: "Bearer " + this.state.access_token,
         },
       });
       if (respond.status >= 200 && respond.status < 300) {
@@ -377,7 +376,8 @@ class MYASGCreation extends Component {
           "table": "p_digi_madd_m_site_data",
           "columns": [
             "JSON_UNQUOTE(JSON_EXTRACT(p_digi_madd_m_site_data.custom_property, '$.\"c0edbe63-8616-11eb-9b96-000d3aa2f57d\".\"value\"')) as workplan_id",
-            "JSON_UNQUOTE(JSON_EXTRACT(p_digi_madd_m_site_data.custom_property, '$.\"c0ef9d14-8616-11eb-9b96-000d3aa2f57d\".\"value\"')) as project_name",
+            // "JSON_UNQUOTE(JSON_EXTRACT(p_digi_madd_m_site_data.custom_property, '$.\"c0ef9d14-8616-11eb-9b96-000d3aa2f57d\".\"value\"')) as project_name",
+            "JSON_UNQUOTE(JSON_EXTRACT(p_digi_madd_m_site_data.custom_property, '$.\"298dc641-8adf-11eb-9de5-000d3aa2f57d\".\"value\"')) as project_name",
             "JSON_UNQUOTE(JSON_EXTRACT(p_digi_madd_m_site_data.custom_property, '$.\"c0f139d6-8616-11eb-9b96-000d3aa2f57d\".\"value\"')) as cd_id",
             "JSON_UNQUOTE(JSON_EXTRACT(p_digi_madd_m_site_data.custom_property, '$.\"c0f4efd9-8616-11eb-9b96-000d3aa2f57d\".\"value\"')) as site_id",
             "JSON_UNQUOTE(JSON_EXTRACT(p_digi_madd_m_site_data.custom_property, '$.\"c0f81a00-8616-11eb-9b96-000d3aa2f57d\".\"value\"')) as site_name",
@@ -432,18 +432,27 @@ class MYASGCreation extends Component {
     }
   }
 
-  async updateLMRtoACT(proxyurl, url, m_id, lmr_id) {
+  async updateLMRtoACT(proxyurl, url, m_id, lmr_id, lmr_date) {
     try {
-      let param = '';
+      let param = '', date = '';
       if (this.state.lmr_form.gl_account_actual === 'ITC + transport - 402603') {
-        param = 'lmr_ti_number';
+        param = 'ti_lmr_number';
+        date = 'ti_lmr_date';
       } else if (this.state.lmr_form.gl_account_actual === 'Survey - 402603') {
-        param = 'lmr_survey_number';
+        param = 'survey_lmr_number';
+        date = 'survey_lmr_date';
+      } else if (this.state.lmr_form.gl_account_actual === 'NDO - 402603') {
+        param = 'ndo_lmr_number';
+        date = 'ndo_lmr_date';
+      } else if (this.state.lmr_form.gl_account_actual === 'Integration - 402603') {
+        param = 'integration_lmr_number';
+        date = 'integration_lmr_date';
       }
       let body = {
         "m_id": m_id,
         "query_param": {
-          [param]: lmr_id
+          [param]: lmr_id,
+          [date]: lmr_date
         }
       }
       let respond = await axios.patch(proxyurl + url, body, {
@@ -481,6 +490,7 @@ class MYASGCreation extends Component {
   }
 
   handleChangeWP = async (e, action) => {
+    this.toggleLoading();
     let dataLMR = this.state.creation_lmr_child_form;
     let idxField = action.name.split(" /// ");
     let value = e.value;
@@ -513,9 +523,11 @@ class MYASGCreation extends Component {
     this.setState({ creation_lmr_child_form: dataLMR }, () =>
       console.log(this.state.creation_lmr_child_form)
     );
+    this.toggleLoading();
   }
 
   handleChangeWPPackage = async (e, action) => {
+    this.toggleLoading();
     let dataLMR = this.state.lmr_child_package;
     let value = e.value;
     let field = action.name;
@@ -550,6 +562,7 @@ class MYASGCreation extends Component {
     this.setState({ lmr_child_package: dataLMR }, () =>
       console.log(this.state.lmr_child_package)
     );
+    this.toggleLoading();
   }
 
   async getDataFromAPINODE(url) {
@@ -573,7 +586,7 @@ class MYASGCreation extends Component {
 
   getDataCDACT_Fas() {
     this.toggleLoading();
-    this.getFASfromACT("https://dev-corsanywhere.e-dpm.com/", "https://act.e-dpm.com/index.php/android/get_data_new").then((resCD) => {
+    this.getFASfromACT("https://dev-corsanywhere.e-dpm.com/", "https://api.act.e-dpm.com/api/get_data_auth").then((resCD) => {
       if (resCD.data !== undefined) {
         if (resCD.data.result !== undefined) {
           const list_fas = resCD.data.result.raw_data;
@@ -753,8 +766,7 @@ class MYASGCreation extends Component {
   async componentDidMount() {
     this.toggleLoading();
     this.getVendorList();
-    this.getDataCDACT_Fas();
-    this.setState({ access_token: await generateTokenACT() }, () => this.toggleLoading());
+    this.setState({ access_token: await generateTokenACT() }, () => { this.getDataCDACT_Fas(); this.toggleLoading(); });
     // this.getProjectList();
     // this.getMaterialList();
     // this.getDataCDACT(); enable this again later
@@ -1357,7 +1369,8 @@ class MYASGCreation extends Component {
         let failed_update_wp = [];
 
         for (let i = 0; i < dataChildForm.length; i++) {
-          let updateLMRtoACT = await this.updateLMRtoACT("https://dev-corsanywhere.e-dpm.com/", "https://api.act.e-dpm.com/api/update_site_data", dataChildForm[i].m_id_wp, respondSaveLMR.data.parent.lmr_id);
+          let date = new Date();
+          let updateLMRtoACT = await this.updateLMRtoACT("https://dev-corsanywhere.e-dpm.com/", "https://api.act.e-dpm.com/api/update_site_data", dataChildForm[i].m_id_wp, respondSaveLMR.data.parent.lmr_id, convertDateFormat(date));
           if (updateLMRtoACT !== undefined && updateLMRtoACT.data !== undefined && updateLMRtoACT.data.result.status >= 200 && updateLMRtoACT.data.result.status <= 300) {
             console.log('success update WP', dataChildForm[i].wp_id);
           } else {
@@ -1987,7 +2000,7 @@ class MYASGCreation extends Component {
       "item_category",
       "lmr_type",
       "gl_account",
-      "fas_id",
+      // "fas_id",
       "vendor_name",
       "header_text",
     ];
@@ -2589,7 +2602,7 @@ class MYASGCreation extends Component {
                             value={lmr.cdid}
                             onChange={this.handleChangeFormLMRChild}
                             disabled
-                            style={lmr.cdid === '' ? { border: "2px solid red" } : {}}
+                            style={lmr.cdid === '' || lmr.cdid === null ? { border: "2px solid red" } : {}}
                           />
                         </FormGroup>
                       </Col>
@@ -2655,7 +2668,7 @@ class MYASGCreation extends Component {
                             value={lmr.nw}
                             onChange={this.handleChangeFormLMRChild}
                             disabled
-                            style={lmr.nw === '' ? { border: "2px solid red" } : {}}
+                            style={lmr.nw === '' || lmr.nw === null ? { border: "2px solid red" } : {}}
                           />
                         </FormGroup>
                       </Col>
