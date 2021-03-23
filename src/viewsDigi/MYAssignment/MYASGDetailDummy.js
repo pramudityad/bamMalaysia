@@ -14,8 +14,6 @@ const API_URL_XL = 'https://api-dev.xl.pdb.e-dpm.com/xlpdbapi';
 const usernameBAM = 'adminbamidsuper';
 const passwordBAM = 'F760qbAg2sml';
 
-// const process.env.REACT_APP_API_URL_NODE_Digi = 'https://api2-dev.bam-id.e-dpm.com/bamidapi';
-
 class MYASGDetailDummy extends Component {
   constructor(props) {
     super(props);
