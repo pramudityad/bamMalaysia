@@ -2000,7 +2000,7 @@ class MYASGCreation extends Component {
       "item_category",
       "lmr_type",
       "gl_account",
-      // "fas_id",
+      "fas_id",
       "vendor_name",
       "header_text",
     ];

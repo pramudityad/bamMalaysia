@@ -1943,6 +1943,7 @@ class MYASGDetail extends Component {
                         <th>Action</th>
                         <th>Request Type</th>
                         <th>Project Name</th>
+                        <th>WP ID</th>
                         <th>CD_ID</th>
                         <th>Site ID</th>
                         <th>SO # / NW #</th>
@@ -1992,6 +1993,7 @@ class MYASGDetail extends Component {
                             )}
                             <td>{e.request_type}</td>
                             <td>{e.project_name}</td>
+                            <td>{e.wp_id}</td>
                             <td>{e.cdid}</td>
                             <td>{e.site_id}</td>
                             <td>{e.nw}</td>
