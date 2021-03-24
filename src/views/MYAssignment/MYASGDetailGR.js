@@ -138,7 +138,10 @@ class MYASGDetail extends Component {
             PO_Number: this.state.list_pr_po[0].PO_Number,
             PO_Item: this.state.list_pr_po[0].PO_Item,
             PO_Price: this.state.list_pr_po[0].PO_Price,
-            PO_Qty: this.state.list_pr_po[0].PO_Qty,
+            PO_Qty:
+              this.state.list_pr_po[0].PO_Qty === null
+                ? 0
+                : this.state.list_pr_po[0].PO_Qty,
             Required_GR_Qty: "",
             DN_No: "",
             WCN_Link: "https://mas.pdb.e-dpm.com/grmenu/list/",
