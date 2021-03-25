@@ -1847,7 +1847,7 @@ class MappingSVC extends React.PureComponent {
                             <>
                               <tr align="center">
                                 <th></th>
-                                {/* <th></th> */}
+                                <th></th>
                                 {header_model.map((head, j) =>
                                   head === "Qty" ||
                                   head === "Unit_Price" ||
@@ -1873,7 +1873,7 @@ class MappingSVC extends React.PureComponent {
                           <tr align="center">
                             {this.state.tabs_submenu[0] === true ? (
                               <>
-                                {/* <td></td> */}
+                                <td></td>
                                 <td></td>
                                 {this.loopSearchBar()}
                               </>
