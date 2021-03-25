@@ -1833,7 +1833,7 @@ class MappingSVC extends React.PureComponent {
                           <tr align="center">
                             {this.state.tabs_submenu[0] === true ? (
                               <>
-                                {/* <th></th> */}
+                                <th></th>
                                 <th>Not Required</th>
                               </>
                             ) : (
