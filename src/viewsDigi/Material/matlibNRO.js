@@ -400,46 +400,6 @@ class MatNRO extends React.Component {
     });
   }
 
-  exportMatStatus = async () => {
-    const wb = new Excel.Workbook();
-    const ws = wb.addWorksheet();
-
-    // const vendorName = this.state.vendor_list.map((a) => a.Name);
-    let header = [
-      "Material_Type",
-      "Material_Sub_Type",
-      "MM_Code",
-      "MM_Description",
-      "UoM",
-      "Unit_Price",
-      "BB",
-      "BB_Sub",
-      "Region",
-      "SLA",
-      "SoW_Description_or_Site_Type",
-      "Remarks",
-    ];
-    // header = header.concat(vendorName);
-
-    ws.addRow(header);
-    for (let i = 1; i < header.length + 1; i++) {
-      ws.getCell(numToSSColumn(i) + "1").fill = {
-        type: "pattern",
-        pattern: "solid",
-        fgColor: { argb: "FFFFFF00" },
-        bgColor: { argb: "A9A9A9" },
-      };
-      ws.getCell(numToSSColumn(i) + "1").font = {
-        bold: true
-      };
-    }
-
-    ws.addRow([module_name]);
-
-    const PPFormat = await wb.xlsx.writeBuffer();
-    saveAs(new Blob([PPFormat]), "Material " + module_name + " Template.xlsx");
-  };
-
   toggleLoading() {
     this.setState((prevState) => ({
       modal_loading: !prevState.modal_loading,
@@ -769,15 +729,17 @@ class MatNRO extends React.Component {
 
     const vendorName = this.state.vendor_list.map((a) => a.Name);
     let header = [
-      "BB",
-      "BB_Sub",
-      "SoW_Description_or_Site_Type",
-      "UoM",
-      "Region",
-      "Unit_Price",
+      "Material_Type",
+      "Material_Sub_Type",
       "MM_Code",
       "MM_Description",
+      "UoM",
+      "Unit_Price",
+      "BB",
+      "BB_Sub",
+      "Region",
       "SLA",
+      "SoW_Description_or_Site_Type",
       "Remarks",
     ];
     // header = header.concat(vendorName);
@@ -790,30 +752,71 @@ class MatNRO extends React.Component {
         fgColor: { argb: "FFFFFF00" },
         bgColor: { argb: "A9A9A9" },
       };
+      ws.getCell(numToSSColumn(i) + "1").font = {
+        bold: true
+      };
     }
 
     for (let i = 0; i < download_all.length; i++) {
       let e = download_all[i];
       ws.addRow([
-        e.BB,
-        e.BB_Sub,
-        e.SoW_Description_or_Site_Type,
-        e.UoM,
-        e.Region,
-        e.Unit_Price,
+        e.Material_Type,
+        e.Material_Sub_Type,
         e.MM_Code,
         e.MM_Description,
-        e.FTV_or_SSO_SLA_or_SSO_Lite_SLA_or_CBO,
-        e.Remarks_or_Acceptance,
-        e.ZERV_18,
-        e.ZEXT_40,
-        e.Note,
-        e.Vendor_List.map((vendor) => vendor.Vendor_Name),
+        e.UoM,
+        e.Unit_Price,
+        e.BB,
+        e.BB_Sub,
+        e.Region,
+        e.SLA,
+        e.SoW_Description_or_Site_Type,
+        e.Remarks,
       ]);
     }
 
     const allocexport = await wb.xlsx.writeBuffer();
-    saveAs(new Blob([allocexport]), "All " + module_name + ".xlsx");
+    saveAs(new Blob([allocexport]), "All " + module_name + " Materials.xlsx");
+  };
+
+  exportMatStatus = async () => {
+    const wb = new Excel.Workbook();
+    const ws = wb.addWorksheet();
+
+    // const vendorName = this.state.vendor_list.map((a) => a.Name);
+    let header = [
+      "Material_Type",
+      "Material_Sub_Type",
+      "MM_Code",
+      "MM_Description",
+      "UoM",
+      "Unit_Price",
+      "BB",
+      "BB_Sub",
+      "Region",
+      "SLA",
+      "SoW_Description_or_Site_Type",
+      "Remarks",
+    ];
+    // header = header.concat(vendorName);
+
+    ws.addRow(header);
+    for (let i = 1; i < header.length + 1; i++) {
+      ws.getCell(numToSSColumn(i) + "1").fill = {
+        type: "pattern",
+        pattern: "solid",
+        fgColor: { argb: "FFFFFF00" },
+        bgColor: { argb: "A9A9A9" },
+      };
+      ws.getCell(numToSSColumn(i) + "1").font = {
+        bold: true
+      };
+    }
+
+    ws.addRow([module_name]);
+
+    const PPFormat = await wb.xlsx.writeBuffer();
+    saveAs(new Blob([PPFormat]), "Material " + module_name + " Template.xlsx");
   };
 
   toggleDelete = (e) => {

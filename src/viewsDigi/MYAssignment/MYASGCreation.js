@@ -920,8 +920,10 @@ class MYASGCreation extends Component {
     let filter_array = [];
     // this.state.creation_lmr_child_form[number_child_form].transport === "yes" && filter_array.push('"BB":"Transport"');
     // vendor
+    // this.state.lmr_form.vendor_code_actual !== "" &&
+    //   filter_array.push('"$or":[{"Vendor_List.Vendor_Code":"' + this.state.lmr_form.vendor_code_actual + '"},{"Vendor_ID":"' + this.state.lmr_form.vendor_code_actual + '"}]');
     this.state.lmr_form.vendor_code_actual !== "" &&
-      filter_array.push('"$or":[{"Vendor_List.Vendor_Code":"' + this.state.lmr_form.vendor_code_actual + '"},{"Vendor_ID":"' + this.state.lmr_form.vendor_code_actual + '"}]');
+      filter_array.push('"$and":[{"$or":[{"Vendor_List.Vendor_Code":"' + this.state.lmr_form.vendor_code_actual + '"},{"Vendor_ID":"' + this.state.lmr_form.vendor_code_actual + '"}]},{"$or":[{"Region":"' + this.state.creation_lmr_child_form[this.state.current_material_select].region + '"},{"Region":null}]}]');
     filter_array.push('"Material_Sub_Type":{"$in":["Integration"]}');
     this.state.filter_list[0] !== "" &&
       filter_array.push(
@@ -935,7 +937,7 @@ class MYASGCreation extends Component {
         this.state.filter_list[1] +
         '", "$options" : "i"}'
       );
-    filter_array.push('"Region":"' + this.state.creation_lmr_child_form[this.state.current_material_select].region + '"');
+    // filter_array.push('"Region":"' + this.state.creation_lmr_child_form[this.state.current_material_select].region + '"');
     this.state.filter_list[3] !== "" &&
       filter_array.push(
         '"MM_Code":{"$regex" : "' +
@@ -988,8 +990,10 @@ class MYASGCreation extends Component {
     let filter_array = [];
     // this.state.creation_lmr_child_form[number_child_form].transport === "yes" && filter_array.push('"BB":"Transport"');
     // vendor
+    // this.state.lmr_form.vendor_code_actual !== "" &&
+    //   filter_array.push('"$or":[{"Vendor_List.Vendor_Code":"' + this.state.lmr_form.vendor_code_actual + '"},{"Vendor_ID":"' + this.state.lmr_form.vendor_code_actual + '"}]');
     this.state.lmr_form.vendor_code_actual !== "" &&
-      filter_array.push('"$or":[{"Vendor_List.Vendor_Code":"' + this.state.lmr_form.vendor_code_actual + '"},{"Vendor_ID":"' + this.state.lmr_form.vendor_code_actual + '"}]');
+      filter_array.push('"$and":[{"$or":[{"Vendor_List.Vendor_Code":"' + this.state.lmr_form.vendor_code_actual + '"},{"Vendor_ID":"' + this.state.lmr_form.vendor_code_actual + '"}]},{"$or":[{"Region":"' + this.state.creation_lmr_child_form[this.state.current_material_select].region + '"},{"Region":null}]}]');
     filter_array.push('"Material_Sub_Type":{"$in":["NDO"]}');
     this.state.filter_list[0] !== "" &&
       filter_array.push(
@@ -1003,7 +1007,7 @@ class MYASGCreation extends Component {
         this.state.filter_list[1] +
         '", "$options" : "i"}'
       );
-    filter_array.push('"Region":"' + this.state.creation_lmr_child_form[this.state.current_material_select].region + '"');
+    // filter_array.push('"Region":"' + this.state.creation_lmr_child_form[this.state.current_material_select].region + '"');
     this.state.filter_list[3] !== "" &&
       filter_array.push(
         '"MM_Code":{"$regex" : "' +
@@ -1055,10 +1059,12 @@ class MYASGCreation extends Component {
   getMaterialListNRO(number_child_form) {
     let filter_array = [];
     // vendor
+    // this.state.lmr_form.vendor_code_actual !== "" &&
+    //   filter_array.push('"$or":[{"Vendor_List.Vendor_Code":"' + this.state.lmr_form.vendor_code_actual + '"},{"Vendor_ID":"' + this.state.lmr_form.vendor_code_actual + '"}]');
     this.state.lmr_form.vendor_code_actual !== "" &&
-      filter_array.push('"$or":[{"Vendor_List.Vendor_Code":"' + this.state.lmr_form.vendor_code_actual + '"},{"Vendor_ID":"' + this.state.lmr_form.vendor_code_actual + '"}]');
+      filter_array.push('"$and":[{"$or":[{"Vendor_List.Vendor_Code":"' + this.state.lmr_form.vendor_code_actual + '"},{"Vendor_ID":"' + this.state.lmr_form.vendor_code_actual + '"}]},{"$or":[{"Region":"' + this.state.creation_lmr_child_form[this.state.current_material_select].region + '"},{"Region":null}]}]');
     this.state.mm_data_type !== "" &&
-      filter_array.push('"Material_Sub_Type":{"$in":["ITC","Transport"]}');
+      filter_array.push('"Material_Sub_Type":{"$in":["ITC","Transport","Special Transport"]}');
     this.state.filter_list[0] !== "" &&
       filter_array.push(
         '"BB":{"$regex" : "' +
@@ -1071,7 +1077,7 @@ class MYASGCreation extends Component {
         this.state.filter_list[1] +
         '", "$options" : "i"}'
       );
-    filter_array.push('"Region":"' + this.state.creation_lmr_child_form[this.state.current_material_select].region + '"');
+    // filter_array.push('"$or":[{"Region":"' + this.state.creation_lmr_child_form[this.state.current_material_select].region + '"}]');
     this.state.filter_list[3] !== "" &&
       filter_array.push(
         '"MM_Code":{"$regex" : "' +
@@ -2000,7 +2006,7 @@ class MYASGCreation extends Component {
       "item_category",
       "lmr_type",
       "gl_account",
-      "fas_id",
+      // "fas_id",
       "vendor_name",
       "header_text",
     ];
