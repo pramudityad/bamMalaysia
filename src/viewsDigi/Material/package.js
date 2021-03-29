@@ -210,10 +210,11 @@ class Package extends Component {
     this.state.filter_list_material[0] !== "" && (filter_array.push('"MM_Code":{"$regex" : "' + this.state.filter_list_material[0] + '", "$options" : "i"}'));
     this.state.filter_list_material[1] !== "" && (filter_array.push('"MM_Description":{"$regex" : "' + this.state.filter_list_material[1] + '", "$options" : "i"}'));
     this.state.filter_list_material[2] !== "" && (filter_array.push('"Unit_Price":' + this.state.filter_list_material[2]));
-    filter_array.push('"Region":"' + this.state.create_package_parent.Region + '"');
+    // filter_array.push('"Region":"' + this.state.create_package_parent.Region + '"');
+    filter_array.push('"$or":[{"Region":"' + this.state.create_package_parent.Region + '"},{"Region":null}]');
     this.state.filter_list_material[4] !== "" && (filter_array.push('"Material_Type":{"$regex" : "' + this.state.filter_list_material[4] + '", "$options" : "i"}'));
     if (this.state.create_package_parent.Material_Sub_Type === 'ITC + Transport') {
-      filter_array.push('"Material_Sub_Type":{"$in":["ITC","Transport"]}');
+      filter_array.push('"Material_Sub_Type":{"$in":["ITC","Transport","Special Transport"]}');
     } else {
       filter_array.push('"Material_Sub_Type":{"$in":["' + this.state.create_package_parent.Material_Sub_Type + '"]}');
     }
@@ -265,7 +266,7 @@ class Package extends Component {
     }
     let dataFilter = this.state.filter_list_material;
     dataFilter[parseInt(index)] = value;
-    this.setState({ filter_list_material: dataFilter, activePage: 1 }, () => {
+    this.setState({ filter_list_material: dataFilter, activePage_material: 1 }, () => {
       this.onChangeDebouncedMaterial(e);
     })
   }
