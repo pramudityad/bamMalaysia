@@ -1957,6 +1957,7 @@ class MappingSVC extends React.PureComponent {
                                   <td>{convertDateFormat(e.CNI_Date)}</td>
                                   <td>{convertDateFormat(e.Mapping_Date)}</td>
                                   <td>{e.Remarks}</td>
+                                  <td>{e.Gr_No}</td>
                                   <td>{e.Premr_No}</td>
                                   <td>{e.Proceed_Billing_100}</td>
                                   <td>{e.Celcom_User}</td>
