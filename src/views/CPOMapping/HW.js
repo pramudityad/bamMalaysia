@@ -51,7 +51,7 @@ import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 import AsyncSelect from "react-select/async";
 import * as XLSX from "xlsx";
-import "../../helper/config"
+import "../../helper/config";
 import "./cpomapping.css";
 const DefaultNotif = React.lazy(() =>
   import("../../views/DefaultView/DefaultNotif")
@@ -834,9 +834,12 @@ class MappingHW extends React.Component {
       }
       newDataXLS.push(col);
     }
-    this.setState({
-      rowsXLS: newDataXLS,
-    });
+    this.setState(
+      {
+        rowsXLS: newDataXLS,
+      },
+      () => console.log("ini", this.state.rowsXLS)
+    );
   }
 
   toggle = (i) => {
@@ -1818,7 +1821,7 @@ class MappingHW extends React.Component {
                           <tr align="center">
                             {this.state.tabs_submenu[0] === true ? (
                               <>
-                                {/* <th></th> */}
+                                <th></th>
                                 <th>Not Required</th>
                               </>
                             ) : (
@@ -1831,7 +1834,7 @@ class MappingHW extends React.Component {
                           {this.state.tabs_submenu[0] === true ? (
                             <>
                               <tr align="center">
-                                {/* <th></th> */}
+                                <th></th>
                                 <th></th>
                                 {header_model.map((head, j) =>
                                   head === "Qty" ||
@@ -1856,7 +1859,7 @@ class MappingHW extends React.Component {
                             </>
                           )}
                           <tr align="center">
-                            {/* <td></td> */}
+                            <td></td>
                             <td>
                               {/* <Checkbox1
                                 name={"all"}
