@@ -54,7 +54,7 @@ class MYASGCreation extends Component {
         // lmr_issued_by: "EHAYZUX",
         total_price: 0,
         plant: "2172",
-        customer: "CELCOM",
+        customer: "Digi",
         request_type: "Add LMR",
       },
       createModal: true,
