@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from "react";
+import React, { Component, Fragment, PureComponent } from "react";
 import {
   Form,
   FormGroup,
@@ -30,10 +30,9 @@ import { Modal, ModalBody, ModalHeader, ModalFooter } from "reactstrap";
 import * as XLSX from "xlsx";
 import { Link } from "react-router-dom";
 import "./LMRMY.css";
-import { getDatafromAPINODE } from "../../helper/asyncFunctionDigi";
+import { getDatafromAPINODE } from "../../helper/asyncFunction";
 import { connect } from "react-redux";
 import Select from "react-select";
-import './LMRMY.css';
 
 import {
   convertDateFormatfull,
@@ -71,7 +70,7 @@ const MaterialDB = [
   },
 ];
 
-class MYASGDetail extends Component {
+class MYASGDetail extends PureComponent {
   constructor(props) {
     super(props);
 
@@ -91,6 +90,9 @@ class MYASGDetail extends Component {
       modal_material_ARP: false,
       data_cpo: null,
       data_cpo_db: [],
+      modal_postgr: false,
+      dn_no: "",
+      file_upload: null,
       prevPage: 0,
       activePage: 1,
       totalData: 0,
@@ -357,6 +359,12 @@ class MYASGDetail extends Component {
     }));
   }
 
+  toggleGRPost = () => {
+    this.setState({
+      modal_postgr: !this.state.modal_postgr,
+    });
+  };
+
   checkValue(props) {
     // if value undefined return null
     if (typeof props === "undefined") {
@@ -368,7 +376,7 @@ class MYASGDetail extends Component {
 
   async getDatafromAPIMY(url) {
     try {
-      let respond = await axios.get(process.env.REACT_APP_API_URL_Digi + url, {
+      let respond = await axios.get(process.env.REACT_APP_API_URL_MAS + url, {
         headers: { "Content-Type": "application/json" },
         auth: {
           username: process.env.REACT_APP_usernameMAS,
@@ -388,7 +396,7 @@ class MYASGDetail extends Component {
 
   async getDatafromAPINODE(url) {
     try {
-      let respond = await axios.get(process.env.REACT_APP_API_URL_NODE_Digi + url, {
+      let respond = await axios.get(process.env.REACT_APP_API_URL_NODE + url, {
         headers: {
           "Content-Type": "application/json",
           Authorization: "Bearer " + this.state.tokenUser,
@@ -408,7 +416,7 @@ class MYASGDetail extends Component {
   async postDatatoAPINODE(url, data) {
     try {
       let respond = await axios.post(
-        process.env.REACT_APP_API_URL_NODE_Digi + url,
+        process.env.REACT_APP_API_URL_NODE + url,
         data,
         {
           headers: {
@@ -431,7 +439,7 @@ class MYASGDetail extends Component {
   async patchDatatoAPINODE(url, data) {
     try {
       let respond = await axios.patch(
-        process.env.REACT_APP_API_URL_NODE_Digi + url,
+        process.env.REACT_APP_API_URL_NODE + url,
         data,
         {
           headers: {
@@ -454,7 +462,7 @@ class MYASGDetail extends Component {
   async deleteDatafromAPINODE(url) {
     try {
       let respond = await axios.delete(
-        process.env.REACT_APP_API_URL_NODE_Digi + url,
+        process.env.REACT_APP_API_URL_NODE + url,
         {
           headers: {
             "Content-Type": "application/json",
@@ -473,11 +481,23 @@ class MYASGDetail extends Component {
     }
   }
 
+  fileInputHandle = (e) => {
+    let fileUpload = null;
+    if (
+      e !== undefined &&
+      e.target !== undefined &&
+      e.target.files !== undefined
+    ) {
+      fileUpload = e.target.files[0];
+      this.setState({ file_upload: fileUpload });
+    }
+  };
+
   fileHandlerMaterial = (input) => {
     const file = input.target.files[0];
     const reader = new FileReader();
     const rABS = !!reader.readAsBinaryString;
-    console.log("rABS");
+    // console.log("rABS");
     reader.onload = (e) => {
       /* Parse data */
       const bstr = e.target.result;
@@ -907,7 +927,7 @@ class MYASGDetail extends Component {
             () => {
               // this.toggleLoading();
               this.getDataPRPO(dataLMRDetail.lmr_id);
-              console.log(this.state.lmr_detail);
+              // this.postAllGR_draft();
             }
           );
         }
@@ -1286,11 +1306,80 @@ class MYASGDetail extends Component {
     } else {
       this.getLMRDetailData(this.props.match.params.id);
     }
+    // const dataChild = JSON.parse(state_lmr.detail.map(id => localStorage.getItem(lmr_id + "///" + id.cdid)))
+    // console.log(dataChild)
     // this.getMaterialList();
     // this.getDataCD();
     // this.getProjectList();
     document.title = "LMR Detail | BAM";
   }
+
+  postAllGR_draft = async () => {
+    this.toggleLoading();
+    this.toggleGRPost();
+    const state_lmr = this.state.lmr_detail;
+    const lmr_id = state_lmr["lmr_id"];
+    let fileDocument = new FormData();
+    const dataChild = state_lmr.detail.map((id) =>
+      JSON.parse(
+        localStorage.getItem(lmr_id + " /// " + id.cdid + " /// " + id._id)
+      )
+    );
+
+    console.log(dataChild);
+    const merge_dataChild = [].concat(...dataChild).filter((gr) => gr !== null);
+    console.log(merge_dataChild);
+
+    await fileDocument.append("fileDocument", this.state.file_upload);
+    await fileDocument.append("dn_no", JSON.stringify(this.state.dn_no));
+    await fileDocument.append("gr_data", JSON.stringify(merge_dataChild));
+    const respondSaveLMRChild = await this.postDatatoAPINODE(
+      "/aspassignment/createGrForm1/",
+      fileDocument
+    );
+    if (
+      respondSaveLMRChild.data !== undefined &&
+      respondSaveLMRChild.status >= 200 &&
+      respondSaveLMRChild.status <= 300
+    ) {
+      let remove_gr = state_lmr.detail.map(
+        (id) => lmr_id + " /// " + id.cdid + " /// " + id._id
+      );
+      for (let i = 0; i < remove_gr.length; i++) {
+        const element = remove_gr[i];
+        localStorage.removeItem(element);
+      }
+      this.setState({ action_status: "success" });
+    } else {
+      if (
+        respondSaveLMRChild.response !== undefined &&
+        respondSaveLMRChild.response.data !== undefined &&
+        respondSaveLMRChild.response.data.error !== undefined
+      ) {
+        if (respondSaveLMRChild.response.data.error.message !== undefined) {
+          this.setState({
+            action_status: "failed",
+            action_message: JSON.stringify(
+              respondSaveLMRChild.response.data.error.message
+            ),
+          });
+        } else {
+          this.setState({
+            action_status: "failed",
+            action_message: JSON.stringify(
+              respondSaveLMRChild.response.data.error
+            ),
+          });
+        }
+      } else {
+        this.setState({ action_status: "failed" });
+      }
+    }
+    this.toggleLoading();
+    // setTimeout(function () {
+    //   window.location.reload();
+    // }, 1500);
+  };
 
   getDataCD() {
     this.getDatafromAPIMY("/cdid_data").then((resCD) => {
@@ -1574,6 +1663,14 @@ class MYASGDetail extends Component {
     );
   }
 
+  handleChangeForm = (e) => {
+    const value = e.target.value;
+    // const index = e.target.name;
+    // let dataForm = this.state.PPForm;
+    // dataForm[parseInt(index)] = value;
+    this.setState({ dn_no: value });
+  };
+
   handleChangeCDFormLMRChild = (e, action) => {
     let dataLMR = this.state.creation_lmr_child_form;
     let dataparentLMR_GL = this.state.lmr_detail.gl_account;
@@ -1689,7 +1786,8 @@ class MYASGDetail extends Component {
             <Card>
               <CardHeader>
                 <span style={{ lineHeight: "2", fontSize: "17px" }}>
-                  LMR Detail
+                  {" "}
+                  LMR Detail{" "}
                 </span>
                 <div
                   className="card-header-actions"
@@ -1733,11 +1831,34 @@ class MYASGDetail extends Component {
                   </Button>
                   &nbsp;&nbsp;&nbsp; */}
                   {this.state.roleUser !== "Public" ? (
-                    <Link to={"/lmr-edit/" + this.props.match.params.id}>
-                      <Button color="warning">
-                        <i className="fa fa-wpforms" aria-hidden="true"></i>&nbsp;&nbsp;Duplicate
-                      </Button>
-                    </Link>
+                    <>
+                      <Link to={"/lmr-edit/" + this.props.match.params.id}>
+                        <Button color="warning">
+                          <i className="fa fa-wpforms" aria-hidden="true">
+                            &nbsp; Duplicate
+                          </i>
+                        </Button>
+                      </Link>
+                      &nbsp;&nbsp;
+                      {this.state.list_pr_po[0] !== undefined &&
+                        this.state.list_pr_po[0].PO_Number !== null ? (
+                        <Button color="success" onClick={this.toggleGRPost}>
+                          <i class="fa fa-paper-plane" aria-hidden="true">
+                            &nbsp; Post GR
+                          </i>
+                        </Button>
+                      ) : (
+                        <Button
+                          color="success"
+                          onClick={this.toggleGRPost}
+                          disabled
+                        >
+                          <i class="fa fa-paper-plane" aria-hidden="true">
+                            &nbsp; Post GR
+                          </i>
+                        </Button>
+                      )}
+                    </>
                   ) : (
                     ""
                   )}
@@ -1902,7 +2023,13 @@ class MYASGDetail extends Component {
                         </tbody>
                       </table>
                     </Col>
-                    <Col sm="5" md="5">
+                    {/* <Col sm="5" md="5"> */}
+                    <div
+                      style={{
+                        "max-height": "calc(100vh - 210px)",
+                        "overflow-y": "auto",
+                      }}
+                    >
                       <table className="table-header">
                         <tbody>
                           <tr style={{ fontWeight: "425", fontSize: "15px" }}>
@@ -1932,21 +2059,21 @@ class MYASGDetail extends Component {
                           </tr>
                         </tbody>
                       </table>
-                    </Col>
+                    </div>
+                    {/* </Col> */}
                   </Row>
                 </div>
 
                 <div class="divtable">
-                  <Table hover bordered responsive size="sm" width="100%" id="asg-detail-table">
+                  <Table hover bordered responsive size="sm" width="100%">
                     <thead class="table-commercial__header">
                       <tr>
-                        <th>Action</th>
+                        <th style={{ width: "70%" }}></th>
                         <th>Request Type</th>
                         <th>Project Name</th>
-                        <th>WP ID</th>
                         <th>CD_ID</th>
                         <th>Site ID</th>
-                        <th>SO # / NW #</th>
+                        <th>SO # /NW #</th>
                         <th>Activity</th>
                         <th>Tax Code</th>
                         <th>Material #</th>
@@ -1973,27 +2100,53 @@ class MYASGDetail extends Component {
                       {this.state.lmr_detail.detail !== undefined ? (
                         this.state.lmr_detail.detail.map((e) => (
                           <tr>
-                            {this.state.roleUser.includes("BAM-CPM") === true || this.state.roleUser.includes("BAM-GR PA") === true ? (
+                            {this.state.roleUser.includes("BAM-CPM") === true ||
+                              (this.state.roleUser.includes("BAM-GR-PA") ===
+                                true &&
+                                (this.state.lmr_detail.mm_data_type === "NDO" ||
+                                  this.state.lmr_detail.mm_data_type ===
+                                  "NRO")) ||
+                              (this.state.roleUser.includes("BAM-PA") === true &&
+                                this.state.lmr_detail.mm_data_type === "ARP") ? (
                               <td>
-                                <Link
-                                  to={
-                                    "/lmr-detail/" +
-                                    this.props.match.params.id +
-                                    "/gr-detail/" +
-                                    e._id
-                                  }
-                                >
-                                  <Button color="info" style={{ width: "100%" }}>
-                                    <i className="fa fa-info-circle" aria-hidden="true"></i>&nbsp;&nbsp;GR
+                                {this.state.list_pr_po[0] !== undefined &&
+                                  this.state.list_pr_po[0].PO_Number !== null &&
+                                  this.state.list_pr_po[0].PO_Item !== null ? (
+                                  <Link
+                                    to={
+                                      "/lmr-detail/" +
+                                      this.props.match.params.id +
+                                      "/gr-detail/" +
+                                      e._id
+                                    }
+                                  >
+                                    <Button color="info" size="sm">
+                                      <i
+                                        className="fa fa-info-circle"
+                                        aria-hidden="true"
+                                      >
+                                        &nbsp;
+                                      </i>
+                                      &nbsp;GR
+                                    </Button>
+                                  </Link>
+                                ) : (
+                                  <Button color="info" size="sm" disabled>
+                                    <i
+                                      className="fa fa-info-circle"
+                                      aria-hidden="true"
+                                    >
+                                      &nbsp;
+                                    </i>
+                                    &nbsp;GR
                                   </Button>
-                                </Link>
+                                )}
                               </td>
                             ) : (
                               <td></td>
                             )}
                             <td>{e.request_type}</td>
                             <td>{e.project_name}</td>
-                            <td>{e.wp_id}</td>
                             <td>{e.cdid}</td>
                             <td>{e.site_id}</td>
                             <td>{e.nw}</td>
@@ -2914,6 +3067,60 @@ class MYASGDetail extends Component {
           </ModalFooter>
         </Modal>
         {/* end Modal Loading */}
+
+        {/* Modal Update */}
+        <Modal
+          isOpen={this.state.modal_postgr}
+          toggle={this.toggleGRPost}
+          className="modal--form"
+        >
+          <ModalHeader>Form GR</ModalHeader>
+          <ModalBody>
+            <Row>
+              <Col sm="8">
+                <FormGroup row>
+                  <Col xs="8">
+                    <FormGroup>
+                      <Label>DN No</Label>
+                      <Input
+                        type="text"
+                        name=""
+                        placeholder="Input DN No"
+                        value={this.state.dn_no}
+                        onChange={this.handleChangeForm}
+                      />
+                    </FormGroup>
+                  </Col>
+                </FormGroup>
+              </Col>
+              <Col sm="8">
+                <FormGroup row>
+                  <Col xs="8">
+                    <FormGroup>
+                      <Label>Input File</Label>
+                      <input
+                        type="file"
+                        onChange={this.fileInputHandle.bind(this)}
+                        style={{ padding: "10px", visiblity: "hidden" }}
+                      />
+                    </FormGroup>
+                  </Col>
+                </FormGroup>
+              </Col>
+            </Row>
+          </ModalBody>
+          <ModalFooter>
+            <Button
+              color="success"
+              onClick={this.postAllGR_draft}
+              disabled={
+                this.state.dn_no === "" && this.state.rowsXLS.length === 0
+              }
+            >
+              Submit
+            </Button>
+          </ModalFooter>
+        </Modal>
 
         {/* Modal Material ARP */}
         <Modal

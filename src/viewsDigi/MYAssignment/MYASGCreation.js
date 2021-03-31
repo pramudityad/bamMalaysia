@@ -1259,6 +1259,8 @@ class MYASGCreation extends Component {
         material: dataChildForm[i].material,
         description: dataChildForm[i].description,
         site_id: dataChildForm[i].site_id,
+        site_name: dataChildForm[i].site_name,
+        region: dataChildForm[i].region,
         qty: dataChildForm[i].qty,
         unit_price: dataChildForm[i].unit_price,
         tax_code: dataChildForm[i].tax_code,
