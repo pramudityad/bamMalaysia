@@ -51,6 +51,7 @@ import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 import AsyncSelect from "react-select/async";
 import * as XLSX from "xlsx";
+import "../../helper/config";
 
 import "./cpomapping.css";
 const DefaultNotif = React.lazy(() =>
