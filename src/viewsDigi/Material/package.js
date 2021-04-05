@@ -83,6 +83,8 @@ class Package extends Component {
       vendorCheckedPage: new Map(),
       modal_delete_package: false,
       package_to_be_deleted: null,
+      modal_edit_package: false,
+      package_to_be_edited: null,
       prevPage: 0,
       activePage: 1,
       totalData: 0,
@@ -473,6 +475,163 @@ class Package extends Component {
     }
   }
 
+  updatePackage = async () => {
+    let create_package_child = this.state.create_package_child;
+
+    for (let i = 0; i < create_package_child.length; i++) {
+      create_package_child[i].duplicate = 'no';
+      create_package_child[i].blank_material = 'no';
+      create_package_child[i].zero_qty = 'no';
+    }
+
+    let check_duplicate = false;
+    for (let i = 0; i < create_package_child.length; i++) {
+      for (let j = i + 1; j < create_package_child.length; j++) {
+        if (create_package_child[i].MM_Code === create_package_child[j].MM_Code) {
+          check_duplicate = true;
+          create_package_child[i].duplicate = 'yes';
+          create_package_child[j].duplicate = 'yes';
+        }
+      }
+    }
+
+    for (let i = 0; i < create_package_child.length; i++) {
+      if (create_package_child[i].MM_Code === '') {
+        create_package_child[i].blank_material = 'yes';
+      }
+    }
+
+    for (let i = 0; i < create_package_child.length; i++) {
+      if (create_package_child[i].Qty === 0 && create_package_child[i].Transport !== 'yes') {
+        create_package_child[i].zero_qty = 'yes';
+      }
+    }
+
+    if (check_duplicate) {
+      const getAlert = () => (
+        <SweetAlert
+          danger
+          title="Error!"
+          onConfirm={() => this.hideAlert()}
+        >
+          Material duplication found!
+        </SweetAlert>
+      );
+
+      this.setState({
+        sweet_alert: getAlert()
+      });
+
+      for (let i = 0; i < create_package_child.length; i++) {
+        create_package_child[i].blank_material = 'no';
+        create_package_child[i].zero_qty = 'no';
+      }
+      this.setState({ create_package_child: create_package_child }, () =>
+        console.log(this.state.create_package_child)
+      );
+    } else if (create_package_child.some(e => e.blank_material === 'yes')) {
+      const getAlert = () => (
+        <SweetAlert
+          danger
+          title="Error!"
+          onConfirm={() => this.hideAlert()}
+        >
+          Please select a material first!
+        </SweetAlert>
+      );
+
+      this.setState({
+        sweet_alert: getAlert()
+      });
+
+      for (let i = 0; i < create_package_child.length; i++) {
+        create_package_child[i].duplicate = 'no';
+        create_package_child[i].zero_qty = 'no';
+      }
+      this.setState({ create_package_child: create_package_child }, () =>
+        console.log(this.state.create_package_child)
+      );
+    } else if (create_package_child.some(e => e.zero_qty === 'yes')) {
+      const getAlert = () => (
+        <SweetAlert
+          danger
+          title="Error!"
+          onConfirm={() => this.hideAlert()}
+        >
+          Please input the qty to be more than 0!
+        </SweetAlert>
+      );
+
+      this.setState({
+        sweet_alert: getAlert()
+      });
+
+      for (let i = 0; i < create_package_child.length; i++) {
+        create_package_child[i].duplicate = 'no';
+        create_package_child[i].blank_material = 'no';
+      }
+      this.setState({ create_package_child: create_package_child }, () =>
+        console.log(this.state.create_package_child)
+      );
+    } else {
+      this.toggleLoading();
+      for (let i = 0; i < create_package_child.length; i++) {
+        create_package_child[i].duplicate = 'no';
+        create_package_child[i].blank_material = 'no';
+        create_package_child[i].zero_qty = 'no';
+      }
+      this.setState({ create_package_child: create_package_child }, () =>
+        console.log(this.state.create_package_child)
+      );
+
+      const dataPackageChild = [];
+      for (let i = 0; i < create_package_child.length; i++) {
+        let dataChild = {
+          MM_Code_Id: create_package_child[i].MM_Code_Id,
+          MM_Code: create_package_child[i].MM_Code,
+          Qty: create_package_child[i].Qty,
+          Transport: create_package_child[i].Transport
+        }
+        dataPackageChild.push(dataChild);
+      }
+
+      const dataPackage = {
+        _id: this.state.create_package_parent._id,
+        Package_Name: this.state.create_package_parent.Package_Name,
+        Region: this.state.create_package_parent.Region,
+        Material_Sub_Type: this.state.create_package_parent.Material_Sub_Type,
+        MM_Data: dataPackageChild
+      }
+
+      console.log('dataPackage', dataPackage)
+
+      const response = await patchDatatoAPINODE("/package/updatePackage", { package_data: [dataPackage] }, this.state.tokenUser);
+      if (response.data !== undefined && response.status >= 200 && response.status <= 300) {
+        this.toggleLoading();
+        this.setState({ action_status: "success", action_message: "Package has been updated, please check in Package List!" });
+      } else {
+        if (response.response !== undefined && response.response.data !== undefined && response.response.data.error !== undefined) {
+          if (response.response.data.error.message !== undefined) {
+            this.toggleLoading();
+            this.setState({
+              action_status: "failed",
+              action_message: response.response.data.error.message,
+            });
+          } else {
+            this.toggleLoading();
+            this.setState({
+              action_status: "failed",
+              action_message: response.response.data.error,
+            });
+          }
+        } else {
+          this.toggleLoading();
+          this.setState({ action_status: "failed" });
+        }
+      }
+    }
+  }
+
   hideAlert() {
     this.setState({
       sweet_alert: null
@@ -697,6 +856,65 @@ class Package extends Component {
     this.setState({ package_to_be_deleted: package_id });
   }
 
+  toggleEditPackage = async (package_id) => {
+    if (this.state.modal_edit_package === false) {
+      const response = await postDatatoAPINODE("/package/getManyPackagebyId", { package_data: [package_id] }, this.state.tokenUser);
+      if (response.data !== undefined && response.status >= 200 && response.status <= 300) {
+        let selectedPackage = response.data.data;
+        let allMaterials = [];
+        for (let i = 0; i < selectedPackage.MM_Data.length; i++) {
+          let vendors = [];
+          if (selectedPackage.MM_Data[i].Vendor_ID !== null) {
+            vendors.push(selectedPackage.MM_Data[i].Vendor_Name);
+          } else {
+            for (let x = 0; x < selectedPackage.MM_Data[i].Vendor_List.length; x++) {
+              vendors.push(selectedPackage.MM_Data[i].Vendor_List[x].Vendor_Name);
+            }
+          }
+          let material = {
+            MM_Code: selectedPackage.MM_Data[i].MM_Code,
+            Description: selectedPackage.MM_Data[i].Description,
+            Price: selectedPackage.MM_Data[i].Price,
+            Qty: selectedPackage.MM_Data[i].Qty,
+            Transport: selectedPackage.MM_Data[i].Transport,
+            Unit_Price: selectedPackage.MM_Data[i].Price,
+            Vendors: vendors.join(', ')
+          }
+          allMaterials.push(material)
+        }
+        this.setState({ create_package_child: allMaterials });
+        let create_package_parent = {
+          _id: selectedPackage._id,
+          Package_Id: selectedPackage.Package_Id,
+          Package_Name: selectedPackage.Package_Name,
+          Region: selectedPackage.Region,
+          Material_Sub_Type: selectedPackage.Material_Sub_Type
+        }
+        this.setState({ create_package_parent: create_package_parent });
+      } else {
+        if (response.response !== undefined && response.response.data !== undefined && response.response.data.error !== undefined) {
+          if (response.response.data.error.message !== undefined) {
+            this.setState({
+              action_status: "failed",
+              action_message: response.response.data.error.message,
+            });
+          } else {
+            this.setState({
+              action_status: "failed",
+              action_message: response.response.data.error,
+            });
+          }
+        } else {
+          this.setState({ action_status: "failed" });
+        }
+      }
+    }
+    this.setState((prevState) => ({
+      modal_edit_package: !prevState.modal_edit_package,
+    }));
+    this.setState({ package_to_be_edited: package_id });
+  }
+
   deleteDataFromAPINODE = async (url, id, props) => {
     try {
       let respond = await axios.delete(process.env.REACT_APP_API_URL_NODE_Digi + url, {
@@ -899,8 +1117,11 @@ class Package extends Component {
                           <td>{e.Region}</td>
                           <td>{e.Material_Sub_Type}</td>
                           <td>
-                            <Button color="danger" style={{ width: "100%" }} className="hvr-icon-grow" onClick={() => this.toggleDeletePackage(e._id)}>
-                              <i className="fa fa-trash hvr-icon"></i>
+                            <Button color="secondary" style={{ width: "46%", marginRight: "4%" }} onClick={() => this.toggleEditPackage(e._id)}>
+                              <i className="fa fa-edit"></i>
+                            </Button>
+                            <Button color="danger" style={{ width: "46%", marginLeft: "4%" }} onClick={() => this.toggleDeletePackage(e._id)}>
+                              <i className="fa fa-trash"></i>
                             </Button>
                           </td>
                           {/* {this.state.vendor_list.map((vendor, i) =>
@@ -1050,6 +1271,7 @@ class Package extends Component {
                       <option value="NDO">NDO</option>
                       <option value="Survey">Survey</option>
                       <option value="Integration">Integration</option>
+                      <option value="Transport">Transport</option>
                     </Input>
                   </FormGroup>
                 </Col>
@@ -1068,7 +1290,7 @@ class Package extends Component {
                         className="checkmark-dash"
                         style={{ left: "40%" }}
                         checked={mat.Transport === 'yes'}
-                        disabled={this.state.create_package_child.find(x => x.Transport === 'yes') || this.state.create_package_parent.Material_Sub_Type !== 'ITC + Transport'}
+                        disabled={this.state.create_package_child.find(x => x.Transport === 'yes') || this.state.create_package_parent.Material_Sub_Type !== 'Transport'}
                       />
                     </FormGroup>
                   </Col>
@@ -1231,6 +1453,160 @@ class Package extends Component {
             Cancel
           </Button>
         </ModalDelete>
+
+        {/* Modal Edit Package */}
+        <Modal
+          isOpen={this.state.modal_edit_package}
+          toggle={this.toggleEditPackage}
+          className={"modal-xl"}
+        >
+          <ModalBody>
+            <div>
+              <strong><h6>Input Package Details</h6></strong>
+              <hr className="upload-line--lmr"></hr>
+              <Row>
+                <Col md={3}>
+                  <FormGroup>
+                    <Label>Package Name</Label>
+                    <Input
+                      type="text"
+                      name="Package_Name"
+                      placeholder="Input Package Name"
+                      onChange={this.handleChangeFormPackageParent}
+                      value={this.state.create_package_parent.Package_Name}
+                      disabled={this.state.create_package_child.length > 0}
+                    />
+                  </FormGroup>
+                </Col>
+                <Col md={3}>
+                  <FormGroup>
+                    <Label>Region</Label>
+                    <Input
+                      type="select"
+                      name="Region"
+                      onChange={this.handleChangeFormPackageParent}
+                      value={this.state.create_package_parent.Region}
+                      disabled={this.state.create_package_child.length > 0}
+                    >
+                      <option value="" disabled selected hidden>Select Region</option>
+                      <option value="KV">KV</option>
+                      <option value="SN">SN</option>
+                      <option value="ER">ER</option>
+                      <option value="EM">EM</option>
+                    </Input>
+                  </FormGroup>
+                </Col>
+                <Col md={4}>
+                  <FormGroup>
+                    <Label>MM Type</Label>
+                    <Input
+                      type="select"
+                      name="Material_Sub_Type"
+                      onChange={this.handleChangeFormPackageParent}
+                      value={this.state.create_package_parent.Material_Sub_Type}
+                      disabled={this.state.create_package_child.length > 0}
+                    >
+                      <option value="" disabled selected hidden>Select MM Type</option>
+                      <option value="ITC + Transport">ITC + Transport</option>
+                      <option value="NDO">NDO</option>
+                      <option value="Survey">Survey</option>
+                      <option value="Integration">Integration</option>
+                      <option value="Transport">Transport</option>
+                    </Input>
+                  </FormGroup>
+                </Col>
+              </Row>
+              <strong><h6 style={{ marginTop: "16px" }}>Choose Materials</h6></strong>
+              <hr className="upload-line--lmr"></hr>
+              {this.state.create_package_child.map((mat, i) => (
+                <Row>
+                  <Col md={1}>
+                    <FormGroup>
+                      <Label>Transport</Label><br />
+                      <Input
+                        type="checkbox"
+                        name={i + " /// Transport"}
+                        onChange={this.handleChangeFormPackageChild}
+                        className="checkmark-dash"
+                        style={{ left: "40%" }}
+                        checked={mat.Transport === 'yes'}
+                        disabled={this.state.create_package_child.find(x => x.Transport === 'yes') || this.state.create_package_parent.Material_Sub_Type !== 'Transport'}
+                      />
+                    </FormGroup>
+                  </Col>
+                  <Col md={3}>
+                    <FormGroup>
+                      <Label>MM Code</Label>
+                      <Input
+                        type="text"
+                        name={i + " /// MM_Code"}
+                        id={i + " /// MM_Code"}
+                        value={mat.MM_Code}
+                        onClick={() => this.toggleModalMaterial(i)}
+                        disabled={mat.Transport === 'yes'}
+                        style={mat.duplicate === 'yes' || mat.blank_material === 'yes' ? { border: "2px solid red" } : {}}
+                      />
+                    </FormGroup>
+                  </Col>
+                  <Col md={3}>
+                    <FormGroup>
+                      <Label>Description</Label>
+                      <Input
+                        type="text"
+                        name={i + " /// Description"}
+                        id={i + " /// Description"}
+                        value={mat.Description}
+                        readOnly
+                      />
+                    </FormGroup>
+                  </Col>
+                  <Col md={2}>
+                    <FormGroup>
+                      <Label>Price</Label>
+                      <Input
+                        type="number"
+                        name={i + " /// Unit_Price"}
+                        id={i + " /// Unit_Price"}
+                        value={mat.Unit_Price}
+                        readOnly
+                      />
+                    </FormGroup>
+                  </Col>
+                  <Col md={2}>
+                    <FormGroup>
+                      <Label>Quantity</Label>
+                      <Input
+                        min="0"
+                        type="number"
+                        name={i + " /// Qty"}
+                        id={i + " /// Qty"}
+                        value={mat.Qty}
+                        onChange={this.handleChangeFormPackageChild}
+                        disabled={mat.Transport === 'yes'}
+                        style={mat.zero_qty === 'yes' ? { border: "2px solid red" } : {}}
+                      />
+                    </FormGroup>
+                  </Col>
+                  <Col md="auto">
+                    <Button color="danger" size="sm" onClick={e => this.handleDeletePackageChild(i)} style={{ marginTop: '30px' }}><span className="fa fa-times"></span></Button>
+                  </Col>
+                </Row>
+              ))}
+              <Button color="primary" size="sm" onClick={this.addMaterial} disabled={this.state.create_package_parent.Package_Name === undefined || this.state.create_package_parent.Package_Name === "" || this.state.create_package_parent.Region === undefined || this.state.create_package_parent.Region === ""}>
+                <i className="fa fa-plus">&nbsp;</i> Add Material
+              </Button>
+            </div>
+          </ModalBody>
+          <ModalFooter>
+            <Button color="success" onClick={this.updatePackage}>
+              Update Package
+            </Button>
+            <Button color="secondary" onClick={this.toggleEditPackage}>
+              Close
+            </Button>
+          </ModalFooter>
+        </Modal>
+        {/* end Modal Edit Package */}
 
         {/* Modal Loading */}
         <Modal
