@@ -366,7 +366,7 @@ class MatNRO extends React.Component {
     let whereAnd = "{" + filter_array.join(",") + "}";
 
     getDatafromAPINODE(
-      "/mmCode/getMm?q=" +
+      "/mmCode/getMm?srt=_id:1&q=" +
       whereAnd +
       "&lmt=" +
       this.state.perPage +
@@ -390,7 +390,7 @@ class MatNRO extends React.Component {
 
   getMaterialListAll() {
     getDatafromAPINODE(
-      '/mmCode/getMm?q={"Material_Type": "' + module_name + '"}' + "&noPg=1",
+      '/mmCode/getMm?srt=_id:1&q={"Material_Type": "' + module_name + '"}' + "&noPg=1",
       this.state.tokenUser
     ).then((res) => {
       if (res.data !== undefined) {
@@ -731,15 +731,14 @@ class MatNRO extends React.Component {
     let header = [
       "Material_Type",
       "Material_Sub_Type",
-      "MM_Code",
-      "MM_Description",
-      "UoM",
-      "Unit_Price",
       "BB",
       "BB_Sub",
-      "Region",
-      "SLA",
       "SoW_Description_or_Site_Type",
+      "UoM",
+      "Region",
+      "Unit_Price",
+      "MM_Code",
+      "MM_Description",
       "Remarks",
     ];
     // header = header.concat(vendorName);
@@ -762,15 +761,14 @@ class MatNRO extends React.Component {
       ws.addRow([
         e.Material_Type,
         e.Material_Sub_Type,
-        e.MM_Code,
-        e.MM_Description,
-        e.UoM,
-        e.Unit_Price,
         e.BB,
         e.BB_Sub,
-        e.Region,
-        e.SLA,
         e.SoW_Description_or_Site_Type,
+        e.UoM,
+        e.Region,
+        e.Unit_Price,
+        e.MM_Code,
+        e.MM_Description,
         e.Remarks,
       ]);
     }
