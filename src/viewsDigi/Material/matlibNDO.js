@@ -104,7 +104,7 @@ class MatNDO extends React.Component {
   }
 
   getMaterialListAll() {
-    getDatafromAPINODE('/mmCode/getMm?srt=_id:-1&q={"Material_Type": "' + module_name + '"}' + "&noPg=1", this.state.tokenUser).then((res) => {
+    getDatafromAPINODE('/mmCode/getMm?srt=_id:1&q={"Material_Type": "' + module_name + '"}' + "&noPg=1", this.state.tokenUser).then((res) => {
       if (res.data !== undefined) {
         const items = res.data.data;
         this.setState({ material_list_all: items });
@@ -204,7 +204,7 @@ class MatNDO extends React.Component {
     let whereAnd = "{" + filter_array.join(",") + "}";
 
     getDatafromAPINODE(
-      "/mmCode/getMm?srt=_id:-1&q=" +
+      "/mmCode/getMm?srt=_id:1&q=" +
       whereAnd +
       "&lmt=" +
       this.state.perPage +
