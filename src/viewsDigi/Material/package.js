@@ -1290,7 +1290,7 @@ class Package extends Component {
                         className="checkmark-dash"
                         style={{ left: "40%" }}
                         checked={mat.Transport === 'yes'}
-                        disabled={this.state.create_package_child.find(x => x.Transport === 'yes') || this.state.create_package_parent.Material_Sub_Type !== 'Transport'}
+                        disabled={this.state.create_package_child.find(x => x.Transport === 'yes') || (this.state.create_package_parent.Material_Sub_Type !== 'Transport' && this.state.create_package_parent.Material_Sub_Type !== 'ITC + Transport')}
                       />
                     </FormGroup>
                   </Col>
@@ -1530,7 +1530,7 @@ class Package extends Component {
                         className="checkmark-dash"
                         style={{ left: "40%" }}
                         checked={mat.Transport === 'yes'}
-                        disabled={this.state.create_package_child.find(x => x.Transport === 'yes') || this.state.create_package_parent.Material_Sub_Type !== 'Transport'}
+                        disabled={this.state.create_package_child.find(x => x.Transport === 'yes') || (this.state.create_package_parent.Material_Sub_Type !== 'Transport' && this.state.create_package_parent.Material_Sub_Type !== 'ITC + Transport')}
                       />
                     </FormGroup>
                   </Col>

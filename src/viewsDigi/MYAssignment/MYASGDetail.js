@@ -1834,18 +1834,14 @@ class MYASGDetail extends PureComponent {
                     <>
                       <Link to={"/lmr-edit/" + this.props.match.params.id}>
                         <Button color="warning">
-                          <i className="fa fa-wpforms" aria-hidden="true">
-                            &nbsp; Duplicate
-                          </i>
+                          <i className="fa fa-wpforms" aria-hidden="true"></i>&nbsp; Duplicate
                         </Button>
                       </Link>
                       &nbsp;&nbsp;
                       {this.state.list_pr_po[0] !== undefined &&
                         this.state.list_pr_po[0].PO_Number !== null ? (
                         <Button color="success" onClick={this.toggleGRPost}>
-                          <i class="fa fa-paper-plane" aria-hidden="true">
-                            &nbsp; Post GR
-                          </i>
+                          <i class="fa fa-paper-plane" aria-hidden="true"></i>&nbsp; Post GR
                         </Button>
                       ) : (
                         <Button
@@ -1853,9 +1849,7 @@ class MYASGDetail extends PureComponent {
                           onClick={this.toggleGRPost}
                           disabled
                         >
-                          <i class="fa fa-paper-plane" aria-hidden="true">
-                            &nbsp; Post GR
-                          </i>
+                          <i class="fa fa-paper-plane" aria-hidden="true"></i>&nbsp; Post GR
                         </Button>
                       )}
                     </>
@@ -1952,7 +1946,7 @@ class MYASGDetail extends PureComponent {
                               fontWeight: "500",
                             }}
                           >
-                            Customer : CELCOM
+                            Customer : {this.state.lmr_detail.customer}
                           </td>
                         </tr>
                       </tbody>
@@ -2065,18 +2059,19 @@ class MYASGDetail extends PureComponent {
                 </div>
 
                 <div class="divtable">
-                  <Table hover bordered responsive size="sm" width="100%">
+                  <Table hover bordered responsive size="sm" width="100%" id="asg-detail-table">
                     <thead class="table-commercial__header">
                       <tr>
-                        <th style={{ width: "70%" }}></th>
+                        <th>GR</th>
                         <th>Request Type</th>
                         <th>Project Name</th>
-                        <th>CD_ID</th>
+                        <th>WP ID</th>
+                        <th>CD ID</th>
                         <th>Site ID</th>
-                        <th>SO # /NW #</th>
+                        <th>SO / NW</th>
                         <th>Activity</th>
                         <th>Tax Code</th>
-                        <th>Material #</th>
+                        <th>Material</th>
                         <th>Description</th>
                         <th>Price</th>
                         <th>Quantity</th>
@@ -2147,6 +2142,7 @@ class MYASGDetail extends PureComponent {
                             )}
                             <td>{e.request_type}</td>
                             <td>{e.project_name}</td>
+                            <td>{e.wp_id}</td>
                             <td>{e.cdid}</td>
                             <td>{e.site_id}</td>
                             <td>{e.nw}</td>
