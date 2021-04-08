@@ -615,7 +615,7 @@ class MappingHW extends React.Component {
     const wb = new Excel.Workbook();
     const ws = wb.addWorksheet();
 
-    const download_all_template = this.state.all_data_mapping;
+    const download_all_template = await this.state.all_data_mapping;
     ws.addRow(header_materialmapping);
     for (let i = 1; i < header_materialmapping.length + 1; i++) {
       ws.getCell(numToSSColumn(i) + "1").fill = {
@@ -676,7 +676,7 @@ class MappingHW extends React.Component {
     const wb = new Excel.Workbook();
     const ws = wb.addWorksheet();
 
-    const download_all_template = this.state.all_data_mapping;
+    const download_all_template = await this.state.all_data_mapping;
 
     ws.addRow(header_model);
     for (let i = 1; i < header_model.length + 1; i++) {
@@ -1224,7 +1224,7 @@ class MappingHW extends React.Component {
 
   download_Admin = async () => {
     this.toggleLoading();
-    const download_all_A = this.state.all_data_mapping;
+    const download_all_A = await this.state.all_data_mapping;
 
     const wb = new Excel.Workbook();
     const ws = wb.addWorksheet();
@@ -1308,7 +1308,7 @@ class MappingHW extends React.Component {
 
   download_PFM = async () => {
     this.toggleLoading();
-    const download_all_A = this.state.all_data;
+    const download_all_A = await this.state.all_data;
 
     const wb = new Excel.Workbook();
     const ws = wb.addWorksheet();
@@ -1416,7 +1416,7 @@ class MappingHW extends React.Component {
 
   export_PFM = async () => {
     this.toggleLoading();
-    const download_all_A = this.state.all_data_mapping;
+    const download_all_A = await this.state.all_data_mapping;
 
     const wb = new Excel.Workbook();
     const ws = wb.addWorksheet();

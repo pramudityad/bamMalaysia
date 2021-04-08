@@ -438,9 +438,7 @@ class MappingSVC extends React.PureComponent {
     ).then((res) => {
       if (res.data !== undefined) {
         const items = res.data.data;
-        this.setState({ all_data_mapping: items }, () =>
-          this.loadOptionsReclocID(items)
-        );
+        this.setState({ all_data_mapping: items });
       }
     });
   }
@@ -620,10 +618,11 @@ class MappingSVC extends React.PureComponent {
   };
 
   exportTemplate2 = async () => {
+    this.toggleLoading();
     const wb = new Excel.Workbook();
     const ws = wb.addWorksheet();
 
-    const download_all_template = this.state.all_data_mapping;
+    const download_all_template = await this.state.all_data_mapping;
 
     ws.addRow(header_materialmapping);
     for (let i = 1; i < header_materialmapping.length + 1; i++) {
@@ -636,7 +635,7 @@ class MappingSVC extends React.PureComponent {
     }
 
     if (download_all_template !== undefined) {
-      console.log(download_all_template.map((u) => u._id));
+      // console.log(download_all_template.map((u) => u._id));
 
       for (let i = 0; i < download_all_template.length; i++) {
         let e = download_all_template[i];
@@ -742,16 +741,15 @@ class MappingSVC extends React.PureComponent {
       new Blob([PPFormat]),
       this.state.roleUser[1] + " " + modul_name + " All Data.xlsx"
     );
+    this.toggleLoading();
   };
 
   exportTemplateall = async () => {
+    this.toggleLoading();
     const wb = new Excel.Workbook();
     const ws = wb.addWorksheet();
 
-    const download_all_template = await getDatafromAPINODE(
-      "/cpoMapping/getCpo/svc?noPg=1",
-      this.state.tokenUser
-    );
+    const download_all_template = await this.state.all_data_mapping;
 
     ws.addRow(header_model);
     for (let i = 1; i < header_model.length + 1; i++) {
@@ -763,11 +761,11 @@ class MappingSVC extends React.PureComponent {
       };
     }
 
-    if (download_all_template.data !== undefined) {
-      console.log(download_all_template.data.data.map((u) => u._id));
+    if (download_all_template !== undefined) {
+      // console.log(download_all_template.data.data.map((u) => u._id));
 
-      for (let i = 0; i < download_all_template.data.data.length; i++) {
-        let e = download_all_template.data.data[i];
+      for (let i = 0; i < download_all_template.length; i++) {
+        let e = download_all_template[i];
         ws.addRow([
           e.Project,
           e.Internal_Po,
@@ -849,6 +847,7 @@ class MappingSVC extends React.PureComponent {
       new Blob([PPFormat]),
       this.state.roleUser[1] + " " + modul_name + " All Data.xlsx"
     );
+    this.toggleLoading();
   };
 
   togglecreateModal = () => {
@@ -1226,7 +1225,7 @@ class MappingSVC extends React.PureComponent {
 
   download_Admin = async () => {
     this.toggleLoading();
-    const download_all_A = this.state.all_data;
+    const download_all_A = await this.state.all_data_mapping;
     const wb = new Excel.Workbook();
     const ws = wb.addWorksheet();
 
@@ -1287,10 +1286,7 @@ class MappingSVC extends React.PureComponent {
 
   export_Admin = async () => {
     this.toggleLoading();
-    const download_all_A = await getDatafromAPINODE(
-      "/cpoMapping/getCpo/svc?noPg=1",
-      this.state.tokenUser
-    );
+    const download_all_A = await this.state.all_data_mapping;
 
     const wb = new Excel.Workbook();
     const ws = wb.addWorksheet();
@@ -1315,7 +1311,7 @@ class MappingSVC extends React.PureComponent {
 
   download_PFM = async () => {
     this.toggleLoading();
-    const download_all_A = this.state.all_data;
+    const download_all_A = await this.state.all_data_mapping;
 
     const wb = new Excel.Workbook();
     const ws = wb.addWorksheet();
@@ -1421,10 +1417,7 @@ class MappingSVC extends React.PureComponent {
 
   export_PFM = async () => {
     this.toggleLoading();
-    const download_all_A = await getDatafromAPINODE(
-      "/cpoMapping/getCpo/svc?noPg=1",
-      this.state.tokenUser
-    );
+    const download_all_A = await this.state.all_data_mapping;
 
     const wb = new Excel.Workbook();
     const ws = wb.addWorksheet();
@@ -1540,10 +1533,7 @@ class MappingSVC extends React.PureComponent {
   };
 
   handleChangeChecklistAll = async (e) => {
-    const getall = await getDatafromAPINODE(
-      "/cpoMapping/getCpo/svc?noPg=1",
-      this.state.tokenUser
-    );
+    const getall = await this.state.all_data_mapping;
     console.log(getall.data);
 
     if (getall.data !== undefined) {
