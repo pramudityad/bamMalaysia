@@ -56,9 +56,13 @@ const header = [
   "Po_Number",
   "Po",
   "Line_Item",
+  "LINE ITEM SAP CELCOM",
+  "MATERIAL CODE",
   "Description",
   "Qty",
-  "Used",
+  // "Used",
+  "RESERVED",
+  "CALLOFF",
   "Balance",
   "Unit_Price",
   "Total_Price",
@@ -79,9 +83,13 @@ const header_model = [
   "Po_Number",
   "Po",
   "Line_Item",
+  "Line_Item_Sap",
+  "Material_Code",
   "Description",
   "Qty",
-  "Used",
+  // "Used",
+  "Reserve",
+  "Called_Off",
   "Balance",
   "Unit_Price",
   "Total_Price",
@@ -103,6 +111,8 @@ const header_materialmapping = [
   "Po_Number",
   "Po",
   "Line_Item",
+  "Line_Item_Sap",
+  "Material_Code",
   "Description",
   "Qty",
   // "Used",
@@ -542,9 +552,13 @@ class SVCMaster extends React.Component {
           e.Po_Number,
           e.Po,
           e.Line_Item,
+          e.Line_Item_Sap,
+          e.Material_Code,
           e.Description,
           e.Qty,
-          this.countUsed(e.Po, e.Line_Item),
+          e.Reserve,
+          e.Called_Off,
+          // this.countUsed(e.Po, e.Line_Item),
           e.Qty - this.countUsed(e.Po, e.Line_Item),
           e.Unit_Price,
           e.Qty * e.Unit_Price,
@@ -683,8 +697,14 @@ class SVCMaster extends React.Component {
       (acc, curr) => acc + eval(value),
       0
     );
-    // console.log(sumheader);
-    return Math.round((sumheader + Number.EPSILON) * 100) / 100;
+    if (
+      params_field === "Qty" ||
+      params_field === "Used" ||
+      params_field === "Balance"
+    ) {
+      return Math.round((sumheader + Number.EPSILON) * 100) / 100;
+    }
+    return this.formatMoney(sumheader);
   };
 
   toggleDelete = (e) => {
@@ -712,20 +732,56 @@ class SVCMaster extends React.Component {
     const objData = this.state.selected_id;
     this.toggleLoading();
     this.toggleDelete();
-    const DelData = deleteDataFromAPINODE2(
+    const DelData = await deleteDataFromAPINODE2(
       "/summaryMaster/deleteSummaryMaster",
       this.state.tokenUser,
       { data: [objData] }
-    ).then((res) => {
-      if (res.data !== undefined) {
-        this.setState({ action_status: "success" });
+    );
+    if (DelData.data !== undefined) {
+      const table_header = Object.keys(DelData.data.updateData[0]);
+      const update_Data = DelData.data.updateData;
+      const new_table_header = table_header.slice(0, -2);
+      // update_Data.map((row, k) => console.log(row));
+      console.log(table_header);
+      let value = "row.";
+      const bodyEmail =
+        "<h2>DPM - BAM Notification</h2><br/><span>Please be notified that the following " +
+        modul_name +
+        " data has been updated <br/><br/><table><tr>" +
+        new_table_header.map((tab, i) => "<th>" + tab + "</th>").join(" ") +
+        "</tr>" +
+        update_Data
+          .map(
+            (row, j) =>
+              "<tr key={" +
+              j +
+              "}>" +
+              new_table_header
+                .map((td) => "<td>" + eval(value + td) + "</td>")
+                .join(" ") +
+              "</tr>"
+          )
+          .join(" ") +
+        "</table>";
+      let dataEmail = {
+        // "to": creatorEmail,
+        // to: "pramudityad@student.telkomuniversity.ac.id",
+        to: global.config.role.cpm,
+        subject: "[NOTIFY to CPM] " + modul_name,
+        body: bodyEmail,
+      };
+      const sendEmail = await apiSendEmail(dataEmail);
+      // console.log(sendEmail);
+      this.setState({ action_status: "success" });
+      this.toggleLoading();
+      // setTimeout(function () {
+      //   window.location.reload();
+      // }, 1500);
+    } else {
+      this.setState({ action_status: "failed" }, () => {
         this.toggleLoading();
-      } else {
-        this.setState({ action_status: "failed" }, () => {
-          this.toggleLoading();
-        });
-      }
-    });
+      });
+    }
   };
 
   Logic_Price(num) {
@@ -733,6 +789,34 @@ class SVCMaster extends React.Component {
       return "-";
     }
     return Math.round((num + Number.EPSILON) * 100) / 100;
+  }
+
+  formatMoney(amount, decimalCount = 2, decimal = ".", thousands = ",") {
+    try {
+      decimalCount = Math.abs(decimalCount);
+      decimalCount = isNaN(decimalCount) ? 2 : decimalCount;
+
+      const negativeSign = amount < 0 ? "-" : "";
+
+      let i = parseInt(
+        (amount = Math.abs(Number(amount) || 0).toFixed(decimalCount))
+      ).toString();
+      let j = i.length > 3 ? i.length % 3 : 0;
+
+      return (
+        negativeSign +
+        (j ? i.substr(0, j) + thousands : "") +
+        i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + thousands) +
+        (decimalCount
+          ? decimal +
+            Math.abs(amount - i)
+              .toFixed(decimalCount)
+              .slice(2)
+          : "")
+      );
+    } catch (e) {
+      console.log(e);
+    }
   }
 
   render() {
@@ -862,7 +946,10 @@ class SVCMaster extends React.Component {
                               head === "Unit_Price" ||
                               head === "Total_Price" ||
                               head === "Assigned_Price" ||
-                              head === "Total_Po_Amount" ? (
+                              head === "Total_Po_Amount" ||
+                              head === "Discounted_Unit_Price" ||
+                              head === "Discounted_Po_Price" ||
+                              head === "Discounted_Assigned_Price" ? (
                                 <th>{this.countheader(head)}</th>
                               ) : (
                                 <th>{this.countheaderNaN(head)}</th>
@@ -915,21 +1002,27 @@ class SVCMaster extends React.Component {
                                   <td>{e.Po_Number}</td>
                                   <td>{e.Po}</td>
                                   <td>{e.Line_Item}</td>
+                                  <td>{e.Line_Item_Sap}</td>
+                                  <td>{e.Material_Code}</td>
+
                                   <td>{e.Description}</td>
+
                                   <td>{e.Qty}</td>
-                                  <td>{e.Used}</td>
+                                  <td>{e.Reserve}</td>
+                                  <td>{e.Called_Off}</td>
+
                                   <td>{e.Balance}</td>
-                                  <td>{this.Logic_Price(e.Unit_Price)}</td>
-                                  <td>{this.Logic_Price(e.Total_Price)}</td>
-                                  <td>{this.Logic_Price(e.Assigned_Price)}</td>
+                                  <td>{this.formatMoney(e.Unit_Price)}</td>
+                                  <td>{this.formatMoney(e.Total_Price)}</td>
+                                  <td>{this.formatMoney(e.Assigned_Price)}</td>
                                   <td>
-                                    {this.Logic_Price(e.Discounted_Unit_Price)}
+                                    {this.formatMoney(e.Discounted_Unit_Price)}
                                   </td>
                                   <td>
-                                    {this.Logic_Price(e.Discounted_Po_Price)}
+                                    {this.formatMoney(e.Discounted_Po_Price)}
                                   </td>
                                   <td>
-                                    {this.Logic_Price(
+                                    {this.formatMoney(
                                       e.Discounted_Assigned_Price
                                     )}
                                   </td>

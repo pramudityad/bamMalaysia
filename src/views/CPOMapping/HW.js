@@ -46,6 +46,7 @@ import {
   numToSSColumn,
   getUniqueListBy,
   convertDateFormat,
+  formatMoney,
 } from "../../helper/basicFunction";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
@@ -114,6 +115,8 @@ const header = [
   "CONFIG",
   "PO#",
   "LINE",
+  "LINE ITEM SAP CELCOM",
+  "MATERIAL CODE",
   "DESCRIPTION",
   "QTY",
   "NW#",
@@ -121,7 +124,7 @@ const header = [
   "MAPPING DATE",
   "REMARKS",
   "GR NO",
-  "PREMR NO.",
+  // "PREMR NO.",
   "PROCEED BILLING 100%",
   "CELCOM USER",
   "PCODE",
@@ -190,6 +193,8 @@ const header_model = [
   "Config",
   "Po",
   "Line",
+  "Line_Item_Sap",
+  "Material_Code",
   "Description",
   "Qty",
   "NW",
@@ -197,7 +202,7 @@ const header_model = [
   "Mapping_Date",
   "Remarks",
   "Gr_No",
-  "Premr_No",
+  // "Premr_No",
   "Proceed_Billing_100",
   "Celcom_User",
   "Pcode",
@@ -323,9 +328,10 @@ const header_pfm = [
 ];
 
 const header_admin = [
-  "Gr_No",
+  // "Gr_No",
   "For_Checking_Purpose_Only_Rashidah",
   "Hw_Coa_Received_Date_80",
+  "Invoicing_Date_Hw_Coa_100",
   "Cancel_Column",
   "Reference_Loc_Id_1",
   "Reff",
@@ -640,6 +646,8 @@ class MappingHW extends React.Component {
           e.Config,
           e.Po,
           e.Line,
+          e.Line_Item_Sap,
+          e.Material_Code,
           this.LookupField(e.Po + "-" + e.Line, "Description"),
           e.Qty,
           e.NW,
@@ -698,6 +706,8 @@ class MappingHW extends React.Component {
           e.Config,
           e.Po,
           e.Line,
+          e.Line_Item_Sap,
+          e.Material_Code,
           this.LookupField(e.Po + "-" + e.Line, "Description"),
           e.Qty,
           e.NW,
@@ -1093,6 +1103,8 @@ class MappingHW extends React.Component {
       "Config",
       "Po",
       "Line",
+      "Line_Item_Sap",
+      "Material_Code",
       "Description",
       "Qty",
       "NW",
@@ -1250,6 +1262,7 @@ class MappingHW extends React.Component {
           e.Po,
           e.For_Checking_Purpose_Only_Rashidah,
           e.Hw_Coa_Received_Date_80,
+          e.Invoicing_Date_Hw_Coa_100,
           e.Cancel_Column,
           e.Reference_Loc_Id_1,
           e.Reff,
@@ -1494,6 +1507,15 @@ class MappingHW extends React.Component {
       (e) => e.unique_code === unique_id_master
     );
     if (objectData !== undefined) {
+      if (
+        params_field === "Unit_Price" ||
+        params_field === "Total_Price" ||
+        params_field === "Discounted_Unit_Price" ||
+        params_field === "Discounted_Po_Price" ||
+        params_field === "Net_Unit_Price"
+      ) {
+        return formatMoney(eval(value));
+      }
       return eval(value);
     } else {
       return null;
@@ -1937,6 +1959,9 @@ class MappingHW extends React.Component {
                                   <td>{e.Config}</td>
                                   <td>{e.Po}</td>
                                   <td>{e.Line}</td>
+                                  <td>{e.Line_Item_Sap}</td>
+                                  <td>{e.Material_Code}</td>
+
                                   <td>
                                     {this.LookupField(
                                       e.Po + "-" + e.Line,
@@ -1949,7 +1974,7 @@ class MappingHW extends React.Component {
                                   <td>{convertDateFormat(e.Mapping_Date)}</td>
                                   <td>{e.Remarks}</td>
                                   <td>{e.Gr_No}</td>
-                                  <td>{e.Premr_No}</td>
+                                  {/* <td>{e.Premr_No}</td> */}
                                   <td>{e.Proceed_Billing_100}</td>
                                   <td>{e.Celcom_User}</td>
                                   <td>

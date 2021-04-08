@@ -46,6 +46,7 @@ import {
   numToSSColumn,
   getUniqueListBy,
   convertDateFormat,
+  formatMoney,
 } from "../../helper/basicFunction";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
@@ -97,6 +98,8 @@ const header = [
   "CONFIG",
   "PO#",
   "LINE",
+  "LINE ITEM SAP CELCOM",
+  "MATERIAL CODE",
   "DESCRIPTION",
   "QTY",
   "CNI DATE",
@@ -104,7 +107,7 @@ const header = [
   "REMARKS",
   "GR NO",
 
-  "PREMR NO.",
+  // "PREMR NO.",
   "PROCEED BILLING 100%",
   "CELCOM USER",
   "PCODE",
@@ -184,13 +187,15 @@ const header_model = [
   "Po",
   "Line",
   "Description",
+  "Line_Item_Sap",
+  "Material_Code",
   "Qty",
   "CNI_Date",
   "Mapping_Date",
   "Remarks",
   "Gr_No",
 
-  "Premr_No",
+  // "Premr_No",
   "Proceed_Billing_100",
   "Celcom_User",
   "Pcode",
@@ -1493,13 +1498,20 @@ class MappingSVC extends React.PureComponent {
   };
 
   LookupField = (unique_id_master, params_field) => {
-    // console.log(unique_id_master);
     let value = "objectData." + params_field;
     let objectData = this.state.all_data_master.find(
       (e) => e.unique_code === unique_id_master
     );
-    console.log(objectData);
     if (objectData !== undefined) {
+      if (
+        params_field === "Unit_Price" ||
+        params_field === "Total_Price" ||
+        params_field === "Discounted_Unit_Price" ||
+        params_field === "Discounted_Po_Price" ||
+        params_field === "Net_Unit_Price"
+      ) {
+        return formatMoney(eval(value));
+      }
       return eval(value);
     } else {
       return null;
@@ -1947,6 +1959,8 @@ class MappingSVC extends React.PureComponent {
                                   <td>{e.Config}</td>
                                   <td>{e.Po}</td>
                                   <td>{e.Line}</td>
+                                  <td>{e.Line_Item_Sap}</td>
+                                  <td>{e.Material_Code}</td>
                                   <td>
                                     {this.LookupField(
                                       e.Po + "-" + e.Line,
