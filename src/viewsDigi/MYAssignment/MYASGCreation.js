@@ -1315,7 +1315,7 @@ class MYASGCreation extends Component {
     }
 
     for (let i = 0; i < dataChildForm.length; i++) {
-      if (dataChildForm[i].material === '') {
+      if (dataChildForm[i].material === '' || dataChildForm[i].material_code_doc === '') {
         dataChildForm[i].blank_material = 'yes';
       }
     }
@@ -2126,6 +2126,7 @@ class MYASGCreation extends Component {
       "fas_id",
       "vendor_name",
       "header_text",
+      "l1_approver"
     ];
 
     for (let i = 0; i < form_to_validate.length; i++) {
@@ -2620,6 +2621,7 @@ class MYASGCreation extends Component {
                           id="l1_approver"
                           value={this.state.lmr_form.l1_approver}
                           onChange={this.handleChangeFormLMR}
+                          style={this.state.formvalidate.l1_approver === false ? { borderColor: "red" } : {}}
                         >
                           <option disabled selected hidden>Select L1 Approver</option>
                           <option value="EZYUSMO">EZYUSMO</option>
@@ -3140,11 +3142,11 @@ class MYASGCreation extends Component {
                 <thead>
                   <tr>
                     <th rowSpan="2">Action</th>
+                    <th>MM Code</th>
+                    <th>MM Description</th>
                     <th>BB</th>
                     <th>BB Sub</th>
                     <th>Region</th>
-                    <th>MM Code</th>
-                    <th>MM Description</th>
                     <th>SoW</th>
                     <th>UoM</th>
                     <th>Unit Price</th>
@@ -3168,11 +3170,11 @@ class MYASGCreation extends Component {
                             Select
                           </Button>
                         </td>
+                        <td>{e.MM_Code}</td>
+                        <td>{e.MM_Description}</td>
                         <td>{e.BB}</td>
                         <td>{e.BB_Sub}</td>
                         <td>{e.Region}</td>
-                        <td>{e.MM_Code}</td>
-                        <td>{e.MM_Description}</td>
                         <td>{e.SoW_Description}</td>
                         <td>{e.UoM}</td>
                         <td>{e.Unit_Price}</td>
@@ -3242,11 +3244,11 @@ class MYASGCreation extends Component {
                 <thead>
                   <tr>
                     <th rowSpan="2">Action</th>
+                    <th>MM Code</th>
+                    <th>MM Description</th>
                     <th>BB</th>
                     <th>BB Sub</th>
                     <th>Region</th>
-                    <th>MM Code</th>
-                    <th>MM Description</th>
                     <th>SoW</th>
                     <th>UoM</th>
                     <th>Unit Price</th>
@@ -3270,11 +3272,11 @@ class MYASGCreation extends Component {
                             Select
                           </Button>
                         </td>
+                        <td>{e.MM_Code}</td>
+                        <td>{e.MM_Description}</td>
                         <td>{e.BB}</td>
                         <td>{e.BB_Sub}</td>
                         <td>{e.Region}</td>
-                        <td>{e.MM_Code}</td>
-                        <td>{e.MM_Description}</td>
                         <td>{e.SoW_Description}</td>
                         <td>{e.UoM}</td>
                         <td>{e.Unit_Price}</td>
@@ -3344,11 +3346,11 @@ class MYASGCreation extends Component {
                 <thead>
                   <tr>
                     <th rowSpan="2">Action</th>
+                    <th>MM Code</th>
+                    <th>MM Description</th>
                     <th>BB</th>
                     <th>BB Sub</th>
                     <th>Region</th>
-                    <th>MM Code</th>
-                    <th>MM Description</th>
                     <th>SoW</th>
                     <th>UoM</th>
                     <th>Unit Price</th>
@@ -3372,11 +3374,11 @@ class MYASGCreation extends Component {
                             Select
                           </Button>
                         </td>
+                        <td>{e.MM_Code}</td>
+                        <td>{e.MM_Description}</td>
                         <td>{e.BB}</td>
                         <td>{e.BB_Sub}</td>
                         <td>{e.Region}</td>
-                        <td>{e.MM_Code}</td>
-                        <td>{e.MM_Description}</td>
                         <td>{e.SoW_Description}</td>
                         <td>{e.UoM}</td>
                         <td>{e.Unit_Price}</td>
@@ -3446,11 +3448,11 @@ class MYASGCreation extends Component {
                 <thead>
                   <tr>
                     <th rowSpan="2">Action</th>
+                    <th>MM Code</th>
+                    <th>MM Description</th>
                     <th>BB</th>
                     <th>BB Sub</th>
                     <th>Region</th>
-                    <th>MM Code</th>
-                    <th>MM Description</th>
                     <th>SoW</th>
                     <th>UoM</th>
                     <th>Unit Price</th>
@@ -3474,11 +3476,11 @@ class MYASGCreation extends Component {
                             Select
                           </Button>
                         </td>
+                        <td>{e.MM_Code}</td>
+                        <td>{e.MM_Description}</td>
                         <td>{e.BB}</td>
                         <td>{e.BB_Sub}</td>
                         <td>{e.Region}</td>
-                        <td>{e.MM_Code}</td>
-                        <td>{e.MM_Description}</td>
                         <td>{e.SoW_Description}</td>
                         <td>{e.UoM}</td>
                         <td>{e.Unit_Price}</td>
@@ -3548,11 +3550,11 @@ class MYASGCreation extends Component {
                 <thead>
                   <tr>
                     <th rowSpan="2">Action</th>
+                    <th>MM Code</th>
+                    <th>MM Description</th>
                     <th>BB</th>
                     <th>BB Sub</th>
                     <th>Region</th>
-                    <th>MM Code</th>
-                    <th>MM Description</th>
                     <th>SoW</th>
                     <th>UoM</th>
                     <th>Unit Price</th>
@@ -3576,11 +3578,11 @@ class MYASGCreation extends Component {
                             Select
                           </Button>
                         </td>
+                        <td>{e.MM_Code}</td>
+                        <td>{e.MM_Description}</td>
                         <td>{e.BB}</td>
                         <td>{e.BB_Sub}</td>
                         <td>{e.Region}</td>
-                        <td>{e.MM_Code}</td>
-                        <td>{e.MM_Description}</td>
                         <td>{e.SoW_Description}</td>
                         <td>{e.UoM}</td>
                         <td>{e.Unit_Price}</td>
