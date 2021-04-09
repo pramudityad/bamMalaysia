@@ -378,24 +378,24 @@ class MappingHW extends React.Component {
   componentDidMount() {
     // console.log("header", header.length);
     // console.log("model_header", header_model.length);
-    this.getList();
+    // this.getList();
     this.getListAll();
     this.getMaster();
   }
 
-  getMaster() {
-    getDatafromAPINODE(
+  async getMaster() {
+    await getDatafromAPINODE(
       "/summaryMaster/getSummaryMaster?noPg=1",
       this.state.tokenUser
     ).then((res) => {
       if (res.data !== undefined) {
         const items2 = res.data.data;
-        this.setState({ all_data_master: items2 });
+        this.setState({ all_data_master: items2 }, () => this.getList());
       }
     });
   }
 
-  getList() {
+  async getList() {
     let filter_array = [];
     for (const [key, value] of Object.entries(this.state.filter_list)) {
       if (value !== null && value !== undefined) {
@@ -405,7 +405,7 @@ class MappingHW extends React.Component {
       }
     }
     let whereAnd = "{" + filter_array.join(",") + "}";
-    getDatafromAPINODE(
+    await getDatafromAPINODE(
       "/cpoMapping/getCpo/required/hw?q=" +
         whereAnd +
         "&lmt=" +
@@ -515,13 +515,14 @@ class MappingHW extends React.Component {
     }
   };
 
-  getListAll() {
-    getDatafromAPINODE(
+  async getListAll() {
+    await getDatafromAPINODE(
       "/cpoMapping/getCpo/required/hw?noPg=1",
       this.state.tokenUser
     ).then((res) => {
       if (res.data !== undefined) {
         const items = res.data.data;
+        console.log("len ", items.length);
         this.setState({ all_data_mapping: items });
       }
     });
@@ -612,10 +613,11 @@ class MappingHW extends React.Component {
   };
 
   exportTemplate2 = async () => {
+    this.toggleLoading();
     const wb = new Excel.Workbook();
     const ws = wb.addWorksheet();
 
-    const download_all_template = this.state.all_data_mapping;
+    const download_all_template = await this.state.all_data_mapping;
     ws.addRow(header_materialmapping);
     for (let i = 1; i < header_materialmapping.length + 1; i++) {
       ws.getCell(numToSSColumn(i) + "1").fill = {
@@ -670,9 +672,12 @@ class MappingHW extends React.Component {
       new Blob([PPFormat]),
       this.state.roleUser[1] + " " + modul_name + " All Data.xlsx"
     );
+    this.toggleLoading();
   };
 
   exportTemplateall = async () => {
+    this.toggleLoading();
+    // this.getListAll();
     const wb = new Excel.Workbook();
     const ws = wb.addWorksheet();
 
@@ -774,6 +779,7 @@ class MappingHW extends React.Component {
       new Blob([PPFormat]),
       this.state.roleUser[1] + " " + modul_name + " All Data.xlsx"
     );
+    this.toggleLoading();
   };
 
   togglecreateModal = () => {
@@ -1224,7 +1230,7 @@ class MappingHW extends React.Component {
 
   download_Admin = async () => {
     this.toggleLoading();
-    const download_all_A = this.state.all_data_mapping;
+    const download_all_A = await this.state.all_data_mapping;
 
     const wb = new Excel.Workbook();
     const ws = wb.addWorksheet();
@@ -1308,7 +1314,7 @@ class MappingHW extends React.Component {
 
   download_PFM = async () => {
     this.toggleLoading();
-    const download_all_A = this.state.all_data;
+    const download_all_A = await this.state.all_data;
 
     const wb = new Excel.Workbook();
     const ws = wb.addWorksheet();
@@ -1416,7 +1422,7 @@ class MappingHW extends React.Component {
 
   export_PFM = async () => {
     this.toggleLoading();
-    const download_all_A = this.state.all_data_mapping;
+    const download_all_A = await this.state.all_data_mapping;
 
     const wb = new Excel.Workbook();
     const ws = wb.addWorksheet();
@@ -1723,7 +1729,10 @@ class MappingHW extends React.Component {
                       </DropdownToggle>
                       <DropdownMenu>
                         <DropdownItem header>Export Data</DropdownItem>
-                        <DropdownItem onClick={this.exportTemplateall}>
+                        <DropdownItem
+                          disabled={this.state.all_data_mapping.length === 0}
+                          onClick={this.exportTemplateall}
+                        >
                           {" "}
                           All Data HW Export
                         </DropdownItem>
@@ -1731,7 +1740,12 @@ class MappingHW extends React.Component {
 
                         {role.includes("BAM-MAT PLANNER") === true ? (
                           <>
-                            <DropdownItem onClick={this.exportTemplate2}>
+                            <DropdownItem
+                              disabled={
+                                this.state.all_data_mapping.length === 0
+                              }
+                              onClick={this.exportTemplate2}
+                            >
                               {" "}
                               Mapping Template{" " +
                                 this.state.roleUser[1]}{" "}
@@ -1747,7 +1761,12 @@ class MappingHW extends React.Component {
                         )}
                         {role.includes("BAM-PFM") === true ? (
                           <>
-                            <DropdownItem onClick={this.download_PFM}>
+                            <DropdownItem
+                              disabled={
+                                this.state.all_data_mapping.length === 0
+                              }
+                              onClick={this.download_PFM}
+                            >
                               {" "}
                               Mapping Template{" " +
                                 this.state.roleUser[1]}{" "}
@@ -1761,7 +1780,12 @@ class MappingHW extends React.Component {
                         )}
                         {role.includes("BAM-ADMIN") === true ? (
                           <>
-                            <DropdownItem onClick={this.download_Admin}>
+                            <DropdownItem
+                              disabled={
+                                this.state.all_data_mapping.length === 0
+                              }
+                              onClick={this.download_Admin}
+                            >
                               {" "}
                               Mapping Template{" " +
                                 this.state.roleUser[1]}{" "}
