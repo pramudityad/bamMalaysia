@@ -387,24 +387,24 @@ class MappingSVC extends React.PureComponent {
   componentDidMount() {
     // console.log("header", header.length);
     // console.log("model_header", header_model.length);
-    this.getList();
+    // this.getList();
     this.getListAll();
     this.getMaster();
   }
 
-  getMaster() {
-    getDatafromAPINODE(
+  async getMaster() {
+    await getDatafromAPINODE(
       "/summaryMaster/getSummaryMaster?noPg=1",
       this.state.tokenUser
     ).then((res) => {
       if (res.data !== undefined) {
         const items2 = res.data.data;
-        this.setState({ all_data_master: items2 });
+        this.setState({ all_data_master: items2 }, () => this.getList());
       }
     });
   }
 
-  getList() {
+  async getList() {
     let filter_array = [];
     for (const [key, value] of Object.entries(this.state.filter_list)) {
       if (value !== null && value !== undefined) {
@@ -414,7 +414,7 @@ class MappingSVC extends React.PureComponent {
       }
     }
     let whereAnd = "{" + filter_array.join(",") + "}";
-    getDatafromAPINODE(
+    await getDatafromAPINODE(
       "/cpoMapping/getCpo/required/svc?q=" +
         whereAnd +
         "&lmt=" +
@@ -431,8 +431,8 @@ class MappingSVC extends React.PureComponent {
     });
   }
 
-  getListAll() {
-    getDatafromAPINODE(
+  async getListAll() {
+    await getDatafromAPINODE(
       "/cpoMapping/getCpo/required/svc?noPg=1",
       this.state.tokenUser
     ).then((res) => {
@@ -622,7 +622,7 @@ class MappingSVC extends React.PureComponent {
     const wb = new Excel.Workbook();
     const ws = wb.addWorksheet();
 
-    const download_all_template = await this.state.all_data_mapping;
+    const download_all_template = this.state.all_data_mapping;
 
     ws.addRow(header_materialmapping);
     for (let i = 1; i < header_materialmapping.length + 1; i++) {
@@ -749,7 +749,7 @@ class MappingSVC extends React.PureComponent {
     const wb = new Excel.Workbook();
     const ws = wb.addWorksheet();
 
-    const download_all_template = await this.state.all_data_mapping;
+    const download_all_template = this.state.all_data_mapping;
 
     ws.addRow(header_model);
     for (let i = 1; i < header_model.length + 1; i++) {
@@ -1225,7 +1225,7 @@ class MappingSVC extends React.PureComponent {
 
   download_Admin = async () => {
     this.toggleLoading();
-    const download_all_A = await this.state.all_data_mapping;
+    const download_all_A = this.state.all_data_mapping;
     const wb = new Excel.Workbook();
     const ws = wb.addWorksheet();
 
@@ -1286,7 +1286,7 @@ class MappingSVC extends React.PureComponent {
 
   export_Admin = async () => {
     this.toggleLoading();
-    const download_all_A = await this.state.all_data_mapping;
+    const download_all_A = this.state.all_data_mapping;
 
     const wb = new Excel.Workbook();
     const ws = wb.addWorksheet();
@@ -1311,7 +1311,7 @@ class MappingSVC extends React.PureComponent {
 
   download_PFM = async () => {
     this.toggleLoading();
-    const download_all_A = await this.state.all_data_mapping;
+    const download_all_A = this.state.all_data_mapping;
 
     const wb = new Excel.Workbook();
     const ws = wb.addWorksheet();
@@ -1417,7 +1417,7 @@ class MappingSVC extends React.PureComponent {
 
   export_PFM = async () => {
     this.toggleLoading();
-    const download_all_A = await this.state.all_data_mapping;
+    const download_all_A = this.state.all_data_mapping;
 
     const wb = new Excel.Workbook();
     const ws = wb.addWorksheet();
@@ -1716,7 +1716,10 @@ class MappingSVC extends React.PureComponent {
                       </DropdownToggle>
                       <DropdownMenu>
                         <DropdownItem header>Export Data</DropdownItem>
-                        <DropdownItem onClick={this.exportTemplateall}>
+                        <DropdownItem
+                          disabled={this.state.all_data_mapping.length === 0}
+                          onClick={this.exportTemplateall}
+                        >
                           {" "}
                           All Data SVC Export
                         </DropdownItem>
@@ -1724,7 +1727,12 @@ class MappingSVC extends React.PureComponent {
 
                         {role.includes("BAM-MAT PLANNER") === true ? (
                           <>
-                            <DropdownItem onClick={this.exportTemplate2}>
+                            <DropdownItem
+                              disabled={
+                                this.state.all_data_mapping.length === 0
+                              }
+                              onClick={this.exportTemplate2}
+                            >
                               {" "}
                               Mapping Template{" " +
                                 this.state.roleUser[1]}{" "}
@@ -1740,7 +1748,12 @@ class MappingSVC extends React.PureComponent {
                         )}
                         {role.includes("BAM-PFM") === true ? (
                           <>
-                            <DropdownItem onClick={this.download_PFM}>
+                            <DropdownItem
+                              disabled={
+                                this.state.all_data_mapping.length === 0
+                              }
+                              onClick={this.download_PFM}
+                            >
                               {" "}
                               Mapping Template{" " +
                                 this.state.roleUser[1]}{" "}
@@ -1754,7 +1767,12 @@ class MappingSVC extends React.PureComponent {
                         )}
                         {role.includes("BAM-ADMIN") === true ? (
                           <>
-                            <DropdownItem onClick={this.download_Admin}>
+                            <DropdownItem
+                              disabled={
+                                this.state.all_data_mapping.length === 0
+                              }
+                              onClick={this.download_Admin}
+                            >
                               {" "}
                               Mapping Template{" " +
                                 this.state.roleUser[1]}{" "}
