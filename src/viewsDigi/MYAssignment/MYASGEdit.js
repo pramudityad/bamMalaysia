@@ -65,6 +65,7 @@ class MYASGEdit extends Component {
       modal_material_NDO: false,
       modal_material_survey: false,
       modal_material_integration: false,
+      modal_material_transport: false,
       modal_material_HW: false,
       modal_material_ARP: false,
       modal_package: false,
@@ -193,6 +194,9 @@ class MYASGEdit extends Component {
       case "Integration":
         this.toggleMaterialIntegration(number_child_form);
         break;
+      case "Transport":
+        this.toggleMaterialTransport(number_child_form);
+        break;
       default:
         break;
     }
@@ -251,6 +255,17 @@ class MYASGEdit extends Component {
     }
     this.setState((prevState) => ({
       modal_material_integration: !prevState.modal_material_integration,
+    }));
+  };
+
+  toggleMaterialTransport = (number_child_form) => {
+    if (number_child_form !== undefined && isNaN(number_child_form) === false) {
+      this.setState({ current_material_select: number_child_form }, () => this.getMaterialListTransport(number_child_form));
+    } else {
+      this.setState({ current_material_select: null });
+    }
+    this.setState((prevState) => ({
+      modal_material_transport: !prevState.modal_material_transport,
     }));
   };
 
@@ -798,6 +813,8 @@ class MYASGEdit extends Component {
             mm_data_type = "Survey";
           } else if (dataLMRDetail.gl_account_actual === "Integration - 402603") {
             mm_data_type = "Integration";
+          } else if (dataLMRDetail.gl_account_actual === "Transport - 402603") {
+            mm_data_type = "Transport";
           }
           this.setState({ mm_data_type: mm_data_type });
           this.setState({ creation_lmr_child_form: dataLMRDetail.detail });
@@ -1094,8 +1111,11 @@ class MYASGEdit extends Component {
     //   filter_array.push('"$or":[{"Vendor_List.Vendor_Code":"' + this.state.lmr_form.vendor_code_actual + '"},{"Vendor_ID":"' + this.state.lmr_form.vendor_code_actual + '"}]');
     this.state.lmr_form.vendor_code_actual !== "" &&
       filter_array.push('"$and":[{"$or":[{"Vendor_List.Vendor_Code":"' + this.state.lmr_form.vendor_code_actual + '"},{"Vendor_ID":"' + this.state.lmr_form.vendor_code_actual + '"}]},{"$or":[{"Region":"' + this.state.creation_lmr_child_form[this.state.current_material_select].region + '"},{"Region":null}]}]');
-    this.state.mm_data_type !== "" &&
-      filter_array.push('"Material_Sub_Type":{"$in":["ITC","Transport","Special Transport"]}');
+    if (this.state.creation_lmr_child_form[number_child_form].transport === 'yes') {
+      this.state.mm_data_type !== "" && filter_array.push('"Material_Sub_Type":{"$in":["Transport","Special Transport"]}');
+    } else {
+      this.state.mm_data_type !== "" && filter_array.push('"Material_Sub_Type":{"$in":["ITC","Transport","Special Transport"]}');
+    }
     this.state.filter_list[0] !== "" &&
       filter_array.push(
         '"BB":{"$regex" : "' +
@@ -1156,6 +1176,76 @@ class MYASGEdit extends Component {
         const items = res.data.data;
         const totalData = res.data.totalResults;
         this.setState({ material_list: items, totalData: totalData });
+      }
+    });
+  }
+
+  getMaterialListTransport(number_child_form) {
+    let filter_array = [];
+    // this.state.creation_lmr_child_form[number_child_form].transport === "yes" && filter_array.push('"BB":"Transport"');
+    // vendor
+    // this.state.lmr_form.vendor_code_actual !== "" &&
+    //   filter_array.push('"$or":[{"Vendor_List.Vendor_Code":"' + this.state.lmr_form.vendor_code_actual + '"},{"Vendor_ID":"' + this.state.lmr_form.vendor_code_actual + '"}]');
+    this.state.lmr_form.vendor_code_actual !== "" &&
+      filter_array.push('"$and":[{"$or":[{"Vendor_List.Vendor_Code":"' + this.state.lmr_form.vendor_code_actual + '"},{"Vendor_ID":"' + this.state.lmr_form.vendor_code_actual + '"}]},{"$or":[{"Region":"' + this.state.creation_lmr_child_form[this.state.current_material_select].region + '"},{"Region":null}]}]');
+    filter_array.push('"Material_Sub_Type":{"$in":["Transport","Special Transport"]}');
+    this.state.filter_list[0] !== "" &&
+      filter_array.push(
+        '"BB":{"$regex" : "' +
+        this.state.filter_list[0] +
+        '", "$options" : "i"}'
+      );
+    this.state.filter_list[1] !== "" &&
+      filter_array.push(
+        '"BB_Sub":{"$regex" : "' +
+        this.state.filter_list[1] +
+        '", "$options" : "i"}'
+      );
+    // filter_array.push('"Region":"' + this.state.creation_lmr_child_form[this.state.current_material_select].region + '"');
+    this.state.filter_list[3] !== "" &&
+      filter_array.push(
+        '"MM_Code":{"$regex" : "' +
+        this.state.filter_list[3] +
+        '", "$options" : "i"}'
+      );
+    this.state.filter_list[4] !== "" &&
+      filter_array.push(
+        '"MM_Description":{"$regex" : "' +
+        this.state.filter_list[4] +
+        '", "$options" : "i"}'
+      );
+    this.state.filter_list[5] !== "" &&
+      filter_array.push(
+        '"SoW_Description":{"$regex" : "' +
+        this.state.filter_list[5] +
+        '", "$options" : "i"}'
+      );
+    this.state.filter_list[6] !== "" &&
+      filter_array.push(
+        '"UoM":{"$regex" : "' +
+        this.state.filter_list[6] +
+        '", "$options" : "i"}'
+      );
+    this.state.filter_list[7] !== "" &&
+      filter_array.push(
+        '"Unit_Price":' + this.state.filter_list[7]
+      );
+    let whereAnd = "{" + filter_array.join(",") + "}";
+    getDatafromAPINODE(
+      "/mmCode/getMm?q=" +
+      whereAnd +
+      "&lmt=" +
+      this.state.perPage +
+      "&pg=" +
+      this.state.activePage,
+      this.state.tokenUser
+    ).then((res) => {
+      if (res.data !== undefined) {
+        const items = res.data.data;
+        const totalData = res.data.totalResults;
+        this.setState({ material_list: items, totalData: totalData }, () =>
+          console.log(this.state.material_list)
+        );
       }
     });
   }
@@ -1257,7 +1347,7 @@ class MYASGEdit extends Component {
     }
 
     for (let i = 0; i < dataChildForm.length; i++) {
-      if (dataChildForm[i].material === '') {
+      if (dataChildForm[i].material === '' || dataChildForm[i].material_code_doc === '') {
         dataChildForm[i].blank_material = 'yes';
       }
     }
@@ -1636,6 +1726,11 @@ class MYASGEdit extends Component {
         mm_data_type = "Integration";
         lmr_form["gl_type"] = "Integration";
         lmr_form["mm_data_type"] = mm_data_type;
+      } else if (selected_options === "Transport - 402603") {
+        lmr_form["gl_account_actual"] = selected_options;
+        mm_data_type = "Transport";
+        lmr_form["gl_type"] = "Transport";
+        lmr_form["mm_data_type"] = mm_data_type;
       }
       this.setState({
         custom_gl_display: selected_options,
@@ -1987,6 +2082,9 @@ class MYASGEdit extends Component {
       case "Integration":
         this.getMaterialListIntegration();
         break;
+      case "Transport":
+        this.getMaterialListTransport();
+        break;
       default:
         break;
     }
@@ -2040,6 +2138,7 @@ class MYASGEdit extends Component {
       "fas_id",
       "vendor_name",
       "header_text",
+      "l1_approver"
     ];
 
     for (let i = 0; i < form_to_validate.length; i++) {
@@ -2412,6 +2511,7 @@ class MYASGEdit extends Component {
                               <option value="NDO - 402603">NDO - 402603</option>
                               <option value="Survey - 402603">Survey - 402603</option>
                               <option value="Integration - 402603">Integration - 402603</option>
+                              <option value="Transport - 402603">Transport - 402603</option>
                             </>
                           )}
                         </Input>
@@ -2535,6 +2635,7 @@ class MYASGEdit extends Component {
                           id="l1_approver"
                           value={this.state.lmr_form.l1_approver}
                           onChange={this.handleChangeFormLMR}
+                          style={this.state.formvalidate.l1_approver === false ? { borderColor: "red" } : {}}
                         >
                           <option disabled selected hidden>Select L1 Approver</option>
                           <option value="EZYUSMO">EZYUSMO</option>
@@ -3055,11 +3156,11 @@ class MYASGEdit extends Component {
                 <thead>
                   <tr>
                     <th rowSpan="2">Action</th>
+                    <th>MM Code</th>
+                    <th>MM Description</th>
                     <th>BB</th>
                     <th>BB Sub</th>
                     <th>Region</th>
-                    <th>MM Code</th>
-                    <th>MM Description</th>
                     <th>SoW</th>
                     <th>UoM</th>
                     <th>Unit Price</th>
@@ -3083,11 +3184,11 @@ class MYASGEdit extends Component {
                             Select
                           </Button>
                         </td>
+                        <td>{e.MM_Code}</td>
+                        <td>{e.MM_Description}</td>
                         <td>{e.BB}</td>
                         <td>{e.BB_Sub}</td>
                         <td>{e.Region}</td>
-                        <td>{e.MM_Code}</td>
-                        <td>{e.MM_Description}</td>
                         <td>{e.SoW_Description}</td>
                         <td>{e.UoM}</td>
                         <td>{e.Unit_Price}</td>
@@ -3157,11 +3258,11 @@ class MYASGEdit extends Component {
                 <thead>
                   <tr>
                     <th rowSpan="2">Action</th>
+                    <th>MM Code</th>
+                    <th>MM Description</th>
                     <th>BB</th>
                     <th>BB Sub</th>
                     <th>Region</th>
-                    <th>MM Code</th>
-                    <th>MM Description</th>
                     <th>SoW</th>
                     <th>UoM</th>
                     <th>Unit Price</th>
@@ -3185,11 +3286,11 @@ class MYASGEdit extends Component {
                             Select
                           </Button>
                         </td>
+                        <td>{e.MM_Code}</td>
+                        <td>{e.MM_Description}</td>
                         <td>{e.BB}</td>
                         <td>{e.BB_Sub}</td>
                         <td>{e.Region}</td>
-                        <td>{e.MM_Code}</td>
-                        <td>{e.MM_Description}</td>
                         <td>{e.SoW_Description}</td>
                         <td>{e.UoM}</td>
                         <td>{e.Unit_Price}</td>
@@ -3259,11 +3360,11 @@ class MYASGEdit extends Component {
                 <thead>
                   <tr>
                     <th rowSpan="2">Action</th>
+                    <th>MM Code</th>
+                    <th>MM Description</th>
                     <th>BB</th>
                     <th>BB Sub</th>
                     <th>Region</th>
-                    <th>MM Code</th>
-                    <th>MM Description</th>
                     <th>SoW</th>
                     <th>UoM</th>
                     <th>Unit Price</th>
@@ -3287,11 +3388,11 @@ class MYASGEdit extends Component {
                             Select
                           </Button>
                         </td>
+                        <td>{e.MM_Code}</td>
+                        <td>{e.MM_Description}</td>
                         <td>{e.BB}</td>
                         <td>{e.BB_Sub}</td>
                         <td>{e.Region}</td>
-                        <td>{e.MM_Code}</td>
-                        <td>{e.MM_Description}</td>
                         <td>{e.SoW_Description}</td>
                         <td>{e.UoM}</td>
                         <td>{e.Unit_Price}</td>
@@ -3361,11 +3462,11 @@ class MYASGEdit extends Component {
                 <thead>
                   <tr>
                     <th rowSpan="2">Action</th>
+                    <th>MM Code</th>
+                    <th>MM Description</th>
                     <th>BB</th>
                     <th>BB Sub</th>
                     <th>Region</th>
-                    <th>MM Code</th>
-                    <th>MM Description</th>
                     <th>SoW</th>
                     <th>UoM</th>
                     <th>Unit Price</th>
@@ -3389,11 +3490,11 @@ class MYASGEdit extends Component {
                             Select
                           </Button>
                         </td>
+                        <td>{e.MM_Code}</td>
+                        <td>{e.MM_Description}</td>
                         <td>{e.BB}</td>
                         <td>{e.BB_Sub}</td>
                         <td>{e.Region}</td>
-                        <td>{e.MM_Code}</td>
-                        <td>{e.MM_Description}</td>
                         <td>{e.SoW_Description}</td>
                         <td>{e.UoM}</td>
                         <td>{e.Unit_Price}</td>
@@ -3413,7 +3514,109 @@ class MYASGEdit extends Component {
             />
           </ModalBody>
           <ModalFooter>
-            <Button color="secondary" onClick={this.toggleMaterialIntegration}>
+            <Button color="secondary" onClick={this.toggleMaterialNDO}>
+              Close
+            </Button>
+          </ModalFooter>
+        </Modal>
+        {/* end Modal Loading */}
+
+        {/* Modal Material Transport */}
+        <Modal
+          isOpen={this.state.modal_material_transport}
+          toggle={this.toggleMaterialTransport}
+          className={"modal-lg"}
+        >
+          <ModalBody
+            style={{
+              "max-height": "calc(100vh - 210px)",
+              "overflow-y": "auto",
+            }}
+          >
+            <div style={{ marginLeft: "10px" }}>
+              <Row md={2}>
+                {this.state.hide_region !== true ? (
+                  <FormGroup hidden>
+                    <Label>
+                      <b>Region</b>
+                    </Label>
+                    <Input
+                      type="select"
+                      name={"region"}
+                      value={matfilter.region}
+                      onChange={this.handleMaterialFilter}
+                    >
+                      <option value="" disabled selected hidden>Select Region</option>
+                      <option value="All">All</option>
+                      <option value="KV">KV</option>
+                      <option value="SN">SN</option>
+                      <option value="ER">ER</option>
+                      <option value="EM">EM</option>
+                    </Input>
+                  </FormGroup>
+                ) : (
+                  ""
+                )}
+              </Row>
+            </div>
+            <div class="table-container">
+              <Table responsive striped bordered size="sm" id="asg-detail-table">
+                <thead>
+                  <tr>
+                    <th rowSpan="2">Action</th>
+                    <th>MM Code</th>
+                    <th>MM Description</th>
+                    <th>BB</th>
+                    <th>BB Sub</th>
+                    <th>Region</th>
+                    <th>SoW</th>
+                    <th>UoM</th>
+                    <th>Unit Price</th>
+                  </tr>
+                  <tr>
+                    {this.loopSearchBar()}
+                  </tr>
+                </thead>
+                <tbody>
+                  {this.state.material_list !== null &&
+                    this.state.material_list !== undefined &&
+                    this.state.material_list.map((e) => (
+                      <tr>
+                        <td>
+                          <Button
+                            color={"primary"}
+                            size="sm"
+                            value={e.MM_Code}
+                            onClick={this.handleChangeMaterial}
+                          >
+                            Select
+                          </Button>
+                        </td>
+                        <td>{e.MM_Code}</td>
+                        <td>{e.MM_Description}</td>
+                        <td>{e.BB}</td>
+                        <td>{e.BB_Sub}</td>
+                        <td>{e.Region}</td>
+                        <td>{e.SoW_Description}</td>
+                        <td>{e.UoM}</td>
+                        <td>{e.Unit_Price}</td>
+                      </tr>
+                    ))}
+                </tbody>
+              </Table>
+            </div>
+            <Pagination
+              activePage={this.state.activePage}
+              itemsCountPerPage={this.state.perPage}
+              totalItemsCount={this.state.totalData}
+              pageRangeDisplayed={5}
+              onChange={this.handlePageChange}
+              itemClass="page-item"
+              linkClass="page-link"
+            />
+          </ModalBody>
+          <ModalFooter>
+            <Button color="secondary" onClick={this.toggleMaterialTransport}>
               Close
             </Button>
           </ModalFooter>

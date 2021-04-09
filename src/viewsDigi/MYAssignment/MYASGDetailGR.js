@@ -24,9 +24,9 @@ import { saveAs } from "file-saver";
 import Excel from "exceljs";
 import { Modal, ModalBody, ModalHeader, ModalFooter } from "reactstrap";
 import * as XLSX from "xlsx";
-import { getDatafromAPIMY } from "../../helper/asyncFunction";
+import { getDatafromAPIMY } from "../../helper/asyncFunctionDigi";
 import { connect } from "react-redux";
-import { getDatafromAPINODEFile } from "../../helper/asyncFunction";
+import { getDatafromAPINODEFile } from "../../helper/asyncFunctionDigi";
 import "./LMRMY.css";
 
 const DefaultNotif = React.lazy(() =>
@@ -143,6 +143,7 @@ class MYASGDetail extends Component {
                 ? 0
                 : this.state.list_pr_po[0].PO_Qty,
             Required_GR_Qty: "",
+            GR_Amount: 0,
             DN_No: "",
             WCN_Link: "https://mas.pdb.e-dpm.com/grmenu/list/",
             created_by_gr: this.props.dataLogin.userName,
@@ -164,6 +165,7 @@ class MYASGDetail extends Component {
             PO_Price: "",
             PO_Qty: "",
             Required_GR_Qty: "",
+            GR_Amount: 0,
             DN_No: "",
             WCN_Link: "https://mas.pdb.e-dpm.com/grmenu/list/",
             created_by_gr: this.props.dataLogin.userName,
@@ -790,6 +792,7 @@ class MYASGDetail extends Component {
     this.setState({ qty_formula: qty_formula }, () =>
       this.disableGR_save(qty_formula)
     );
+    console.log("child ", this.state.ChildForm);
   };
 
   handleInputchild = (idx) => (e) => {
@@ -799,7 +802,11 @@ class MYASGDetail extends Component {
     if (name === "Required_GR_Qty") {
       const newChild = this.state.ChildForm.map((child_data, sidx) => {
         if (idx !== sidx) return child_data;
-        return { ...child_data, [name]: value };
+        return {
+          ...child_data,
+          Required_GR_Qty: value,
+          GR_Amount: value * this.state.lmr_lvl2.unit_price,
+        };
       });
       this.setState(
         {
@@ -825,12 +832,9 @@ class MYASGDetail extends Component {
         if (idx !== sidx) return child_data;
         return { ...child_data, [name]: value };
       });
-      this.setState(
-        {
-          ChildForm: newChild,
-        },
-        () => console.log(this.state.ChildForm)
-      );
+      this.setState({
+        ChildForm: newChild,
+      });
     }
   };
 
@@ -1214,7 +1218,7 @@ class MYASGDetail extends Component {
                             <td>{this.state.lmr_lvl2.site_id}</td>
                           </tr>
                           <tr style={{ fontWeight: "425", fontSize: "15px" }}>
-                            <td>SO # /NW #</td>
+                            <td>SO / NW</td>
                             <td>:</td>
                             <td>{this.state.lmr_lvl2.nw}</td>
                           </tr>
@@ -1271,7 +1275,7 @@ class MYASGDetail extends Component {
                 </div>
 
                 <div class="divtable">
-                  <Table hover bordered responsive size="sm">
+                  <Table hover bordered responsive size="sm" id="asg-detail-table">
                     <thead class="table-commercial__header">
                       <tr>
                         {this.state.ChildForm.length !== 0 ? <th></th> : ""}
@@ -1320,6 +1324,7 @@ class MYASGDetail extends Component {
                         </th>
                         <th>GR_Document_No</th>
                         <th>Required GR Qty</th>
+                        <th>GR amount</th>
                         <th>DN No</th>
                         <th style={{ width: "10%" }}>File</th>
                         <th>WCN_Link</th>
@@ -1356,6 +1361,7 @@ class MYASGDetail extends Component {
                             <td>{e.PO_Qty}</td>
                             <td>{e.GR_Document_No}</td>
                             <td>{e.Required_GR_Qty}</td>
+                            <td>{e.GR_Amount}</td>
                             <td>{e.DN_No}</td>
                             <td>
                               <Button
@@ -1381,20 +1387,19 @@ class MYASGDetail extends Component {
                       {this.state.ChildForm.map((child_data, idx) => (
                         <tr>
                           {/* <td></td> */}
-                          <div>
+                          <td>
                             <Button
                               onClick={this.deleteSSOW(idx)}
                               color="danger"
                               size="sm"
                               style={{
-                                marginLeft: "5px",
-                                marginTop: "5px",
                                 display: "inline-block",
+                                textAlign: "center"
                               }}
                             >
                               <i className="fa fa-trash"></i>
                             </Button>
-                          </div>
+                          </td>
                           <td>
                             <input
                               disabled
@@ -1569,6 +1574,21 @@ class MYASGDetail extends Component {
                           </td>
                           <td style={{ width: "10%" }}>
                             <input
+                              type="number"
+                              name="GR_Amount"
+                              id="GR_Amount"
+                              disabled
+                              readonly
+                              value={
+                                child_data.Required_GR_Qty *
+                                this.state.lmr_lvl2.unit_price
+                              }
+                              onChange={this.handleInputchild(idx)}
+                            // style={{ width: "10%" }}
+                            />
+                          </td>
+                          <td style={{ width: "10%" }}>
+                            <input
                               disabled
                               readonly
                               type="text"
@@ -1630,7 +1650,7 @@ class MYASGDetail extends Component {
                     </tbody>
                   </Table>
                 </div>
-                <div>
+                <div style={{ marginTop: 8 }}>
                   {/* {this.state.change_gr !== false ? 
                   (<Button color="primary" size="sm" onClick={this.addGR}>
                   <i className="fa fa-plus">&nbsp;</i> GR Child

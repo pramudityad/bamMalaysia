@@ -30,7 +30,7 @@ import { Modal, ModalBody, ModalHeader, ModalFooter } from "reactstrap";
 import * as XLSX from "xlsx";
 import { Link } from "react-router-dom";
 import "./LMRMY.css";
-import { getDatafromAPINODE } from "../../helper/asyncFunction";
+import { getDatafromAPINODE, getDatafromAPIMY } from "../../helper/asyncFunctionDigi";
 import { connect } from "react-redux";
 import Select from "react-select";
 
@@ -374,26 +374,6 @@ class MYASGDetail extends PureComponent {
     }
   }
 
-  async getDatafromAPIMY(url) {
-    try {
-      let respond = await axios.get(process.env.REACT_APP_API_URL_MAS + url, {
-        headers: { "Content-Type": "application/json" },
-        auth: {
-          username: process.env.REACT_APP_usernameMAS,
-          password: process.env.REACT_APP_passwordMAS,
-        },
-      });
-      if (respond.status >= 200 && respond.status < 300) {
-        console.log("respond Get Data", respond);
-      }
-      return respond;
-    } catch (err) {
-      let respond = err;
-      console.log("respond Get Data", err);
-      return respond;
-    }
-  }
-
   async getDatafromAPINODE(url) {
     try {
       let respond = await axios.get(process.env.REACT_APP_API_URL_NODE + url, {
@@ -564,7 +544,7 @@ class MYASGDetail extends PureComponent {
   }
 
   getProjectList() {
-    this.getDatafromAPIMY("/project_data").then((res) => {
+    getDatafromAPIMY("/project_data").then((res) => {
       if (res.data !== undefined) {
         const items = res.data._items;
         this.setState({ list_project: items });
@@ -936,7 +916,7 @@ class MYASGDetail extends PureComponent {
   }
 
   getDataPRPO(LMR_ID) {
-    this.getDatafromAPIMY(
+    getDatafromAPIMY(
       '/prpo_data?where={"LMR_No" : "' + LMR_ID + '"}'
     ).then((res) => {
       if (res.data !== undefined) {
@@ -1382,7 +1362,7 @@ class MYASGDetail extends PureComponent {
   };
 
   getDataCD() {
-    this.getDatafromAPIMY("/cdid_data").then((resCD) => {
+    getDatafromAPIMY("/cdid_data").then((resCD) => {
       if (resCD.data !== undefined) {
         this.setState({ list_cd_id: resCD.data._items });
       }
@@ -2095,14 +2075,7 @@ class MYASGDetail extends PureComponent {
                       {this.state.lmr_detail.detail !== undefined ? (
                         this.state.lmr_detail.detail.map((e) => (
                           <tr>
-                            {this.state.roleUser.includes("BAM-CPM") === true ||
-                              (this.state.roleUser.includes("BAM-GR-PA") ===
-                                true &&
-                                (this.state.lmr_detail.mm_data_type === "NDO" ||
-                                  this.state.lmr_detail.mm_data_type ===
-                                  "NRO")) ||
-                              (this.state.roleUser.includes("BAM-PA") === true &&
-                                this.state.lmr_detail.mm_data_type === "ARP") ? (
+                            {this.state.roleUser.includes("BAM-CPM") === true || this.state.roleUser.includes("BAM-GR PA") === true ? (
                               <td>
                                 {this.state.list_pr_po[0] !== undefined &&
                                   this.state.list_pr_po[0].PO_Number !== null &&
@@ -2115,7 +2088,7 @@ class MYASGDetail extends PureComponent {
                                       e._id
                                     }
                                   >
-                                    <Button color="info" size="sm">
+                                    <Button color="info">
                                       <i
                                         className="fa fa-info-circle"
                                         aria-hidden="true"
@@ -2126,7 +2099,7 @@ class MYASGDetail extends PureComponent {
                                     </Button>
                                   </Link>
                                 ) : (
-                                  <Button color="info" size="sm" disabled>
+                                  <Button color="info" disabled>
                                     <i
                                       className="fa fa-info-circle"
                                       aria-hidden="true"
