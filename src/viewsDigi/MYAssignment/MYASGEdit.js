@@ -2245,6 +2245,17 @@ class MYASGEdit extends Component {
     this.toggleLoading();
   }
 
+  findVendorName = (vendor_id) => {
+    let vendordata = this.state.vendor_list.find(
+      (element) => element.Vendor_Code === vendor_id
+    );
+    if (vendordata !== undefined) {
+      return vendordata.Name;
+    } else {
+      return null;
+    }
+  }
+
   handleCheckMaterialPackage = async (e) => {
     const value = e.target.value;
     const response = await postDatatoAPINODE("/package/getManyPackagebyId", { package_data: [value] }, this.state.tokenUser);
@@ -2254,7 +2265,7 @@ class MYASGEdit extends Component {
       for (let i = 0; i < selectedPackage.MM_Data.length; i++) {
         let vendors = [];
         if (selectedPackage.MM_Data[i].Vendor_ID !== null) {
-          vendors.push(selectedPackage.MM_Data[i].Vendor_Name);
+          vendors.push(this.findVendorName(selectedPackage.MM_Data[i].Vendor_ID));
         } else {
           for (let x = 0; x < selectedPackage.MM_Data[i].Vendor_List.length; x++) {
             vendors.push(selectedPackage.MM_Data[i].Vendor_List[x].Vendor_Name);
