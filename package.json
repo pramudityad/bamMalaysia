@@ -29,6 +29,7 @@
     "react-app-polyfill": "^1.0.1",
     "react-bootstrap-sweetalert": "^5.2.0",
     "react-chartjs-2": "^2.7.6",
+    "react-csv": "^2.0.3",
     "react-dom": "^16.8.6",
     "react-excel-renderer": "^1.1.0",
     "react-js-pagination": "^3.0.3",
