@@ -1511,65 +1511,65 @@ class MYASGCreation extends Component {
         localStorage.setItem("asp_data_child", JSON.stringify(dataLMRChild));
         if (respondSaveLMR.response !== undefined && respondSaveLMR.response.data !== undefined && respondSaveLMR.response.data.error !== undefined) {
           if (respondSaveLMR.response.data.error.message !== undefined) {
-            // this.setState({
-            //   action_status: "failed",
-            //   action_message: respondSaveLMR.response.data.error.message,
-            // });
-
-            const getAlert = () => (
-              <SweetAlert
-                danger
-                title="Error!"
-                onConfirm={() => this.hideAlert()}
-              >
-                {respondSaveLMR.response.data.error.message.toString()}
-              </SweetAlert>
-            );
-
             this.setState({
-              sweet_alert: getAlert()
+              action_status: "failed",
+              action_message: respondSaveLMR.response.data.error.message,
             });
+
+            // const getAlert = () => (
+            //   <SweetAlert
+            //     danger
+            //     title="Error!"
+            //     onConfirm={() => this.hideAlert()}
+            //   >
+            //     {respondSaveLMR.response.data.error.message.toString()}
+            //   </SweetAlert>
+            // );
+
+            // this.setState({
+            //   sweet_alert: getAlert()
+            // });
             this.toggleLoading();
           } else {
-            // this.setState({
-            //   action_status: "failed",
-            //   action_message: respondSaveLMR.response.data.error,
-            // });
-
-            const getAlert = () => (
-              <SweetAlert
-                danger
-                title="Error!"
-                onConfirm={() => this.hideAlert()}
-              >
-                {respondSaveLMR.response.data.error.toString()}
-              </SweetAlert>
-            );
-
             this.setState({
-              sweet_alert: getAlert()
+              action_status: "failed",
+              action_message: respondSaveLMR.response.data.error,
             });
+
+            // const getAlert = () => (
+            //   <SweetAlert
+            //     danger
+            //     title="Error!"
+            //     onConfirm={() => this.hideAlert()}
+            //   >
+            //     {respondSaveLMR.response.data.error.toString()}
+            //   </SweetAlert>
+            // );
+
+            // this.setState({
+            //   sweet_alert: getAlert()
+            // });
             this.toggleLoading();
           }
         } else {
-          // this.setState({
-          //   action_status: "failed",
-          //   action_message: "There is something error. Don't worry, we saved a draft for you. Please refresh the page"
-          // });
-
-          const getAlert = () => (
-            <SweetAlert
-              danger
-              title="Error!"
-              onConfirm={() => this.hideAlert()}
-            >
-              There is something error. Don't worry, we saved a draft for you. Please refresh the page
-            </SweetAlert>
-          );
-
           this.setState({
-            sweet_alert: getAlert()
+            action_status: "failed",
+            action_message: "There is something error. Don't worry, we saved a draft for you. Please refresh the page"
           });
+
+          // const getAlert = () => (
+          //   <SweetAlert
+          //     danger
+          //     title="Error!"
+          //     onConfirm={() => this.hideAlert()}
+          //   >
+          //     There is something error. Don't worry, we saved a draft for you. Please refresh the page
+          //   </SweetAlert>
+          // );
+
+          // this.setState({
+          //   sweet_alert: getAlert()
+          // });
           this.toggleLoading();
         }
       }
