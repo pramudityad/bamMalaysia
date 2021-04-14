@@ -345,9 +345,7 @@ class MatNRO extends React.Component {
     this.state.filter_list["Unit_Price"] !== null &&
       this.state.filter_list["Unit_Price"] !== undefined &&
       filter_array.push(
-        '"Unit_Price":{"$regex" : "' +
-        this.state.filter_list["Unit_Price"] +
-        '", "$options" : "i"}'
+        '"Unit_Price":' + this.state.filter_list["Unit_Price"]
       );
     this.state.filter_list["MM_Code"] !== null &&
       this.state.filter_list["MM_Code"] !== undefined &&
