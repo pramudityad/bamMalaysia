@@ -37,8 +37,10 @@ import {
   patchDatatoAPINODE,
   deleteDataFromAPINODE2,
   getDatafromAPINODE,
+  getDatafromAPINODE2,
   apiSendEmail,
 } from "../../helper/asyncFunction";
+import { CSVLink, CSVDownload } from "react-csv";
 import ModalCreateNew from "../Component/ModalCreateNew";
 import Pagination from "react-js-pagination";
 import { saveAs } from "file-saver";
@@ -383,8 +385,8 @@ class MappingHW extends React.Component {
     this.getMaster();
   }
 
-  async getMaster() {
-    await getDatafromAPINODE(
+  getMaster() {
+    getDatafromAPINODE(
       "/summaryMaster/getSummaryMaster?noPg=1",
       this.state.tokenUser
     ).then((res) => {
@@ -487,6 +489,7 @@ class MappingHW extends React.Component {
             Mapping_Date: "",
             Po: e.Po,
             Line: e.Line,
+            Qty: e.Qty,
           })
         );
       // console.log("dataref", data_ref);
@@ -515,13 +518,16 @@ class MappingHW extends React.Component {
     }
   };
 
-  async getListAll() {
-    await getDatafromAPINODE(
+  getListAll() {
+    const t0 = performance.now();
+    getDatafromAPINODE2(
       "/cpoMapping/getCpo/required/hw?noPg=1",
       this.state.tokenUser
     ).then((res) => {
       if (res.data !== undefined) {
         const items = res.data.data;
+        const t1 = performance.now();
+        console.log("took 1" + (t1 - t0) + " milliseconds.");
         console.log("len ", items.length);
         this.setState({ all_data_mapping: items });
       }
@@ -678,6 +684,8 @@ class MappingHW extends React.Component {
   exportTemplateall = async () => {
     this.toggleLoading();
     // this.getListAll();
+    const t2 = performance.now();
+
     const wb = new Excel.Workbook();
     const ws = wb.addWorksheet();
 
@@ -775,10 +783,25 @@ class MappingHW extends React.Component {
       }
     }
     const PPFormat = await wb.xlsx.writeBuffer();
+    // let export_file =
+    //   (new Blob([PPFormat]),
+    //   this.state.roleUser[1] + " " + modul_name + " All Data.xlsx");
+    // let dataEmail = {
+    //   // "to": creatorEmail,
+    //   // to: "pramudityad@student.telkomuniversity.ac.id",
+    //   to: "pramudityad@outlook.com",
+    //   subject: "[NOTIFY to CPM] " + modul_name,
+    //   body: "test file",
+    //   attachments: export_file,
+    // };
     saveAs(
       new Blob([PPFormat]),
       this.state.roleUser[1] + " " + modul_name + " All Data.xlsx"
     );
+    const t3 = performance.now();
+    console.log("took 2" + (t3 - t2) + " milliseconds.");
+    // const sendEmail = await apiSendEmail(dataEmail);
+    // console.log("sendEmail ", sendEmail);
     this.toggleLoading();
   };
 
@@ -998,13 +1021,14 @@ class MappingHW extends React.Component {
         ? 2
         : 3;
     const header_update_Mapping_Date = [
-      ["Po", "Line", "Reference_Loc_Id", "Mapping_Date"],
+      ["Po", "Line", "Reference_Loc_Id", "Qty", "Mapping_Date"],
     ];
     const body_update_Mapping_Date = this.state.multiple_select2.map((req) =>
       req_body.push([
         req.Po,
         req.Line,
         req.Reference_Loc_Id,
+        req.Qty,
         this.state.mapping_date,
       ])
     );
@@ -1713,6 +1737,16 @@ class MappingHW extends React.Component {
                     </div>
                   </div>
                   &nbsp;&nbsp;&nbsp;
+                  {/* <div>
+                    <CSVLink
+                      data={this.state.all_data_mapping}
+                      separator={";"}
+                      filename={"All Data HW Export.csv"}
+                    >
+                      CSV file
+                    </CSVLink>
+                  </div>
+                  &nbsp;&nbsp;&nbsp; */}
                   <div>
                     <Dropdown
                       isOpen={this.state.dropdownOpen[1]}
@@ -1737,7 +1771,6 @@ class MappingHW extends React.Component {
                           All Data HW Export
                         </DropdownItem>
                         <DropdownItem header>Uploader Template</DropdownItem>
-
                         {role.includes("BAM-MAT PLANNER") === true ? (
                           <>
                             <DropdownItem
