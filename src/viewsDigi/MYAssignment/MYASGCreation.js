@@ -126,7 +126,8 @@ class MYASGCreation extends Component {
       child_data: {},
       check_draft: false,
       sweet_alert: null,
-      access_token: null
+      access_token: null,
+      child_selected: null
     };
     this.handleChangeCD = this.handleChangeCD.bind(this);
     this.loadOptionsCDID = this.loadOptionsCDID.bind(this);
@@ -180,6 +181,7 @@ class MYASGCreation extends Component {
   decideToggleMaterial = (number_child_form) => {
     // let Mat_type = this.state.creation_lmr_child_form[number_child_form]
     //   .material_type;
+    this.setState({ child_selected: number_child_form });
     let Mat_type = this.state.mm_data_type;
     console.log(Mat_type);
     switch (Mat_type) {
@@ -870,33 +872,34 @@ class MYASGCreation extends Component {
     // this.state.creation_lmr_child_form[number_child_form].transport === "yes" && filter_array.push('"BB":"Transport"');
     // vendor
     this.state.lmr_form.vendor_code_actual !== "" &&
-      filter_array.push('"$or":[{"Vendor_List.Vendor_Code":"' + this.state.lmr_form.vendor_code_actual + '"},{"Vendor_ID":"' + this.state.lmr_form.vendor_code_actual + '"}]');
+      filter_array.push('"$and":[{"$or":[{"Vendor_List.Vendor_Code":"' + this.state.lmr_form.vendor_code_actual + '"},{"Vendor_ID":"' + this.state.lmr_form.vendor_code_actual + '"}]},{"$or":[{"Region":"' + this.state.creation_lmr_child_form[this.state.current_material_select].region + '"},{"Region":null}]}]');
     filter_array.push('"Material_Sub_Type":{"$in":["Survey"]}');
     this.state.filter_list[0] !== "" &&
       filter_array.push(
-        '"BB":{"$regex" : "' +
+        '"MM_Code":{"$regex" : "' +
         this.state.filter_list[0] +
         '", "$options" : "i"}'
       );
     this.state.filter_list[1] !== "" &&
       filter_array.push(
-        '"BB_Sub":{"$regex" : "' +
+        '"MM_Description":{"$regex" : "' +
         this.state.filter_list[1] +
         '", "$options" : "i"}'
       );
-    filter_array.push('"Region":"' + this.state.creation_lmr_child_form[this.state.current_material_select].region + '"');
+    this.state.filter_list[2] !== "" &&
+      filter_array.push(
+        '"BB":{"$regex" : "' +
+        this.state.filter_list[2] +
+        '", "$options" : "i"}'
+      );
     this.state.filter_list[3] !== "" &&
       filter_array.push(
-        '"MM_Code":{"$regex" : "' +
+        '"BB_Sub":{"$regex" : "' +
         this.state.filter_list[3] +
         '", "$options" : "i"}'
       );
-    this.state.filter_list[4] !== "" &&
-      filter_array.push(
-        '"MM_Description":{"$regex" : "' +
-        this.state.filter_list[4] +
-        '", "$options" : "i"}'
-      );
+    // filter_array.push('"Region":"' + this.state.creation_lmr_child_form[this.state.current_material_select].region + '"');
+
     this.state.filter_list[5] !== "" &&
       filter_array.push(
         '"SoW_Description":{"$regex" : "' +
@@ -944,29 +947,30 @@ class MYASGCreation extends Component {
     filter_array.push('"Material_Sub_Type":{"$in":["Integration"]}');
     this.state.filter_list[0] !== "" &&
       filter_array.push(
-        '"BB":{"$regex" : "' +
+        '"MM_Code":{"$regex" : "' +
         this.state.filter_list[0] +
         '", "$options" : "i"}'
       );
     this.state.filter_list[1] !== "" &&
       filter_array.push(
-        '"BB_Sub":{"$regex" : "' +
+        '"MM_Description":{"$regex" : "' +
         this.state.filter_list[1] +
         '", "$options" : "i"}'
       );
-    // filter_array.push('"Region":"' + this.state.creation_lmr_child_form[this.state.current_material_select].region + '"');
+    this.state.filter_list[2] !== "" &&
+      filter_array.push(
+        '"BB":{"$regex" : "' +
+        this.state.filter_list[2] +
+        '", "$options" : "i"}'
+      );
     this.state.filter_list[3] !== "" &&
       filter_array.push(
-        '"MM_Code":{"$regex" : "' +
+        '"BB_Sub":{"$regex" : "' +
         this.state.filter_list[3] +
         '", "$options" : "i"}'
       );
-    this.state.filter_list[4] !== "" &&
-      filter_array.push(
-        '"MM_Description":{"$regex" : "' +
-        this.state.filter_list[4] +
-        '", "$options" : "i"}'
-      );
+    // filter_array.push('"Region":"' + this.state.creation_lmr_child_form[this.state.current_material_select].region + '"');
+
     this.state.filter_list[5] !== "" &&
       filter_array.push(
         '"SoW_Description":{"$regex" : "' +
@@ -1014,29 +1018,30 @@ class MYASGCreation extends Component {
     filter_array.push('"Material_Sub_Type":{"$in":["NDO"]}');
     this.state.filter_list[0] !== "" &&
       filter_array.push(
-        '"BB":{"$regex" : "' +
+        '"MM_Code":{"$regex" : "' +
         this.state.filter_list[0] +
         '", "$options" : "i"}'
       );
     this.state.filter_list[1] !== "" &&
       filter_array.push(
-        '"BB_Sub":{"$regex" : "' +
+        '"MM_Description":{"$regex" : "' +
         this.state.filter_list[1] +
         '", "$options" : "i"}'
       );
-    // filter_array.push('"Region":"' + this.state.creation_lmr_child_form[this.state.current_material_select].region + '"');
+    this.state.filter_list[2] !== "" &&
+      filter_array.push(
+        '"BB":{"$regex" : "' +
+        this.state.filter_list[2] +
+        '", "$options" : "i"}'
+      );
     this.state.filter_list[3] !== "" &&
       filter_array.push(
-        '"MM_Code":{"$regex" : "' +
+        '"BB_Sub":{"$regex" : "' +
         this.state.filter_list[3] +
         '", "$options" : "i"}'
       );
-    this.state.filter_list[4] !== "" &&
-      filter_array.push(
-        '"MM_Description":{"$regex" : "' +
-        this.state.filter_list[4] +
-        '", "$options" : "i"}'
-      );
+    // filter_array.push('"Region":"' + this.state.creation_lmr_child_form[this.state.current_material_select].region + '"');
+
     this.state.filter_list[5] !== "" &&
       filter_array.push(
         '"SoW_Description":{"$regex" : "' +
@@ -1079,42 +1084,36 @@ class MYASGCreation extends Component {
     // this.state.lmr_form.vendor_code_actual !== "" &&
     //   filter_array.push('"$or":[{"Vendor_List.Vendor_Code":"' + this.state.lmr_form.vendor_code_actual + '"},{"Vendor_ID":"' + this.state.lmr_form.vendor_code_actual + '"}]');
     this.state.lmr_form.vendor_code_actual !== "" && filter_array.push('"$and":[{"$or":[{"Vendor_List.Vendor_Code":"' + this.state.lmr_form.vendor_code_actual + '"},{"Vendor_ID":"' + this.state.lmr_form.vendor_code_actual + '"}]},{"$or":[{"Region":"' + this.state.creation_lmr_child_form[this.state.current_material_select].region + '"},{"Region":null}]}]');
-    if (this.state.creation_lmr_child_form[number_child_form].transport === 'yes') {
+    if (this.state.creation_lmr_child_form[this.state.child_selected].transport === 'yes') {
       this.state.mm_data_type !== "" && filter_array.push('"Material_Sub_Type":{"$in":["Transport","Special Transport"]}');
     } else {
       this.state.mm_data_type !== "" && filter_array.push('"Material_Sub_Type":{"$in":["ITC","Transport","Special Transport"]}');
     }
     this.state.filter_list[0] !== "" &&
       filter_array.push(
-        '"BB":{"$regex" : "' +
+        '"MM_Code":{"$regex" : "' +
         this.state.filter_list[0] +
         '", "$options" : "i"}'
       );
     this.state.filter_list[1] !== "" &&
       filter_array.push(
-        '"BB_Sub":{"$regex" : "' +
+        '"MM_Description":{"$regex" : "' +
         this.state.filter_list[1] +
         '", "$options" : "i"}'
       );
-    // filter_array.push('"$or":[{"Region":"' + this.state.creation_lmr_child_form[this.state.current_material_select].region + '"}]');
+    this.state.filter_list[2] !== "" &&
+      filter_array.push(
+        '"BB":{"$regex" : "' +
+        this.state.filter_list[2] +
+        '", "$options" : "i"}'
+      );
     this.state.filter_list[3] !== "" &&
       filter_array.push(
-        '"MM_Code":{"$regex" : "' +
+        '"BB_Sub":{"$regex" : "' +
         this.state.filter_list[3] +
         '", "$options" : "i"}'
       );
-    this.state.filter_list[4] !== "" &&
-      filter_array.push(
-        '"MM_Description":{"$regex" : "' +
-        this.state.filter_list[4] +
-        '", "$options" : "i"}'
-      );
-    this.state.filter_list[6] !== "" &&
-      filter_array.push(
-        '"UoM":{"$regex" : "' +
-        this.state.filter_list[6] +
-        '", "$options" : "i"}'
-      );
+    // filter_array.push('"$or":[{"Region":"' + this.state.creation_lmr_child_form[this.state.current_material_select].region + '"}]');
     this.state.matfilter.region === "All" &&
       filter_array.push('"Region": {"$exists" : 1}');
     this.state.matfilter.region !== "" &&
@@ -1129,6 +1128,16 @@ class MYASGCreation extends Component {
         '"SoW_Description_or_Site_Type":{"$regex" : "' +
         this.state.filter_list[5] +
         '", "$options" : "i"}'
+      );
+    this.state.filter_list[6] !== "" &&
+      filter_array.push(
+        '"UoM":{"$regex" : "' +
+        this.state.filter_list[6] +
+        '", "$options" : "i"}'
+      );
+    this.state.filter_list[7] !== "" &&
+      filter_array.push(
+        '"Unit_Price":' + this.state.filter_list[7]
       );
     let whereAnd = "{" + filter_array.join(",") + "}";
     getDatafromAPINODE(
@@ -1159,29 +1168,30 @@ class MYASGCreation extends Component {
     filter_array.push('"Material_Sub_Type":{"$in":["Transport","Special Transport"]}');
     this.state.filter_list[0] !== "" &&
       filter_array.push(
-        '"BB":{"$regex" : "' +
+        '"MM_Code":{"$regex" : "' +
         this.state.filter_list[0] +
         '", "$options" : "i"}'
       );
     this.state.filter_list[1] !== "" &&
       filter_array.push(
-        '"BB_Sub":{"$regex" : "' +
+        '"MM_Description":{"$regex" : "' +
         this.state.filter_list[1] +
         '", "$options" : "i"}'
       );
-    // filter_array.push('"Region":"' + this.state.creation_lmr_child_form[this.state.current_material_select].region + '"');
+    this.state.filter_list[2] !== "" &&
+      filter_array.push(
+        '"BB":{"$regex" : "' +
+        this.state.filter_list[2] +
+        '", "$options" : "i"}'
+      );
     this.state.filter_list[3] !== "" &&
       filter_array.push(
-        '"MM_Code":{"$regex" : "' +
+        '"BB_Sub":{"$regex" : "' +
         this.state.filter_list[3] +
         '", "$options" : "i"}'
       );
-    this.state.filter_list[4] !== "" &&
-      filter_array.push(
-        '"MM_Description":{"$regex" : "' +
-        this.state.filter_list[4] +
-        '", "$options" : "i"}'
-      );
+    // filter_array.push('"Region":"' + this.state.creation_lmr_child_form[this.state.current_material_select].region + '"');
+
     this.state.filter_list[5] !== "" &&
       filter_array.push(
         '"SoW_Description":{"$regex" : "' +
@@ -1501,22 +1511,64 @@ class MYASGCreation extends Component {
         localStorage.setItem("asp_data_child", JSON.stringify(dataLMRChild));
         if (respondSaveLMR.response !== undefined && respondSaveLMR.response.data !== undefined && respondSaveLMR.response.data.error !== undefined) {
           if (respondSaveLMR.response.data.error.message !== undefined) {
+            // this.setState({
+            //   action_status: "failed",
+            //   action_message: respondSaveLMR.response.data.error.message,
+            // });
+
+            const getAlert = () => (
+              <SweetAlert
+                danger
+                title="Error!"
+                onConfirm={() => this.hideAlert()}
+              >
+                {respondSaveLMR.response.data.error.message.toString()}
+              </SweetAlert>
+            );
+
             this.setState({
-              action_status: "failed",
-              action_message: respondSaveLMR.response.data.error.message,
+              sweet_alert: getAlert()
             });
             this.toggleLoading();
           } else {
+            // this.setState({
+            //   action_status: "failed",
+            //   action_message: respondSaveLMR.response.data.error,
+            // });
+
+            const getAlert = () => (
+              <SweetAlert
+                danger
+                title="Error!"
+                onConfirm={() => this.hideAlert()}
+              >
+                {respondSaveLMR.response.data.error.toString()}
+              </SweetAlert>
+            );
+
             this.setState({
-              action_status: "failed",
-              action_message: respondSaveLMR.response.data.error,
+              sweet_alert: getAlert()
             });
             this.toggleLoading();
           }
         } else {
+          // this.setState({
+          //   action_status: "failed",
+          //   action_message: "There is something error. Don't worry, we saved a draft for you. Please refresh the page"
+          // });
+
+          const getAlert = () => (
+            <SweetAlert
+              danger
+              title="Error!"
+              onConfirm={() => this.hideAlert()}
+            >
+              There is something error. Don't worry, we saved a draft for you. Please refresh the page
+            </SweetAlert>
+          );
+
           this.setState({
-            action_status: "failed",
-            action_message: "There is something error. Don't worry, we saved a draft for you. Please refresh the page"
+            sweet_alert: getAlert()
           });
           this.toggleLoading();
         }
@@ -1639,7 +1691,8 @@ class MYASGCreation extends Component {
         qty: 0,
         unit_price: 0,
         total_value: 0,
-        delivery_date: convertDateFormat(date)
+        delivery_date: convertDateFormat(date),
+        transport: "no"
       });
       this.setState({ creation_lmr_child_form: dataLMR, key_child: key });
     } else {

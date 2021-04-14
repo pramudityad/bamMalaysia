@@ -93,6 +93,10 @@ class Package extends Component {
       activePage_material: 1,
       totalData_material: 0,
       perPage_material: 10,
+      prevPage_check_material: 0,
+      activePage_check_material: 1,
+      totalData_check_material: 0,
+      perPage_check_material: 10,
       sweet_alert: null
     }
 
@@ -175,7 +179,7 @@ class Package extends Component {
         Region: selectedPackage.Region,
         Materials: allMaterials
       }
-      this.setState({ check_material_package_list: check_material_package_list }, () => this.toggleModalCheckMaterialPackage());
+      this.setState({ check_material_package_list: check_material_package_list, totalData_check_material: allMaterials.length }, () => this.toggleModalCheckMaterialPackage());
     } else {
       if (response.response !== undefined && response.response.data !== undefined && response.response.data.error !== undefined) {
         if (response.response.data.error.message !== undefined) {
@@ -295,6 +299,12 @@ class Package extends Component {
     create_package_child[parseInt(this.state.current_material_select)]["Qty"] = 0;
     this.setState({ create_package_child: create_package_child });
     this.toggleModalMaterial();
+  }
+
+  handlePageChange = (pageNumber) => {
+    this.setState({ activePage: pageNumber }, () => {
+      this.getPackageList();
+    });
   }
 
   handleChangeFormPackageChild = (e) => {
@@ -984,7 +994,7 @@ class Package extends Component {
 
   componentDidMount() {
     this.getPackageList();
-    this.getPackageListAll();
+    // this.getPackageListAll();
     this.getVendorList();
     document.title = "Package List | BAM";
   }
@@ -1148,7 +1158,7 @@ class Package extends Component {
                 <Pagination
                   activePage={this.state.activePage}
                   itemsCountPerPage={this.state.perPage}
-                  totalItemsCount={this.state.package_list.length}
+                  totalItemsCount={this.state.totalData}
                   pageRangeDisplayed={5}
                   onChange={this.handlePageChange}
                   itemClass="page-item"
@@ -1208,11 +1218,11 @@ class Package extends Component {
               </Table>
             </div>
             <Pagination
-              activePage={this.state.activePage}
-              itemsCountPerPage={this.state.perPage}
-              totalItemsCount={this.state.totalData}
+              activePage={this.state.activePage_check_material}
+              itemsCountPerPage={this.state.totalData_check_material}
+              totalItemsCount={this.state.totalData_check_material}
               pageRangeDisplayed={5}
-              onChange={this.handlePageChange}
+              onChange={this.handlePageChangeCheckMaterial}
               itemClass="page-item"
               linkClass="page-link"
             />
