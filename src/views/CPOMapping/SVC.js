@@ -38,6 +38,7 @@ import {
   deleteDataFromAPINODE2,
   getDatafromAPINODE,
   apiSendEmail,
+  getDatafromAPINODE2,
 } from "../../helper/asyncFunction";
 import ModalCreateNew from "../Component/ModalCreateNew";
 import Pagination from "react-js-pagination";
@@ -392,8 +393,8 @@ class MappingSVC extends React.PureComponent {
     this.getMaster();
   }
 
-  async getMaster() {
-    await getDatafromAPINODE(
+  getMaster() {
+    getDatafromAPINODE(
       "/summaryMaster/getSummaryMaster?noPg=1",
       this.state.tokenUser
     ).then((res) => {
@@ -431,13 +432,17 @@ class MappingSVC extends React.PureComponent {
     });
   }
 
-  async getListAll() {
-    await getDatafromAPINODE(
+  getListAll() {
+    const t0 = performance.now();
+    getDatafromAPINODE2(
       "/cpoMapping/getCpo/required/svc?noPg=1",
       this.state.tokenUser
     ).then((res) => {
       if (res.data !== undefined) {
         const items = res.data.data;
+        const t1 = performance.now();
+        console.log("took " + (t1 - t0) + " milliseconds.");
+        console.log("len ", items.length);
         this.setState({ all_data_mapping: items });
       }
     });
@@ -471,10 +476,13 @@ class MappingSVC extends React.PureComponent {
       return [];
     } else {
       let asycn_options = [];
-      await getUniqueListBy(this.state.all_data_mapping, "Po").map((data) =>
+      await getUniqueListBy(
+        this.state.all_data_master,
+        "Project_Description"
+      ).map((data) =>
         asycn_options.push({
-          label: data.Po,
-          value: data.Po,
+          label: data.Project_Description,
+          value: data.Project_Description,
           // Reference_Loc_Id: data.Reference_Loc_Id,
           // Po: data.Po,
           // Line: data.Line,
@@ -505,6 +513,7 @@ class MappingSVC extends React.PureComponent {
             Mapping_Date: "",
             Po: e.Po,
             Line: e.Line,
+            Qty: e.Qty,
           })
         );
       // console.log("dataref", data_ref);
@@ -1173,13 +1182,14 @@ class MappingSVC extends React.PureComponent {
         ? 2
         : 3;
     const header_update_Mapping_Date = [
-      ["Po", "Line", "Reference_Loc_Id", "Mapping_Date"],
+      ["Po", "Line", "Reference_Loc_Id", "Qty", "Mapping_Date"],
     ];
     const body_update_Mapping_Date = this.state.multiple_select.map((req) =>
       req_body.push([
         req.Po,
         req.Line,
         req.Reference_Loc_Id,
+        req.Qty,
         this.state.mapping_date,
       ])
     );

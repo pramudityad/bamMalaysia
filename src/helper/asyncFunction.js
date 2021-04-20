@@ -22,12 +22,46 @@ export const getDatafromAPIMY = async (url) => {
 
 export const getDatafromAPINODE = async (url, props) => {
   try {
-    let respond = await axios.get(process.env.REACT_APP_API_URL_NODE + url, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + props,
-      },
-    });
+    let respond = await axios.get(
+      process.env.REACT_APP_API_URL_NODE + url,
+
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + props,
+        },
+      }
+    );
+    if (respond.status >= 200 && respond.status < 300) {
+      console.log("respond Post Data", respond);
+    }
+    return respond;
+  } catch (err) {
+    let respond = err;
+    console.log("respond Post Data err", err);
+    return respond;
+  }
+};
+
+export const getDatafromAPINODE2 = async (url, props) => {
+  try {
+    let respond = await axios.get(
+      process.env.REACT_APP_API_URL_NODE + url,
+
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + props,
+        },
+        onDownloadProgress: (progressEvent) => {
+          let percentCompleted = Math.round(
+            (progressEvent.loaded * 100) / progressEvent.total
+          );
+          // console.log(progressEvent.lengthComputable);
+          console.log("% ", percentCompleted);
+        },
+      }
+    );
     if (respond.status >= 200 && respond.status < 300) {
       console.log("respond Post Data", respond);
     }
