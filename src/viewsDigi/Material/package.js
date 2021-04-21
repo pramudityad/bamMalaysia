@@ -1363,7 +1363,6 @@ class Package extends Component {
                         id={i + " /// Qty"}
                         value={mat.Qty}
                         onChange={this.handleChangeFormPackageChild}
-                        disabled={mat.Transport === 'yes'}
                         style={mat.zero_qty === 'yes' ? { border: "2px solid red" } : {}}
                       />
                     </FormGroup>
@@ -1603,7 +1602,6 @@ class Package extends Component {
                         id={i + " /// Qty"}
                         value={mat.Qty}
                         onChange={this.handleChangeFormPackageChild}
-                        disabled={mat.Transport === 'yes'}
                         style={mat.zero_qty === 'yes' ? { border: "2px solid red" } : {}}
                       />
                     </FormGroup>

@@ -1862,15 +1862,11 @@ class MYASGEdit extends Component {
       (e) => e.MM_Code === value
     );
     let dataLMR = this.state.creation_lmr_child_form;
-    dataLMR[parseInt(this.state.current_material_select)]["material_code_doc"] =
-      data_material._id;
-    dataLMR[parseInt(this.state.current_material_select)]["material"] =
-      data_material.MM_Code;
-    dataLMR[parseInt(this.state.current_material_select)]["description"] =
-      data_material.MM_Description;
-    dataLMR[parseInt(this.state.current_material_select)]["unit_price"] =
-      data_material.Unit_Price;
-    dataLMR[parseInt(this.state.current_material_select)]["qty"] = 0;
+    dataLMR[parseInt(this.state.current_material_select)]["material_code_doc"] = data_material._id;
+    dataLMR[parseInt(this.state.current_material_select)]["material"] = data_material.MM_Code;
+    dataLMR[parseInt(this.state.current_material_select)]["description"] = data_material.MM_Description;
+    dataLMR[parseInt(this.state.current_material_select)]["unit_price"] = data_material.Unit_Price;
+    dataLMR[parseInt(this.state.current_material_select)]["total_value"] = dataLMR[parseInt(this.state.current_material_select)]["qty"] * dataLMR[parseInt(this.state.current_material_select)]["unit_price"];
     this.setState({ creation_lmr_child_form: dataLMR });
     this.decideToggleMaterial();
   }
