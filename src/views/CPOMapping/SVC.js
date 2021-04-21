@@ -195,7 +195,6 @@ const header_model = [
   "Mapping_Date",
   "Remarks",
   "Gr_No",
-
   // "Premr_No",
   "Proceed_Billing_100",
   "Celcom_User",
@@ -382,6 +381,7 @@ class MappingSVC extends React.PureComponent {
       all_data_true: [],
       dataChecked_all: false,
       modal_callof: false,
+      count_header: {},
     };
   }
 
@@ -389,8 +389,49 @@ class MappingSVC extends React.PureComponent {
     // console.log("header", header.length);
     // console.log("model_header", header_model.length);
     // this.getList();
-    this.getListAll();
+    this.getHeader();
+    // this.getListAll();
     this.getMaster();
+  }
+
+  getHeader() {
+    let filter_array = [];
+    for (const [key, value] of Object.entries(this.state.filter_list)) {
+      if (value !== null && value !== undefined) {
+        filter_array.push(
+          '"' + key + '":{"$regex" : "' + value + '", "$options" : "i"}'
+        );
+      }
+    }
+    let whereAnd = "{" + filter_array.join(",") + "}";
+    getDatafromAPINODE(
+      "/cpoMapping/getCpo/required/count/svc?q=" + whereAnd + "&noPg=1",
+      this.state.tokenUser
+    ).then((res) => {
+      if (res.data !== undefined) {
+        const items3 = res.data.data;
+        this.setState({ count_header: items3 });
+      }
+    });
+  }
+
+  mapHeader(data_header) {
+    let header_keys = Object.keys(data_header);
+    let header_values = Object.values(data_header);
+    // console.log("header ", header_values);
+    // if (header_keys !== undefined) {
+    if (
+      header_keys === "Qty" ||
+      header_keys === "Unit_Price" ||
+      header_keys === "Total_Price" ||
+      header_keys === "Discounted_Unit_Price" ||
+      header_keys === "Discounted_Po_Price"
+    ) {
+      return formatMoney(header_values);
+    } else {
+      return header_values;
+    }
+    // }
   }
 
   getMaster() {
@@ -405,7 +446,7 @@ class MappingSVC extends React.PureComponent {
     });
   }
 
-  async getList() {
+  getList() {
     let filter_array = [];
     for (const [key, value] of Object.entries(this.state.filter_list)) {
       if (value !== null && value !== undefined) {
@@ -415,7 +456,7 @@ class MappingSVC extends React.PureComponent {
       }
     }
     let whereAnd = "{" + filter_array.join(",") + "}";
-    await getDatafromAPINODE(
+    getDatafromAPINODE(
       "/cpoMapping/getCpo/required/svc?q=" +
         whereAnd +
         "&lmt=" +
@@ -1878,16 +1919,15 @@ class MappingSVC extends React.PureComponent {
                               <tr align="center">
                                 <th></th>
                                 <th></th>
-                                {header_model.map((head, j) =>
-                                  head === "Qty" ||
-                                  head === "Unit_Price" ||
-                                  head === "Total_Price" ||
-                                  head === "Discounted_Unit_Price" ||
-                                  head === "Discounted_Po_Price" ? (
-                                    <th>{this.countheader(head)}</th>
-                                  ) : (
-                                    <th>{this.countheaderNaN(head)}</th>
-                                  )
+                                {Object.keys(this.state.count_header).length !==
+                                  0 &&
+                                this.state.count_header.constructor ===
+                                  Object ? (
+                                  this.mapHeader(
+                                    this.state.count_header
+                                  ).map((head, j) => <th>{head}</th>)
+                                ) : (
+                                  <></>
                                 )}
                               </tr>
                             </>

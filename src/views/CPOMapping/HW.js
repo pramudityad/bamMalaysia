@@ -340,49 +340,93 @@ const header_admin = [
 ];
 
 class MappingHW extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      tokenUser: this.props.dataLogin.token,
-      roleUser: this.props.dataLogin.role,
-      dropdownOpen: new Array(3).fill(false),
-      all_data: [],
-      createModal: false,
-      rowsXLS: [],
-      modal_loading: false,
-      prevPage: 0,
-      activePage: 1,
-      totalData: 0,
-      perPage: 10,
-      CPOForm: {},
-      modalEdit: false,
-      modal_loading: false,
-      modal_callof: false,
-      multiple_select: [],
-      multiple_select2: [],
-      mapping_date: "",
-      po_select: null,
-      reloc_options: [],
-      action_status: null,
-      action_message: null,
-      filter_list: {},
-      all_data_master: [],
-      all_data_mapping: [],
-      dataChecked: new Map(),
-      dataChecked_container: [],
-      dataChecked_container2: [],
-      tabs_submenu: [true, false],
-      all_data_true: [],
-      dataChecked_all: false,
-    };
-  }
+  csvLink = React.createRef();
+  // constructor(props) {
+  //   super(props);
+  state = {
+    tokenUser: this.props.dataLogin.token,
+    roleUser: this.props.dataLogin.role,
+    dropdownOpen: new Array(3).fill(false),
+    all_data: [],
+    createModal: false,
+    rowsXLS: [],
+    modal_loading: false,
+    prevPage: 0,
+    activePage: 1,
+    totalData: 0,
+    perPage: 10,
+    CPOForm: {},
+    modalEdit: false,
+    modal_loading: false,
+    modal_callof: false,
+    multiple_select: [],
+    multiple_select2: [],
+    mapping_date: "",
+    po_select: null,
+    reloc_options: [],
+    action_status: null,
+    action_message: null,
+    filter_list: {},
+    all_data_master: [],
+    all_data_mapping: [],
+    dataChecked: new Map(),
+    dataChecked_container: [],
+    dataChecked_container2: [],
+    tabs_submenu: [true, false],
+    all_data_true: [],
+    dataChecked_all: false,
+    count_header: {},
+  };
+  // }
 
   componentDidMount() {
-    // console.log("header", header.length);
+    console.log("token", this.state.tokenUser);
     // console.log("model_header", header_model.length);
     // this.getList();
-    this.getListAll();
+    // this.getHeader();
+    // this.getListAll();
     this.getMaster();
+  }
+
+  getHeader() {
+    let filter_array2 = [];
+    for (const [key, value] of Object.entries(this.state.filter_list)) {
+      if (value !== null && value !== undefined) {
+        filter_array2.push(
+          '"' + key + '":{"$regex" : "' + value + '", "$options" : "i"}'
+        );
+      }
+    }
+    let whereAnd2 = "{" + filter_array2.join(",") + "}";
+    getDatafromAPINODE(
+      "/cpoMapping/getCpo/required/count/hw?q=" + whereAnd2 + "&noPg=1",
+      this.state.tokenUser
+    ).then((res) => {
+      if (res.data !== undefined) {
+        const items3 = res.data.data;
+        console.log("items3 ", items3);
+        this.setState({ count_header: items3 });
+      }
+    });
+  }
+
+  mapHeader(data_header) {
+    let header_keys = Object.keys(data_header);
+    let header_values = Object.values(data_header);
+    // console.log("header ", header_values);
+    // if (header_keys !== undefined) {
+    if (
+      header_keys === "Qty" ||
+      header_keys === "Unit_Price" ||
+      header_keys === "Total_Price" ||
+      header_keys === "Discounted_Unit_Price" ||
+      header_keys === "Discounted_Po_Price"
+    ) {
+      return formatMoney(header_values);
+    } else {
+      return header_values;
+    }
+    // }
   }
 
   getMaster() {
@@ -397,7 +441,7 @@ class MappingHW extends React.Component {
     });
   }
 
-  async getList() {
+  getList() {
     let filter_array = [];
     for (const [key, value] of Object.entries(this.state.filter_list)) {
       if (value !== null && value !== undefined) {
@@ -407,7 +451,7 @@ class MappingHW extends React.Component {
       }
     }
     let whereAnd = "{" + filter_array.join(",") + "}";
-    await getDatafromAPINODE(
+    getDatafromAPINODE(
       "/cpoMapping/getCpo/required/hw?q=" +
         whereAnd +
         "&lmt=" +
@@ -419,7 +463,9 @@ class MappingHW extends React.Component {
       if (res.data !== undefined) {
         const items = res.data.data;
         const totalData = res.data.totalResults;
-        this.setState({ all_data: items, totalData: totalData });
+        this.setState({ all_data: items, totalData: totalData }, () =>
+          this.getHeader()
+        );
       }
     });
   }
@@ -518,9 +564,10 @@ class MappingHW extends React.Component {
     }
   };
 
-  getListAll() {
+  getListAll = () => {
+    this.toggleLoading();
     const t0 = performance.now();
-    getDatafromAPINODE2(
+    getDatafromAPINODE(
       "/cpoMapping/getCpo/required/hw?noPg=1",
       this.state.tokenUser
     ).then((res) => {
@@ -529,10 +576,15 @@ class MappingHW extends React.Component {
         const t1 = performance.now();
         console.log("took 1" + (t1 - t0) + " milliseconds.");
         console.log("len ", items.length);
-        this.setState({ all_data_mapping: items });
+        this.setState({ all_data_mapping: items }, () => {
+          setTimeout(() => {
+            this.csvLink.current.link.click();
+          });
+          this.toggleLoading();
+        });
       }
     });
-  }
+  };
 
   getList2() {
     let filter_array = [];
@@ -911,7 +963,7 @@ class MappingHW extends React.Component {
     );
     if (res.data !== undefined) {
       if (roles === 2) {
-        this.setState({ action_status: "success" });
+        this.setState({ action_status: "success", action_status: "success" });
         this.toggleLoading();
       } else {
         if (res.data.updateData.length !== 0) {
@@ -1483,6 +1535,7 @@ class MappingHW extends React.Component {
 
   onChangeDebounced = () => {
     this.state.tabs_submenu[0] === true ? this.getList() : this.getList2();
+    // this.state.tabs_submenu[0] === true ? this.getHeader() : this.getList2();
   };
 
   handleFilterList = (e) => {
@@ -1737,16 +1790,28 @@ class MappingHW extends React.Component {
                     </div>
                   </div>
                   &nbsp;&nbsp;&nbsp;
-                  {/* <div>
+                  <div>
+                    <Button onClick={this.getListAll}>CSV file</Button>
                     <CSVLink
                       data={this.state.all_data_mapping}
                       separator={";"}
+                      ref={this.csvLink}
+                      target="_blank"
                       filename={"All Data HW Export.csv"}
-                    >
-                      CSV file
-                    </CSVLink>
+                    />
+                    {/* this.state.all_data_mapping.length !== 0 ? (
+                      <CSVLink
+                        data={this.state.all_data_mapping}
+                        separator={";"}
+                        filename={"All Data HW Export.csv"}
+                      >
+                        CSV file
+                      </CSVLink>
+                    ) : (
+                      ""
+                    )} */}
                   </div>
-                  &nbsp;&nbsp;&nbsp; */}
+                  &nbsp;&nbsp;&nbsp;
                   <div>
                     <Dropdown
                       isOpen={this.state.dropdownOpen[1]}
@@ -1915,16 +1980,15 @@ class MappingHW extends React.Component {
                               <tr align="center">
                                 <th></th>
                                 <th></th>
-                                {header_model.map((head, j) =>
-                                  head === "Qty" ||
-                                  head === "Unit_Price" ||
-                                  head === "Total_Price" ||
-                                  head === "Discounted_Unit_Price" ||
-                                  head === "Discounted_Po_Price" ? (
-                                    <th>{this.countheader(head)}</th>
-                                  ) : (
-                                    <th>{this.countheaderNaN(head)}</th>
-                                  )
+                                {Object.keys(this.state.count_header).length !==
+                                  0 &&
+                                this.state.count_header.constructor ===
+                                  Object ? (
+                                  this.mapHeader(
+                                    this.state.count_header
+                                  ).map((head, j) => <th>{head}</th>)
+                                ) : (
+                                  <></>
                                 )}
                               </tr>
                             </>
@@ -1938,16 +2002,15 @@ class MappingHW extends React.Component {
                             </>
                           )}
                           <tr align="center">
-                            <td></td>
-                            <td>
-                              {/* <Checkbox1
-                                name={"all"}
-                                checked={this.state.dataChecked_all}
-                                onChange={this.handleChangeChecklistAll}
-                                value={"all"}
-                              /> */}
-                            </td>{" "}
-                            {this.loopSearchBar()}
+                            {this.state.tabs_submenu[0] === true ? (
+                              <>
+                                <td></td>
+                                <td></td>
+                                {this.loopSearchBar()}
+                              </>
+                            ) : (
+                              <>{this.loopSearchBar()}</>
+                            )}
                           </tr>
                         </thead>
                         <tbody>
@@ -2126,25 +2189,6 @@ class MappingHW extends React.Component {
                             this.state.all_data_true.map((e, i) => (
                               <React.Fragment key={e._id + "frag"}>
                                 <tr align="center" key={e._id}>
-                                  {role.includes("BAM-ADMIN") === true ||
-                                  role.includes("BAM-PFM") === true ? (
-                                    <td>
-                                      <Link to={"/hw-cpo/" + e._id}>
-                                        <Button
-                                          size="sm"
-                                          color="secondary"
-                                          title="Edit"
-                                        >
-                                          <i
-                                            className="fa fa-edit"
-                                            aria-hidden="true"
-                                          ></i>
-                                        </Button>
-                                      </Link>
-                                    </td>
-                                  ) : (
-                                    <td></td>
-                                  )}
                                   <td>
                                     {this.LookupField(
                                       e.Po + "-" + e.Line,
@@ -2179,6 +2223,9 @@ class MappingHW extends React.Component {
                                   <td>{e.Config}</td>
                                   <td>{e.Po}</td>
                                   <td>{e.Line}</td>
+                                  <td>{e.Line_Item_Sap}</td>
+                                  <td>{e.Material_Code}</td>
+
                                   <td>
                                     {this.LookupField(
                                       e.Po + "-" + e.Line,
@@ -2187,10 +2234,11 @@ class MappingHW extends React.Component {
                                   </td>
                                   <td>{e.Qty}</td>
                                   <td>{e.NW}</td>
-                                  <td>{e.On_Air_Date}</td>
-                                  <td>{e.Mapping_Date}</td>
+                                  <td>{convertDateFormat(e.On_Air_Date)}</td>
+                                  <td>{convertDateFormat(e.Mapping_Date)}</td>
                                   <td>{e.Remarks}</td>
-                                  <td>{e.Premr_No}</td>
+                                  <td>{e.Gr_No}</td>
+                                  {/* <td>{e.Premr_No}</td> */}
                                   <td>{e.Proceed_Billing_100}</td>
                                   <td>{e.Celcom_User}</td>
                                   <td>
@@ -2223,6 +2271,8 @@ class MappingHW extends React.Component {
                                       "Discounted_Po_Price"
                                     )}
                                   </td>
+                                  <td>{e.Net_Unit_Price}</td>
+                                  <td>{e.Invoice_Total}</td>
                                   <td>
                                     {e.Unit_Price *
                                       e.Qty *
