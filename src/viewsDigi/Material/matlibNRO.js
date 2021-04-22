@@ -345,9 +345,7 @@ class MatNRO extends React.Component {
     this.state.filter_list["Unit_Price"] !== null &&
       this.state.filter_list["Unit_Price"] !== undefined &&
       filter_array.push(
-        '"Unit_Price":{"$regex" : "' +
-        this.state.filter_list["Unit_Price"] +
-        '", "$options" : "i"}'
+        '"Unit_Price":' + this.state.filter_list["Unit_Price"]
       );
     this.state.filter_list["MM_Code"] !== null &&
       this.state.filter_list["MM_Code"] !== undefined &&
@@ -366,7 +364,7 @@ class MatNRO extends React.Component {
     let whereAnd = "{" + filter_array.join(",") + "}";
 
     getDatafromAPINODE(
-      "/mmCode/getMm?q=" +
+      "/mmCode/getMm?srt=_id:1&q=" +
       whereAnd +
       "&lmt=" +
       this.state.perPage +
@@ -390,7 +388,7 @@ class MatNRO extends React.Component {
 
   getMaterialListAll() {
     getDatafromAPINODE(
-      '/mmCode/getMm?q={"Material_Type": "' + module_name + '"}' + "&noPg=1",
+      '/mmCode/getMm?srt=_id:1&q={"Material_Type": "' + module_name + '"}' + "&noPg=1",
       this.state.tokenUser
     ).then((res) => {
       if (res.data !== undefined) {
@@ -399,46 +397,6 @@ class MatNRO extends React.Component {
       }
     });
   }
-
-  exportMatStatus = async () => {
-    const wb = new Excel.Workbook();
-    const ws = wb.addWorksheet();
-
-    // const vendorName = this.state.vendor_list.map((a) => a.Name);
-    let header = [
-      "Material_Type",
-      "Material_Sub_Type",
-      "MM_Code",
-      "MM_Description",
-      "UoM",
-      "Unit_Price",
-      "BB",
-      "BB_Sub",
-      "Region",
-      "SLA",
-      "SoW_Description_or_Site_Type",
-      "Remarks",
-    ];
-    // header = header.concat(vendorName);
-
-    ws.addRow(header);
-    for (let i = 1; i < header.length + 1; i++) {
-      ws.getCell(numToSSColumn(i) + "1").fill = {
-        type: "pattern",
-        pattern: "solid",
-        fgColor: { argb: "FFFFFF00" },
-        bgColor: { argb: "A9A9A9" },
-      };
-      ws.getCell(numToSSColumn(i) + "1").font = {
-        bold: true
-      };
-    }
-
-    ws.addRow([module_name]);
-
-    const PPFormat = await wb.xlsx.writeBuffer();
-    saveAs(new Blob([PPFormat]), "Material " + module_name + " Template.xlsx");
-  };
 
   toggleLoading() {
     this.setState((prevState) => ({
@@ -769,6 +727,8 @@ class MatNRO extends React.Component {
 
     const vendorName = this.state.vendor_list.map((a) => a.Name);
     let header = [
+      "Material_Type",
+      "Material_Sub_Type",
       "BB",
       "BB_Sub",
       "SoW_Description_or_Site_Type",
@@ -777,7 +737,6 @@ class MatNRO extends React.Component {
       "Unit_Price",
       "MM_Code",
       "MM_Description",
-      "SLA",
       "Remarks",
     ];
     // header = header.concat(vendorName);
@@ -790,11 +749,16 @@ class MatNRO extends React.Component {
         fgColor: { argb: "FFFFFF00" },
         bgColor: { argb: "A9A9A9" },
       };
+      ws.getCell(numToSSColumn(i) + "1").font = {
+        bold: true
+      };
     }
 
     for (let i = 0; i < download_all.length; i++) {
       let e = download_all[i];
       ws.addRow([
+        e.Material_Type,
+        e.Material_Sub_Type,
         e.BB,
         e.BB_Sub,
         e.SoW_Description_or_Site_Type,
@@ -803,17 +767,52 @@ class MatNRO extends React.Component {
         e.Unit_Price,
         e.MM_Code,
         e.MM_Description,
-        e.FTV_or_SSO_SLA_or_SSO_Lite_SLA_or_CBO,
-        e.Remarks_or_Acceptance,
-        e.ZERV_18,
-        e.ZEXT_40,
-        e.Note,
-        e.Vendor_List.map((vendor) => vendor.Vendor_Name),
+        e.Remarks,
       ]);
     }
 
     const allocexport = await wb.xlsx.writeBuffer();
-    saveAs(new Blob([allocexport]), "All " + module_name + ".xlsx");
+    saveAs(new Blob([allocexport]), "All " + module_name + " Materials.xlsx");
+  };
+
+  exportMatStatus = async () => {
+    const wb = new Excel.Workbook();
+    const ws = wb.addWorksheet();
+
+    // const vendorName = this.state.vendor_list.map((a) => a.Name);
+    let header = [
+      "Material_Type",
+      "Material_Sub_Type",
+      "MM_Code",
+      "MM_Description",
+      "UoM",
+      "Unit_Price",
+      "BB",
+      "BB_Sub",
+      "Region",
+      "SLA",
+      "SoW_Description_or_Site_Type",
+      "Remarks",
+    ];
+    // header = header.concat(vendorName);
+
+    ws.addRow(header);
+    for (let i = 1; i < header.length + 1; i++) {
+      ws.getCell(numToSSColumn(i) + "1").fill = {
+        type: "pattern",
+        pattern: "solid",
+        fgColor: { argb: "FFFFFF00" },
+        bgColor: { argb: "A9A9A9" },
+      };
+      ws.getCell(numToSSColumn(i) + "1").font = {
+        bold: true
+      };
+    }
+
+    ws.addRow([module_name]);
+
+    const PPFormat = await wb.xlsx.writeBuffer();
+    saveAs(new Blob([PPFormat]), "Material " + module_name + " Template.xlsx");
   };
 
   toggleDelete = (e) => {

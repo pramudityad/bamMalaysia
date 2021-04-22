@@ -10,7 +10,7 @@ const MatARP = React.lazy(() => import("./viewsDigi/Material/matlibARP"));
 const Package = React.lazy(() => import("./viewsDigi/Material/package"));
 
 const LMRCreation = React.lazy(() => import("./viewsDigi/MYAssignment/MYASGCreation"));
-const LMREdit = React.lazy(() => import("./viewsDigi/MYAssignment/MYASGEdit2"));
+const LMREdit = React.lazy(() => import("./viewsDigi/MYAssignment/MYASGEdit"));
 const LMRDetail = React.lazy(() => import("./viewsDigi/MYAssignment/MYASGDetail"));
 const LMRDetailGR = React.lazy(() => import("./viewsDigi/MYAssignment/MYASGDetailGR"));
 const LMRList = React.lazy(() => import("./viewsDigi/MYAssignment/MYASGList"));

@@ -9,6 +9,8 @@ import {
   InputGroupAddon,
   InputGroupText,
   Input,
+  Modal,
+  ModalBody,
   Row,
   Table,
 } from "reactstrap";
@@ -52,6 +54,7 @@ class MYASGList extends Component {
       mr_all: [],
       lmr_list_filter: [],
       lmr_list_pagination: [],
+      modal_loading: false,
     };
     this.handlePageChange = this.handlePageChange.bind(this);
     this.handleFilterList = this.handleFilterList.bind(this);
@@ -80,6 +83,12 @@ class MYASGList extends Component {
     }
   }
 
+  toggleLoading = () => {
+    this.setState((prevState) => ({
+      modal_loading: !prevState.modal_loading,
+    }));
+  };
+
   exportLMR = async () => {
     const wb = new Excel.Workbook();
     const ws = wb.addWorksheet();
@@ -91,8 +100,8 @@ class MYASGList extends Component {
       "Header Text",
       "Payment Terms",
       "GL Account",
-      "Vendor",
-      "Project",
+      "Vendor Name",
+      "Project Name",
       "Grand Total Amount",
       "Requisitioner",
       "L1 Approver",
@@ -131,6 +140,58 @@ class MYASGList extends Component {
     const allocexport = await wb.xlsx.writeBuffer();
     saveAs(new Blob([allocexport]), "All LMR.xlsx");
   };
+
+  downloadLMRlist = async () => {
+    this.toggleLoading();
+    const wb = new Excel.Workbook();
+    const ws = wb.addWorksheet();
+
+    const all_lmr_list = await getDatafromAPINODE('/aspassignment/getAspAssignment?srt=_id:-1&noPg=1', this.state.tokenUser)
+
+    if (all_lmr_list !== undefined) {
+      const allLMR = all_lmr_list.data.data;
+
+      let headerRow = [
+        "LMR ID",
+        "Header Text",
+        "Payment Terms",
+        "GL Account",
+        "Vendor Name",
+        "Project Name",
+        "Grand Total Amount",
+        "Requisitioner",
+        "L1 Approver",
+        "L2 Approver",
+        "L3 Approver",
+        "Request Type",
+      ];
+      ws.addRow(headerRow);
+
+      for (let i = 1; i < headerRow.length + 1; i++) {
+        ws.getCell(this.numToSSColumn(i) + '1').font = { size: 11, bold: true };
+      }
+
+      for (let i = 0; i < allLMR.length; i++) {
+        let po_number = '';
+        // await getDatafromAPITH('/prpo_data?where={"LMR_No":"' + allLMR[i].lmr_id + '"}').then((res) => {
+        //   if (res.data !== undefined) {
+        //     po_number = res.data._items[0].PO_Number;
+        //   }
+        // });
+        ws.addRow([allLMR[i].lmr_id, allLMR[i].header_text, allLMR[i].payment_term, allLMR[i].gl_account, allLMR[i].vendor_name, allLMR[i].project_name, allLMR[i].total_price, allLMR[i].lmr_issued_by, allLMR[i].l1_approver, allLMR[i].l2_approver, allLMR[i].l3_approver, allLMR[i].request_type])
+      }
+
+      const allocexport = await wb.xlsx.writeBuffer();
+      saveAs(new Blob([allocexport]), 'LMR List.xlsx');
+    } else {
+      this.setState({
+        action_status: "failed",
+        action_message: "Cannot get LMR Data!",
+      });
+    }
+
+    this.toggleLoading();
+  }
 
   getMRList() {
     const page = this.state.activePage;
@@ -396,7 +457,7 @@ class MYASGList extends Component {
                   color="warning"
                   style={{ float: "right", marginLeft: "8px" }}
                   size="sm"
-                  onClick={this.exportLMR}
+                  onClick={this.downloadLMRlist}
                 >
                   <i
                     className="fa fa-download"
@@ -464,6 +525,32 @@ class MYASGList extends Component {
             </Card>
           </Col>
         </Row>
+
+        {/* Modal Loading */}
+        <Modal
+          isOpen={this.state.modal_loading}
+          toggle={this.toggleLoading}
+          className={"modal-sm " + this.props.className}
+        >
+          <ModalBody>
+            <div style={{ textAlign: "center" }}>
+              <div className="lds-ring">
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+              </div>
+            </div>
+            <div style={{ textAlign: "center" }}>Loading ...</div>
+            <div style={{ textAlign: "center" }}>System is processing ...</div>
+          </ModalBody>
+          {/* <ModalFooter>
+            <Button color="secondary" onClick={this.toggleLoading}>
+              Close
+            </Button>
+          </ModalFooter> */}
+        </Modal>
+        {/* end Modal Loading */}
       </div>
     );
   }

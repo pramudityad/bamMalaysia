@@ -38,6 +38,7 @@ import {
   deleteDataFromAPINODE2,
   getDatafromAPINODE,
   apiSendEmail,
+  getDatafromAPINODE2,
 } from "../../helper/asyncFunction";
 import ModalCreateNew from "../Component/ModalCreateNew";
 import Pagination from "react-js-pagination";
@@ -46,6 +47,7 @@ import {
   numToSSColumn,
   getUniqueListBy,
   convertDateFormat,
+  formatMoney,
 } from "../../helper/basicFunction";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
@@ -97,6 +99,8 @@ const header = [
   "CONFIG",
   "PO#",
   "LINE",
+  "LINE ITEM SAP CELCOM",
+  "MATERIAL CODE",
   "DESCRIPTION",
   "QTY",
   "CNI DATE",
@@ -104,7 +108,7 @@ const header = [
   "REMARKS",
   "GR NO",
 
-  "PREMR NO.",
+  // "PREMR NO.",
   "PROCEED BILLING 100%",
   "CELCOM USER",
   "PCODE",
@@ -184,13 +188,15 @@ const header_model = [
   "Po",
   "Line",
   "Description",
+  "Line_Item_Sap",
+  "Material_Code",
   "Qty",
   "CNI_Date",
   "Mapping_Date",
   "Remarks",
   "Gr_No",
 
-  "Premr_No",
+  // "Premr_No",
   "Proceed_Billing_100",
   "Celcom_User",
   "Pcode",
@@ -382,7 +388,7 @@ class MappingSVC extends React.PureComponent {
   componentDidMount() {
     // console.log("header", header.length);
     // console.log("model_header", header_model.length);
-    this.getList();
+    // this.getList();
     this.getListAll();
     this.getMaster();
   }
@@ -394,12 +400,12 @@ class MappingSVC extends React.PureComponent {
     ).then((res) => {
       if (res.data !== undefined) {
         const items2 = res.data.data;
-        this.setState({ all_data_master: items2 });
+        this.setState({ all_data_master: items2 }, () => this.getList());
       }
     });
   }
 
-  getList() {
+  async getList() {
     let filter_array = [];
     for (const [key, value] of Object.entries(this.state.filter_list)) {
       if (value !== null && value !== undefined) {
@@ -409,7 +415,7 @@ class MappingSVC extends React.PureComponent {
       }
     }
     let whereAnd = "{" + filter_array.join(",") + "}";
-    getDatafromAPINODE(
+    await getDatafromAPINODE(
       "/cpoMapping/getCpo/required/svc?q=" +
         whereAnd +
         "&lmt=" +
@@ -427,15 +433,17 @@ class MappingSVC extends React.PureComponent {
   }
 
   getListAll() {
-    getDatafromAPINODE(
+    const t0 = performance.now();
+    getDatafromAPINODE2(
       "/cpoMapping/getCpo/required/svc?noPg=1",
       this.state.tokenUser
     ).then((res) => {
       if (res.data !== undefined) {
         const items = res.data.data;
-        this.setState({ all_data_mapping: items }, () =>
-          this.loadOptionsReclocID(items)
-        );
+        const t1 = performance.now();
+        console.log("took " + (t1 - t0) + " milliseconds.");
+        console.log("len ", items.length);
+        this.setState({ all_data_mapping: items });
       }
     });
   }
@@ -468,10 +476,13 @@ class MappingSVC extends React.PureComponent {
       return [];
     } else {
       let asycn_options = [];
-      await getUniqueListBy(this.state.all_data_mapping, "Po").map((data) =>
+      await getUniqueListBy(
+        this.state.all_data_master,
+        "Project_Description"
+      ).map((data) =>
         asycn_options.push({
-          label: data.Po,
-          value: data.Po,
+          label: data.Project_Description,
+          value: data.Project_Description,
           // Reference_Loc_Id: data.Reference_Loc_Id,
           // Po: data.Po,
           // Line: data.Line,
@@ -502,6 +513,7 @@ class MappingSVC extends React.PureComponent {
             Mapping_Date: "",
             Po: e.Po,
             Line: e.Line,
+            Qty: e.Qty,
           })
         );
       // console.log("dataref", data_ref);
@@ -615,6 +627,7 @@ class MappingSVC extends React.PureComponent {
   };
 
   exportTemplate2 = async () => {
+    this.toggleLoading();
     const wb = new Excel.Workbook();
     const ws = wb.addWorksheet();
 
@@ -631,7 +644,7 @@ class MappingSVC extends React.PureComponent {
     }
 
     if (download_all_template !== undefined) {
-      console.log(download_all_template.map((u) => u._id));
+      // console.log(download_all_template.map((u) => u._id));
 
       for (let i = 0; i < download_all_template.length; i++) {
         let e = download_all_template[i];
@@ -737,16 +750,15 @@ class MappingSVC extends React.PureComponent {
       new Blob([PPFormat]),
       this.state.roleUser[1] + " " + modul_name + " All Data.xlsx"
     );
+    this.toggleLoading();
   };
 
   exportTemplateall = async () => {
+    this.toggleLoading();
     const wb = new Excel.Workbook();
     const ws = wb.addWorksheet();
 
-    const download_all_template = await getDatafromAPINODE(
-      "/cpoMapping/getCpo/svc?noPg=1",
-      this.state.tokenUser
-    );
+    const download_all_template = this.state.all_data_mapping;
 
     ws.addRow(header_model);
     for (let i = 1; i < header_model.length + 1; i++) {
@@ -758,11 +770,11 @@ class MappingSVC extends React.PureComponent {
       };
     }
 
-    if (download_all_template.data !== undefined) {
-      console.log(download_all_template.data.data.map((u) => u._id));
+    if (download_all_template !== undefined) {
+      // console.log(download_all_template.data.data.map((u) => u._id));
 
-      for (let i = 0; i < download_all_template.data.data.length; i++) {
-        let e = download_all_template.data.data[i];
+      for (let i = 0; i < download_all_template.length; i++) {
+        let e = download_all_template[i];
         ws.addRow([
           e.Project,
           e.Internal_Po,
@@ -844,6 +856,7 @@ class MappingSVC extends React.PureComponent {
       new Blob([PPFormat]),
       this.state.roleUser[1] + " " + modul_name + " All Data.xlsx"
     );
+    this.toggleLoading();
   };
 
   togglecreateModal = () => {
@@ -1169,13 +1182,14 @@ class MappingSVC extends React.PureComponent {
         ? 2
         : 3;
     const header_update_Mapping_Date = [
-      ["Po", "Line", "Reference_Loc_Id", "Mapping_Date"],
+      ["Po", "Line", "Reference_Loc_Id", "Qty", "Mapping_Date"],
     ];
     const body_update_Mapping_Date = this.state.multiple_select.map((req) =>
       req_body.push([
         req.Po,
         req.Line,
         req.Reference_Loc_Id,
+        req.Qty,
         this.state.mapping_date,
       ])
     );
@@ -1221,7 +1235,7 @@ class MappingSVC extends React.PureComponent {
 
   download_Admin = async () => {
     this.toggleLoading();
-    const download_all_A = this.state.all_data;
+    const download_all_A = this.state.all_data_mapping;
     const wb = new Excel.Workbook();
     const ws = wb.addWorksheet();
 
@@ -1282,10 +1296,7 @@ class MappingSVC extends React.PureComponent {
 
   export_Admin = async () => {
     this.toggleLoading();
-    const download_all_A = await getDatafromAPINODE(
-      "/cpoMapping/getCpo/svc?noPg=1",
-      this.state.tokenUser
-    );
+    const download_all_A = this.state.all_data_mapping;
 
     const wb = new Excel.Workbook();
     const ws = wb.addWorksheet();
@@ -1310,7 +1321,7 @@ class MappingSVC extends React.PureComponent {
 
   download_PFM = async () => {
     this.toggleLoading();
-    const download_all_A = this.state.all_data;
+    const download_all_A = this.state.all_data_mapping;
 
     const wb = new Excel.Workbook();
     const ws = wb.addWorksheet();
@@ -1416,10 +1427,7 @@ class MappingSVC extends React.PureComponent {
 
   export_PFM = async () => {
     this.toggleLoading();
-    const download_all_A = await getDatafromAPINODE(
-      "/cpoMapping/getCpo/svc?noPg=1",
-      this.state.tokenUser
-    );
+    const download_all_A = this.state.all_data_mapping;
 
     const wb = new Excel.Workbook();
     const ws = wb.addWorksheet();
@@ -1493,13 +1501,20 @@ class MappingSVC extends React.PureComponent {
   };
 
   LookupField = (unique_id_master, params_field) => {
-    // console.log(unique_id_master);
     let value = "objectData." + params_field;
     let objectData = this.state.all_data_master.find(
       (e) => e.unique_code === unique_id_master
     );
-    console.log(objectData);
     if (objectData !== undefined) {
+      if (
+        params_field === "Unit_Price" ||
+        params_field === "Total_Price" ||
+        params_field === "Discounted_Unit_Price" ||
+        params_field === "Discounted_Po_Price" ||
+        params_field === "Net_Unit_Price"
+      ) {
+        return formatMoney(eval(value));
+      }
       return eval(value);
     } else {
       return null;
@@ -1528,10 +1543,7 @@ class MappingSVC extends React.PureComponent {
   };
 
   handleChangeChecklistAll = async (e) => {
-    const getall = await getDatafromAPINODE(
-      "/cpoMapping/getCpo/svc?noPg=1",
-      this.state.tokenUser
-    );
+    const getall = await this.state.all_data_mapping;
     console.log(getall.data);
 
     if (getall.data !== undefined) {
@@ -1714,7 +1726,10 @@ class MappingSVC extends React.PureComponent {
                       </DropdownToggle>
                       <DropdownMenu>
                         <DropdownItem header>Export Data</DropdownItem>
-                        <DropdownItem onClick={this.exportTemplateall}>
+                        <DropdownItem
+                          disabled={this.state.all_data_mapping.length === 0}
+                          onClick={this.exportTemplateall}
+                        >
                           {" "}
                           All Data SVC Export
                         </DropdownItem>
@@ -1722,7 +1737,12 @@ class MappingSVC extends React.PureComponent {
 
                         {role.includes("BAM-MAT PLANNER") === true ? (
                           <>
-                            <DropdownItem onClick={this.exportTemplate2}>
+                            <DropdownItem
+                              disabled={
+                                this.state.all_data_mapping.length === 0
+                              }
+                              onClick={this.exportTemplate2}
+                            >
                               {" "}
                               Mapping Template{" " +
                                 this.state.roleUser[1]}{" "}
@@ -1738,7 +1758,12 @@ class MappingSVC extends React.PureComponent {
                         )}
                         {role.includes("BAM-PFM") === true ? (
                           <>
-                            <DropdownItem onClick={this.download_PFM}>
+                            <DropdownItem
+                              disabled={
+                                this.state.all_data_mapping.length === 0
+                              }
+                              onClick={this.download_PFM}
+                            >
                               {" "}
                               Mapping Template{" " +
                                 this.state.roleUser[1]}{" "}
@@ -1752,7 +1777,12 @@ class MappingSVC extends React.PureComponent {
                         )}
                         {role.includes("BAM-ADMIN") === true ? (
                           <>
-                            <DropdownItem onClick={this.download_Admin}>
+                            <DropdownItem
+                              disabled={
+                                this.state.all_data_mapping.length === 0
+                              }
+                              onClick={this.download_Admin}
+                            >
                               {" "}
                               Mapping Template{" " +
                                 this.state.roleUser[1]}{" "}
@@ -1833,7 +1863,7 @@ class MappingSVC extends React.PureComponent {
                           <tr align="center">
                             {this.state.tabs_submenu[0] === true ? (
                               <>
-                                {/* <th></th> */}
+                                <th></th>
                                 <th>Not Required</th>
                               </>
                             ) : (
@@ -1847,7 +1877,7 @@ class MappingSVC extends React.PureComponent {
                             <>
                               <tr align="center">
                                 <th></th>
-                                {/* <th></th> */}
+                                <th></th>
                                 {header_model.map((head, j) =>
                                   head === "Qty" ||
                                   head === "Unit_Price" ||
@@ -1873,7 +1903,7 @@ class MappingSVC extends React.PureComponent {
                           <tr align="center">
                             {this.state.tabs_submenu[0] === true ? (
                               <>
-                                {/* <td></td> */}
+                                <td></td>
                                 <td></td>
                                 {this.loopSearchBar()}
                               </>
@@ -1947,6 +1977,8 @@ class MappingSVC extends React.PureComponent {
                                   <td>{e.Config}</td>
                                   <td>{e.Po}</td>
                                   <td>{e.Line}</td>
+                                  <td>{e.Line_Item_Sap}</td>
+                                  <td>{e.Material_Code}</td>
                                   <td>
                                     {this.LookupField(
                                       e.Po + "-" + e.Line,
@@ -1957,6 +1989,7 @@ class MappingSVC extends React.PureComponent {
                                   <td>{convertDateFormat(e.CNI_Date)}</td>
                                   <td>{convertDateFormat(e.Mapping_Date)}</td>
                                   <td>{e.Remarks}</td>
+                                  <td>{e.Gr_No}</td>
                                   <td>{e.Premr_No}</td>
                                   <td>{e.Proceed_Billing_100}</td>
                                   <td>{e.Celcom_User}</td>

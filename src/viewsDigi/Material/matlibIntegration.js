@@ -104,7 +104,7 @@ class MatIntegration extends React.Component {
   }
 
   getMaterialListAll() {
-    getDatafromAPINODE('/mmCode/getMm?srt=_id:-1&q={"Material_Type": "' + module_name + '"}' + "&noPg=1", this.state.tokenUser).then((res) => {
+    getDatafromAPINODE('/mmCode/getMm?srt=_id:1&q={"Material_Type": "' + module_name + '"}' + "&noPg=1", this.state.tokenUser).then((res) => {
       if (res.data !== undefined) {
         const items = res.data.data;
         this.setState({ material_list_all: items });
@@ -204,7 +204,7 @@ class MatIntegration extends React.Component {
     let whereAnd = "{" + filter_array.join(",") + "}";
 
     getDatafromAPINODE(
-      "/mmCode/getMm?srt=_id:-1&q=" +
+      "/mmCode/getMm?srt=_id:1&q=" +
       whereAnd +
       "&lmt=" +
       this.state.perPage +
@@ -225,46 +225,6 @@ class MatIntegration extends React.Component {
       }
     });
   }
-
-  exportMatStatus = async () => {
-    const wb = new Excel.Workbook();
-    const ws = wb.addWorksheet();
-
-    let header = [
-      "Material_Type",
-      "Material_Sub_Type",
-      "BB",
-      "BB_Sub",
-      "SoW_Description_or_Site_Type",
-      "SLA",
-      "UoM",
-      "Unit_Price",
-      "Region",
-      "MM_Code",
-      "MM_Description",
-      "Vendor_ID",
-      "Vendor_Name",
-      "Remarks",
-    ];
-
-    ws.addRow(header);
-    for (let i = 1; i < header.length + 1; i++) {
-      ws.getCell(numToSSColumn(i) + "1").fill = {
-        type: "pattern",
-        pattern: "solid",
-        fgColor: { argb: "FFFFFF00" },
-        bgColor: { argb: "A9A9A9" },
-      };
-      ws.getCell(numToSSColumn(i) + "1").font = {
-        bold: true
-      };
-    }
-
-    ws.addRow([module_name, module_name]);
-
-    const PPFormat = await wb.xlsx.writeBuffer();
-    saveAs(new Blob([PPFormat]), "Material " + module_name + " Template.xlsx");
-  };
 
   toggleLoading() {
     this.setState((prevState) => ({
@@ -442,6 +402,8 @@ class MatIntegration extends React.Component {
     const ws = wb.addWorksheet();
 
     let headerRow = [
+      "Material_Type",
+      "Material_Sub_Type",
       "BB",
       "BB_Sub",
       "SoW_Description_or_Site_Type",
@@ -463,11 +425,16 @@ class MatIntegration extends React.Component {
         fgColor: { argb: "FFFFFF00" },
         bgColor: { argb: "A9A9A9" },
       };
+      ws.getCell(numToSSColumn(i) + "1").font = {
+        bold: true
+      };
     }
 
     for (let i = 0; i < download_all.length; i++) {
       let e = download_all[i];
       ws.addRow([
+        e.Material_Type,
+        e.Material_Sub_Type,
         e.BB,
         e.BB_Sub,
         e.SoW_Description_or_Site_Type,
@@ -478,13 +445,54 @@ class MatIntegration extends React.Component {
         e.MM_Code,
         e.MM_Description,
         e.Vendor_ID,
-        e.Note,
+        e.Vendor_Name,
+        e.Remarks,
       ]);
     }
 
     const allocexport = await wb.xlsx.writeBuffer();
-    saveAs(new Blob([allocexport]), "All " + module_name + ".xlsx");
-  };
+    saveAs(new Blob([allocexport]), "All " + module_name + " Materials.xlsx");
+  }
+
+  exportMatStatus = async () => {
+    const wb = new Excel.Workbook();
+    const ws = wb.addWorksheet();
+
+    let header = [
+      "Material_Type",
+      "Material_Sub_Type",
+      "BB",
+      "BB_Sub",
+      "SoW_Description_or_Site_Type",
+      "SLA",
+      "UoM",
+      "Unit_Price",
+      "Region",
+      "MM_Code",
+      "MM_Description",
+      "Vendor_ID",
+      "Vendor_Name",
+      "Remarks",
+    ];
+
+    ws.addRow(header);
+    for (let i = 1; i < header.length + 1; i++) {
+      ws.getCell(numToSSColumn(i) + "1").fill = {
+        type: "pattern",
+        pattern: "solid",
+        fgColor: { argb: "FFFFFF00" },
+        bgColor: { argb: "A9A9A9" },
+      };
+      ws.getCell(numToSSColumn(i) + "1").font = {
+        bold: true
+      };
+    }
+
+    ws.addRow([module_name, module_name]);
+
+    const PPFormat = await wb.xlsx.writeBuffer();
+    saveAs(new Blob([PPFormat]), "Material " + module_name + " Template.xlsx");
+  }
 
   findVendorName = (vendor_id) => {
     let vendordata = this.state.vendor_list.find(
