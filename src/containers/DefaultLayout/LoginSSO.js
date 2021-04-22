@@ -261,7 +261,7 @@ class SSOLogin extends Component {
                     </div>
                   </div>
                 </Col>
-                {/* <Col md="6" lg="6" xl="6">
+                <Col md="6" lg="6" xl="6">
                   <div className="flex--card-account">
                     <div
                       className="card-account--digi"
@@ -276,7 +276,7 @@ class SSOLogin extends Component {
                       </div>
                     </div>
                   </div>
-                </Col> */}
+                </Col>
               </Row>
               {this.state.authenticatedLoginBAM === false && (
                 <Row className="justify-content-center">
