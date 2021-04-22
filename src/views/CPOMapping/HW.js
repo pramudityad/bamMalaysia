@@ -49,6 +49,7 @@ import {
   getUniqueListBy,
   convertDateFormat,
   formatMoney,
+  arraychunk,
 } from "../../helper/basicFunction";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
@@ -273,6 +274,8 @@ const header_materialmapping = [
   "Config",
   "Po",
   "Line",
+  "Line_Item_Sap",
+  "Material_Code",
   "Description",
   "Qty",
   "NW",
@@ -280,7 +283,6 @@ const header_materialmapping = [
   "Mapping_Date",
   "Remarks",
   "Gr_No",
-
   "Premr_No",
   "Proceed_Billing_100",
   "Celcom_User",
@@ -340,51 +342,52 @@ const header_admin = [
 ];
 
 class MappingHW extends React.Component {
-  csvLink = React.createRef();
-  // constructor(props) {
-  //   super(props);
-  state = {
-    tokenUser: this.props.dataLogin.token,
-    roleUser: this.props.dataLogin.role,
-    dropdownOpen: new Array(3).fill(false),
-    all_data: [],
-    createModal: false,
-    rowsXLS: [],
-    modal_loading: false,
-    prevPage: 0,
-    activePage: 1,
-    totalData: 0,
-    perPage: 10,
-    CPOForm: {},
-    modalEdit: false,
-    modal_loading: false,
-    modal_callof: false,
-    multiple_select: [],
-    multiple_select2: [],
-    mapping_date: "",
-    po_select: null,
-    reloc_options: [],
-    action_status: null,
-    action_message: null,
-    filter_list: {},
-    all_data_master: [],
-    all_data_mapping: [],
-    dataChecked: new Map(),
-    dataChecked_container: [],
-    dataChecked_container2: [],
-    tabs_submenu: [true, false],
-    all_data_true: [],
-    dataChecked_all: false,
-    count_header: {},
-  };
-  // }
+  // csvLink = React.createRef();
+  constructor(props) {
+    super(props);
+    this.state = {
+      tokenUser: this.props.dataLogin.token,
+      roleUser: this.props.dataLogin.role,
+      dropdownOpen: new Array(3).fill(false),
+      all_data: [],
+      createModal: false,
+      rowsXLS: [],
+      modal_loading: false,
+      prevPage: 0,
+      activePage: 1,
+      totalData: 0,
+      perPage: 10,
+      CPOForm: {},
+      modalEdit: false,
+      modal_loading: false,
+      modal_callof: false,
+      multiple_select: [],
+      multiple_select2: [],
+      mapping_date: "",
+      po_select: null,
+      reloc_options: [],
+      action_status: null,
+      action_message: null,
+      filter_list: {},
+      all_data_master: [],
+      all_data_mapping: [],
+      dataChecked: new Map(),
+      dataChecked_container: [],
+      dataChecked_container2: [],
+      tabs_submenu: [true, false],
+      all_data_true: [],
+      dataChecked_all: false,
+      count_header: {},
+    };
+    // this.exportTemplate2 = this.exportTemplate2.bind(this);
+  }
 
   componentDidMount() {
     console.log("token", this.state.tokenUser);
     // console.log("model_header", header_model.length);
     // this.getList();
     // this.getHeader();
-    // this.getListAll();
+    this.getListAll();
     this.getMaster();
   }
 
@@ -404,7 +407,7 @@ class MappingHW extends React.Component {
     ).then((res) => {
       if (res.data !== undefined) {
         const items3 = res.data.data;
-        console.log("items3 ", items3);
+        // console.log("items3 ", items3);
         this.setState({ count_header: items3 });
       }
     });
@@ -564,7 +567,8 @@ class MappingHW extends React.Component {
     }
   };
 
-  getListAll = () => {
+  getListAll = async () => {
+    let all_data = [];
     this.toggleLoading();
     const t0 = performance.now();
     getDatafromAPINODE(
@@ -576,14 +580,21 @@ class MappingHW extends React.Component {
         const t1 = performance.now();
         console.log("took 1" + (t1 - t0) + " milliseconds.");
         console.log("len ", items.length);
-        this.setState({ all_data_mapping: items }, () => {
-          setTimeout(() => {
-            this.csvLink.current.link.click();
-          });
-          this.toggleLoading();
-        });
+        // all_data = items;
+        // return all_data;
+        this.setState(
+          { all_data_mapping: items }
+          //   , () => {
+          //   setTimeout(() => {
+          //     this.csvLink.current.link.click();
+          //   });
+          // }
+        );
+      } else {
+        all_data = [];
       }
     });
+    this.toggleLoading();
   };
 
   getList2() {
@@ -675,7 +686,7 @@ class MappingHW extends React.Component {
     const wb = new Excel.Workbook();
     const ws = wb.addWorksheet();
 
-    const download_all_template = await this.state.all_data_mapping;
+    const download_all_template = this.state.all_data_mapping;
     ws.addRow(header_materialmapping);
     for (let i = 1; i < header_materialmapping.length + 1; i++) {
       ws.getCell(numToSSColumn(i) + "1").fill = {
@@ -692,10 +703,10 @@ class MappingHW extends React.Component {
       for (let i = 0; i < download_all_template.length; i++) {
         let e = download_all_template[i];
         ws.addRow([
-          this.LookupField(e.Po + "-" + e.Line, "Deal_Name"),
-          this.LookupField(e.Po + "-" + e.Line, "Hammer"),
-          this.LookupField(e.Po + "-" + e.Line, "Project_Description"),
-          this.LookupField(e.Po + "-" + e.Line, "Po_Number"),
+          this.LookupField2(e.Po + "-" + e.Line, "Deal_Name"),
+          this.LookupField2(e.Po + "-" + e.Line, "Hammer"),
+          this.LookupField2(e.Po + "-" + e.Line, "Project_Description"),
+          this.LookupField2(e.Po + "-" + e.Line, "Po_Number"),
           e.Data_1,
           e.Lookup_Reference,
           e.Region,
@@ -708,7 +719,7 @@ class MappingHW extends React.Component {
           e.Line,
           e.Line_Item_Sap,
           e.Material_Code,
-          this.LookupField(e.Po + "-" + e.Line, "Description"),
+          this.LookupField2(e.Po + "-" + e.Line, "Description"),
           e.Qty,
           e.NW,
           e.On_Air_Date,
@@ -717,26 +728,25 @@ class MappingHW extends React.Component {
           e.Premr_No,
           e.Proceed_Billing_100,
           e.Celcom_User,
-          this.LookupField(e.Po + "-" + e.Line, "Pcode"),
-          this.LookupField(e.Po + "-" + e.Line, "Unit_Price"),
-          this.LookupField(e.Po + "-" + e.Line, "Total_Price"),
-          this.LookupField(e.Po + "-" + e.Line, "Discounted_Unit_Price"),
-          this.LookupField(e.Po + "-" + e.Line, "Discounted_Po_Price"),
+          this.LookupField2(e.Po + "-" + e.Line, "Pcode"),
+          this.LookupField2(e.Po + "-" + e.Line, "Unit_Price"),
+          this.LookupField2(e.Po + "-" + e.Line, "Total_Price"),
+          this.LookupField2(e.Po + "-" + e.Line, "Discounted_Unit_Price"),
+          this.LookupField2(e.Po + "-" + e.Line, "Discounted_Po_Price"),
         ]);
       }
     }
+    this.toggleLoading();
     const PPFormat = await wb.xlsx.writeBuffer();
     saveAs(
       new Blob([PPFormat]),
       this.state.roleUser[1] + " " + modul_name + " All Data.xlsx"
     );
-    this.toggleLoading();
   };
 
   exportTemplateall = async () => {
     this.toggleLoading();
     // this.getListAll();
-    const t2 = performance.now();
 
     const wb = new Excel.Workbook();
     const ws = wb.addWorksheet();
@@ -757,10 +767,10 @@ class MappingHW extends React.Component {
       for (let i = 0; i < download_all_template.length; i++) {
         let e = download_all_template[i];
         ws.addRow([
-          this.LookupField(e.Po + "-" + e.Line, "Deal_Name"),
-          this.LookupField(e.Po + "-" + e.Line, "Hammer"),
-          this.LookupField(e.Po + "-" + e.Line, "Project_Description"),
-          this.LookupField(e.Po + "-" + e.Line, "Po_Number"),
+          this.LookupField2(e.Po + "-" + e.Line, "Deal_Name"),
+          this.LookupField2(e.Po + "-" + e.Line, "Hammer"),
+          this.LookupField2(e.Po + "-" + e.Line, "Project_Description"),
+          this.LookupField2(e.Po + "-" + e.Line, "Po_Number"),
           e.Data_1,
           e.Lookup_Reference,
           e.Region,
@@ -773,7 +783,7 @@ class MappingHW extends React.Component {
           e.Line,
           e.Line_Item_Sap,
           e.Material_Code,
-          this.LookupField(e.Po + "-" + e.Line, "Description"),
+          this.LookupField2(e.Po + "-" + e.Line, "Description"),
           e.Qty,
           e.NW,
           e.On_Air_Date,
@@ -782,14 +792,14 @@ class MappingHW extends React.Component {
           e.Premr_No,
           e.Proceed_Billing_100,
           e.Celcom_User,
-          this.LookupField(e.Po + "-" + e.Line, "Pcode"),
-          this.LookupField(e.Po + "-" + e.Line, "Unit_Price"),
-          this.LookupField(e.Po + "-" + e.Line, "Total_Price"),
-          this.LookupField(e.Po + "-" + e.Line, "Discounted_Unit_Price"),
-          this.LookupField(e.Po + "-" + e.Line, "Discounted_Po_Price"),
+          this.LookupField2(e.Po + "-" + e.Line, "Pcode"),
+          this.LookupField2(e.Po + "-" + e.Line, "Unit_Price"),
+          this.LookupField2(e.Po + "-" + e.Line, "Total_Price"),
+          this.LookupField2(e.Po + "-" + e.Line, "Discounted_Unit_Price"),
+          this.LookupField2(e.Po + "-" + e.Line, "Discounted_Po_Price"),
           e.Unit_Price *
             e.Qty *
-            (this.LookupField(e.Po + "-" + e.Line, "Hammer_1_Hd") / 100),
+            (this.LookupField2(e.Po + "-" + e.Line, "Hammer_1_Hd") / 100),
           e.So_Line_Item_Description,
           e.Sitepcode,
           e.VlookupWbs,
@@ -835,26 +845,12 @@ class MappingHW extends React.Component {
       }
     }
     const PPFormat = await wb.xlsx.writeBuffer();
-    // let export_file =
-    //   (new Blob([PPFormat]),
-    //   this.state.roleUser[1] + " " + modul_name + " All Data.xlsx");
-    // let dataEmail = {
-    //   // "to": creatorEmail,
-    //   // to: "pramudityad@student.telkomuniversity.ac.id",
-    //   to: "pramudityad@outlook.com",
-    //   subject: "[NOTIFY to CPM] " + modul_name,
-    //   body: "test file",
-    //   attachments: export_file,
+    this.toggleLoading();
     // };
     saveAs(
       new Blob([PPFormat]),
       this.state.roleUser[1] + " " + modul_name + " All Data.xlsx"
     );
-    const t3 = performance.now();
-    console.log("took 2" + (t3 - t2) + " milliseconds.");
-    // const sendEmail = await apiSendEmail(dataEmail);
-    // console.log("sendEmail ", sendEmail);
-    this.toggleLoading();
   };
 
   togglecreateModal = () => {
@@ -929,7 +925,7 @@ class MappingHW extends React.Component {
       {
         rowsXLS: newDataXLS,
       },
-      () => console.log("ini", this.state.rowsXLS)
+      () => console.log("ini", arraychunk(this.state.rowsXLS, 5000))
     );
   }
 
@@ -1306,7 +1302,7 @@ class MappingHW extends React.Component {
 
   download_Admin = async () => {
     this.toggleLoading();
-    const download_all_A = await this.state.all_data_mapping;
+    const download_all_A = this.state.all_data_mapping;
 
     const wb = new Excel.Workbook();
     const ws = wb.addWorksheet();
@@ -1336,8 +1332,8 @@ class MappingHW extends React.Component {
         let e = download_all_A[i];
         ws.addRow([
           e.Deal_Name,
-          this.LookupField(e.Po_Number + "-" + e.Line, "Hammer"),
-          this.LookupField(e.Po_Number + "-" + e.Line, "Project_Description"),
+          this.LookupField2(e.Po_Number + "-" + e.Line, "Hammer"),
+          this.LookupField2(e.Po_Number + "-" + e.Line, "Project_Description"),
           e.Po_Number,
           e.Reference_Loc_Id,
           e.Line,
@@ -1353,11 +1349,11 @@ class MappingHW extends React.Component {
     }
 
     const allocexport = await wb.xlsx.writeBuffer();
+    this.toggleLoading();
     saveAs(
       new Blob([allocexport]),
       "All Data " + this.state.roleUser[1] + " " + modul_name + ".xlsx"
     );
-    this.toggleLoading();
   };
 
   export_Admin = async () => {
@@ -1381,16 +1377,16 @@ class MappingHW extends React.Component {
     }
 
     const allocexport = await wb.xlsx.writeBuffer();
+    this.toggleLoading();
     saveAs(
       new Blob([allocexport]),
       "Template " + this.state.roleUser[1] + " " + modul_name + ".xlsx"
     );
-    this.toggleLoading();
   };
 
   download_PFM = async () => {
     this.toggleLoading();
-    const download_all_A = await this.state.all_data;
+    const download_all_A = this.state.all_data;
 
     const wb = new Excel.Workbook();
     const ws = wb.addWorksheet();
@@ -1447,8 +1443,8 @@ class MappingHW extends React.Component {
         let e = download_all_A[i];
         ws.addRow([
           e.Deal_Name,
-          this.LookupField(e.Po + "-" + e.Line, "Hammer"),
-          this.LookupField(e.Po + "-" + e.Line, "Project_Description"),
+          this.LookupField2(e.Po + "-" + e.Line, "Hammer"),
+          this.LookupField2(e.Po + "-" + e.Line, "Project_Description"),
           e.Po_Number,
           e.Reference_Loc_Id,
           e.Line,
@@ -1489,11 +1485,11 @@ class MappingHW extends React.Component {
     }
 
     const allocexport = await wb.xlsx.writeBuffer();
+    this.toggleLoading();
     saveAs(
       new Blob([allocexport]),
       "All Data " + this.state.roleUser[1] + " " + modul_name + ".xlsx"
     );
-    this.toggleLoading();
   };
 
   export_PFM = async () => {
@@ -1535,7 +1531,6 @@ class MappingHW extends React.Component {
 
   onChangeDebounced = () => {
     this.state.tabs_submenu[0] === true ? this.getList() : this.getList2();
-    // this.state.tabs_submenu[0] === true ? this.getHeader() : this.getList2();
   };
 
   handleFilterList = (e) => {
@@ -1599,6 +1594,18 @@ class MappingHW extends React.Component {
       ) {
         return formatMoney(eval(value));
       }
+      return eval(value);
+    } else {
+      return null;
+    }
+  };
+
+  LookupField2 = (unique_id_master, params_field) => {
+    let value = "objectData." + params_field;
+    let objectData = this.state.all_data_master.find(
+      (e) => e.unique_code === unique_id_master
+    );
+    if (objectData !== undefined) {
       return eval(value);
     } else {
       return null;
@@ -1790,7 +1797,7 @@ class MappingHW extends React.Component {
                     </div>
                   </div>
                   &nbsp;&nbsp;&nbsp;
-                  <div>
+                  {/* <div>
                     <Button onClick={this.getListAll}>CSV file</Button>
                     <CSVLink
                       data={this.state.all_data_mapping}
@@ -1798,20 +1805,9 @@ class MappingHW extends React.Component {
                       ref={this.csvLink}
                       target="_blank"
                       filename={"All Data HW Export.csv"}
-                    />
-                    {/* this.state.all_data_mapping.length !== 0 ? (
-                      <CSVLink
-                        data={this.state.all_data_mapping}
-                        separator={";"}
-                        filename={"All Data HW Export.csv"}
-                      >
-                        CSV file
-                      </CSVLink>
-                    ) : (
-                      ""
-                    )} */}
+                    />               
                   </div>
-                  &nbsp;&nbsp;&nbsp;
+                  &nbsp;&nbsp;&nbsp; */}
                   <div>
                     <Dropdown
                       isOpen={this.state.dropdownOpen[1]}
@@ -1965,7 +1961,7 @@ class MappingHW extends React.Component {
                           <tr align="center">
                             {this.state.tabs_submenu[0] === true ? (
                               <>
-                                <th></th>
+                                {/* <th></th> */}
                                 <th>Not Required</th>
                               </>
                             ) : (
@@ -1978,7 +1974,7 @@ class MappingHW extends React.Component {
                           {this.state.tabs_submenu[0] === true ? (
                             <>
                               <tr align="center">
-                                <th></th>
+                                {/* <th></th> */}
                                 <th></th>
                                 {Object.keys(this.state.count_header).length !==
                                   0 &&
@@ -2004,7 +2000,7 @@ class MappingHW extends React.Component {
                           <tr align="center">
                             {this.state.tabs_submenu[0] === true ? (
                               <>
-                                <td></td>
+                                {/* <td></td> */}
                                 <td></td>
                                 {this.loopSearchBar()}
                               </>
@@ -2019,7 +2015,7 @@ class MappingHW extends React.Component {
                             this.state.all_data.map((e, i) => (
                               <React.Fragment key={e._id + "frag"}>
                                 <tr align="center" key={e._id}>
-                                  <td>
+                                  {/* <td>
                                     <Link to={"/hw-cpo/" + e._id}>
                                       <Button
                                         size="sm"
@@ -2032,7 +2028,7 @@ class MappingHW extends React.Component {
                                         ></i>
                                       </Button>
                                     </Link>
-                                  </td>
+                                  </td> */}
 
                                   <td>
                                     <Checkbox1
@@ -2144,37 +2140,65 @@ class MappingHW extends React.Component {
                                   <td>{e.So_No}</td>
                                   <td>{e.Wbs_No}</td>
                                   <td>
-                                    {e.For_Checking_Purpose_Only_Rashidah}
+                                    {convertDateFormat(
+                                      e.For_Checking_Purpose_Only_Rashidah
+                                    )}
                                   </td>
-                                  <td>{e.Hw_Coa_Received_Date_80}</td>
+                                  <td>
+                                    {convertDateFormat(
+                                      e.Hw_Coa_Received_Date_80
+                                    )}
+                                  </td>
                                   <td>{e.Billing_Upon_Hw_Coa_80}</td>
                                   <td>{e.Invoicing_No_Hw_Coa_80}</td>
                                   <td>{e.Invoicing_Date_Hw_Coa_80}</td>
-                                  <td>{e.Cancelled_Invoice_Hw_Coa_80}</td>
+                                  <td>
+                                    {convertDateFormat(
+                                      e.Cancelled_Invoice_Hw_Coa_80
+                                    )}
+                                  </td>
                                   <td>{e.Ni_Coa_Date_20}</td>
                                   <td>{e.Billing_Upon_Ni_20}</td>
                                   <td>{e.Invoicing_No_Ni_20}</td>
                                   <td>{e.Invoicing_Date_Ni_20}</td>
                                   <td>{e.Cancelled_Invoicing_Ni_20}</td>
-                                  <td>{e.Hw_Coa_Received_Date_40}</td>
+                                  <td>
+                                    {convertDateFormat(
+                                      e.Hw_Coa_Received_Date_40
+                                    )}
+                                  </td>
                                   <td>{e.Billing_Upon_Hw_Coa_40}</td>
                                   <td>{e.Invoicing_No_Hw_Coa_40}</td>
-                                  <td>{e.Invoicing_Date_Hw_Coa_40}</td>
+                                  <td>
+                                    {convertDateFormat(
+                                      e.Invoicing_Date_Hw_Coa_40
+                                    )}
+                                  </td>
                                   <td>{e.Cancelled_Hw_Coa_40}</td>
-                                  <td>{e.Ni_Coa_Date_40}</td>
+                                  <td>{convertDateFormat(e.Ni_Coa_Date_40)}</td>
                                   <td>{e.Billing_Upon_Ni_40}</td>
                                   <td>{e.Invoicing_No_Ni_40}</td>
-                                  <td>{e.Invoicing_Date_Ni_40}</td>
+                                  <td>
+                                    {convertDateFormat(e.Invoicing_Date_Ni_40)}
+                                  </td>
                                   <td>{e.Cancelled_Ni_40}</td>
                                   <td>{e.Sso_Coa_Date_20_1}</td>
                                   <td>{e.Billing_Upon_Sso_20_1}</td>
                                   <td>{e.Invoicing_No_Sso_20_1}</td>
-                                  <td>{e.Invoicing_Date_Sso_20_1}</td>
+                                  <td>
+                                    {convertDateFormat(
+                                      e.Invoicing_Date_Sso_20_1
+                                    )}
+                                  </td>
                                   <td>{e.Cancelled_Sso_20}</td>
                                   <td>{e.Hw_Coa_100}</td>
                                   <td>{e.Billing_Upon_Hw_Coa_100}</td>
                                   <td>{e.Invoicing_No_Hw_Coa_100}</td>
-                                  <td>{e.Invoicing_Date_Hw_Coa_100}</td>
+                                  <td>
+                                    {convertDateFormat(
+                                      e.Invoicing_Date_Hw_Coa_100
+                                    )}
+                                  </td>
                                   <td>{e.Cancelled_Invoicing_Hw_Coa_100}</td>
                                   <td>{e.Cancel_Column}</td>
                                   <td>{e.Reference_Loc_Id_1}</td>
