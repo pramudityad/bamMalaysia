@@ -817,7 +817,19 @@ class MYASGEdit extends Component {
             mm_data_type = "Transport";
           }
           this.setState({ mm_data_type: mm_data_type });
-          this.setState({ creation_lmr_child_form: dataLMRDetail.detail });
+          this.setState({ creation_lmr_child_form: dataLMRDetail.detail }, async () => {
+            let child_form = this.state.creation_lmr_child_form;
+            if (child_form.length > 0) {
+              for (let i = 0; i < child_form.length > 0; i++) {
+                let findWPID = await this.getWPfromACT("https://dev-corsanywhere.e-dpm.com/", "https://act.e-dpm.com/api/find_by_wpid?wp_id=" + child_form[i].wp_id);
+                if (findWPID !== undefined && findWPID.data !== undefined && findWPID.data.result !== undefined && findWPID.data.result.status >= 200 && findWPID.data.result.status <= 300) {
+                  child_form[i]["m_id_wp"] = findWPID.data.result.m_id;
+                } else {
+                  child_form[i]["m_id_wp"] = "";
+                }
+              }
+            }
+          });
         }
       }
     );
@@ -1850,15 +1862,11 @@ class MYASGEdit extends Component {
       (e) => e.MM_Code === value
     );
     let dataLMR = this.state.creation_lmr_child_form;
-    dataLMR[parseInt(this.state.current_material_select)]["material_code_doc"] =
-      data_material._id;
-    dataLMR[parseInt(this.state.current_material_select)]["material"] =
-      data_material.MM_Code;
-    dataLMR[parseInt(this.state.current_material_select)]["description"] =
-      data_material.MM_Description;
-    dataLMR[parseInt(this.state.current_material_select)]["unit_price"] =
-      data_material.Unit_Price;
-    dataLMR[parseInt(this.state.current_material_select)]["qty"] = 0;
+    dataLMR[parseInt(this.state.current_material_select)]["material_code_doc"] = data_material._id;
+    dataLMR[parseInt(this.state.current_material_select)]["material"] = data_material.MM_Code;
+    dataLMR[parseInt(this.state.current_material_select)]["description"] = data_material.MM_Description;
+    dataLMR[parseInt(this.state.current_material_select)]["unit_price"] = data_material.Unit_Price;
+    dataLMR[parseInt(this.state.current_material_select)]["total_value"] = dataLMR[parseInt(this.state.current_material_select)]["qty"] * dataLMR[parseInt(this.state.current_material_select)]["unit_price"];
     this.setState({ creation_lmr_child_form: dataLMR });
     this.decideToggleMaterial();
   }
