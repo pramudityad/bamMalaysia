@@ -99,8 +99,9 @@ const header = [
   "CONFIG",
   "PO#",
   "LINE",
-  "LINE ITEM SAP CELCOM",
   "MATERIAL CODE",
+  "LINE ITEM SAP CELCOM",
+
   "DESCRIPTION",
   "QTY",
   "CNI DATE",
@@ -187,9 +188,10 @@ const header_model = [
   "Config",
   "Po",
   "Line",
+  "Material_Code",
   "Description",
   "Line_Item_Sap",
-  "Material_Code",
+
   "Qty",
   "CNI_Date",
   "Mapping_Date",
@@ -243,11 +245,11 @@ const header_model = [
   "Invoicing_No_Cosso_60",
   "Invoicing_Date_Cosso_60",
   "Cancelled_Cosso_Received_Date_60",
-  "Sso_Coa_Date_100",
+  "Coa_Sso_Received_Date_100",
   "Billing_Upon_Sso_Coa_100",
   "Invoicing_No_Sso_Coa_100",
   "Invoicing_Date_Sso_Coa_100",
-  "Cancelled_Sso_Coa_Date_100",
+  "Cancelled_Coa_Sso_Received_Date_100",
   "Coa_Ni_Date_100",
   "Billing_Upon_Coa_Ni_100",
   "Invoicing_No_Coa_Ni_100",
@@ -318,11 +320,11 @@ const header_pfm = [
   "Invoicing_No_Coa_Psp_20",
   "Invoicing_Date_Coa_Psp_20",
   "Cancelled_Coa_Psp_Received_Date_20",
-  // "Sso_Coa_Date_100",
+  // "Coa_Sso_Received_Date_100",
   "Billing_Upon_Sso_Coa_100",
   "Invoicing_No_Sso_Coa_100",
   "Invoicing_Date_Sso_Coa_100",
-  "Cancelled_Sso_Coa_Date_100",
+  "Cancelled_Coa_Sso_Received_Date_100",
   "Coa_Ni_Date_100",
   "Billing_Upon_Coa_Ni_100",
   "Invoicing_No_Coa_Ni_100",
@@ -729,7 +731,7 @@ class MappingSVC extends React.PureComponent {
           e.CNI_Date,
           e.Mapping_Date,
           e.Remarks,
-          e.Premr_No,
+          // e.Premr_No,
           e.Proceed_Billing_100,
           e.Celcom_User,
 
@@ -785,11 +787,11 @@ class MappingSVC extends React.PureComponent {
           e.Invoicing_No_Cosso_60,
           e.Invoicing_Date_Cosso_60,
           e.Cancelled_Cosso_Received_Date_60,
-          e.Sso_Coa_Date_100,
+          e.Coa_Sso_Received_Date_100,
           e.Billing_Upon_Sso_Coa_100,
           e.Invoicing_No_Sso_Coa_100,
           e.Invoicing_Date_Sso_Coa_100,
-          e.Cancelled_Sso_Coa_Date_100,
+          e.Cancelled_Coa_Sso_Received_Date_100,
           e.Coa_Ni_Date_100,
           e.Billing_Upon_Coa_Ni_100,
           e.Invoicing_No_Coa_Ni_100,
@@ -847,9 +849,10 @@ class MappingSVC extends React.PureComponent {
           e.Config,
           e.Po,
           e.Line,
+          e.Material_Code,
           this.LookupField2(e.Po + "-" + e.Line, "Description"),
           e.Line_Item_Sap,
-          e.Material_Code,
+
           e.Qty,
           e.CNI_Date,
           e.Mapping_Date,
@@ -902,11 +905,11 @@ class MappingSVC extends React.PureComponent {
           e.Invoicing_No_Cosso_60,
           e.Invoicing_Date_Cosso_60,
           e.Cancelled_Cosso_Received_Date_60,
-          e.Sso_Coa_Date_100,
+          e.Coa_Sso_Received_Date_100,
           e.Billing_Upon_Sso_Coa_100,
           e.Invoicing_No_Sso_Coa_100,
           e.Invoicing_Date_Sso_Coa_100,
-          e.Cancelled_Sso_Coa_Date_100,
+          e.Cancelled_Coa_Sso_Received_Date_100,
           e.Coa_Ni_Date_100,
           e.Billing_Upon_Coa_Ni_100,
           e.Invoicing_No_Coa_Ni_100,
@@ -995,9 +998,12 @@ class MappingSVC extends React.PureComponent {
       }
       newDataXLS.push(col);
     }
-    this.setState({
-      rowsXLS: newDataXLS,
-    });
+    this.setState(
+      {
+        rowsXLS: newDataXLS,
+      },
+      () => console.log(this.state.rowsXLS)
+    );
   }
 
   toggle = (i) => {
@@ -1029,32 +1035,53 @@ class MappingSVC extends React.PureComponent {
       this.state.tokenUser
     );
     if (res.data !== undefined) {
-      const table_header = Object.keys(res.data.updateData[0]);
-      const update_Data = res.data.updateData;
-      const new_table_header = table_header.slice(0, -2);
-      // update_Data.map((row, k) => console.log(row));
-      console.log(table_header);
-      let value = "row.";
-      const bodyEmail =
-        "<h2>DPM - BAM Notification</h2><br/><span>Please be notified that the following " +
-        modul_name +
-        " data has been updated <br/><br/><table><tr>" +
-        new_table_header.map((tab, i) => "<th>" + tab + "</th>").join(" ") +
-        "</tr>" +
-        update_Data
-          .map(
-            (row, j) =>
-              "<tr key={" +
-              j +
-              "}>" +
-              new_table_header
-                .map((td) => "<td>" + eval(value + td) + "</td>")
-                .join(" ") +
-              "</tr>"
-          )
-          .join(" ") +
-        "</table>";
-      if (res.data.warnNotif.length !== 0) {
+      if (res.data.updateData.length !== 0) {
+        const table_header = Object.keys(res.data.updateData[0]);
+        const update_Data = res.data.updateData;
+        const new_table_header = table_header.slice(0, -2);
+        // update_Data.map((row, k) => console.log(row));
+        console.log(table_header);
+        let value = "row.";
+        const bodyEmail =
+          "<h2>DPM - BAM Notification</h2><br/><span>Please be notified that the following " +
+          modul_name +
+          " data has been updated <br/><br/><table><tr>" +
+          new_table_header.map((tab, i) => "<th>" + tab + "</th>").join(" ") +
+          "</tr>" +
+          update_Data
+            .map(
+              (row, j) =>
+                "<tr key={" +
+                j +
+                "}>" +
+                new_table_header
+                  .map((td) => "<td>" + eval(value + td) + "</td>")
+                  .join(" ") +
+                "</tr>"
+            )
+            .join(" ") +
+          "</table>";
+        if (res.data.warnNotif.length !== 0) {
+          let dataEmail = {
+            // "to": creatorEmail,
+            // to: "pramudityad@student.telkomuniversity.ac.id",
+            to: global.config.role.cpm,
+            subject: "[NOTIFY to CPM] " + modul_name,
+            body: bodyEmail,
+          };
+          const sendEmail = await apiSendEmail(dataEmail);
+          // console.log(sendEmail);
+          this.setState({
+            action_status: "warning",
+            action_message:
+              "success with warn " + res.data.warnNotif.map((warn) => warn),
+          });
+          this.toggleLoading();
+          return;
+          // setTimeout(function () {
+          //   window.location.reload();
+          // }, 1500);
+        }
         let dataEmail = {
           // "to": creatorEmail,
           // to: "pramudityad@student.telkomuniversity.ac.id",
@@ -1064,31 +1091,12 @@ class MappingSVC extends React.PureComponent {
         };
         const sendEmail = await apiSendEmail(dataEmail);
         // console.log(sendEmail);
-        this.setState({
-          action_status: "warning",
-          action_message:
-            "success with warn " + res.data.warnNotif.map((warn) => warn),
-        });
+        this.setState({ action_status: "success" });
         this.toggleLoading();
-        return;
         // setTimeout(function () {
         //   window.location.reload();
         // }, 1500);
       }
-      let dataEmail = {
-        // "to": creatorEmail,
-        // to: "pramudityad@student.telkomuniversity.ac.id",
-        to: global.config.role.cpm,
-        subject: "[NOTIFY to CPM] " + modul_name,
-        body: bodyEmail,
-      };
-      const sendEmail = await apiSendEmail(dataEmail);
-      // console.log(sendEmail);
-      this.setState({ action_status: "success" });
-      this.toggleLoading();
-      // setTimeout(function () {
-      //   window.location.reload();
-      // }, 1500);
     } else {
       if (
         res.response !== undefined &&
@@ -1475,7 +1483,7 @@ class MappingSVC extends React.PureComponent {
           e.Billing_Upon_Sso_Coa_100,
           e.Invoicing_No_Sso_Coa_100,
           e.Invoicing_Date_Sso_Coa_100,
-          e.Cancelled_Sso_Coa_Date_100,
+          e.Cancelled_Coa_Sso_Received_Date_100,
           e.Coa_Ni_Date_100,
           e.Billing_Upon_Coa_Ni_100,
           e.Invoicing_No_Coa_Ni_100,
@@ -2056,8 +2064,9 @@ class MappingSVC extends React.PureComponent {
                                   <td>{e.Config}</td>
                                   <td>{e.Po}</td>
                                   <td>{e.Line}</td>
-                                  <td>{e.Line_Item_Sap}</td>
                                   <td>{e.Material_Code}</td>
+                                  <td>{e.Line_Item_Sap}</td>
+
                                   <td>
                                     {this.LookupField(
                                       e.Po + "-" + e.Line,
@@ -2069,7 +2078,7 @@ class MappingSVC extends React.PureComponent {
                                   <td>{convertDateFormat(e.Mapping_Date)}</td>
                                   <td>{e.Remarks}</td>
                                   <td>{e.Gr_No}</td>
-                                  <td>{e.Premr_No}</td>
+                                  {/* <td>{e.Premr_No}</td> */}
                                   <td>{e.Proceed_Billing_100}</td>
                                   <td>{e.Celcom_User}</td>
                                   <td>
@@ -2185,13 +2194,13 @@ class MappingSVC extends React.PureComponent {
                                       e.Cancelled_Cosso_Received_Date_60
                                     )}
                                   </td>
-                                  <td>{e.Sso_Coa_Date_100}</td>
+                                  <td>{e.Coa_Sso_Received_Date_100}</td>
                                   <td>{e.Billing_Upon_Sso_Coa_100}</td>
                                   <td>{e.Invoicing_No_Sso_Coa_100}</td>
                                   <td>{e.Invoicing_Date_Sso_Coa_100}</td>
                                   <td>
                                     {convertDateFormat(
-                                      e.Cancelled_Sso_Coa_Date_100
+                                      e.Cancelled_Coa_Sso_Received_Date_100
                                     )}
                                   </td>
                                   <td>{e.Coa_Ni_Date_100}</td>
@@ -2285,7 +2294,7 @@ class MappingSVC extends React.PureComponent {
                                   <td>{e.Mapping_Date}</td>
                                   <td>{e.Remarks}</td>
                                   <td>{e.Gr_No}</td>
-                                  <td>{e.Premr_No}</td>
+                                  {/* <td>{e.Premr_No}</td> */}
                                   <td>{e.Proceed_Billing_100}</td>
                                   <td>{e.Celcom_User}</td>
                                   <td>
@@ -2373,11 +2382,13 @@ class MappingSVC extends React.PureComponent {
                                   <td>{e.Invoicing_No_Cosso_60}</td>
                                   <td>{e.Invoicing_Date_Cosso_60}</td>
                                   <td>{e.Cancelled_Cosso_Received_Date_60}</td>
-                                  <td>{e.Sso_Coa_Date_100}</td>
+                                  <td>{e.Coa_Sso_Received_Date_100}</td>
                                   <td>{e.Billing_Upon_Sso_Coa_100}</td>
                                   <td>{e.Invoicing_No_Sso_Coa_100}</td>
                                   <td>{e.Invoicing_Date_Sso_Coa_100}</td>
-                                  <td>{e.Cancelled_Sso_Coa_Date_100}</td>
+                                  <td>
+                                    {e.Cancelled_Coa_Sso_Received_Date_100}
+                                  </td>
                                   <td>{e.Coa_Ni_Date_100}</td>
                                   <td>{e.Billing_Upon_Coa_Ni_100}</td>
                                   <td>{e.Invoicing_No_Coa_Ni_100}</td>
