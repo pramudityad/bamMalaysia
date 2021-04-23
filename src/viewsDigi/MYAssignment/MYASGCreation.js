@@ -1474,6 +1474,7 @@ class MYASGCreation extends Component {
         localStorage.removeItem("asp_data_child");
 
         let failed_update_wp = [];
+        let failed_update_wp_message = [];
 
         for (let i = 0; i < dataChildForm.length; i++) {
           let date = new Date();
@@ -1483,6 +1484,7 @@ class MYASGCreation extends Component {
               console.log('success update WP', dataChildForm[i].wp_id);
             } else {
               failed_update_wp.push(dataChildForm[i].wp_id);
+              failed_update_wp_message.push(JSON.stringify(updateLMRtoACT.data));
             }
           }
         }
@@ -1497,6 +1499,7 @@ class MYASGCreation extends Component {
               onConfirm={() => this.hideAlert()}
             >
               WP ID: {failed_update_wp.join(', ')}
+              Message: {failed_update_wp_message.join(', ')}
             </SweetAlert>
           );
 
