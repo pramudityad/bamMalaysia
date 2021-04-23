@@ -195,7 +195,6 @@ const header_model = [
   "Mapping_Date",
   "Remarks",
   "Gr_No",
-
   // "Premr_No",
   "Proceed_Billing_100",
   "Celcom_User",
@@ -382,6 +381,7 @@ class MappingSVC extends React.PureComponent {
       all_data_true: [],
       dataChecked_all: false,
       modal_callof: false,
+      count_header: {},
     };
   }
 
@@ -389,8 +389,49 @@ class MappingSVC extends React.PureComponent {
     // console.log("header", header.length);
     // console.log("model_header", header_model.length);
     // this.getList();
+    // this.getHeader();
     this.getListAll();
     this.getMaster();
+  }
+
+  getHeader() {
+    let filter_array = [];
+    for (const [key, value] of Object.entries(this.state.filter_list)) {
+      if (value !== null && value !== undefined) {
+        filter_array.push(
+          '"' + key + '":{"$regex" : "' + value + '", "$options" : "i"}'
+        );
+      }
+    }
+    let whereAnd = "{" + filter_array.join(",") + "}";
+    getDatafromAPINODE(
+      "/cpoMapping/getCpo/required/count/svc?q=" + whereAnd + "&noPg=1",
+      this.state.tokenUser
+    ).then((res) => {
+      if (res.data !== undefined) {
+        const items3 = res.data.data;
+        this.setState({ count_header: items3 });
+      }
+    });
+  }
+
+  mapHeader(data_header) {
+    let header_keys = Object.keys(data_header);
+    let header_values = Object.values(data_header);
+    // console.log("header ", header_values);
+    // if (header_keys !== undefined) {
+    if (
+      header_keys === "Qty" ||
+      header_keys === "Unit_Price" ||
+      header_keys === "Total_Price" ||
+      header_keys === "Discounted_Unit_Price" ||
+      header_keys === "Discounted_Po_Price"
+    ) {
+      return formatMoney(header_values);
+    } else {
+      return header_values;
+    }
+    // }
   }
 
   getMaster() {
@@ -405,7 +446,7 @@ class MappingSVC extends React.PureComponent {
     });
   }
 
-  async getList() {
+  getList() {
     let filter_array = [];
     for (const [key, value] of Object.entries(this.state.filter_list)) {
       if (value !== null && value !== undefined) {
@@ -415,7 +456,7 @@ class MappingSVC extends React.PureComponent {
       }
     }
     let whereAnd = "{" + filter_array.join(",") + "}";
-    await getDatafromAPINODE(
+    getDatafromAPINODE(
       "/cpoMapping/getCpo/required/svc?q=" +
         whereAnd +
         "&lmt=" +
@@ -427,26 +468,42 @@ class MappingSVC extends React.PureComponent {
       if (res.data !== undefined) {
         const items = res.data.data;
         const totalData = res.data.totalResults;
-        this.setState({ all_data: items, totalData: totalData });
+        this.setState({ all_data: items, totalData: totalData }, () =>
+          this.getHeader()
+        );
       }
     });
   }
 
-  getListAll() {
+  getListAll = async () => {
+    let all_data = [];
+    this.toggleLoading();
     const t0 = performance.now();
-    getDatafromAPINODE2(
+    getDatafromAPINODE(
       "/cpoMapping/getCpo/required/svc?noPg=1",
       this.state.tokenUser
     ).then((res) => {
       if (res.data !== undefined) {
         const items = res.data.data;
         const t1 = performance.now();
-        console.log("took " + (t1 - t0) + " milliseconds.");
+        console.log("took 1" + (t1 - t0) + " milliseconds.");
         console.log("len ", items.length);
-        this.setState({ all_data_mapping: items });
+        // all_data = items;
+        // return all_data;
+        this.setState(
+          { all_data_mapping: items }
+          //   , () => {
+          //   setTimeout(() => {
+          //     this.csvLink.current.link.click();
+          //   });
+          // }
+        );
+      } else {
+        all_data = [];
       }
     });
-  }
+    this.toggleLoading();
+  };
 
   loadOptionsReclocID = async (inputValue) => {
     if (!inputValue) {
@@ -649,13 +706,13 @@ class MappingSVC extends React.PureComponent {
       for (let i = 0; i < download_all_template.length; i++) {
         let e = download_all_template[i];
         ws.addRow([
-          this.LookupField(e.Po + "-" + e.Line, "Deal_Name"),
+          this.LookupField2(e.Po + "-" + e.Line, "Deal_Name"),
 
-          this.LookupField(e.Po + "-" + e.Line, "Hammer"),
+          this.LookupField2(e.Po + "-" + e.Line, "Hammer"),
 
-          this.LookupField(e.Po + "-" + e.Line, "Project_Description"),
+          this.LookupField2(e.Po + "-" + e.Line, "Project_Description"),
 
-          this.LookupField(e.Po + "-" + e.Line, "Po_Number"),
+          this.LookupField2(e.Po + "-" + e.Line, "Po_Number"),
           e.Data_1,
           e.Lookup_Reference,
           e.Region,
@@ -667,7 +724,7 @@ class MappingSVC extends React.PureComponent {
           e.Po,
           e.Line,
 
-          this.LookupField(e.Po + "-" + e.Line, "Description"),
+          this.LookupField2(e.Po + "-" + e.Line, "Description"),
           e.Qty,
           e.CNI_Date,
           e.Mapping_Date,
@@ -676,21 +733,21 @@ class MappingSVC extends React.PureComponent {
           e.Proceed_Billing_100,
           e.Celcom_User,
 
-          this.LookupField(e.Po + "-" + e.Line, "Pcode"),
+          this.LookupField2(e.Po + "-" + e.Line, "Pcode"),
 
-          this.LookupField(e.Po + "-" + e.Line, "Unit_Price"),
+          this.LookupField2(e.Po + "-" + e.Line, "Unit_Price"),
 
-          this.LookupField(e.Po + "-" + e.Line, "Total_Price"),
+          this.LookupField2(e.Po + "-" + e.Line, "Total_Price"),
 
-          this.LookupField(e.Po + "-" + e.Line, "Commodity"),
+          this.LookupField2(e.Po + "-" + e.Line, "Commodity"),
 
-          this.LookupField(e.Po + "-" + e.Line, "Discounted_Unit_Price"),
+          this.LookupField2(e.Po + "-" + e.Line, "Discounted_Unit_Price"),
 
-          this.LookupField(e.Po + "-" + e.Line, "Discounted_Po_Price"),
+          this.LookupField2(e.Po + "-" + e.Line, "Discounted_Po_Price"),
 
           e.Unit_Price *
             e.Qty *
-            (this.LookupField(e.Po + "-" + e.Line, "Hammer_1_Hd") / 100),
+            (this.LookupField2(e.Po + "-" + e.Line, "Hammer_1_Hd") / 100),
           e.So_Line_Item_Description,
           e.Sitepcode,
           e.VlookupWbs,
@@ -776,9 +833,11 @@ class MappingSVC extends React.PureComponent {
       for (let i = 0; i < download_all_template.length; i++) {
         let e = download_all_template[i];
         ws.addRow([
-          e.Project,
-          e.Internal_Po,
-          // e.Link,
+          e.Deal_Name,
+          e.Hammer,
+          e.Project_Description,
+          e.Po_Number,
+          e.Data_1,
           e.Lookup_Reference,
           e.Region,
           e.Reference_Loc_Id,
@@ -788,19 +847,28 @@ class MappingSVC extends React.PureComponent {
           e.Config,
           e.Po,
           e.Line,
-          this.LookupField(e.Po + "-" + e.Line, "Description"),
+          this.LookupField2(e.Po + "-" + e.Line, "Description"),
+          e.Line_Item_Sap,
+          e.Material_Code,
           e.Qty,
           e.CNI_Date,
           e.Mapping_Date,
           e.Remarks,
+          e.Gr_No,
+          e.Proceed_Billing_100,
           e.Celcom_User,
-          this.LookupField(e.Po + "-" + e.Line, "Pcode"),
-          this.LookupField(e.Po + "-" + e.Line, "Unit_Price"),
+          this.LookupField2(e.Po + "-" + e.Line, "Pcode"),
+          this.LookupField2(e.Po + "-" + e.Line, "Unit_Price"),
           e.Total_Price,
+          e.Commodity,
           e.Discounted_Unit_Price,
           e.Discounted_Po_Price,
-          e.Type,
+          e.Net_Unit_Price,
+          e.Invoice_Total,
+          e.Hammer_1_Hd_Total,
           e.So_Line_Item_Description,
+          e.Sitepcode,
+          e.VlookupWbs,
           e.So_No,
           e.Wbs_No,
           e.Billing_100,
@@ -813,41 +881,41 @@ class MappingSVC extends React.PureComponent {
           e.Billing_Upon_Ni_20,
           e.Invoicing_No_Ni_20,
           e.Invoicing_Date_Ni_20,
+          e.Cancelled_Invoicing_Ni_20,
           e.Sso_Coa_Date_80,
           e.Billing_Upon_Sso_80,
           e.Invoicing_No_Sso_80,
           e.Invoicing_Date_Sso_80,
+          e.Cancelled_Sso_Coa_Date_80,
           e.Coa_Psp_Received_Date_20,
           e.Billing_Upon_Coa_Psp_20,
           e.Invoicing_No_Coa_Psp_20,
           e.Invoicing_Date_Coa_Psp_20,
+          e.Cancelled_Coa_Psp_Received_Date_20,
+          e.Coa_Ni_Received_Date_40,
+          e.Billing_Upon_Coa_Ni_40,
+          e.Invoicing_No_Coa_Ni_40,
+          e.Invoicing_Date_Coa_Ni_40,
+          e.Cancelled_Coa_Ni_Received_Date_40,
+          e.Cosso_Received_Date_60,
+          e.Billing_Upon_Cosso_60,
+          e.Invoicing_No_Cosso_60,
+          e.Invoicing_Date_Cosso_60,
+          e.Cancelled_Cosso_Received_Date_60,
           e.Sso_Coa_Date_100,
           e.Billing_Upon_Sso_Coa_100,
           e.Invoicing_No_Sso_Coa_100,
           e.Invoicing_Date_Sso_Coa_100,
+          e.Cancelled_Sso_Coa_Date_100,
           e.Coa_Ni_Date_100,
           e.Billing_Upon_Coa_Ni_100,
           e.Invoicing_No_Coa_Ni_100,
           e.Invoicing_Date_Coa_Ni_100,
+          e.Cancelled_Coa_Ni_Date_100,
           e.Ses_No,
           e.Ses_Status,
-          e.Link_1,
+          e.Link,
           e.Ni_Coa_Submission_Status,
-          e.Invoicing_Date_Sso_20_1,
-          e.Cancelled_Sso_20,
-          e.Vlookup_SSO_100_In_Service,
-          e.Hw_Coa_100,
-          e.Billing_Upon_Hw_Coa_100,
-          e.Invoicing_No_Hw_Coa_100,
-          e.Invoicing_Date_Hw_Coa_100,
-          e.Reference_Loc_Id_1,
-          e.Po_1,
-          e.Reff_1,
-          e.Site_List,
-          e.Reff_2,
-          e.Ni,
-          e.Sso,
-          e.Ref_Ni,
         ]);
       }
     }
@@ -1264,8 +1332,8 @@ class MappingSVC extends React.PureComponent {
         let e = download_all_A[i];
         ws.addRow([
           e.Deal_Name,
-          e.Hammer,
-          e.Project_Description,
+          this.LookupField2(e.Po + "-" + e.Line, "Hammer"),
+          this.LookupField2(e.Po + "-" + e.Line, "Project_Description"),
           e.Po_Number,
           e.Reference_Loc_Id,
           e.Line,
@@ -1376,8 +1444,8 @@ class MappingSVC extends React.PureComponent {
         let e = download_all_A[i];
         ws.addRow([
           e.Deal_Name,
-          e.Hammer,
-          e.Project_Description,
+          this.LookupField2(e.Po + "-" + e.Line, "Hammer"),
+          this.LookupField2(e.Po + "-" + e.Line, "Project_Description"),
           e.Po_Number,
           e.Reference_Loc_Id,
           e.Line,
@@ -1515,6 +1583,18 @@ class MappingSVC extends React.PureComponent {
       ) {
         return formatMoney(eval(value));
       }
+      return eval(value);
+    } else {
+      return null;
+    }
+  };
+
+  LookupField2 = (unique_id_master, params_field) => {
+    let value = "objectData." + params_field;
+    let objectData = this.state.all_data_master.find(
+      (e) => e.unique_code === unique_id_master
+    );
+    if (objectData !== undefined) {
       return eval(value);
     } else {
       return null;
@@ -1863,7 +1943,7 @@ class MappingSVC extends React.PureComponent {
                           <tr align="center">
                             {this.state.tabs_submenu[0] === true ? (
                               <>
-                                <th></th>
+                                {/* <th></th> */}
                                 <th>Not Required</th>
                               </>
                             ) : (
@@ -1876,18 +1956,17 @@ class MappingSVC extends React.PureComponent {
                           {this.state.tabs_submenu[0] === true ? (
                             <>
                               <tr align="center">
+                                {/* <th></th> */}
                                 <th></th>
-                                <th></th>
-                                {header_model.map((head, j) =>
-                                  head === "Qty" ||
-                                  head === "Unit_Price" ||
-                                  head === "Total_Price" ||
-                                  head === "Discounted_Unit_Price" ||
-                                  head === "Discounted_Po_Price" ? (
-                                    <th>{this.countheader(head)}</th>
-                                  ) : (
-                                    <th>{this.countheaderNaN(head)}</th>
-                                  )
+                                {Object.keys(this.state.count_header).length !==
+                                  0 &&
+                                this.state.count_header.constructor ===
+                                  Object ? (
+                                  this.mapHeader(
+                                    this.state.count_header
+                                  ).map((head, j) => <th>{head}</th>)
+                                ) : (
+                                  <></>
                                 )}
                               </tr>
                             </>
@@ -1903,7 +1982,7 @@ class MappingSVC extends React.PureComponent {
                           <tr align="center">
                             {this.state.tabs_submenu[0] === true ? (
                               <>
-                                <td></td>
+                                {/* <td></td> */}
                                 <td></td>
                                 {this.loopSearchBar()}
                               </>
@@ -1918,7 +1997,7 @@ class MappingSVC extends React.PureComponent {
                             this.state.all_data.map((e, i) => (
                               <React.Fragment key={e._id + "frag"}>
                                 <tr align="center" key={e._id}>
-                                  <td>
+                                  {/* <td>
                                     <Link to={"/svc-cpo/" + e._id}>
                                       <Button
                                         size="sm"
@@ -1931,7 +2010,7 @@ class MappingSVC extends React.PureComponent {
                                         ></i>
                                       </Button>
                                     </Link>
-                                  </td>
+                                  </td> */}
                                   <td>
                                     <Checkbox1
                                       checked={this.state.dataChecked.get(
@@ -2044,12 +2123,20 @@ class MappingSVC extends React.PureComponent {
                                   <td>{e.So_No}</td>
                                   <td>{e.Wbs_No}</td>
                                   <td>{e.Billing_100}</td>
-                                  <td>{e.Atp_Coa_Received_Date_80}</td>
+                                  <td>
+                                    {convertDateFormat(
+                                      e.Atp_Coa_Received_Date_80
+                                    )}
+                                  </td>
                                   <td>{e.Billing_Upon_Atp_Coa_80}</td>
                                   <td>{e.Invoicing_No_Atp_Coa_80}</td>
-                                  <td>{e.Invoicing_Date_Atp_Coa_80}</td>
+                                  <td>
+                                    {convertDateFormat(
+                                      e.Invoicing_Date_Atp_Coa_80
+                                    )}
+                                  </td>
                                   <td>{e.Cancelled_Atp_Coa_80}</td>
-                                  <td>{e.Ni_Coa_Date_20}</td>
+                                  <td>{convertDateFormat(e.Ni_Coa_Date_20)}</td>
                                   <td>{e.Billing_Upon_Ni_20}</td>
                                   <td>{e.Invoicing_No_Ni_20}</td>
                                   <td>{e.Invoicing_Date_Ni_20}</td>
@@ -2058,34 +2145,68 @@ class MappingSVC extends React.PureComponent {
                                   <td>{e.Billing_Upon_Sso_80}</td>
                                   <td>{e.Invoicing_No_Sso_80}</td>
                                   <td>{e.Invoicing_Date_Sso_80}</td>
-                                  <td>{e.Cancelled_Sso_Coa_Date_80}</td>
-                                  <td>{e.Coa_Psp_Received_Date_20}</td>
+                                  <td>
+                                    {convertDateFormat(
+                                      e.Cancelled_Sso_Coa_Date_80
+                                    )}
+                                  </td>
+                                  <td>
+                                    {convertDateFormat(
+                                      e.Coa_Psp_Received_Date_20
+                                    )}
+                                  </td>
                                   <td>{e.Billing_Upon_Coa_Psp_20}</td>
                                   <td>{e.Invoicing_No_Coa_Psp_20}</td>
                                   <td>{e.Invoicing_Date_Coa_Psp_20}</td>
                                   <td>
-                                    {e.Cancelled_Coa_Psp_Received_Date_20}
+                                    {convertDateFormat(
+                                      e.Cancelled_Coa_Psp_Received_Date_20
+                                    )}
                                   </td>
-                                  <td>{e.Coa_Ni_Received_Date_40}</td>
+                                  <td>
+                                    {convertDateFormat(
+                                      e.Coa_Ni_Received_Date_40
+                                    )}
+                                  </td>
                                   <td>{e.Billing_Upon_Coa_Ni_40}</td>
                                   <td>{e.Invoicing_No_Coa_Ni_40}</td>
                                   <td>{e.Invoicing_Date_Coa_Ni_40}</td>
-                                  <td>{e.Cancelled_Coa_Ni_Received_Date_40}</td>
+                                  <td>
+                                    {convertDateFormat(
+                                      e.Cancelled_Coa_Ni_Received_Date_40
+                                    )}
+                                  </td>
                                   <td>{e.Cosso_Received_Date_60}</td>
                                   <td>{e.Billing_Upon_Cosso_60}</td>
                                   <td>{e.Invoicing_No_Cosso_60}</td>
                                   <td>{e.Invoicing_Date_Cosso_60}</td>
-                                  <td>{e.Cancelled_Cosso_Received_Date_60}</td>
+                                  <td>
+                                    {convertDateFormat(
+                                      e.Cancelled_Cosso_Received_Date_60
+                                    )}
+                                  </td>
                                   <td>{e.Sso_Coa_Date_100}</td>
                                   <td>{e.Billing_Upon_Sso_Coa_100}</td>
                                   <td>{e.Invoicing_No_Sso_Coa_100}</td>
                                   <td>{e.Invoicing_Date_Sso_Coa_100}</td>
-                                  <td>{e.Cancelled_Sso_Coa_Date_100}</td>
+                                  <td>
+                                    {convertDateFormat(
+                                      e.Cancelled_Sso_Coa_Date_100
+                                    )}
+                                  </td>
                                   <td>{e.Coa_Ni_Date_100}</td>
                                   <td>{e.Billing_Upon_Coa_Ni_100}</td>
                                   <td>{e.Invoicing_No_Coa_Ni_100}</td>
-                                  <td>{e.Invoicing_Date_Coa_Ni_100}</td>
-                                  <td>{e.Cancelled_Coa_Ni_Date_100}</td>
+                                  <td>
+                                    {convertDateFormat(
+                                      e.Invoicing_Date_Coa_Ni_100
+                                    )}
+                                  </td>
+                                  <td>
+                                    {convertDateFormat(
+                                      e.Cancelled_Coa_Ni_Date_100
+                                    )}
+                                  </td>
                                   <td>{e.Ses_No}</td>
                                   <td>{e.Ses_Status}</td>
                                   <td>{e.Link}</td>
@@ -2100,7 +2221,8 @@ class MappingSVC extends React.PureComponent {
                                 <tr align="center" key={e._id}>
                                   {role.includes("BAM-ADMIN") === true ||
                                   role.includes("BAM-PFM") === true ? (
-                                    <td>
+                                    {
+                                      /* <td>
                                       <Link to={"/svc-cpo/" + e._id}>
                                         <Button
                                           size="sm"
@@ -2113,7 +2235,8 @@ class MappingSVC extends React.PureComponent {
                                           ></i>
                                         </Button>
                                       </Link>
-                                    </td>
+                                    </td> */
+                                    }
                                   ) : (
                                     <td></td>
                                   )}
