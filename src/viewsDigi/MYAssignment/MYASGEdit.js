@@ -1353,7 +1353,7 @@ class MYASGEdit extends Component {
     let dataLMRChild = [], empty_nw = false, check_duplicate = false;
 
     for (let i = 0; i < dataChildForm.length; i++) {
-      dataChildForm[i].duplicate = 'no';
+      // dataChildForm[i].duplicate = 'no';
       dataChildForm[i].blank_material = 'no';
       dataChildForm[i].zero_qty = 'no';
     }
@@ -1371,13 +1371,13 @@ class MYASGEdit extends Component {
     }
 
     for (let i = 0; i < dataChildForm.length; i++) {
-      for (let j = i + 1; j < dataChildForm.length; j++) {
-        if (dataChildForm[i].material === dataChildForm[j].material) {
-          check_duplicate = true;
-          dataChildForm[i].duplicate = 'yes';
-          dataChildForm[j].duplicate = 'yes';
-        }
-      }
+      // for (let j = i + 1; j < dataChildForm.length; j++) {
+      //   if (dataChildForm[i].material === dataChildForm[j].material) {
+      //     check_duplicate = true;
+      //     dataChildForm[i].duplicate = 'yes';
+      //     dataChildForm[j].duplicate = 'yes';
+      //   }
+      // }
 
       if (dataChildForm[i].nw === '' || dataChildForm[i].nw === null || dataChildForm[i].cdid === '' || dataChildForm[i].cdid === null) {
         empty_nw = true;
@@ -1437,26 +1437,6 @@ class MYASGEdit extends Component {
         sweet_alert: getAlert()
       });
       this.toggleLoading();
-    } else if (check_duplicate) {
-      const getAlert = () => (
-        <SweetAlert
-          danger
-          title="Error!"
-          onConfirm={() => this.hideAlert()}
-        >
-          Material duplication found!
-        </SweetAlert>
-      );
-
-      this.setState({
-        sweet_alert: getAlert()
-      });
-
-      for (let i = 0; i < dataChildForm.length; i++) {
-        dataChildForm[i].blank_material = 'no';
-        dataChildForm[i].zero_qty = 'no';
-      }
-      this.toggleLoading();
     } else if (dataChildForm.some(e => e.blank_material === 'yes')) {
       const getAlert = () => (
         <SweetAlert
@@ -1473,7 +1453,7 @@ class MYASGEdit extends Component {
       });
 
       for (let i = 0; i < dataChildForm.length; i++) {
-        dataChildForm[i].duplicate = 'no';
+        // dataChildForm[i].duplicate = 'no';
         dataChildForm[i].zero_qty = 'no';
       }
       this.toggleLoading();
@@ -1493,7 +1473,7 @@ class MYASGEdit extends Component {
       });
 
       for (let i = 0; i < dataChildForm.length; i++) {
-        dataChildForm[i].duplicate = 'no';
+        // dataChildForm[i].duplicate = 'no';
         dataChildForm[i].blank_material = 'no';
       }
       this.toggleLoading();
@@ -2657,8 +2637,8 @@ class MYASGEdit extends Component {
                           style={this.state.formvalidate.l1_approver === false ? { borderColor: "red" } : {}}
                         >
                           <option disabled selected hidden>Select L1 Approver</option>
-                          <option value="EZYUSMO">EZYUSMO</option>
-                          <option value="EYAUHON">EYAUHON</option>
+                          <option value="ESLSBUE">ESLSBUE</option>
+                          <option value="EKHXPHS">EKHXPHS</option>
                         </Input>
                       </FormGroup>
                     </Col>
@@ -2673,8 +2653,7 @@ class MYASGEdit extends Component {
                           onChange={this.handleChangeFormLMR}
                         >
                           <option disabled selected hidden>Select L2 Approver</option>
-                          <option value="EZSETMA">EZSETMA</option>
-                          {/* <option value="EYAUHON">EYAUHON</option> */}
+                          <option value="ERAMZUL">ERAMZUL</option>
                         </Input>
                       </FormGroup>
                     </Col>
@@ -2689,8 +2668,7 @@ class MYASGEdit extends Component {
                           onChange={this.handleChangeFormLMR}
                         >
                           <option disabled selected hidden>Select L3 Approver</option>
-                          <option value="ERAMANN">ERAMANN</option>
-                          {/* <option value="EYAUHON">EYAUHON</option> */}
+                          <option value="EILGAGS">EILGAGS</option>
                         </Input>
                       </FormGroup>
                     </Col>
@@ -2706,7 +2684,6 @@ class MYASGEdit extends Component {
                         >
                           <option disabled selected hidden>Select L4 Approver</option>
                           <option value="QDAVHAG">QDAVHAG</option>
-                          {/* <option value="EYAUHON">EYAUHON</option> */}
                         </Input>
                       </FormGroup>
                     </Col>
@@ -2722,7 +2699,6 @@ class MYASGEdit extends Component {
                         >
                           <option disabled selected hidden>Select L5 Approver</option>
                           <option value="TEIMIR">TEIMIR</option>
-                          {/* <option value="EYAUHON">EYAUHON</option> */}
                         </Input>
                       </FormGroup>
                     </Col>
@@ -2893,7 +2869,7 @@ class MYASGEdit extends Component {
                             id={i + " /// material"}
                             value={lmr.material}
                             onClick={() => this.decideToggleMaterial(i)}
-                            style={lmr.duplicate === 'yes' || lmr.blank_material === 'yes' ? { border: "2px solid red" } : {}}
+                            style={lmr.blank_material === 'yes' ? { border: "2px solid red" } : {}}
                           // onChange={this.handleChangeFormLMRChild}
                           />
                         </FormGroup>

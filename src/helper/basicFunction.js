@@ -135,3 +135,17 @@ export const formatMoney = (
     console.log(e);
   }
 };
+
+export const arraychunk = (inputArray, perChunk) => {
+  const result = inputArray.reduce((resultArray, item, index) => {
+    const chunkIndex = Math.floor(index / perChunk);
+
+    if (!resultArray[chunkIndex]) {
+      resultArray[chunkIndex] = []; // start a new chunk
+    }
+
+    resultArray[chunkIndex].push(item);
+    // console.log(result);
+    return resultArray;
+  }, []);
+};
