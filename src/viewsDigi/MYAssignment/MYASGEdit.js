@@ -2637,8 +2637,8 @@ class MYASGEdit extends Component {
                           style={this.state.formvalidate.l1_approver === false ? { borderColor: "red" } : {}}
                         >
                           <option disabled selected hidden>Select L1 Approver</option>
-                          <option value="EZYUSMO">EZYUSMO</option>
-                          <option value="EYAUHON">EYAUHON</option>
+                          <option value="ESLSBUE">ESLSBUE</option>
+                          <option value="EKHXPHS">EKHXPHS</option>
                         </Input>
                       </FormGroup>
                     </Col>
@@ -2653,8 +2653,7 @@ class MYASGEdit extends Component {
                           onChange={this.handleChangeFormLMR}
                         >
                           <option disabled selected hidden>Select L2 Approver</option>
-                          <option value="EZSETMA">EZSETMA</option>
-                          {/* <option value="EYAUHON">EYAUHON</option> */}
+                          <option value="ERAMZUL">ERAMZUL</option>
                         </Input>
                       </FormGroup>
                     </Col>
@@ -2669,8 +2668,7 @@ class MYASGEdit extends Component {
                           onChange={this.handleChangeFormLMR}
                         >
                           <option disabled selected hidden>Select L3 Approver</option>
-                          <option value="ERAMANN">ERAMANN</option>
-                          {/* <option value="EYAUHON">EYAUHON</option> */}
+                          <option value="EILGAGS">EILGAGS</option>
                         </Input>
                       </FormGroup>
                     </Col>
@@ -2686,7 +2684,6 @@ class MYASGEdit extends Component {
                         >
                           <option disabled selected hidden>Select L4 Approver</option>
                           <option value="QDAVHAG">QDAVHAG</option>
-                          {/* <option value="EYAUHON">EYAUHON</option> */}
                         </Input>
                       </FormGroup>
                     </Col>
@@ -2702,7 +2699,6 @@ class MYASGEdit extends Component {
                         >
                           <option disabled selected hidden>Select L5 Approver</option>
                           <option value="TEIMIR">TEIMIR</option>
-                          {/* <option value="EYAUHON">EYAUHON</option> */}
                         </Input>
                       </FormGroup>
                     </Col>
