@@ -149,3 +149,23 @@ export const arraychunk = (inputArray, perChunk) => {
     return resultArray;
   }, []);
 };
+
+export const convertArray = (array) => {
+  var convertedArray = [];
+
+  var length = array.length;
+  for (var i = 0; i < length; i++) {
+    var rowArray = [];
+    var colArray = [];
+    var innerLength = array[i].length;
+    for (var j = 0; j < innerLength; j++) {
+      colArray.push(array[i][j]);
+      if ((j + 1) % 2 === 0) {
+        rowArray.push(colArray);
+        colArray = [];
+      }
+    }
+    convertedArray.push(rowArray);
+  }
+  return convertedArray;
+};
