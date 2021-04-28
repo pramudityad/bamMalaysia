@@ -1058,7 +1058,7 @@ class MappingSVC extends React.PureComponent {
   //     );
   //     if (res.data !== undefined) {
   //       if (roles === 2) {
-  //         this.setState({ action_status: "success", action_status: "success" });
+  //         this.setState({ action_status: "success", action_status: "success batch "+index_xlsx+1 });
   //         this.toggleLoading();
   //       } else {
   //         if (res.data.updateData.length !== 0) {
@@ -1157,10 +1157,17 @@ class MappingSVC extends React.PureComponent {
 
   saveBulk = async () => {
     this.toggleLoading();
+    this.togglecreateModal();
+    const roles =
+      this.state.roleUser.includes("BAM-MAT PLANNER") === true
+        ? 1
+        : this.state.roleUser.includes("BAM-PFM") === true
+        ? 2
+        : 3;
     const res = await postDatatoAPINODE(
       "/cpoMapping/createCpo",
       {
-        cpo_type: "hw",
+        cpo_type: "svc",
         required_check: true,
         roles: roles,
         cpo_data: this.state.rowsXLS,
