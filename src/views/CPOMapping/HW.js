@@ -205,7 +205,6 @@ const header_model = [
   "Mapping_Date",
   "Remarks",
   "Gr_No",
-  // "Premr_No",
   "Proceed_Billing_100",
   "Celcom_User",
   "Pcode",
@@ -352,6 +351,7 @@ class MappingHW extends React.Component {
       all_data: [],
       createModal: false,
       rowsXLS: [],
+      rowsXLS_batch: [],
       modal_loading: false,
       prevPage: 0,
       activePage: 1,
@@ -925,9 +925,28 @@ class MappingHW extends React.Component {
       {
         rowsXLS: newDataXLS,
       },
-      () => console.log("ini", arraychunk(this.state.rowsXLS, 5000))
+      () => this.chunkArray(this.state.rowsXLS, 2000)
     );
   }
+
+  chunkArray = (array, size) => {
+    let result = [];
+    // console.log("origin ", array.splice(1, array.length));
+    let arrayCopy = [...array.splice(1, array.length)];
+    let header_change =
+      this.state.roleUser.includes("BAM-MAT PLANNER") === true
+        ? header_materialmapping
+        : this.state.roleUser.includes("BAM-PFM") === true
+        ? header_pfm
+        : header_admin;
+    while (arrayCopy.length > 0) {
+      result.push(header_change.concat(arrayCopy.splice(0, size)));
+    }
+    console.log("res len, ", result.length);
+    console.log("result ", result);
+    this.setState({ rowsXLS_batch: result });
+    // return result;
+  };
 
   toggle = (i) => {
     const newArray = this.state.dropdownOpen.map((element, index) => {
@@ -938,15 +957,133 @@ class MappingHW extends React.Component {
     });
   };
 
+  // saveBulk = async () => {
+  //   // this.toggleLoading();
+  //   this.togglecreateModal();
+  //   const roles =
+  //     this.state.roleUser.includes("BAM-MAT PLANNER") === true
+  //       ? 1
+  //       : this.state.roleUser.includes("BAM-PFM") === true
+  //       ? 2
+  //       : 3;
+  //   for (
+  //     let index_xlsx = 0;
+  //     index_xlsx < this.state.rowsXLS_batch.length;
+  //     index_xlsx++
+  //   ) {
+  //     this.toggleLoading();
+  //     // const element = this.state.rowsXLS_batch[index_xlsx];
+  //     console.log(`hit ${index_xlsx}`);
+  //     const res = await postDatatoAPINODE(
+  //       "/cpoMapping/createCpo",
+  //       {
+  //         cpo_type: "hw",
+  //         required_check: true,
+  //         roles: roles,
+  //         cpo_data: this.state.rowsXLS_batch[index_xlsx],
+  //       },
+  //       this.state.tokenUser
+  //     );
+  //     if (res.data !== undefined) {
+  //       if (roles === 2) {
+  //         this.setState({ action_status: "success", action_status: "success" });
+  //         this.toggleLoading();
+  //       } else {
+  //         if (res.data.updateData.length !== 0) {
+  //           const table_header = Object.keys(res.data.updateData[0]);
+  //           const update_Data = res.data.updateData;
+  //           const new_table_header = table_header.slice(0, -2);
+  //           // update_Data.map((row, k) => console.log(row));
+  //           // console.log(table_header);
+  //           let value = "row.";
+  //           const bodyEmail =
+  //             "<h2>DPM - BAM Notification</h2><br/><span>Please be notified that the following " +
+  //             modul_name +
+  //             " data has been updated <br/><br/><table><tr>" +
+  //             new_table_header
+  //               .map((tab, i) => "<th>" + tab + "</th>")
+  //               .join(" ") +
+  //             "</tr>" +
+  //             update_Data
+  //               .map(
+  //                 (row, j) =>
+  //                   "<tr key={" +
+  //                   j +
+  //                   "}>" +
+  //                   new_table_header
+  //                     .map((td) => "<td>" + eval(value + td) + "</td>")
+  //                     .join(" ") +
+  //                   "</tr>"
+  //               )
+  //               .join(" ") +
+  //             "</table>";
+  //           if (res.data.warnNotif.length !== 0) {
+  //             let dataEmail = {
+  //               // "to": creatorEmail,
+  //               to: "pramudityad@outlook.com",
+  //               // to: global.config.role.cpm,
+  //               subject: "[NOTIFY to CPM] " + modul_name,
+  //               body: bodyEmail,
+  //             };
+  //             const sendEmail = await apiSendEmail(dataEmail);
+  //             // console.log(sendEmail);
+  //             this.setState({
+  //               action_status: "warning",
+  //               action_message:
+  //                 "success with warn " + res.data.warnNotif.map((warn) => warn),
+  //             });
+  //             this.toggleLoading();
+  //             return;
+  //             // setTimeout(function () {
+  //             //   window.location.reload();
+  //             // }, 1500);
+  //           }
+  //           let dataEmail = {
+  //             // "to": creatorEmail,
+  //             to: "pramudityad@outlook.com",
+  //             // to: global.config.role.cpm,
+  //             subject: "[NOTIFY to CPM] " + modul_name,
+  //             body: bodyEmail,
+  //           };
+  //           const sendEmail = await apiSendEmail(dataEmail);
+  //           // console.log(sendEmail);
+  //           this.setState({ action_status: "success" });
+  //           this.toggleLoading();
+  //           // setTimeout(function () {
+  //           //   window.location.reload();
+  //           // }, 1500);
+  //         } else {
+  //           this.setState({ action_status: "success" });
+  //           this.toggleLoading();
+  //         }
+  //       }
+  //     } else {
+  //       if (
+  //         res.response !== undefined &&
+  //         res.response.data !== undefined &&
+  //         res.response.data.error !== undefined
+  //       ) {
+  //         if (res.response.data.error.message !== undefined) {
+  //           this.setState({
+  //             action_status: "failed",
+  //             action_message: res.response.data.error.message,
+  //           });
+  //         } else {
+  //           this.setState({
+  //             action_status: "failed",
+  //             action_message: res.response.data.error,
+  //           });
+  //         }
+  //       } else {
+  //         this.setState({ action_status: "failed" });
+  //       }
+  //       this.toggleLoading();
+  //     }
+  //   }
+  // };
+
   saveBulk = async () => {
     this.toggleLoading();
-    this.togglecreateModal();
-    const roles =
-      this.state.roleUser.includes("BAM-MAT PLANNER") === true
-        ? 1
-        : this.state.roleUser.includes("BAM-PFM") === true
-        ? 2
-        : 3;
     const res = await postDatatoAPINODE(
       "/cpoMapping/createCpo",
       {
@@ -991,7 +1128,7 @@ class MappingHW extends React.Component {
           if (res.data.warnNotif.length !== 0) {
             let dataEmail = {
               // "to": creatorEmail,
-              // to: "pramudityad@student.telkomuniversity.ac.id",
+              // to: "pramudityad@outlook.com",
               to: global.config.role.cpm,
               subject: "[NOTIFY to CPM] " + modul_name,
               body: bodyEmail,
@@ -1011,7 +1148,7 @@ class MappingHW extends React.Component {
           }
           let dataEmail = {
             // "to": creatorEmail,
-            // to: "pramudityad@student.telkomuniversity.ac.id",
+            // to: "pramudityad@outlook.com",
             to: global.config.role.cpm,
             subject: "[NOTIFY to CPM] " + modul_name,
             body: bodyEmail,
@@ -2041,30 +2178,10 @@ class MappingHW extends React.Component {
                                       value={e}
                                     />
                                   </td>
-                                  <td>
-                                    {this.LookupField(
-                                      e.Po + "-" + e.Line,
-                                      "Deal_Name"
-                                    )}
-                                  </td>
-                                  <td>
-                                    {this.LookupField(
-                                      e.Po + "-" + e.Line,
-                                      "Hammer"
-                                    )}
-                                  </td>
-                                  <td>
-                                    {this.LookupField(
-                                      e.Po + "-" + e.Line,
-                                      "Project_Description"
-                                    )}
-                                  </td>
-                                  <td>
-                                    {this.LookupField(
-                                      e.Po + "-" + e.Line,
-                                      "Po_Number"
-                                    )}
-                                  </td>
+                                  <td>{e.Deal_Name}</td>
+                                  <td>{e.Hammer}</td>
+                                  <td>{e.Project_Description}</td>
+                                  <td>{e.Po_Number}</td>
                                   <td>{e.Data_1}</td>
                                   <td>{e.Lookup_Reference}</td>
                                   <td>{e.Region}</td>
@@ -2077,128 +2194,60 @@ class MappingHW extends React.Component {
                                   <td>{e.Line}</td>
                                   <td>{e.Line_Item_Sap}</td>
                                   <td>{e.Material_Code}</td>
-
-                                  <td>
-                                    {this.LookupField(
-                                      e.Po + "-" + e.Line,
-                                      "Description"
-                                    )}
-                                  </td>
+                                  <td>{e.Description}</td>
                                   <td>{e.Qty}</td>
                                   <td>{e.NW}</td>
-                                  <td>{convertDateFormat(e.On_Air_Date)}</td>
-                                  <td>{convertDateFormat(e.Mapping_Date)}</td>
+                                  <td>{e.On_Air_Date}</td>
+                                  <td>{e.Mapping_Date}</td>
                                   <td>{e.Remarks}</td>
                                   <td>{e.Gr_No}</td>
-                                  {/* <td>{e.Premr_No}</td> */}
                                   <td>{e.Proceed_Billing_100}</td>
                                   <td>{e.Celcom_User}</td>
-                                  <td>
-                                    {this.LookupField(
-                                      e.Po + "-" + e.Line,
-                                      "Pcode"
-                                    )}
-                                  </td>
-                                  <td>
-                                    {this.LookupField(
-                                      e.Po + "-" + e.Line,
-                                      "Unit_Price"
-                                    )}
-                                  </td>
-                                  <td>
-                                    {this.LookupField(
-                                      e.Po + "-" + e.Line,
-                                      "Total_Price"
-                                    )}
-                                  </td>
-                                  <td>
-                                    {this.LookupField(
-                                      e.Po + "-" + e.Line,
-                                      "Discounted_Unit_Price"
-                                    )}
-                                  </td>
-                                  <td>
-                                    {this.LookupField(
-                                      e.Po + "-" + e.Line,
-                                      "Discounted_Po_Price"
-                                    )}
-                                  </td>
+                                  <td>{e.Pcode}</td>
+                                  <td>{e.Unit_Price}</td>
+                                  <td>{e.Total_Price}</td>
+                                  <td>{e.Discounted_Unit_Price}</td>
+                                  <td>{e.Discounted_Po_Price}</td>
                                   <td>{e.Net_Unit_Price}</td>
                                   <td>{e.Invoice_Total}</td>
-                                  <td>
-                                    {e.Unit_Price *
-                                      e.Qty *
-                                      (this.LookupField(
-                                        e.Po + "-" + e.Line,
-                                        "Hammer_1_Hd"
-                                      ) /
-                                        100)}
-                                  </td>
+                                  <td>{e.Hammer_1_Hd_Total}</td>
                                   <td>{e.So_Line_Item_Description}</td>
                                   <td>{e.Sitepcode}</td>
                                   <td>{e.VlookupWbs}</td>
                                   <td>{e.So_No}</td>
                                   <td>{e.Wbs_No}</td>
                                   <td>
-                                    {convertDateFormat(
-                                      e.For_Checking_Purpose_Only_Rashidah
-                                    )}
+                                    {e.For_Checking_Purpose_Only_Rashidah}
                                   </td>
-                                  <td>
-                                    {convertDateFormat(
-                                      e.Hw_Coa_Received_Date_80
-                                    )}
-                                  </td>
+                                  <td>{e.Hw_Coa_Received_Date_80}</td>
                                   <td>{e.Billing_Upon_Hw_Coa_80}</td>
                                   <td>{e.Invoicing_No_Hw_Coa_80}</td>
                                   <td>{e.Invoicing_Date_Hw_Coa_80}</td>
-                                  <td>
-                                    {convertDateFormat(
-                                      e.Cancelled_Invoice_Hw_Coa_80
-                                    )}
-                                  </td>
+                                  <td>{e.Cancelled_Invoice_Hw_Coa_80}</td>
                                   <td>{e.Ni_Coa_Date_20}</td>
                                   <td>{e.Billing_Upon_Ni_20}</td>
                                   <td>{e.Invoicing_No_Ni_20}</td>
                                   <td>{e.Invoicing_Date_Ni_20}</td>
                                   <td>{e.Cancelled_Invoicing_Ni_20}</td>
-                                  <td>
-                                    {convertDateFormat(
-                                      e.Hw_Coa_Received_Date_40
-                                    )}
-                                  </td>
+                                  <td>{e.Hw_Coa_Received_Date_40}</td>
                                   <td>{e.Billing_Upon_Hw_Coa_40}</td>
                                   <td>{e.Invoicing_No_Hw_Coa_40}</td>
-                                  <td>
-                                    {convertDateFormat(
-                                      e.Invoicing_Date_Hw_Coa_40
-                                    )}
-                                  </td>
+                                  <td>{e.Invoicing_Date_Hw_Coa_40}</td>
                                   <td>{e.Cancelled_Hw_Coa_40}</td>
-                                  <td>{convertDateFormat(e.Ni_Coa_Date_40)}</td>
+                                  <td>{e.Ni_Coa_Date_40}</td>
                                   <td>{e.Billing_Upon_Ni_40}</td>
                                   <td>{e.Invoicing_No_Ni_40}</td>
-                                  <td>
-                                    {convertDateFormat(e.Invoicing_Date_Ni_40)}
-                                  </td>
+                                  <td>{e.Invoicing_Date_Ni_40}</td>
                                   <td>{e.Cancelled_Ni_40}</td>
                                   <td>{e.Sso_Coa_Date_20_1}</td>
                                   <td>{e.Billing_Upon_Sso_20_1}</td>
                                   <td>{e.Invoicing_No_Sso_20_1}</td>
-                                  <td>
-                                    {convertDateFormat(
-                                      e.Invoicing_Date_Sso_20_1
-                                    )}
-                                  </td>
+                                  <td>{e.Invoicing_Date_Sso_20_1}</td>
                                   <td>{e.Cancelled_Sso_20}</td>
                                   <td>{e.Hw_Coa_100}</td>
                                   <td>{e.Billing_Upon_Hw_Coa_100}</td>
                                   <td>{e.Invoicing_No_Hw_Coa_100}</td>
-                                  <td>
-                                    {convertDateFormat(
-                                      e.Invoicing_Date_Hw_Coa_100
-                                    )}
-                                  </td>
+                                  <td>{e.Invoicing_Date_Hw_Coa_100}</td>
                                   <td>{e.Cancelled_Invoicing_Hw_Coa_100}</td>
                                   <td>{e.Cancel_Column}</td>
                                   <td>{e.Reference_Loc_Id_1}</td>
@@ -2213,30 +2262,10 @@ class MappingHW extends React.Component {
                             this.state.all_data_true.map((e, i) => (
                               <React.Fragment key={e._id + "frag"}>
                                 <tr align="center" key={e._id}>
-                                  <td>
-                                    {this.LookupField(
-                                      e.Po + "-" + e.Line,
-                                      "Deal_Name"
-                                    )}
-                                  </td>
-                                  <td>
-                                    {this.LookupField(
-                                      e.Po + "-" + e.Line,
-                                      "Hammer"
-                                    )}
-                                  </td>
-                                  <td>
-                                    {this.LookupField(
-                                      e.Po + "-" + e.Line,
-                                      "Project_Description"
-                                    )}
-                                  </td>
-                                  <td>
-                                    {this.LookupField(
-                                      e.Po + "-" + e.Line,
-                                      "Po_Number"
-                                    )}
-                                  </td>
+                                  <td>{e.Deal_Name}</td>
+                                  <td>{e.Hammer}</td>
+                                  <td>{e.Project_Description}</td>
+                                  <td>{e.Po_Number}</td>
                                   <td>{e.Data_1}</td>
                                   <td>{e.Lookup_Reference}</td>
                                   <td>{e.Region}</td>
@@ -2249,63 +2278,23 @@ class MappingHW extends React.Component {
                                   <td>{e.Line}</td>
                                   <td>{e.Line_Item_Sap}</td>
                                   <td>{e.Material_Code}</td>
-
-                                  <td>
-                                    {this.LookupField(
-                                      e.Po + "-" + e.Line,
-                                      "Description"
-                                    )}
-                                  </td>
+                                  <td>{e.Description}</td>
                                   <td>{e.Qty}</td>
                                   <td>{e.NW}</td>
-                                  <td>{convertDateFormat(e.On_Air_Date)}</td>
-                                  <td>{convertDateFormat(e.Mapping_Date)}</td>
+                                  <td>{e.On_Air_Date}</td>
+                                  <td>{e.Mapping_Date}</td>
                                   <td>{e.Remarks}</td>
                                   <td>{e.Gr_No}</td>
-                                  {/* <td>{e.Premr_No}</td> */}
                                   <td>{e.Proceed_Billing_100}</td>
                                   <td>{e.Celcom_User}</td>
-                                  <td>
-                                    {this.LookupField(
-                                      e.Po + "-" + e.Line,
-                                      "Pcode"
-                                    )}
-                                  </td>
-                                  <td>
-                                    {this.LookupField(
-                                      e.Po + "-" + e.Line,
-                                      "Unit_Price"
-                                    )}
-                                  </td>
-                                  <td>
-                                    {this.LookupField(
-                                      e.Po + "-" + e.Line,
-                                      "Total_Price"
-                                    )}
-                                  </td>
-                                  <td>
-                                    {this.LookupField(
-                                      e.Po + "-" + e.Line,
-                                      "Discounted_Unit_Price"
-                                    )}
-                                  </td>
-                                  <td>
-                                    {this.LookupField(
-                                      e.Po + "-" + e.Line,
-                                      "Discounted_Po_Price"
-                                    )}
-                                  </td>
+                                  <td>{e.Pcode}</td>
+                                  <td>{e.Unit_Price}</td>
+                                  <td>{e.Total_Price}</td>
+                                  <td>{e.Discounted_Unit_Price}</td>
+                                  <td>{e.Discounted_Po_Price}</td>
                                   <td>{e.Net_Unit_Price}</td>
                                   <td>{e.Invoice_Total}</td>
-                                  <td>
-                                    {e.Unit_Price *
-                                      e.Qty *
-                                      (this.LookupField(
-                                        e.Po + "-" + e.Line,
-                                        "Hammer_1_Hd"
-                                      ) /
-                                        100)}
-                                  </td>
+                                  <td>{e.Hammer_1_Hd_Total}</td>
                                   <td>{e.So_Line_Item_Description}</td>
                                   <td>{e.Sitepcode}</td>
                                   <td>{e.VlookupWbs}</td>
