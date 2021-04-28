@@ -27,6 +27,7 @@ import {
   Nav,
   NavItem,
   NavLink,
+  Progress,
 } from "reactstrap";
 import Excel from "exceljs";
 import Loading from "../Component/Loading";
@@ -60,6 +61,8 @@ import "./cpomapping.css";
 const DefaultNotif = React.lazy(() =>
   import("../../views/DefaultView/DefaultNotif")
 );
+const Progressbar = React.lazy(() => import("../Component/Progressbar"));
+
 const Checkbox1 = ({
   type = "checkbox",
   name,
@@ -353,6 +356,7 @@ class MappingHW extends React.Component {
       rowsXLS: [],
       rowsXLS_batch: [],
       modal_loading: false,
+      modal_progress: false,
       prevPage: 0,
       activePage: 1,
       totalData: 0,
@@ -868,6 +872,7 @@ class MappingHW extends React.Component {
   resettogglecreateModal = () => {
     this.setState({
       rowsXLS: [],
+      rowsXLS_batch: [],
     });
   };
 
@@ -933,12 +938,7 @@ class MappingHW extends React.Component {
     let result = [];
     // console.log("origin ", array.splice(1, array.length));
     let arrayCopy = [...array.splice(1, array.length)];
-    let header_change =
-      this.state.roleUser.includes("BAM-MAT PLANNER") === true
-        ? header_materialmapping
-        : this.state.roleUser.includes("BAM-PFM") === true
-        ? header_pfm
-        : header_admin;
+    let header_change = [...this.state.rowsXLS.splice(0, 1)];
     while (arrayCopy.length > 0) {
       result.push(header_change.concat(arrayCopy.splice(0, size)));
     }
@@ -946,6 +946,15 @@ class MappingHW extends React.Component {
     console.log("result ", result);
     this.setState({ rowsXLS_batch: result });
     // return result;
+  };
+
+  toggle = (i) => {
+    const newArray = this.state.dropdownOpen.map((element, index) => {
+      return index === i ? !element : false;
+    });
+    this.setState({
+      dropdownOpen: newArray,
+    });
   };
 
   toggle = (i) => {
@@ -977,7 +986,7 @@ class MappingHW extends React.Component {
   //     const res = await postDatatoAPINODE(
   //       "/cpoMapping/createCpo",
   //       {
-  //         cpo_type: "hw",
+  //         cpo_type: "svc",
   //         required_check: true,
   //         roles: roles,
   //         cpo_data: this.state.rowsXLS_batch[index_xlsx],
@@ -986,7 +995,10 @@ class MappingHW extends React.Component {
   //     );
   //     if (res.data !== undefined) {
   //       if (roles === 2) {
-  //         this.setState({ action_status: "success", action_status: "success" });
+  //         this.setState({
+  //           action_status: "success",
+  //           action_status: "success batch " + index_xlsx + 1,
+  //         });
   //         this.toggleLoading();
   //       } else {
   //         if (res.data.updateData.length !== 0) {
@@ -1030,7 +1042,11 @@ class MappingHW extends React.Component {
   //             this.setState({
   //               action_status: "warning",
   //               action_message:
-  //                 "success with warn " + res.data.warnNotif.map((warn) => warn),
+  //                 "success with warn " +
+  //                 res.data.warnNotif.map((warn) => warn) +
+  //                 "batch " +
+  //                 index_xlsx +
+  //                 1,
   //             });
   //             this.toggleLoading();
   //             return;
@@ -1047,13 +1063,19 @@ class MappingHW extends React.Component {
   //           };
   //           const sendEmail = await apiSendEmail(dataEmail);
   //           // console.log(sendEmail);
-  //           this.setState({ action_status: "success" });
+  //           this.setState({
+  //             action_status: "success",
+  //             action_status: "success batch " + index_xlsx + 1,
+  //           });
   //           this.toggleLoading();
   //           // setTimeout(function () {
   //           //   window.location.reload();
   //           // }, 1500);
   //         } else {
-  //           this.setState({ action_status: "success" });
+  //           this.setState({
+  //             action_status: "success",
+  //             action_status: "success batch " + index_xlsx + 1,
+  //           });
   //           this.toggleLoading();
   //         }
   //       }
@@ -1078,12 +1100,20 @@ class MappingHW extends React.Component {
   //         this.setState({ action_status: "failed" });
   //       }
   //       this.toggleLoading();
+  //       break;
   //     }
   //   }
   // };
 
   saveBulk = async () => {
     this.toggleLoading();
+    this.togglecreateModal();
+    const roles =
+      this.state.roleUser.includes("BAM-MAT PLANNER") === true
+        ? 1
+        : this.state.roleUser.includes("BAM-PFM") === true
+        ? 2
+        : 3;
     const res = await postDatatoAPINODE(
       "/cpoMapping/createCpo",
       {
@@ -1260,6 +1290,12 @@ class MappingHW extends React.Component {
   toggleLoading = () => {
     this.setState((prevState) => ({
       modal_loading: !prevState.modal_loading,
+    }));
+  };
+
+  toggleProgress = () => {
+    this.setState((prevState) => ({
+      modal_progress: !prevState.modal_progress,
     }));
   };
 
@@ -1872,6 +1908,19 @@ class MappingHW extends React.Component {
     // console.log(params_field, sumheader);
   };
 
+  Upload_progress = (value, max) => {
+    const percent = (value / max) * 100;
+    return (
+      <div className="animated fadeIn">
+        <div className="card-header-actions">
+          <div style={{ textAlign: "center" }}>
+            <Progress value={percent} />
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   render() {
     const CPOForm = this.state.CPOForm;
     const role = this.state.roleUser;
@@ -1883,6 +1932,7 @@ class MappingHW extends React.Component {
               actionMessage={this.state.action_message}
               actionStatus={this.state.action_status}
             />
+            <Progressbar value={20} />
           </Col>
         </Row>
         <Row>
@@ -2586,7 +2636,7 @@ class MappingHW extends React.Component {
             <table>
               <tbody>
                 <tr>
-                  <td>Upload File</td>
+                  <td>Upload</td>
                   <td>:</td>
                   <td>
                     <input
@@ -2598,34 +2648,23 @@ class MappingHW extends React.Component {
                 </tr>
               </tbody>
             </table>
+            <span>
+              File will be split into {this.state.rowsXLS_batch.length} batch
+            </span>
           </div>
+
           <ModalFooter>
-            {/* {role.includes("BAM-ADMIN") === true ||
-            role.includes("BAM-PFM") === true ? (
-              <Button
-                size="sm"
-                block
-                color="secondary"
-                className="btn-pill"
-                disabled={this.state.rowsXLS.length === 0}
-                onClick={this.saveUpdate}
-                style={{ height: "30px", width: "100px" }}
-              >
-                Update
-              </Button>
-            ) : ( */}
             <Button
               size="sm"
               block
               color="success"
               className="btn-pill"
-              disabled={this.state.rowsXLS.length === 0}
+              disabled={this.state.rowsXLS_batch.length === 0}
               onClick={this.saveBulk}
               style={{ height: "30px", width: "100px" }}
             >
               Save
             </Button>
-            {/* )} */}
           </ModalFooter>
         </ModalCreateNew>
 
@@ -2636,6 +2675,26 @@ class MappingHW extends React.Component {
           className={"modal-sm modal--loading "}
         ></Loading>
         {/* end Modal Loading */}
+
+        <Modal
+          isOpen={this.state.modal_progress}
+          toggle={this.toggleProgress}
+          // className={"modal-sm modal--loading "}
+        >
+          <ModalBody>
+            <div className="animated fadeIn">
+              <div style={{ textAlign: "center" }}>
+                <Progress
+                  value={
+                    (this.state.curr_batch / this.state.rowsXLS_batch.length) *
+                    100
+                    // 50
+                  }
+                />
+              </div>
+            </div>
+          </ModalBody>
+        </Modal>
       </div>
     );
   }
