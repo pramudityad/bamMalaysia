@@ -938,7 +938,7 @@ class MappingHW extends React.Component {
     let result = [];
     // console.log("origin ", array.splice(1, array.length));
     let arrayCopy = [...array.splice(1, array.length)];
-    let header_change = [...this.state.rowsXLS.splice(0, 1)];
+    let header_change = [...array.splice(0, 1)];
     while (arrayCopy.length > 0) {
       result.push(header_change.concat(arrayCopy.splice(0, size)));
     }
@@ -966,147 +966,8 @@ class MappingHW extends React.Component {
     });
   };
 
-  // saveBulk = async () => {
-  //   // this.toggleLoading();
-  //   this.togglecreateModal();
-  //   const roles =
-  //     this.state.roleUser.includes("BAM-MAT PLANNER") === true
-  //       ? 1
-  //       : this.state.roleUser.includes("BAM-PFM") === true
-  //       ? 2
-  //       : 3;
-  //   for (
-  //     let index_xlsx = 0;
-  //     index_xlsx < this.state.rowsXLS_batch.length;
-  //     index_xlsx++
-  //   ) {
-  //     this.toggleLoading();
-  //     // const element = this.state.rowsXLS_batch[index_xlsx];
-  //     console.log(`hit ${index_xlsx}`);
-  //     const res = await postDatatoAPINODE(
-  //       "/cpoMapping/createCpo",
-  //       {
-  //         cpo_type: "svc",
-  //         required_check: true,
-  //         roles: roles,
-  //         cpo_data: this.state.rowsXLS_batch[index_xlsx],
-  //       },
-  //       this.state.tokenUser
-  //     );
-  //     if (res.data !== undefined) {
-  //       if (roles === 2) {
-  //         this.setState({
-  //           action_status: "success",
-  //           action_status: "success batch " + index_xlsx + 1,
-  //         });
-  //         this.toggleLoading();
-  //       } else {
-  //         if (res.data.updateData.length !== 0) {
-  //           const table_header = Object.keys(res.data.updateData[0]);
-  //           const update_Data = res.data.updateData;
-  //           const new_table_header = table_header.slice(0, -2);
-  //           // update_Data.map((row, k) => console.log(row));
-  //           // console.log(table_header);
-  //           let value = "row.";
-  //           const bodyEmail =
-  //             "<h2>DPM - BAM Notification</h2><br/><span>Please be notified that the following " +
-  //             modul_name +
-  //             " data has been updated <br/><br/><table><tr>" +
-  //             new_table_header
-  //               .map((tab, i) => "<th>" + tab + "</th>")
-  //               .join(" ") +
-  //             "</tr>" +
-  //             update_Data
-  //               .map(
-  //                 (row, j) =>
-  //                   "<tr key={" +
-  //                   j +
-  //                   "}>" +
-  //                   new_table_header
-  //                     .map((td) => "<td>" + eval(value + td) + "</td>")
-  //                     .join(" ") +
-  //                   "</tr>"
-  //               )
-  //               .join(" ") +
-  //             "</table>";
-  //           if (res.data.warnNotif.length !== 0) {
-  //             let dataEmail = {
-  //               // "to": creatorEmail,
-  //               to: "pramudityad@outlook.com",
-  //               // to: global.config.role.cpm,
-  //               subject: "[NOTIFY to CPM] " + modul_name,
-  //               body: bodyEmail,
-  //             };
-  //             const sendEmail = await apiSendEmail(dataEmail);
-  //             // console.log(sendEmail);
-  //             this.setState({
-  //               action_status: "warning",
-  //               action_message:
-  //                 "success with warn " +
-  //                 res.data.warnNotif.map((warn) => warn) +
-  //                 "batch " +
-  //                 index_xlsx +
-  //                 1,
-  //             });
-  //             this.toggleLoading();
-  //             return;
-  //             // setTimeout(function () {
-  //             //   window.location.reload();
-  //             // }, 1500);
-  //           }
-  //           let dataEmail = {
-  //             // "to": creatorEmail,
-  //             to: "pramudityad@outlook.com",
-  //             // to: global.config.role.cpm,
-  //             subject: "[NOTIFY to CPM] " + modul_name,
-  //             body: bodyEmail,
-  //           };
-  //           const sendEmail = await apiSendEmail(dataEmail);
-  //           // console.log(sendEmail);
-  //           this.setState({
-  //             action_status: "success",
-  //             action_status: "success batch " + index_xlsx + 1,
-  //           });
-  //           this.toggleLoading();
-  //           // setTimeout(function () {
-  //           //   window.location.reload();
-  //           // }, 1500);
-  //         } else {
-  //           this.setState({
-  //             action_status: "success",
-  //             action_status: "success batch " + index_xlsx + 1,
-  //           });
-  //           this.toggleLoading();
-  //         }
-  //       }
-  //     } else {
-  //       if (
-  //         res.response !== undefined &&
-  //         res.response.data !== undefined &&
-  //         res.response.data.error !== undefined
-  //       ) {
-  //         if (res.response.data.error.message !== undefined) {
-  //           this.setState({
-  //             action_status: "failed",
-  //             action_message: res.response.data.error.message,
-  //           });
-  //         } else {
-  //           this.setState({
-  //             action_status: "failed",
-  //             action_message: res.response.data.error,
-  //           });
-  //         }
-  //       } else {
-  //         this.setState({ action_status: "failed" });
-  //       }
-  //       this.toggleLoading();
-  //       break;
-  //     }
-  //   }
-  // };
-
   saveBulk = async () => {
-    this.toggleLoading();
+    // this.toggleLoading();
     this.togglecreateModal();
     const roles =
       this.state.roleUser.includes("BAM-MAT PLANNER") === true
@@ -1114,110 +975,257 @@ class MappingHW extends React.Component {
         : this.state.roleUser.includes("BAM-PFM") === true
         ? 2
         : 3;
-    const res = await postDatatoAPINODE(
-      "/cpoMapping/createCpo",
-      {
-        cpo_type: "hw",
-        required_check: true,
-        roles: roles,
-        cpo_data: this.state.rowsXLS,
-      },
-      this.state.tokenUser
-    );
-    if (res.data !== undefined) {
-      if (roles === 2) {
-        this.setState({ action_status: "success", action_status: "success" });
-        this.toggleLoading();
-      } else {
-        if (res.data.updateData.length !== 0) {
-          const table_header = Object.keys(res.data.updateData[0]);
-          const update_Data = res.data.updateData;
-          const new_table_header = table_header.slice(0, -2);
-          // update_Data.map((row, k) => console.log(row));
-          // console.log(table_header);
-          let value = "row.";
-          const bodyEmail =
-            "<h2>DPM - BAM Notification</h2><br/><span>Please be notified that the following " +
-            modul_name +
-            " data has been updated <br/><br/><table><tr>" +
-            new_table_header.map((tab, i) => "<th>" + tab + "</th>").join(" ") +
-            "</tr>" +
-            update_Data
-              .map(
-                (row, j) =>
-                  "<tr key={" +
-                  j +
-                  "}>" +
-                  new_table_header
-                    .map((td) => "<td>" + eval(value + td) + "</td>")
-                    .join(" ") +
-                  "</tr>"
-              )
-              .join(" ") +
-            "</table>";
-          if (res.data.warnNotif.length !== 0) {
-            let dataEmail = {
-              // "to": creatorEmail,
-              // to: "pramudityad@outlook.com",
-              to: global.config.role.cpm,
-              subject: "[NOTIFY to CPM] " + modul_name,
-              body: bodyEmail,
-            };
-            const sendEmail = await apiSendEmail(dataEmail);
-            // console.log(sendEmail);
-            this.setState({
-              action_status: "warning",
-              action_message:
-                "success with warn " + res.data.warnNotif.map((warn) => warn),
-            });
-            this.toggleLoading();
-            return;
-            // setTimeout(function () {
-            //   window.location.reload();
-            // }, 1500);
-          }
-          let dataEmail = {
-            // "to": creatorEmail,
-            // to: "pramudityad@outlook.com",
-            to: global.config.role.cpm,
-            subject: "[NOTIFY to CPM] " + modul_name,
-            body: bodyEmail,
-          };
-          const sendEmail = await apiSendEmail(dataEmail);
-          // console.log(sendEmail);
-          this.setState({ action_status: "success" });
-          this.toggleLoading();
-          // setTimeout(function () {
-          //   window.location.reload();
-          // }, 1500);
-        } else {
-          this.setState({ action_status: "success" });
-          this.toggleLoading();
-        }
-      }
-    } else {
-      if (
-        res.response !== undefined &&
-        res.response.data !== undefined &&
-        res.response.data.error !== undefined
-      ) {
-        if (res.response.data.error.message !== undefined) {
-          this.setState({
-            action_status: "failed",
-            action_message: res.response.data.error.message,
-          });
-        } else {
-          this.setState({
-            action_status: "failed",
-            action_message: res.response.data.error,
-          });
-        }
-      } else {
-        this.setState({ action_status: "failed" });
-      }
+    for (
+      let index_xlsx = 0;
+      index_xlsx < this.state.rowsXLS_batch.length;
+      index_xlsx++
+    ) {
       this.toggleLoading();
+      console.log(`hit ${index_xlsx}`);
+      // this.toggleLoading();
+      const res = await postDatatoAPINODE(
+        "/cpoMapping/createCpo",
+        {
+          cpo_type: "hw",
+          required_check: true,
+          roles: roles,
+          cpo_data: this.state.rowsXLS_batch[index_xlsx],
+        },
+        this.state.tokenUser
+      );
+      if (res.data !== undefined) {
+        if (roles === 2) {
+          this.setState({
+            action_status: "success",
+            action_message: "success batch " + index_xlsx,
+          });
+          this.toggleLoading();
+        } else {
+          console.log("just ", index_xlsx);
+          this.setState({
+            action_status: "success",
+            action_message: "success batch " + index_xlsx,
+          });
+          this.toggleLoading();
+          // if (res.data.updateData.length !== 0) {
+          //   const table_header = Object.keys(res.data.updateData[0]);
+          //   const update_Data = res.data.updateData;
+          //   const new_table_header = table_header.slice(0, -2);
+          //   // update_Data.map((row, k) => console.log(row));
+          //   // console.log(table_header);
+          //   let value = "row.";
+          //   const bodyEmail =
+          //     "<h2>DPM - BAM Notification</h2><br/><span>Please be notified that the following " +
+          //     modul_name +
+          //     " data has been updated <br/><br/><table><tr>" +
+          //     new_table_header
+          //       .map((tab, i) => "<th>" + tab + "</th>")
+          //       .join(" ") +
+          //     "</tr>" +
+          //     update_Data
+          //       .map(
+          //         (row, j) =>
+          //           "<tr key={" +
+          //           j +
+          //           "}>" +
+          //           new_table_header
+          //             .map((td) => "<td>" + eval(value + td) + "</td>")
+          //             .join(" ") +
+          //           "</tr>"
+          //       )
+          //       .join(" ") +
+          //     "</table>";
+          //   if (res.data.warnNotif.length !== 0) {
+          //     console.log("there are warn");
+          //     let dataEmail = {
+          //       // "to": creatorEmail,
+          //       to: "pramudityad@outlook.com",
+          //       // to: global.config.role.cpm,
+          //       subject: "[NOTIFY to CPM] " + modul_name,
+          //       body: bodyEmail,
+          //     };
+          //     const sendEmail = await apiSendEmail(dataEmail);
+          //     // console.log(sendEmail);
+          //     this.setState({
+          //       action_status: "warning",
+          //       action_message:
+          //         "success with warn " +
+          //         res.data.warnNotif.map((warn) => warn) +
+          //         " batch " +
+          //         index_xlsx,
+          //     });
+          //     this.toggleLoading();
+          //     // return;
+          //     // setTimeout(function () {
+          //     //   window.location.reload();
+          //     // }, 1500);
+          //   }
+          //   let dataEmail = {
+          //     // "to": creatorEmail,
+          //     to: "pramudityad@outlook.com",
+          //     // to: global.config.role.cpm,
+          //     subject: "[NOTIFY to CPM] " + modul_name,
+          //     body: bodyEmail,
+          //   };
+          //   const sendEmail = await apiSendEmail(dataEmail);
+          //   // console.log(sendEmail);
+          //   this.setState({
+          //     action_status: "success",
+          //     action_message: "success batch " + index_xlsx,
+          //   });
+          //   this.toggleLoading();
+          //   // setTimeout(function () {
+          //   //   window.location.reload();
+          //   // }, 1500);
+          // } else {
+          //   console.log("just ", index_xlsx);
+          //   this.setState({
+          //     action_status: "success",
+          //     action_message: "success batch " + index_xlsx,
+          //   });
+          //   this.toggleLoading();
+          // }
+        }
+      } else {
+        if (
+          res.response !== undefined &&
+          res.response.data !== undefined &&
+          res.response.data.error !== undefined
+        ) {
+          if (res.response.data.error.message !== undefined) {
+            this.setState({
+              action_status: "failed",
+              action_message:
+                res.response.data.error.message + "batch " + index_xlsx,
+            });
+          } else {
+            this.setState({
+              action_status: "failed",
+              action_message: res.response.data.error + "batch " + index_xlsx,
+            });
+          }
+        } else {
+          this.setState({ action_status: "failed" });
+        }
+        this.toggleLoading();
+        // break;
+      }
     }
   };
+
+  // saveBulk = async () => {
+  //   this.toggleLoading();
+  //   this.togglecreateModal();
+  //   const roles =
+  //     this.state.roleUser.includes("BAM-MAT PLANNER") === true
+  //       ? 1
+  //       : this.state.roleUser.includes("BAM-PFM") === true
+  //       ? 2
+  //       : 3;
+  //   const res = await postDatatoAPINODE(
+  //     "/cpoMapping/createCpo",
+  //     {
+  //       cpo_type: "hw",
+  //       required_check: true,
+  //       roles: roles,
+  //       cpo_data: this.state.rowsXLS,
+  //     },
+  //     this.state.tokenUser
+  //   );
+  //   if (res.data !== undefined) {
+  //     if (roles === 2) {
+  //       this.setState({ action_status: "success", action_status: "success" });
+  //       this.toggleLoading();
+  //     } else {
+  //       if (res.data.updateData.length !== 0) {
+  //         const table_header = Object.keys(res.data.updateData[0]);
+  //         const update_Data = res.data.updateData;
+  //         const new_table_header = table_header.slice(0, -2);
+  //         // update_Data.map((row, k) => console.log(row));
+  //         // console.log(table_header);
+  //         let value = "row.";
+  //         const bodyEmail =
+  //           "<h2>DPM - BAM Notification</h2><br/><span>Please be notified that the following " +
+  //           modul_name +
+  //           " data has been updated <br/><br/><table><tr>" +
+  //           new_table_header.map((tab, i) => "<th>" + tab + "</th>").join(" ") +
+  //           "</tr>" +
+  //           update_Data
+  //             .map(
+  //               (row, j) =>
+  //                 "<tr key={" +
+  //                 j +
+  //                 "}>" +
+  //                 new_table_header
+  //                   .map((td) => "<td>" + eval(value + td) + "</td>")
+  //                   .join(" ") +
+  //                 "</tr>"
+  //             )
+  //             .join(" ") +
+  //           "</table>";
+  //         if (res.data.warnNotif.length !== 0) {
+  //           let dataEmail = {
+  //             // "to": creatorEmail,
+  //             // to: "pramudityad@outlook.com",
+  //             to: global.config.role.cpm,
+  //             subject: "[NOTIFY to CPM] " + modul_name,
+  //             body: bodyEmail,
+  //           };
+  //           const sendEmail = await apiSendEmail(dataEmail);
+  //           // console.log(sendEmail);
+  //           this.setState({
+  //             action_status: "warning",
+  //             action_message:
+  //               "success with warn " + res.data.warnNotif.map((warn) => warn),
+  //           });
+  //           this.toggleLoading();
+  //           return;
+  //           // setTimeout(function () {
+  //           //   window.location.reload();
+  //           // }, 1500);
+  //         }
+  //         let dataEmail = {
+  //           // "to": creatorEmail,
+  //           // to: "pramudityad@outlook.com",
+  //           to: global.config.role.cpm,
+  //           subject: "[NOTIFY to CPM] " + modul_name,
+  //           body: bodyEmail,
+  //         };
+  //         const sendEmail = await apiSendEmail(dataEmail);
+  //         // console.log(sendEmail);
+  //         this.setState({ action_status: "success" });
+  //         this.toggleLoading();
+  //         // setTimeout(function () {
+  //         //   window.location.reload();
+  //         // }, 1500);
+  //       } else {
+  //         this.setState({ action_status: "success" });
+  //         this.toggleLoading();
+  //       }
+  //     }
+  //   } else {
+  //     if (
+  //       res.response !== undefined &&
+  //       res.response.data !== undefined &&
+  //       res.response.data.error !== undefined
+  //     ) {
+  //       if (res.response.data.error.message !== undefined) {
+  //         this.setState({
+  //           action_status: "failed",
+  //           action_message: res.response.data.error.message,
+  //         });
+  //       } else {
+  //         this.setState({
+  //           action_status: "failed",
+  //           action_message: res.response.data.error,
+  //         });
+  //       }
+  //     } else {
+  //       this.setState({ action_status: "failed" });
+  //     }
+  //     this.toggleLoading();
+  //   }
+  // };
 
   handleChangeForm = (e) => {
     const value = e.target.value;

@@ -5,8 +5,12 @@ import Proptypes from "prop-types";
 export default React.memo(({ isOpen, toggle, value, max }) => {
   const percent = (value / max) * 100;
   return (
-    <div style={{ textAlign: "center" }}>
-      <Progress value={percent} />
+    <div className="animated fadeIn">
+      <div className="card-header-actions">
+        <div style={{ textAlign: "center" }}>
+          <Progress value={percent} />
+        </div>
+      </div>
     </div>
   );
 });
