@@ -1043,6 +1043,10 @@ class MappingSVC extends React.PureComponent {
       index_xlsx < this.state.rowsXLS_batch.length;
       index_xlsx++
     ) {
+      this.setState({
+        action_status: null,
+        action_message: null,
+      });
       let num_batch = 1;
       this.toggleLoading();
       console.log(`hit ${index_xlsx}`);
