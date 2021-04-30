@@ -929,8 +929,9 @@ class MappingHW extends React.Component {
     this.setState(
       {
         rowsXLS: newDataXLS,
-      },
-      () => this.chunkArray(this.state.rowsXLS, 2000)
+      }
+      // ,
+      // () => this.chunkArray(this.state.rowsXLS, 2000)
     );
   }
 
@@ -938,7 +939,7 @@ class MappingHW extends React.Component {
     let result = [];
     // console.log("origin ", array.splice(1, array.length));
     let arrayCopy = [...array.splice(1, array.length)];
-    let header_change = [...this.state.rowsXLS.splice(0, 1)];
+    let header_change = [...array.splice(0, 1)];
     while (arrayCopy.length > 0) {
       result.push(header_change.concat(arrayCopy.splice(0, size)));
     }
@@ -981,12 +982,12 @@ class MappingHW extends React.Component {
   //     index_xlsx++
   //   ) {
   //     this.toggleLoading();
-  //     // const element = this.state.rowsXLS_batch[index_xlsx];
   //     console.log(`hit ${index_xlsx}`);
+  //     // this.toggleLoading();
   //     const res = await postDatatoAPINODE(
   //       "/cpoMapping/createCpo",
   //       {
-  //         cpo_type: "svc",
+  //         cpo_type: "hw",
   //         required_check: true,
   //         roles: roles,
   //         cpo_data: this.state.rowsXLS_batch[index_xlsx],
@@ -997,89 +998,97 @@ class MappingHW extends React.Component {
   //       if (roles === 2) {
   //         this.setState({
   //           action_status: "success",
-  //           action_status: "success batch " + index_xlsx + 1,
+  //           action_message: "success batch " + index_xlsx,
   //         });
   //         this.toggleLoading();
   //       } else {
-  //         if (res.data.updateData.length !== 0) {
-  //           const table_header = Object.keys(res.data.updateData[0]);
-  //           const update_Data = res.data.updateData;
-  //           const new_table_header = table_header.slice(0, -2);
-  //           // update_Data.map((row, k) => console.log(row));
-  //           // console.log(table_header);
-  //           let value = "row.";
-  //           const bodyEmail =
-  //             "<h2>DPM - BAM Notification</h2><br/><span>Please be notified that the following " +
-  //             modul_name +
-  //             " data has been updated <br/><br/><table><tr>" +
-  //             new_table_header
-  //               .map((tab, i) => "<th>" + tab + "</th>")
-  //               .join(" ") +
-  //             "</tr>" +
-  //             update_Data
-  //               .map(
-  //                 (row, j) =>
-  //                   "<tr key={" +
-  //                   j +
-  //                   "}>" +
-  //                   new_table_header
-  //                     .map((td) => "<td>" + eval(value + td) + "</td>")
-  //                     .join(" ") +
-  //                   "</tr>"
-  //               )
-  //               .join(" ") +
-  //             "</table>";
-  //           if (res.data.warnNotif.length !== 0) {
-  //             let dataEmail = {
-  //               // "to": creatorEmail,
-  //               to: "pramudityad@outlook.com",
-  //               // to: global.config.role.cpm,
-  //               subject: "[NOTIFY to CPM] " + modul_name,
-  //               body: bodyEmail,
-  //             };
-  //             const sendEmail = await apiSendEmail(dataEmail);
-  //             // console.log(sendEmail);
-  //             this.setState({
-  //               action_status: "warning",
-  //               action_message:
-  //                 "success with warn " +
-  //                 res.data.warnNotif.map((warn) => warn) +
-  //                 "batch " +
-  //                 index_xlsx +
-  //                 1,
-  //             });
-  //             this.toggleLoading();
-  //             return;
-  //             // setTimeout(function () {
-  //             //   window.location.reload();
-  //             // }, 1500);
-  //           }
-  //           let dataEmail = {
-  //             // "to": creatorEmail,
-  //             to: "pramudityad@outlook.com",
-  //             // to: global.config.role.cpm,
-  //             subject: "[NOTIFY to CPM] " + modul_name,
-  //             body: bodyEmail,
-  //           };
-  //           const sendEmail = await apiSendEmail(dataEmail);
-  //           // console.log(sendEmail);
-  //           this.setState({
-  //             action_status: "success",
-  //             action_status: "success batch " + index_xlsx + 1,
-  //           });
-  //           this.toggleLoading();
-  //           // setTimeout(function () {
-  //           //   window.location.reload();
-  //           // }, 1500);
-  //         } else {
-  //           this.setState({
-  //             action_status: "success",
-  //             action_status: "success batch " + index_xlsx + 1,
-  //           });
-  //           this.toggleLoading();
-  //         }
+  //         console.log("just ", index_xlsx);
+  //         this.setState({
+  //           action_status: "success",
+  //           action_message: "success batch " + index_xlsx,
+  //         });
+  //         this.toggleLoading();
+  //         // if (res.data.updateData.length !== 0) {
+  //         //   const table_header = Object.keys(res.data.updateData[0]);
+  //         //   const update_Data = res.data.updateData;
+  //         //   const new_table_header = table_header.slice(0, -2);
+  //         //   // update_Data.map((row, k) => console.log(row));
+  //         //   // console.log(table_header);
+  //         //   let value = "row.";
+  //         //   const bodyEmail =
+  //         //     "<h2>DPM - BAM Notification</h2><br/><span>Please be notified that the following " +
+  //         //     modul_name +
+  //         //     " data has been updated <br/><br/><table><tr>" +
+  //         //     new_table_header
+  //         //       .map((tab, i) => "<th>" + tab + "</th>")
+  //         //       .join(" ") +
+  //         //     "</tr>" +
+  //         //     update_Data
+  //         //       .map(
+  //         //         (row, j) =>
+  //         //           "<tr key={" +
+  //         //           j +
+  //         //           "}>" +
+  //         //           new_table_header
+  //         //             .map((td) => "<td>" + eval(value + td) + "</td>")
+  //         //             .join(" ") +
+  //         //           "</tr>"
+  //         //       )
+  //         //       .join(" ") +
+  //         //     "</table>";
+  //         //   if (res.data.warnNotif.length !== 0) {
+  //         //     console.log("there are warn");
+  //         //     let dataEmail = {
+  //         //       // "to": creatorEmail,
+  //         //       to: "pramudityad@outlook.com",
+  //         //       // to: global.config.role.cpm,
+  //         //       subject: "[NOTIFY to CPM] " + modul_name,
+  //         //       body: bodyEmail,
+  //         //     };
+  //         //     const sendEmail = await apiSendEmail(dataEmail);
+  //         //     // console.log(sendEmail);
+  //         //     this.setState({
+  //         //       action_status: "warning",
+  //         //       action_message:
+  //         //         "success with warn " +
+  //         //         res.data.warnNotif.map((warn) => warn) +
+  //         //         " batch " +
+  //         //         index_xlsx,
+  //         //     });
+  //         //     this.toggleLoading();
+  //         //     // return;
+  //         //     // setTimeout(function () {
+  //         //     //   window.location.reload();
+  //         //     // }, 1500);
+  //         //   }
+  //         //   let dataEmail = {
+  //         //     // "to": creatorEmail,
+  //         //     to: "pramudityad@outlook.com",
+  //         //     // to: global.config.role.cpm,
+  //         //     subject: "[NOTIFY to CPM] " + modul_name,
+  //         //     body: bodyEmail,
+  //         //   };
+  //         //   const sendEmail = await apiSendEmail(dataEmail);
+  //         //   // console.log(sendEmail);
+  //         //   this.setState({
+  //         //     action_status: "success",
+  //         //     action_message: "success batch " + index_xlsx,
+  //         //   });
+  //         //   this.toggleLoading();
+  //         //   // setTimeout(function () {
+  //         //   //   window.location.reload();
+  //         //   // }, 1500);
+  //         // } else {
+  //         //   console.log("just ", index_xlsx);
+  //         //   this.setState({
+  //         //     action_status: "success",
+  //         //     action_message: "success batch " + index_xlsx,
+  //         //   });
+  //         //   this.toggleLoading();
+  //         // }
   //       }
   //     } else {
+  //       console.log("err ", index_xlsx);
   //       if (
   //         res.response !== undefined &&
   //         res.response.data !== undefined &&
@@ -1088,19 +1097,20 @@ class MappingHW extends React.Component {
   //         if (res.response.data.error.message !== undefined) {
   //           this.setState({
   //             action_status: "failed",
-  //             action_message: res.response.data.error.message,
+  //             action_message:
+  //               res.response.data.error.message + "batch " + index_xlsx,
   //           });
   //         } else {
   //           this.setState({
   //             action_status: "failed",
-  //             action_message: res.response.data.error,
+  //             action_message: res.response.data.error + "batch " + index_xlsx,
   //           });
   //         }
   //       } else {
   //         this.setState({ action_status: "failed" });
   //       }
   //       this.toggleLoading();
-  //       break;
+  //       // break;
   //     }
   //   }
   // };
@@ -2648,9 +2658,9 @@ class MappingHW extends React.Component {
                 </tr>
               </tbody>
             </table>
-            <span>
+            {/* <span>
               File will be split into {this.state.rowsXLS_batch.length} batch
-            </span>
+            </span> */}
           </div>
 
           <ModalFooter>
@@ -2659,7 +2669,7 @@ class MappingHW extends React.Component {
               block
               color="success"
               className="btn-pill"
-              disabled={this.state.rowsXLS_batch.length === 0}
+              disabled={this.state.rowsXLS.length === 0}
               onClick={this.saveBulk}
               style={{ height: "30px", width: "100px" }}
             >
