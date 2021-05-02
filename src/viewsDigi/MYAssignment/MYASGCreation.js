@@ -2277,6 +2277,7 @@ class MYASGCreation extends Component {
   }
 
   handleCheckMaterialPackage = async (e) => {
+    this.toggleLoading();
     const value = e.target.value;
     const response = await postDatatoAPINODE("/package/getManyPackagebyId", { package_data: [value] }, this.state.tokenUser);
     if (response.data !== undefined && response.status >= 200 && response.status <= 300) {
@@ -2307,20 +2308,24 @@ class MYASGCreation extends Component {
         Materials: allMaterials
       }
       this.setState({ check_material_package_list: check_material_package_list }, () => this.toggleModalCheckMaterialPackage());
+      this.toggleLoading();
     } else {
       if (response.response !== undefined && response.response.data !== undefined && response.response.data.error !== undefined) {
         if (response.response.data.error.message !== undefined) {
+          this.toggleLoading();
           this.setState({
             action_status: "failed",
             action_message: response.response.data.error.message,
           });
         } else {
+          this.toggleLoading();
           this.setState({
             action_status: "failed",
             action_message: response.response.data.error,
           });
         }
       } else {
+        this.toggleLoading();
         this.setState({ action_status: "failed" });
       }
     }
