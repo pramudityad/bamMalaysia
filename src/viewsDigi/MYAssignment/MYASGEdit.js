@@ -76,6 +76,14 @@ class MYASGEdit extends Component {
       activePage: 1,
       totalData: 0,
       perPage: 10,
+      prevPagePackage: 0,
+      activePagePackage: 1,
+      totalDataPackage: 0,
+      perPagePackage: 10,
+      prevPageCheckMaterialPackage: 0,
+      activePageCheckMaterialPackage: 1,
+      totalDataCheckMaterialPackage: 0,
+      perPageCheckMaterialPackage: 10,
       form_checking: {},
       list_cd_id: [],
       cd_id_selected: "",
@@ -94,6 +102,7 @@ class MYASGEdit extends Component {
         site_id: "",
         currency: "MYR",
         tax_code: "I0",
+        wp_id: "",
         delivery_date: convertDateFormat(date)
       },
       validation_form: {},
@@ -171,7 +180,7 @@ class MYASGEdit extends Component {
       if (res.data !== undefined) {
         const items = res.data.data;
         const totalData = res.data.totalResults;
-        this.setState({ package_list: items, totalData: totalData });
+        this.setState({ package_list: items, totalDataPackage: totalData });
       }
     })
   }
@@ -873,6 +882,18 @@ class MYASGEdit extends Component {
     let type_material = this.state.mm_data_type;
     this.setState({ activePage: pageNumber }, () => {
       this.decideFilter(type_material);
+    });
+  }
+
+  handlePageChangePackage = (pageNumber) => {
+    this.setState({ activePagePackage: pageNumber }, () => {
+      this.getPackageList();
+    });
+  }
+
+  handlePageChangeCheckMaterialPackage = (pageNumber) => {
+    this.setState({ activePageCheckMaterialPackage: pageNumber }, () => {
+      this.getPackageList();
     });
   }
 
@@ -2275,7 +2296,7 @@ class MYASGEdit extends Component {
         Region: selectedPackage.Region,
         Materials: allMaterials
       }
-      this.setState({ check_material_package_list: check_material_package_list }, () => this.toggleModalCheckMaterialPackage());
+      this.setState({ check_material_package_list: check_material_package_list, totalDataCheckMaterialPackage: allMaterials.length }, () => this.toggleModalCheckMaterialPackage());
       this.toggleLoading();
     } else {
       if (response.response !== undefined && response.response.data !== undefined && response.response.data.error !== undefined) {
@@ -4073,6 +4094,7 @@ class MYASGEdit extends Component {
                             size="sm"
                             value={e._id}
                             onClick={this.handleSelectPackage}
+                            disabled={this.state.lmr_child_package.wp_id === '' || this.state.lmr_child_package.wp_id === null}
                           >
                             <i className="fa fa-check-square" style={{ marginRight: "8px" }}></i>Select
                           </Button>
@@ -4097,11 +4119,11 @@ class MYASGEdit extends Component {
               </Table>
             </div>
             <Pagination
-              activePage={this.state.activePage}
-              itemsCountPerPage={this.state.perPage}
-              totalItemsCount={this.state.totalData}
+              activePage={this.state.activePagePackage}
+              itemsCountPerPage={this.state.perPagePackage}
+              totalItemsCount={this.state.totalDataPackage}
               pageRangeDisplayed={5}
-              onChange={this.handlePageChange}
+              onChange={this.handlePageChangePackage}
               itemClass="page-item"
               linkClass="page-link"
             />
@@ -4154,11 +4176,11 @@ class MYASGEdit extends Component {
               </Table>
             </div>
             <Pagination
-              activePage={this.state.activePage}
-              itemsCountPerPage={this.state.perPage}
-              totalItemsCount={this.state.totalData}
+              activePage={this.state.activePageCheckMaterialPackage}
+              itemsCountPerPage={this.state.perPageCheckMaterialPackage}
+              totalItemsCount={this.state.totalDataCheckMaterialPackage}
               pageRangeDisplayed={5}
-              onChange={this.handlePageChange}
+              onChange={this.handlePageChangeCheckMaterialPackage}
               itemClass="page-item"
               linkClass="page-link"
             />
