@@ -76,6 +76,14 @@ class MYASGCreation extends Component {
       activePage: 1,
       totalData: 0,
       perPage: 10,
+      prevPagePackage: 0,
+      activePagePackage: 1,
+      totalDataPackage: 0,
+      perPagePackage: 10,
+      prevPageCheckMaterialPackage: 0,
+      activePageCheckMaterialPackage: 1,
+      totalDataCheckMaterialPackage: 0,
+      perPageCheckMaterialPackage: 10,
       form_checking: {},
       list_cd_id: [],
       cd_id_selected: "",
@@ -153,8 +161,8 @@ class MYASGCreation extends Component {
   };
 
   getPackageList() {
-    const page = this.state.activePage;
-    const maxPage = this.state.perPage;
+    const page = this.state.activePagePackage;
+    const maxPage = this.state.perPagePackage;
     let filter_array = [];
     this.state.filter_list_package[0] !== "" && (filter_array.push('"Package_Id":{"$regex" : "' + this.state.filter_list_package[0] + '", "$options" : "i"}'));
     this.state.filter_list_package[1] !== "" && (filter_array.push('"Package_Name":{"$regex" : "' + this.state.filter_list_package[1] + '", "$options" : "i"}'));
@@ -173,7 +181,7 @@ class MYASGCreation extends Component {
       if (res.data !== undefined) {
         const items = res.data.data;
         const totalData = res.data.totalResults;
-        this.setState({ package_list: items, totalData: totalData });
+        this.setState({ package_list: items, totalDataPackage: totalData });
       }
     })
   }
@@ -832,6 +840,18 @@ class MYASGCreation extends Component {
     let type_material = this.state.mm_data_type;
     this.setState({ activePage: pageNumber }, () => {
       this.decideFilter(type_material);
+    });
+  }
+
+  handlePageChangePackage = (pageNumber) => {
+    this.setState({ activePagePackage: pageNumber }, () => {
+      this.getPackageList();
+    });
+  }
+
+  handlePageChangeCheckMaterialPackage = (pageNumber) => {
+    this.setState({ activePageCheckMaterialPackage: pageNumber }, () => {
+      this.getPackageList();
     });
   }
 
@@ -2307,7 +2327,7 @@ class MYASGCreation extends Component {
         Region: selectedPackage.Region,
         Materials: allMaterials
       }
-      this.setState({ check_material_package_list: check_material_package_list }, () => this.toggleModalCheckMaterialPackage());
+      this.setState({ check_material_package_list: check_material_package_list, totalDataCheckMaterialPackage: allMaterials.length }, () => this.toggleModalCheckMaterialPackage());
       this.toggleLoading();
     } else {
       if (response.response !== undefined && response.response.data !== undefined && response.response.data.error !== undefined) {
@@ -4128,11 +4148,11 @@ class MYASGCreation extends Component {
               </Table>
             </div>
             <Pagination
-              activePage={this.state.activePage}
-              itemsCountPerPage={this.state.perPage}
-              totalItemsCount={this.state.totalData}
+              activePage={this.state.activePagePackage}
+              itemsCountPerPage={this.state.perPagePackage}
+              totalItemsCount={this.state.totalDataPackage}
               pageRangeDisplayed={5}
-              onChange={this.handlePageChange}
+              onChange={this.handlePageChangePackage}
               itemClass="page-item"
               linkClass="page-link"
             />
@@ -4185,11 +4205,11 @@ class MYASGCreation extends Component {
               </Table>
             </div>
             <Pagination
-              activePage={this.state.activePage}
-              itemsCountPerPage={this.state.perPage}
-              totalItemsCount={this.state.totalData}
+              activePage={this.state.activePageCheckMaterialPackage}
+              itemsCountPerPage={this.state.perPageCheckMaterialPackage}
+              totalItemsCount={this.state.totalDataCheckMaterialPackage}
               pageRangeDisplayed={5}
-              onChange={this.handlePageChange}
+              onChange={this.handlePageChangeCheckMaterialPackage}
               itemClass="page-item"
               linkClass="page-link"
             />
