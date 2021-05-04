@@ -391,7 +391,7 @@ class MappingHW extends React.Component {
     // console.log("model_header", header_model.length);
     // this.getList();
     // this.getHeader();
-    this.getListAll();
+    // this.getListAll();
     this.getMaster();
   }
 
@@ -1992,24 +1992,14 @@ class MappingHW extends React.Component {
                     </div>
                   </div>
                   &nbsp;&nbsp;&nbsp;
-                  {/* <div>
-                    <Button onClick={this.getListAll}>CSV file</Button>
-                    <CSVLink
-                      data={this.state.all_data_mapping}
-                      separator={";"}
-                      ref={this.csvLink}
-                      target="_blank"
-                      filename={"All Data HW Export.csv"}
-                    />               
-                  </div>
-                  &nbsp;&nbsp;&nbsp; */}
                   <div>
-                    <Dropdown
+                    {/* <Dropdown
                       isOpen={this.state.dropdownOpen[1]}
                       toggle={() => {
                         this.toggle(1);
                       }}
                     >
+
                       <DropdownToggle block color="warning" size="sm">
                         <i className="fa fa-download" aria-hidden="true">
                           {" "}
@@ -2038,12 +2028,7 @@ class MappingHW extends React.Component {
                               {" "}
                               Mapping Template{" " +
                                 this.state.roleUser[1]}{" "}
-                            </DropdownItem>
-                            {/* <DropdownItem onClick={this.exportTemplate2}>
-                              {" "}
-                              All Data Template{" " +
-                                this.state.roleUser[1]}{" "}
-                            </DropdownItem> */}
+                            </DropdownItem>                   
                           </>
                         ) : (
                           ""
@@ -2059,10 +2044,7 @@ class MappingHW extends React.Component {
                               {" "}
                               Mapping Template{" " +
                                 this.state.roleUser[1]}{" "}
-                            </DropdownItem>
-                            {/* <DropdownItem onClick={this.download_PFM}>
-                              All Data Template{" " + this.state.roleUser[1]}{" "}
-                            </DropdownItem> */}
+                            </DropdownItem>         
                           </>
                         ) : (
                           ""
@@ -2078,16 +2060,26 @@ class MappingHW extends React.Component {
                               {" "}
                               Mapping Template{" " +
                                 this.state.roleUser[1]}{" "}
-                            </DropdownItem>
-                            {/* <DropdownItem onClick={this.download_Admin}>
-                              All Data Template{" " + this.state.roleUser[1]}{" "}
-                            </DropdownItem> */}
+                            </DropdownItem>               
                           </>
                         ) : (
                           ""
                         )}
                       </DropdownMenu>
-                    </Dropdown>
+                    </Dropdown> */}
+                    <Link to={"/cpo-hw-export"} target="_blank">
+                      <Button
+                        color="warning"
+                        style={{ float: "right", marginLeft: "8px" }}
+                        size="sm"
+                      >
+                        <i className="fa fa-download" aria-hidden="true">
+                          {" "}
+                          &nbsp;{" "}
+                        </i>{" "}
+                        Export
+                      </Button>
+                    </Link>
                   </div>
                 </div>
               </CardHeader>
