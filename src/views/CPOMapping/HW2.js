@@ -86,41 +86,6 @@ const Checkbox1 = ({
 
 const modul_name = "HW Mapping";
 
-
-const global.config.cpo_mapping.hw.header_materialmapping = [
-  "Deal_Name",
-  "Hammer",
-  "Project_Description",
-  "Po_Number",
-  "Data_1",
-  "Lookup_Reference",
-  "Region",
-  "Reference_Loc_Id",
-  "New_Loc_Id",
-  "Site_Name",
-  "New_Site_Name",
-  "Config",
-  "Po",
-  "Line",
-  "Line_Item_Sap",
-  "Material_Code",
-  "Description",
-  "Qty",
-  "NW",
-  "On_Air_Date",
-  "Mapping_Date",
-  "Remarks",
-  "Gr_No",
-  "Premr_No",
-  "Proceed_Billing_100",
-  "Celcom_User",
-  "Pcode",
-  "Unit_Price",
-  "Total_Price",
-  "Discounted_Unit_Price",
-  "Discounted_Po_Price",
-];
-
 class MappingHW extends React.PureComponent {
   constructor(props) {
     super(props);
@@ -711,10 +676,14 @@ class MappingHW extends React.PureComponent {
         : this.state.roleUser.includes("BAM-PFM") === true
         ? 2
         : 3;
-    const header_create_not_req = [global.config.cpo_mapping.hw.header_materialmapping];
+    const header_create_not_req = [
+      global.config.cpo_mapping.hw.header_materialmapping,
+    ];
     const body_create_not_req = this.state.dataChecked_container.map((data) =>
       Object.keys(data)
-        .filter((key) => global.config.cpo_mapping.hw.header_materialmapping.includes(key))
+        .filter((key) =>
+          global.config.cpo_mapping.hw.header_materialmapping.includes(key)
+        )
         .reduce((obj, key) => {
           obj[key] = data[key];
           return obj;
