@@ -189,13 +189,11 @@ const header_model = [
   "Material_Code",
   "Description",
   "Line_Item_Sap",
-
   "Qty",
   "CNI_Date",
   "Mapping_Date",
   "Remarks",
   "Gr_No",
-  // "Premr_No",
   "Proceed_Billing_100",
   "Celcom_User",
   "Pcode",
@@ -1860,91 +1858,19 @@ class MappingSVC extends React.PureComponent {
                   </div>
                   &nbsp;&nbsp;&nbsp;
                   <div>
-                    <Dropdown
-                      isOpen={this.state.dropdownOpen[1]}
-                      toggle={() => {
-                        this.toggle(1);
-                      }}
-                    >
-                      <DropdownToggle block color="warning" size="sm">
+                    <Link to={"/cpo-svc-export"} target="_blank">
+                      <Button
+                        color="warning"
+                        style={{ float: "right", marginLeft: "8px" }}
+                        size="sm"
+                      >
                         <i className="fa fa-download" aria-hidden="true">
                           {" "}
                           &nbsp;{" "}
                         </i>{" "}
                         Export
-                      </DropdownToggle>
-                      <DropdownMenu>
-                        <DropdownItem header>Export Data</DropdownItem>
-                        <DropdownItem
-                          disabled={this.state.all_data_mapping.length === 0}
-                          onClick={this.exportTemplateall}
-                        >
-                          {" "}
-                          All Data SVC Export
-                        </DropdownItem>
-                        <DropdownItem header>Uploader Template</DropdownItem>
-
-                        {role.includes("BAM-MAT PLANNER") === true ? (
-                          <>
-                            <DropdownItem
-                              disabled={
-                                this.state.all_data_mapping.length === 0
-                              }
-                              onClick={this.exportTemplate2}
-                            >
-                              {" "}
-                              Mapping Template{" " +
-                                this.state.roleUser[1]}{" "}
-                            </DropdownItem>
-                            {/* <DropdownItem onClick={this.exportTemplate2}>
-                              {" "}
-                              All Data Template{" " +
-                                this.state.roleUser[1]}{" "}
-                            </DropdownItem> */}
-                          </>
-                        ) : (
-                          ""
-                        )}
-                        {role.includes("BAM-PFM") === true ? (
-                          <>
-                            <DropdownItem
-                              disabled={
-                                this.state.all_data_mapping.length === 0
-                              }
-                              onClick={this.download_PFM}
-                            >
-                              {" "}
-                              Mapping Template{" " +
-                                this.state.roleUser[1]}{" "}
-                            </DropdownItem>
-                            {/* <DropdownItem onClick={this.download_PFM}>
-                              All Data Template{" " + this.state.roleUser[1]}{" "}
-                            </DropdownItem> */}
-                          </>
-                        ) : (
-                          ""
-                        )}
-                        {role.includes("BAM-ADMIN") === true ? (
-                          <>
-                            <DropdownItem
-                              disabled={
-                                this.state.all_data_mapping.length === 0
-                              }
-                              onClick={this.download_Admin}
-                            >
-                              {" "}
-                              Mapping Template{" " +
-                                this.state.roleUser[1]}{" "}
-                            </DropdownItem>
-                            {/* <DropdownItem onClick={this.download_Admin}>
-                              All Data Template{" " + this.state.roleUser[1]}{" "}
-                            </DropdownItem> */}
-                          </>
-                        ) : (
-                          ""
-                        )}
-                      </DropdownMenu>
-                    </Dropdown>
+                      </Button>
+                    </Link>
                   </div>
                 </div>
               </CardHeader>
