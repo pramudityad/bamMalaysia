@@ -390,7 +390,7 @@ class MappingSVC extends React.PureComponent {
     // console.log("model_header", header_model.length);
     // this.getList();
     // this.getHeader();
-    this.getListAll();
+    // this.getListAll();
     this.getMaster();
   }
 
@@ -509,22 +509,22 @@ class MappingSVC extends React.PureComponent {
     if (!inputValue) {
       return [];
     } else {
-      let asycn_options = [];
-      await getUniqueListBy(
-        this.state.all_data_mapping,
-        "Reference_Loc_Id"
-      ).map((data) =>
-        asycn_options.push({
-          label: data.Reference_Loc_Id,
-          value: data.Reference_Loc_Id,
-          // Reference_Loc_Id: data.Reference_Loc_Id,
-          // Po: data.Po,
-          // Line: data.Line,
-        })
+      let data_list = [];
+      const getWPID = await getDatafromAPINODE(
+        '/cpoMapping/getCpo/required/svc?q={"Reference_Loc_Id":{"$regex":"' +
+          inputValue +
+          '", "$options":"i"}}',
+        this.state.tokenUser
       );
-      return asycn_options.filter((i) =>
-        i.label.toLowerCase().includes(inputValue)
-      );
+      if (getWPID !== undefined && getWPID.data !== undefined) {
+        getUniqueListBy(getWPID.data.data, "Reference_Loc_Id").map((wp) =>
+          data_list.push({
+            value: wp.Reference_Loc_Id,
+            label: wp.Reference_Loc_Id,
+          })
+        );
+      }
+      return data_list;
     }
   };
 
@@ -532,22 +532,25 @@ class MappingSVC extends React.PureComponent {
     if (!inputValue) {
       return [];
     } else {
-      let asycn_options = [];
-      await getUniqueListBy(
-        this.state.all_data_master,
-        "Project_Description"
-      ).map((data) =>
-        asycn_options.push({
-          label: data.Project_Description,
-          value: data.Project_Description,
-          // Reference_Loc_Id: data.Reference_Loc_Id,
-          // Po: data.Po,
-          // Line: data.Line,
-        })
+      let data_list2 = [];
+      const getWPID = await getDatafromAPINODE(
+        '/cpoMapping/getCpo/required/svc?q={"Project_Description":{"$regex":"' +
+          inputValue +
+          '", "$options":"i"}}',
+        this.state.tokenUser
       );
-      return asycn_options.filter((i) =>
-        i.label.toLowerCase().includes(inputValue)
-      );
+      if (getWPID !== undefined && getWPID.data !== undefined) {
+        // this.setState({ list_cd_id: getWPID.data.data });
+        getUniqueListBy(getWPID.data.data, "Project_Description").map((wp) =>
+          data_list2.push({
+            value: wp.Project_Description,
+            label: wp.Project_Description,
+          })
+        );
+      }
+      // console.log("data_list2 ", data_list2);
+      // this.setState({ reloc_options : data_list2 });
+      return data_list2;
     }
   };
 
@@ -662,271 +665,6 @@ class MappingSVC extends React.PureComponent {
       }
     });
   }
-
-  exportTemplate = async () => {
-    const wb = new Excel.Workbook();
-    const ws = wb.addWorksheet();
-
-    ws.addRow(header_materialmapping);
-    for (let i = 1; i < header_materialmapping.length + 1; i++) {
-      ws.getCell(numToSSColumn(i) + "1").fill = {
-        type: "pattern",
-        pattern: "solid",
-        fgColor: { argb: "FFFFFF00" },
-        bgColor: { argb: "A9A9A9" },
-      };
-    }
-    const PPFormat = await wb.xlsx.writeBuffer();
-    saveAs(
-      new Blob([PPFormat]),
-      this.state.roleUser[1] + " " + modul_name + " Template.xlsx"
-    );
-  };
-
-  exportTemplate2 = async () => {
-    this.toggleLoading();
-    const wb = new Excel.Workbook();
-    const ws = wb.addWorksheet();
-
-    const download_all_template = this.state.all_data_mapping;
-
-    ws.addRow(header_materialmapping);
-    for (let i = 1; i < header_materialmapping.length + 1; i++) {
-      ws.getCell(numToSSColumn(i) + "1").fill = {
-        type: "pattern",
-        pattern: "solid",
-        fgColor: { argb: "FFFFFF00" },
-        bgColor: { argb: "A9A9A9" },
-      };
-    }
-
-    if (download_all_template !== undefined) {
-      // console.log(download_all_template.map((u) => u._id));
-
-      for (let i = 0; i < download_all_template.length; i++) {
-        let e = download_all_template[i];
-        ws.addRow([
-          this.LookupField2(e.Po + "-" + e.Line, "Deal_Name"),
-
-          this.LookupField2(e.Po + "-" + e.Line, "Hammer"),
-
-          this.LookupField2(e.Po + "-" + e.Line, "Project_Description"),
-
-          this.LookupField2(e.Po + "-" + e.Line, "Po_Number"),
-          e.Data_1,
-          e.Lookup_Reference,
-          e.Region,
-          e.Reference_Loc_Id,
-          e.New_Loc_Id,
-          e.Site_Name,
-          e.New_Site_Name,
-          e.Config,
-          e.Po,
-          e.Line,
-
-          this.LookupField2(e.Po + "-" + e.Line, "Description"),
-          e.Qty,
-          e.CNI_Date,
-          e.Mapping_Date,
-          e.Remarks,
-          // e.Premr_No,
-          e.Proceed_Billing_100,
-          e.Celcom_User,
-
-          this.LookupField2(e.Po + "-" + e.Line, "Pcode"),
-
-          this.LookupField2(e.Po + "-" + e.Line, "Unit_Price"),
-
-          this.LookupField2(e.Po + "-" + e.Line, "Total_Price"),
-
-          this.LookupField2(e.Po + "-" + e.Line, "Commodity"),
-
-          this.LookupField2(e.Po + "-" + e.Line, "Discounted_Unit_Price"),
-
-          this.LookupField2(e.Po + "-" + e.Line, "Discounted_Po_Price"),
-
-          e.Unit_Price *
-            e.Qty *
-            (this.LookupField2(e.Po + "-" + e.Line, "Hammer_1_Hd") / 100),
-          e.So_Line_Item_Description,
-          e.Sitepcode,
-          e.VlookupWbs,
-          e.So_No,
-          e.Wbs_No,
-          e.Billing_100,
-          e.Atp_Coa_Received_Date_80,
-          e.Billing_Upon_Atp_Coa_80,
-          e.Invoicing_No_Atp_Coa_80,
-          e.Invoicing_Date_Atp_Coa_80,
-          e.Cancelled_Atp_Coa_80,
-          e.Ni_Coa_Date_20,
-          e.Billing_Upon_Ni_20,
-          e.Invoicing_No_Ni_20,
-          e.Invoicing_Date_Ni_20,
-          e.Cancelled_Invoicing_Ni_20,
-          e.Sso_Coa_Date_80,
-          e.Billing_Upon_Sso_80,
-          e.Invoicing_No_Sso_80,
-          e.Invoicing_Date_Sso_80,
-          e.Cancelled_Sso_Coa_Date_80,
-          e.Coa_Psp_Received_Date_20,
-          e.Billing_Upon_Coa_Psp_20,
-          e.Invoicing_No_Coa_Psp_20,
-          e.Invoicing_Date_Coa_Psp_20,
-
-          e.Cancelled_Coa_Psp_Received_Date_20,
-          e.Coa_Ni_Received_Date_40,
-          e.Billing_Upon_Coa_Ni_40,
-          e.Invoicing_No_Coa_Ni_40,
-          e.Invoicing_Date_Coa_Ni_40,
-          e.Cancelled_Coa_Ni_Received_Date_40,
-          e.Cosso_Received_Date_60,
-          e.Billing_Upon_Cosso_60,
-          e.Invoicing_No_Cosso_60,
-          e.Invoicing_Date_Cosso_60,
-          e.Cancelled_Cosso_Received_Date_60,
-          e.Coa_Sso_Received_Date_100,
-          e.Billing_Upon_Sso_Coa_100,
-          e.Invoicing_No_Sso_Coa_100,
-          e.Invoicing_Date_Sso_Coa_100,
-          e.Cancelled_Coa_Sso_Received_Date_100,
-          e.Coa_Ni_Date_100,
-          e.Billing_Upon_Coa_Ni_100,
-          e.Invoicing_No_Coa_Ni_100,
-          e.Invoicing_Date_Coa_Ni_100,
-          e.Cancelled_Coa_Ni_Date_100,
-          e.Ses_No,
-          e.Ses_Status,
-          e.Link,
-          e.Ni_Coa_Submission_Status,
-        ]);
-      }
-    }
-    const PPFormat = await wb.xlsx.writeBuffer();
-    saveAs(
-      new Blob([PPFormat]),
-      this.state.roleUser[1] + " " + modul_name + " All Data.xlsx"
-    );
-    this.toggleLoading();
-  };
-
-  exportTemplateall = async () => {
-    this.toggleLoading();
-    const wb = new Excel.Workbook();
-    const ws = wb.addWorksheet();
-
-    const download_all_template = this.state.all_data_mapping;
-
-    ws.addRow(header_model);
-    for (let i = 1; i < header_model.length + 1; i++) {
-      ws.getCell(numToSSColumn(i) + "1").fill = {
-        type: "pattern",
-        pattern: "solid",
-        fgColor: { argb: "FFFFFF00" },
-        bgColor: { argb: "A9A9A9" },
-      };
-    }
-
-    if (download_all_template !== undefined) {
-      // console.log(download_all_template.data.data.map((u) => u._id));
-
-      for (let i = 0; i < download_all_template.length; i++) {
-        let e = download_all_template[i];
-        ws.addRow([
-          e.Deal_Name,
-          e.Hammer,
-          e.Project_Description,
-          e.Po_Number,
-          e.Data_1,
-          e.Lookup_Reference,
-          e.Region,
-          e.Reference_Loc_Id,
-          e.New_Loc_Id,
-          e.Site_Name,
-          e.New_Site_Name,
-          e.Config,
-          e.Po,
-          e.Line,
-          e.Material_Code,
-          this.LookupField2(e.Po + "-" + e.Line, "Description"),
-          e.Line_Item_Sap,
-
-          e.Qty,
-          e.CNI_Date,
-          e.Mapping_Date,
-          e.Remarks,
-          e.Gr_No,
-          e.Proceed_Billing_100,
-          e.Celcom_User,
-          this.LookupField2(e.Po + "-" + e.Line, "Pcode"),
-          this.LookupField2(e.Po + "-" + e.Line, "Unit_Price"),
-          e.Total_Price,
-          e.Commodity,
-          e.Discounted_Unit_Price,
-          e.Discounted_Po_Price,
-          e.Net_Unit_Price,
-          e.Invoice_Total,
-          e.Hammer_1_Hd_Total,
-          e.So_Line_Item_Description,
-          e.Sitepcode,
-          e.VlookupWbs,
-          e.So_No,
-          e.Wbs_No,
-          e.Billing_100,
-          e.Atp_Coa_Received_Date_80,
-          e.Billing_Upon_Atp_Coa_80,
-          e.Invoicing_No_Atp_Coa_80,
-          e.Invoicing_Date_Atp_Coa_80,
-          e.Cancelled_Atp_Coa_80,
-          e.Ni_Coa_Date_20,
-          e.Billing_Upon_Ni_20,
-          e.Invoicing_No_Ni_20,
-          e.Invoicing_Date_Ni_20,
-          e.Cancelled_Invoicing_Ni_20,
-          e.Sso_Coa_Date_80,
-          e.Billing_Upon_Sso_80,
-          e.Invoicing_No_Sso_80,
-          e.Invoicing_Date_Sso_80,
-          e.Cancelled_Sso_Coa_Date_80,
-          e.Coa_Psp_Received_Date_20,
-          e.Billing_Upon_Coa_Psp_20,
-          e.Invoicing_No_Coa_Psp_20,
-          e.Invoicing_Date_Coa_Psp_20,
-          e.Cancelled_Coa_Psp_Received_Date_20,
-          e.Coa_Ni_Received_Date_40,
-          e.Billing_Upon_Coa_Ni_40,
-          e.Invoicing_No_Coa_Ni_40,
-          e.Invoicing_Date_Coa_Ni_40,
-          e.Cancelled_Coa_Ni_Received_Date_40,
-          e.Cosso_Received_Date_60,
-          e.Billing_Upon_Cosso_60,
-          e.Invoicing_No_Cosso_60,
-          e.Invoicing_Date_Cosso_60,
-          e.Cancelled_Cosso_Received_Date_60,
-          e.Coa_Sso_Received_Date_100,
-          e.Billing_Upon_Sso_Coa_100,
-          e.Invoicing_No_Sso_Coa_100,
-          e.Invoicing_Date_Sso_Coa_100,
-          e.Cancelled_Coa_Sso_Received_Date_100,
-          e.Coa_Ni_Date_100,
-          e.Billing_Upon_Coa_Ni_100,
-          e.Invoicing_No_Coa_Ni_100,
-          e.Invoicing_Date_Coa_Ni_100,
-          e.Cancelled_Coa_Ni_Date_100,
-          e.Ses_No,
-          e.Ses_Status,
-          e.Link,
-          e.Ni_Coa_Submission_Status,
-        ]);
-      }
-    }
-    const PPFormat = await wb.xlsx.writeBuffer();
-    saveAs(
-      new Blob([PPFormat]),
-      this.state.roleUser[1] + " " + modul_name + " All Data.xlsx"
-    );
-    this.toggleLoading();
-  };
 
   togglecreateModal = () => {
     this.setState({
@@ -1365,224 +1103,6 @@ class MappingSVC extends React.PureComponent {
       }
       this.toggleLoading();
     }
-  };
-
-  download_Admin = async () => {
-    this.toggleLoading();
-    const download_all_A = this.state.all_data_mapping;
-    const wb = new Excel.Workbook();
-    const ws = wb.addWorksheet();
-
-    ws.addRow(
-      [
-        "Deal_Name",
-        "Hammer",
-        "Project_Description",
-        "Po_Number",
-        "Reference_Loc_Id",
-        "Line",
-        "Po",
-      ].concat(header_admin)
-    );
-    for (let i = 1; i < header_admin.length + 1; i++) {
-      ws.getCell(numToSSColumn(i) + "1").fill = {
-        type: "pattern",
-        pattern: "solid",
-        fgColor: { argb: "FFFFFF00" },
-        bgColor: { argb: "A9A9A9" },
-      };
-    }
-
-    if (download_all_A !== undefined) {
-      for (let i = 0; i < download_all_A.length; i++) {
-        let e = download_all_A[i];
-        ws.addRow([
-          e.Deal_Name,
-          this.LookupField2(e.Po + "-" + e.Line, "Hammer"),
-          this.LookupField2(e.Po + "-" + e.Line, "Project_Description"),
-          e.Po_Number,
-          e.Reference_Loc_Id,
-          e.Line,
-          e.Po,
-          e.Billing_100,
-          e.Atp_Coa_Received_Date_80,
-          e.Ni_Coa_Date_20,
-          e.Sso_Coa_Date_80,
-          e.Coa_Psp_Received_Date_20,
-          e.Coa_Ni_Received_Date_40,
-          e.Cosso_Received_Date_60,
-          e.Coa_Sso_Received_Date_100,
-          e.Coa_Ni_Date_100,
-          e.Ses_No,
-          e.Ses_Status,
-          e.Link,
-          e.Ni_Coa_Submission_Status,
-        ]);
-      }
-    }
-
-    const allocexport = await wb.xlsx.writeBuffer();
-    saveAs(
-      new Blob([allocexport]),
-      "All Data " + this.state.roleUser[1] + " " + modul_name + ".xlsx"
-    );
-    this.toggleLoading();
-  };
-
-  export_Admin = async () => {
-    this.toggleLoading();
-    const download_all_A = this.state.all_data_mapping;
-
-    const wb = new Excel.Workbook();
-    const ws = wb.addWorksheet();
-
-    ws.addRow(header_admin);
-    for (let i = 1; i < header_admin.length + 1; i++) {
-      ws.getCell(numToSSColumn(i) + "1").fill = {
-        type: "pattern",
-        pattern: "solid",
-        fgColor: { argb: "FFFFFF00" },
-        bgColor: { argb: "A9A9A9" },
-      };
-    }
-
-    const allocexport = await wb.xlsx.writeBuffer();
-    saveAs(
-      new Blob([allocexport]),
-      "Template " + this.state.roleUser[1] + " " + modul_name + ".xlsx"
-    );
-    this.toggleLoading();
-  };
-
-  download_PFM = async () => {
-    this.toggleLoading();
-    const download_all_A = this.state.all_data_mapping;
-
-    const wb = new Excel.Workbook();
-    const ws = wb.addWorksheet();
-
-    ws.addRow(
-      [
-        "Deal_Name",
-        "Hammer",
-        "Project_Description",
-        "Po_Number",
-        "Reference_Loc_Id",
-        "Line",
-        "Po",
-        "Proceed_Billing_100",
-      ].concat(header_pfm)
-    );
-    // general info column
-    for (let info = 1; info < 9; info++) {
-      ws.getCell(numToSSColumn(info) + "1").fill = {
-        type: "pattern",
-        pattern: "solid",
-        fgColor: { argb: "FFCCFFCC" },
-      };
-    }
-    // hammer2 column
-    for (let hammer2 = 9; hammer2 < 22; hammer2++) {
-      ws.getCell(numToSSColumn(hammer2) + "1").fill = {
-        type: "pattern",
-        pattern: "solid",
-        fgColor: { argb: "DFDF9F" },
-      };
-    }
-    // hammer1 column
-    for (let hammer1 = 22; hammer1 < 35; hammer1++) {
-      ws.getCell(numToSSColumn(hammer1) + "1").fill = {
-        type: "pattern",
-        pattern: "solid",
-        fgColor: { argb: "FFFFFF00" },
-      };
-    }
-    // billing100 column
-    for (let billing100 = 35; billing100 < 40; billing100++) {
-      ws.getCell(numToSSColumn(billing100) + "1").fill = {
-        type: "pattern",
-        pattern: "solid",
-        fgColor: { argb: "60BF9F" },
-      };
-    }
-
-    if (download_all_A.data !== undefined) {
-      for (let i = 0; i < download_all_A.length; i++) {
-        let e = download_all_A[i];
-        ws.addRow([
-          e.Deal_Name,
-          this.LookupField2(e.Po + "-" + e.Line, "Hammer"),
-          this.LookupField2(e.Po + "-" + e.Line, "Project_Description"),
-          e.Po_Number,
-          e.Reference_Loc_Id,
-          e.Line,
-          e.Po,
-          e.Proceed_Billing_100,
-          e.So_Line_Item_Description,
-          e.Sitepcode,
-          e.VlookupWbs,
-          e.So_No,
-          e.Wbs_No,
-          e.Billing_Upon_Atp_Coa_80,
-          e.Invoicing_No_Atp_Coa_80,
-          e.Invoicing_Date_Atp_Coa_80,
-          e.Cancelled_Atp_Coa_80,
-          e.Billing_Upon_Ni_20,
-          e.Invoicing_No_Ni_20,
-          e.Invoicing_Date_Ni_20,
-          e.Cancelled_Invoicing_Ni_20,
-          e.Billing_Upon_Sso_80,
-          e.Invoicing_No_Sso_80,
-          e.Invoicing_Date_Sso_80,
-          e.Cancelled_Sso_Coa_Date_80,
-          e.Billing_Upon_Coa_Psp_20,
-          e.Invoicing_No_Coa_Psp_20,
-          e.Invoicing_Date_Coa_Psp_20,
-          e.Cancelled_Coa_Psp_Received_Date_20,
-          e.Billing_Upon_Sso_Coa_100,
-          e.Invoicing_No_Sso_Coa_100,
-          e.Invoicing_Date_Sso_Coa_100,
-          e.Cancelled_Coa_Sso_Received_Date_100,
-          e.Coa_Ni_Date_100,
-          e.Billing_Upon_Coa_Ni_100,
-          e.Invoicing_No_Coa_Ni_100,
-          e.Invoicing_Date_Coa_Ni_100,
-          e.Cancelled_Coa_Ni_Date_100,
-        ]);
-      }
-    }
-
-    const allocexport = await wb.xlsx.writeBuffer();
-    saveAs(
-      new Blob([allocexport]),
-      "All Data " + this.state.roleUser[1] + " " + modul_name + ".xlsx"
-    );
-    this.toggleLoading();
-  };
-
-  export_PFM = async () => {
-    this.toggleLoading();
-    const download_all_A = this.state.all_data_mapping;
-
-    const wb = new Excel.Workbook();
-    const ws = wb.addWorksheet();
-
-    ws.addRow(header_pfm);
-    for (let i = 1; i < header_pfm.length + 1; i++) {
-      ws.getCell(numToSSColumn(i) + "1").fill = {
-        type: "pattern",
-        pattern: "solid",
-        fgColor: { argb: "FFFFFF00" },
-        bgColor: { argb: "A9A9A9" },
-      };
-    }
-
-    const allocexport = await wb.xlsx.writeBuffer();
-    saveAs(
-      new Blob([allocexport]),
-      "Template" + this.state.roleUser[1] + " " + modul_name + ".xlsx"
-    );
-    this.toggleLoading();
   };
 
   onChangeDebounced = () => {
@@ -2368,12 +1888,13 @@ class MappingSVC extends React.PureComponent {
             <Row>
               <Col sm="8">
                 <FormGroup row>
-                  <Col xs="8">
+                  <Col xs="12">
                     <FormGroup>
                       <Label>Reference Loc ID</Label>
                       <AsyncSelect
                         // isMulti
                         cacheOptions
+                        placeholder={"Type Reference Loc ID"}
                         loadOptions={this.loadOptionsReclocID}
                         defaultOptions
                         onChange={this.handlemultipleRelocID}
@@ -2384,12 +1905,13 @@ class MappingSVC extends React.PureComponent {
               </Col>
               <Col sm="8">
                 <FormGroup row>
-                  <Col xs="8">
+                  <Col xs="12">
                     <FormGroup>
                       <Label>Project Description</Label>
                       <AsyncSelect
                         // isMulti
                         cacheOptions
+                        placeholder={"Type Project Description"}
                         loadOptions={this.loadOptionsPO}
                         defaultOptions
                         onChange={this.handleBeforeCallOf}
