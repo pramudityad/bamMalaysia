@@ -18,7 +18,7 @@ const LMRDetailGR = React.lazy(() =>
 const LMRList = React.lazy(() => import("./views/MYAssignment/MYASGList"));
 const ImportCas = React.lazy(() => import("./views/Material/importCas"));
 
-const HWMapping = React.lazy(() => import("./views/CPOMapping/HW"));
+const HWMapping = React.lazy(() => import("./views/CPOMapping/HW2"));
 const SVCMapping = React.lazy(() => import("./views/CPOMapping/SVC"));
 const Master = React.lazy(() => import("./views/CPOMapping/SummaryMaster"));
 

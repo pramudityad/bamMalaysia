@@ -84,7 +84,7 @@ const Checkbox1 = ({
   />
 );
 
-const modul_name = "SVC Mapping";
+const modul_name = "HW Mapping";
 const header = [
   "DEAL NAME",
   "HAMMER ",
@@ -100,20 +100,21 @@ const header = [
   "CONFIG",
   "PO#",
   "LINE",
-  "MATERIAL CODE",
   "LINE ITEM SAP CELCOM",
+  "MATERIAL CODE",
   "DESCRIPTION",
   "QTY",
-  "CNI DATE",
+  "NW#",
+  "ON AIR DATE",
   "MAPPING DATE",
   "REMARKS",
   "GR NO",
+  // "PREMR NO.",
   "PROCEED BILLING 100%",
   "CELCOM USER",
   "PCODE",
   "UNIT PRICE",
   "TOTAL PRICE",
-  "COMMODITY",
   "DISCOUNTED UNIT PRICE",
   "DISCOUNTED PO PRICE",
   "NET UNIT PRICE",
@@ -124,51 +125,42 @@ const header = [
   "VlookupWBS",
   "SO NO.",
   "WBS  NO.",
-  "100% BILLING",
-  "ATP COA DATE RECEIVED",
-  "80% BILLING UPON ATP",
+  "FOR CHECKING PURPOSE ONLY-RASHIDAH",
+  "HW COA RECEIVED DATE",
+  "80% BILLING UPON HW COA",
   "80% INVOICING NO.",
   "80% INVOICING DATE",
-  "Cancelled",
-  "COA NI DATE RECEIVED",
+  "Cancel Invoice",
+  "NI COA DATE (VLOOKUP FROM SERVICES MAPPING)",
   "20% BILLING UPON NI",
   "20% INVOICING NO.",
   "20% INVOICING DATE",
   "Cancelled",
-  "COA SSO RCVD DATE",
-  "80% BILLING UPON SSO",
-  "80% INVOICING NO.",
-  "80% INVOICING DATE",
-  "Cancelled",
-  "COA PSP RCVD DATE 20%",
-  "20% BILLING UPON PSP",
-  "20% INVOICING NO.",
-  "20% INVOICING DATE",
-  "Cancelled",
-  "COA NI RCVD DATE",
-  "40% BILLING UPON NI",
+  "HW COA RECEIVED DATE",
+  "40% BILLING UPON COA HW",
   "40% INVOICING NO.",
   "40% INVOICING DATE",
   "Cancelled",
-  "COSSO RCVD DATE",
-  "60% BILLING UPON SSO",
-  "60% INVOICING NO.",
-  "60% INVOICING DATE",
+  "NI COA date (vlookup from SERVICES MAPPING)",
+  "40% BILLING UPON COA NI",
+  "40% INVOICING Number",
+  "40% INVOICING DATE",
   "Cancelled",
-  "COA SSO RCVD DATE 100%",
-  "100% BILLING UPON SSO",
+  "SSO COA date (vlookup from SERVICES MAPPING)",
+  "20% BILLING UPON COA SSO",
+  "20% INVOICING NO.",
+  "20% INVOICING DATE",
+  "Cancelled",
+  "100%  HW COA ",
+  "100% BILLING UPON HW COA",
   "100% INVOICING NO.",
   "100% INVOICING DATE",
   "Cancelled",
-  "COA NI RCVD DATE 100%",
-  "100% BILLING UPON NI",
-  "100% INVOICING NO.",
-  "100% INVOICING DATE",
-  "Cancelled",
-  "SES NO.",
-  "SES STATUS",
-  "LINK",
-  "NI COA SUBMISSION STATUS",
+  "Cancel column",
+  "REFERENCE LOC ID",
+  "PO#",
+  "REFF",
+  "Vlookup for billing",
 ];
 
 const header_model = [
@@ -186,22 +178,20 @@ const header_model = [
   "Config",
   "Po",
   "Line",
+  "Line_Item_Sap",
   "Material_Code",
   "Description",
-  "Line_Item_Sap",
-
   "Qty",
-  "CNI_Date",
+  "NW",
+  "On_Air_Date",
   "Mapping_Date",
   "Remarks",
   "Gr_No",
-  // "Premr_No",
   "Proceed_Billing_100",
   "Celcom_User",
   "Pcode",
   "Unit_Price",
   "Total_Price",
-  "Commodity",
   "Discounted_Unit_Price",
   "Discounted_Po_Price",
   "Net_Unit_Price",
@@ -212,51 +202,42 @@ const header_model = [
   "VlookupWbs",
   "So_No",
   "Wbs_No",
-  "Billing_100",
-  "Atp_Coa_Received_Date_80",
-  "Billing_Upon_Atp_Coa_80",
-  "Invoicing_No_Atp_Coa_80",
-  "Invoicing_Date_Atp_Coa_80",
-  "Cancelled_Atp_Coa_80",
+  "For_Checking_Purpose_Only_Rashidah",
+  "Hw_Coa_Received_Date_80",
+  "Billing_Upon_Hw_Coa_80",
+  "Invoicing_No_Hw_Coa_80",
+  "Invoicing_Date_Hw_Coa_80",
+  "Cancelled_Invoice_Hw_Coa_80",
   "Ni_Coa_Date_20",
   "Billing_Upon_Ni_20",
   "Invoicing_No_Ni_20",
   "Invoicing_Date_Ni_20",
   "Cancelled_Invoicing_Ni_20",
-  "Sso_Coa_Date_80",
-  "Billing_Upon_Sso_80",
-  "Invoicing_No_Sso_80",
-  "Invoicing_Date_Sso_80",
-  "Cancelled_Sso_Coa_Date_80",
-  "Coa_Psp_Received_Date_20",
-  "Billing_Upon_Coa_Psp_20",
-  "Invoicing_No_Coa_Psp_20",
-  "Invoicing_Date_Coa_Psp_20",
-  "Cancelled_Coa_Psp_Received_Date_20",
-  "Coa_Ni_Received_Date_40",
-  "Billing_Upon_Coa_Ni_40",
-  "Invoicing_No_Coa_Ni_40",
-  "Invoicing_Date_Coa_Ni_40",
-  "Cancelled_Coa_Ni_Received_Date_40",
-  "Cosso_Received_Date_60",
-  "Billing_Upon_Cosso_60",
-  "Invoicing_No_Cosso_60",
-  "Invoicing_Date_Cosso_60",
-  "Cancelled_Cosso_Received_Date_60",
-  "Coa_Sso_Received_Date_100",
-  "Billing_Upon_Sso_Coa_100",
-  "Invoicing_No_Sso_Coa_100",
-  "Invoicing_Date_Sso_Coa_100",
-  "Cancelled_Coa_Sso_Received_Date_100",
-  "Coa_Ni_Date_100",
-  "Billing_Upon_Coa_Ni_100",
-  "Invoicing_No_Coa_Ni_100",
-  "Invoicing_Date_Coa_Ni_100",
-  "Cancelled_Coa_Ni_Date_100",
-  "Ses_No",
-  "Ses_Status",
-  "Link",
-  "Ni_Coa_Submission_Status",
+  "Hw_Coa_Received_Date_40",
+  "Billing_Upon_Hw_Coa_40",
+  "Invoicing_No_Hw_Coa_40",
+  "Invoicing_Date_Hw_Coa_40",
+  "Cancelled_Hw_Coa_40",
+  "Ni_Coa_Date_40",
+  "Billing_Upon_Ni_40",
+  "Invoicing_No_Ni_40",
+  "Invoicing_Date_Ni_40",
+  "Cancelled_Ni_40",
+  "Sso_Coa_Date_20_1",
+  "Billing_Upon_Sso_20_1",
+  "Invoicing_No_Sso_20_1",
+  "Invoicing_Date_Sso_20_1",
+  "Cancelled_Sso_20",
+  "Hw_Coa_100",
+  "Billing_Upon_Hw_Coa_100",
+  "Invoicing_No_Hw_Coa_100",
+  "Invoicing_Date_Hw_Coa_100",
+  "Cancelled_Invoicing_Hw_Coa_100",
+  "Cancel_Column",
+  "Reference_Loc_Id_1",
+  "Po_1",
+  "Reff",
+  "Vlookup_For_Billing",
 ];
 
 const header_materialmapping = [
@@ -274,20 +255,21 @@ const header_materialmapping = [
   "Config",
   "Po",
   "Line",
+  "Line_Item_Sap",
+  "Material_Code",
   "Description",
   "Qty",
-  "CNI_Date",
+  "NW",
+  "On_Air_Date",
   "Mapping_Date",
   "Remarks",
   "Gr_No",
-
   "Premr_No",
   "Proceed_Billing_100",
   "Celcom_User",
   "Pcode",
   "Unit_Price",
   "Total_Price",
-  "Commodity",
   "Discounted_Unit_Price",
   "Discounted_Po_Price",
 ];
@@ -298,56 +280,49 @@ const header_pfm = [
   "VlookupWbs",
   "So_No",
   "Wbs_No",
-  // "Atp_Coa_Received_Date_80",
-  "Billing_Upon_Atp_Coa_80",
-  "Invoicing_No_Atp_Coa_80",
-  "Invoicing_Date_Atp_Coa_80",
-  "Cancelled_Atp_Coa_80",
+  "Hw_Coa_Received_Date_80",
+  "Billing_Upon_Hw_Coa_80",
+  "Invoicing_No_Hw_Coa_80",
+  "Invoicing_Date_Hw_Coa_80",
+  "Cancelled_Invoice_Hw_Coa_80",
   // "Ni_Coa_Date_20",
   "Billing_Upon_Ni_20",
   "Invoicing_No_Ni_20",
   "Invoicing_Date_Ni_20",
   "Cancelled_Invoicing_Ni_20",
-  // "Sso_Coa_Date_80",
-  "Billing_Upon_Sso_80",
-  "Invoicing_No_Sso_80",
-  "Invoicing_Date_Sso_80",
-  "Cancelled_Sso_Coa_Date_80",
-  // "Coa_Psp_Received_Date_20",
-  "Billing_Upon_Coa_Psp_20",
-  "Invoicing_No_Coa_Psp_20",
-  "Invoicing_Date_Coa_Psp_20",
-  "Cancelled_Coa_Psp_Received_Date_20",
-  // "Coa_Sso_Received_Date_100",
-  "Billing_Upon_Sso_Coa_100",
-  "Invoicing_No_Sso_Coa_100",
-  "Invoicing_Date_Sso_Coa_100",
-  "Cancelled_Coa_Sso_Received_Date_100",
-  "Coa_Ni_Date_100",
-  "Billing_Upon_Coa_Ni_100",
-  "Invoicing_No_Coa_Ni_100",
-  "Invoicing_Date_Coa_Ni_100",
-  "Cancelled_Coa_Ni_Date_100",
+  // "Hw_Coa_Received_Date_40",
+  "Billing_Upon_Hw_Coa_40",
+  "Invoicing_No_Hw_Coa_40",
+  "Invoicing_Date_Hw_Coa_40",
+  "Cancelled_Hw_Coa_40",
+  // "Ni_Coa_Date_40",
+  "Billing_Upon_Ni_40",
+  "Invoicing_No_Ni_40",
+  "Invoicing_Date_Ni_40",
+  "Cancelled_Ni_40",
+  // "Sso_Coa_Date_20_1",
+  "Billing_Upon_Sso_20_1",
+  "Invoicing_No_Sso_20_1",
+  "Invoicing_Date_Sso_20_1",
+  "Cancelled_Sso_20",
+  "Hw_Coa_100",
+  // "Billing_Upon_Hw_Coa_100",
+  "Invoicing_No_Hw_Coa_100",
+  "Invoicing_Date_Hw_Coa_100",
+  "Cancelled_Invoicing_Hw_Coa_100",
 ];
 
 const header_admin = [
-  "Proceed_Billing_100",
-  "Billing_100",
-  "Atp_Coa_Received_Date_80",
-  "Ni_Coa_Date_20",
-  "Sso_Coa_Date_80",
-  "Coa_Psp_Received_Date_20",
-  "Coa_Ni_Received_Date_40",
-  "Cosso_Received_Date_60",
-  "Coa_Sso_Received_Date_100",
-  "Coa_Ni_Date_100",
-  "Ses_No",
-  "Ses_Status",
-  "Link",
-  "Ni_Coa_Submission_Status",
+  // "Gr_No",
+  "For_Checking_Purpose_Only_Rashidah",
+  "Hw_Coa_Received_Date_80",
+  "Invoicing_Date_Hw_Coa_100",
+  "Cancel_Column",
+  "Reference_Loc_Id_1",
+  "Reff",
 ];
 
-class MappingSVC extends React.PureComponent {
+class MappingHW extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {
@@ -407,7 +382,7 @@ class MappingSVC extends React.PureComponent {
     }
     let whereAnd = "{" + filter_array.join(",") + "}";
     getDatafromAPINODE(
-      "/cpoMapping/getCpo/required/count/svc?q=" + whereAnd + "&noPg=1",
+      "/cpoMapping/getCpo/required/count/hw?q=" + whereAnd + "&noPg=1",
       this.state.tokenUser
     ).then((res) => {
       if (res.data !== undefined) {
@@ -459,7 +434,7 @@ class MappingSVC extends React.PureComponent {
     }
     let whereAnd = "{" + filter_array.join(",") + "}";
     getDatafromAPINODE(
-      "/cpoMapping/getCpo/required/svc?q=" +
+      "/cpoMapping/getCpo/required/hw?q=" +
         whereAnd +
         "&lmt=" +
         this.state.perPage +
@@ -482,7 +457,7 @@ class MappingSVC extends React.PureComponent {
     this.toggleLoading();
     const t0 = performance.now();
     getDatafromAPINODE(
-      "/cpoMapping/getCpo/required/svc?noPg=1",
+      "/cpoMapping/getCpo/required/hw?noPg=1",
       this.state.tokenUser
     ).then((res) => {
       if (res.data !== undefined) {
@@ -649,7 +624,7 @@ class MappingSVC extends React.PureComponent {
     // filter_array.push('"Not_Required":' + true);
     let whereAnd = "{" + filter_array.join(",") + "}";
     getDatafromAPINODE(
-      "/cpoMapping/getCpo/svc?q=" +
+      "/cpoMapping/getCpo/hw?q=" +
         whereAnd +
         "&lmt=" +
         this.state.perPage +
@@ -1002,7 +977,7 @@ class MappingSVC extends React.PureComponent {
       {
         rowsXLS: newDataXLS,
       },
-      () => this.chunkArray(this.state.rowsXLS, 2000)
+      () => this.chunkArray(this.state.rowsXLS, 4000)
     );
   }
 
@@ -1053,7 +1028,7 @@ class MappingSVC extends React.PureComponent {
       const res = await postDatatoAPINODE(
         "/cpoMapping/createCpo",
         {
-          cpo_type: "svc",
+          cpo_type: "hw",
           required_check: true,
           roles: roles,
           cpo_data: this.state.rowsXLS_batch[index_xlsx],
@@ -1233,7 +1208,7 @@ class MappingSVC extends React.PureComponent {
     const res = await postDatatoAPINODE(
       "/cpoMapping/createCpo",
       {
-        cpo_type: "svc",
+        cpo_type: "hw",
         required_check: false,
         roles: roles,
         cpo_data: header_create_not_req.concat(trimm_body_create_not_req),
@@ -1251,7 +1226,7 @@ class MappingSVC extends React.PureComponent {
         "/cpoMapping/deleteCpo",
         this.state.tokenUser,
         {
-          cpo_type: "svc",
+          cpo_type: "hw",
           data: req_body_del,
         }
       );
@@ -1332,7 +1307,7 @@ class MappingSVC extends React.PureComponent {
     const res = await postDatatoAPINODE(
       "/cpoMapping/createCpo",
       {
-        cpo_type: "svc",
+        cpo_type: "hw",
         required_check: true,
         roles: roles,
         cpo_data: header_update_Mapping_Date.concat(req_body),
@@ -2067,7 +2042,7 @@ class MappingSVC extends React.PureComponent {
                               <React.Fragment key={e._id + "frag"}>
                                 <tr align="center" key={e._id}>
                                   {/* <td>
-                                    <Link to={"/svc-cpo/" + e._id}>
+                                    <Link to={"/hw-cpo/" + e._id}>
                                       <Button
                                         size="sm"
                                         color="secondary"
@@ -2105,12 +2080,13 @@ class MappingSVC extends React.PureComponent {
                                   <td>{e.Config}</td>
                                   <td>{e.Po}</td>
                                   <td>{e.Line}</td>
+                                  <td>{e.Line_Item_Sap}</td>
                                   <td>{e.Material_Code}</td>
                                   <td>{e.Description}</td>
-                                  <td>{e.Line_Item_Sap}</td>
                                   <td>{e.Qty}</td>
-                                  <td>{convertDateFormat(e.CNI_Date)}</td>
-                                  <td>{convertDateFormat(e.Mapping_Date)}</td>
+                                  <td>{e.NW}</td>
+                                  <td>{e.On_Air_Date}</td>
+                                  <td>{e.Mapping_Date}</td>
                                   <td>{e.Remarks}</td>
                                   <td>{e.Gr_No}</td>
                                   <td>{e.Proceed_Billing_100}</td>
@@ -2118,7 +2094,6 @@ class MappingSVC extends React.PureComponent {
                                   <td>{e.Pcode}</td>
                                   <td>{e.Unit_Price}</td>
                                   <td>{e.Total_Price}</td>
-                                  <td>{e.Commodity}</td>
                                   <td>{e.Discounted_Unit_Price}</td>
                                   <td>{e.Discounted_Po_Price}</td>
                                   <td>{e.Net_Unit_Price}</td>
@@ -2129,101 +2104,44 @@ class MappingSVC extends React.PureComponent {
                                   <td>{e.VlookupWbs}</td>
                                   <td>{e.So_No}</td>
                                   <td>{e.Wbs_No}</td>
-                                  <td>{e.Billing_100}</td>
                                   <td>
-                                    {convertDateFormat(
-                                      e.Atp_Coa_Received_Date_80
-                                    )}
+                                    {e.For_Checking_Purpose_Only_Rashidah}
                                   </td>
-                                  <td>{e.Billing_Upon_Atp_Coa_80}</td>
-                                  <td>{e.Invoicing_No_Atp_Coa_80}</td>
-                                  <td>{e.Invoicing_Date_Atp_Coa_80}</td>
-                                  <td>{e.Cancelled_Atp_Coa_80}</td>
-                                  <td>{convertDateFormat(e.Ni_Coa_Date_20)}</td>
+                                  <td>{e.Hw_Coa_Received_Date_80}</td>
+                                  <td>{e.Billing_Upon_Hw_Coa_80}</td>
+                                  <td>{e.Invoicing_No_Hw_Coa_80}</td>
+                                  <td>{e.Invoicing_Date_Hw_Coa_80}</td>
+                                  <td>{e.Cancelled_Invoice_Hw_Coa_80}</td>
+                                  <td>{e.Ni_Coa_Date_20}</td>
                                   <td>{e.Billing_Upon_Ni_20}</td>
                                   <td>{e.Invoicing_No_Ni_20}</td>
                                   <td>{e.Invoicing_Date_Ni_20}</td>
                                   <td>{e.Cancelled_Invoicing_Ni_20}</td>
-                                  <td>
-                                    {convertDateFormat(e.Sso_Coa_Date_80)}
-                                  </td>
-                                  <td>{e.Billing_Upon_Sso_80}</td>
-                                  <td>{e.Invoicing_No_Sso_80}</td>
-                                  <td>
-                                    {convertDateFormat(e.Invoicing_Date_Sso_80)}
-                                  </td>
-                                  <td>
-                                    {convertDateFormat(
-                                      e.Cancelled_Sso_Coa_Date_80
-                                    )}
-                                  </td>
-                                  <td>
-                                    {convertDateFormat(
-                                      e.Coa_Psp_Received_Date_20
-                                    )}
-                                  </td>
-                                  <td>{e.Billing_Upon_Coa_Psp_20}</td>
-                                  <td>{e.Invoicing_No_Coa_Psp_20}</td>
-                                  <td>{e.Invoicing_Date_Coa_Psp_20}</td>
-                                  <td>
-                                    {convertDateFormat(
-                                      e.Cancelled_Coa_Psp_Received_Date_20
-                                    )}
-                                  </td>
-                                  <td>
-                                    {convertDateFormat(
-                                      e.Coa_Ni_Received_Date_40
-                                    )}
-                                  </td>
-                                  <td>{e.Billing_Upon_Coa_Ni_40}</td>
-                                  <td>{e.Invoicing_No_Coa_Ni_40}</td>
-                                  <td>{e.Invoicing_Date_Coa_Ni_40}</td>
-                                  <td>
-                                    {convertDateFormat(
-                                      e.Cancelled_Coa_Ni_Received_Date_40
-                                    )}
-                                  </td>
-                                  <td>
-                                    {convertDateFormat(
-                                      e.Cosso_Received_Date_60
-                                    )}
-                                  </td>
-                                  <td>{e.Billing_Upon_Cosso_60}</td>
-                                  <td>{e.Invoicing_No_Cosso_60}</td>
-                                  <td>{e.Invoicing_Date_Cosso_60}</td>
-                                  <td>
-                                    {convertDateFormat(
-                                      e.Cancelled_Cosso_Received_Date_60
-                                    )}
-                                  </td>
-                                  <td>
-                                    {convertDateFormat(
-                                      e.Coa_Sso_Received_Date_100
-                                    )}
-                                  </td>
-                                  <td>{e.Billing_Upon_Sso_Coa_100}</td>
-                                  <td>{e.Invoicing_No_Sso_Coa_100}</td>
-                                  <td>{e.Invoicing_Date_Sso_Coa_100}</td>
-                                  <td>
-                                    {convertDateFormat(
-                                      e.Cancelled_Coa_Sso_Received_Date_100
-                                    )}
-                                  </td>
-                                  <td>
-                                    {convertDateFormat(e.Coa_Ni_Date_100)}
-                                  </td>
-                                  <td>{e.Billing_Upon_Coa_Ni_100}</td>
-                                  <td>{e.Invoicing_No_Coa_Ni_100}</td>
-                                  <td>{e.Invoicing_Date_Coa_Ni_100}</td>
-                                  <td>
-                                    {convertDateFormat(
-                                      e.Cancelled_Coa_Ni_Date_100
-                                    )}
-                                  </td>
-                                  <td>{e.Ses_No}</td>
-                                  <td>{e.Ses_Status}</td>
-                                  <td>{e.Link}</td>
-                                  <td>{e.Ni_Coa_Submission_Status}</td>
+                                  <td>{e.Hw_Coa_Received_Date_40}</td>
+                                  <td>{e.Billing_Upon_Hw_Coa_40}</td>
+                                  <td>{e.Invoicing_No_Hw_Coa_40}</td>
+                                  <td>{e.Invoicing_Date_Hw_Coa_40}</td>
+                                  <td>{e.Cancelled_Hw_Coa_40}</td>
+                                  <td>{e.Ni_Coa_Date_40}</td>
+                                  <td>{e.Billing_Upon_Ni_40}</td>
+                                  <td>{e.Invoicing_No_Ni_40}</td>
+                                  <td>{e.Invoicing_Date_Ni_40}</td>
+                                  <td>{e.Cancelled_Ni_40}</td>
+                                  <td>{e.Sso_Coa_Date_20_1}</td>
+                                  <td>{e.Billing_Upon_Sso_20_1}</td>
+                                  <td>{e.Invoicing_No_Sso_20_1}</td>
+                                  <td>{e.Invoicing_Date_Sso_20_1}</td>
+                                  <td>{e.Cancelled_Sso_20}</td>
+                                  <td>{e.Hw_Coa_100}</td>
+                                  <td>{e.Billing_Upon_Hw_Coa_100}</td>
+                                  <td>{e.Invoicing_No_Hw_Coa_100}</td>
+                                  <td>{e.Invoicing_Date_Hw_Coa_100}</td>
+                                  <td>{e.Cancelled_Invoicing_Hw_Coa_100}</td>
+                                  <td>{e.Cancel_Column}</td>
+                                  <td>{e.Reference_Loc_Id_1}</td>
+                                  <td>{e.Po_1}</td>
+                                  <td>{e.Reff}</td>
+                                  <td>{e.Vlookup_For_Billing}</td>
                                 </tr>
                               </React.Fragment>
                             ))}
@@ -2236,7 +2154,7 @@ class MappingSVC extends React.PureComponent {
                                   role.includes("BAM-PFM") === true ? (
                                     {
                                       /* <td>
-                                      <Link to={"/svc-cpo/" + e._id}>
+                                      <Link to={"/hw-cpo/" + e._id}>
                                         <Button
                                           size="sm"
                                           color="secondary"
@@ -2267,12 +2185,13 @@ class MappingSVC extends React.PureComponent {
                                   <td>{e.Config}</td>
                                   <td>{e.Po}</td>
                                   <td>{e.Line}</td>
+                                  <td>{e.Line_Item_Sap}</td>
                                   <td>{e.Material_Code}</td>
                                   <td>{e.Description}</td>
-                                  <td>{e.Line_Item_Sap}</td>
                                   <td>{e.Qty}</td>
-                                  <td>{convertDateFormat(e.CNI_Date)}</td>
-                                  <td>{convertDateFormat(e.Mapping_Date)}</td>
+                                  <td>{e.NW}</td>
+                                  <td>{e.On_Air_Date}</td>
+                                  <td>{e.Mapping_Date}</td>
                                   <td>{e.Remarks}</td>
                                   <td>{e.Gr_No}</td>
                                   <td>{e.Proceed_Billing_100}</td>
@@ -2280,7 +2199,6 @@ class MappingSVC extends React.PureComponent {
                                   <td>{e.Pcode}</td>
                                   <td>{e.Unit_Price}</td>
                                   <td>{e.Total_Price}</td>
-                                  <td>{e.Commodity}</td>
                                   <td>{e.Discounted_Unit_Price}</td>
                                   <td>{e.Discounted_Po_Price}</td>
                                   <td>{e.Net_Unit_Price}</td>
@@ -2291,101 +2209,44 @@ class MappingSVC extends React.PureComponent {
                                   <td>{e.VlookupWbs}</td>
                                   <td>{e.So_No}</td>
                                   <td>{e.Wbs_No}</td>
-                                  <td>{e.Billing_100}</td>
                                   <td>
-                                    {convertDateFormat(
-                                      e.Atp_Coa_Received_Date_80
-                                    )}
+                                    {e.For_Checking_Purpose_Only_Rashidah}
                                   </td>
-                                  <td>{e.Billing_Upon_Atp_Coa_80}</td>
-                                  <td>{e.Invoicing_No_Atp_Coa_80}</td>
-                                  <td>{e.Invoicing_Date_Atp_Coa_80}</td>
-                                  <td>{e.Cancelled_Atp_Coa_80}</td>
-                                  <td>{convertDateFormat(e.Ni_Coa_Date_20)}</td>
+                                  <td>{e.Hw_Coa_Received_Date_80}</td>
+                                  <td>{e.Billing_Upon_Hw_Coa_80}</td>
+                                  <td>{e.Invoicing_No_Hw_Coa_80}</td>
+                                  <td>{e.Invoicing_Date_Hw_Coa_80}</td>
+                                  <td>{e.Cancelled_Invoice_Hw_Coa_80}</td>
+                                  <td>{e.Ni_Coa_Date_20}</td>
                                   <td>{e.Billing_Upon_Ni_20}</td>
                                   <td>{e.Invoicing_No_Ni_20}</td>
                                   <td>{e.Invoicing_Date_Ni_20}</td>
                                   <td>{e.Cancelled_Invoicing_Ni_20}</td>
-                                  <td>
-                                    {convertDateFormat(e.Sso_Coa_Date_80)}
-                                  </td>
-                                  <td>{e.Billing_Upon_Sso_80}</td>
-                                  <td>{e.Invoicing_No_Sso_80}</td>
-                                  <td>
-                                    {convertDateFormat(e.Invoicing_Date_Sso_80)}
-                                  </td>
-                                  <td>
-                                    {convertDateFormat(
-                                      e.Cancelled_Sso_Coa_Date_80
-                                    )}
-                                  </td>
-                                  <td>
-                                    {convertDateFormat(
-                                      e.Coa_Psp_Received_Date_20
-                                    )}
-                                  </td>
-                                  <td>{e.Billing_Upon_Coa_Psp_20}</td>
-                                  <td>{e.Invoicing_No_Coa_Psp_20}</td>
-                                  <td>{e.Invoicing_Date_Coa_Psp_20}</td>
-                                  <td>
-                                    {convertDateFormat(
-                                      e.Cancelled_Coa_Psp_Received_Date_20
-                                    )}
-                                  </td>
-                                  <td>
-                                    {convertDateFormat(
-                                      e.Coa_Ni_Received_Date_40
-                                    )}
-                                  </td>
-                                  <td>{e.Billing_Upon_Coa_Ni_40}</td>
-                                  <td>{e.Invoicing_No_Coa_Ni_40}</td>
-                                  <td>{e.Invoicing_Date_Coa_Ni_40}</td>
-                                  <td>
-                                    {convertDateFormat(
-                                      e.Cancelled_Coa_Ni_Received_Date_40
-                                    )}
-                                  </td>
-                                  <td>
-                                    {convertDateFormat(
-                                      e.Cosso_Received_Date_60
-                                    )}
-                                  </td>
-                                  <td>{e.Billing_Upon_Cosso_60}</td>
-                                  <td>{e.Invoicing_No_Cosso_60}</td>
-                                  <td>{e.Invoicing_Date_Cosso_60}</td>
-                                  <td>
-                                    {convertDateFormat(
-                                      e.Cancelled_Cosso_Received_Date_60
-                                    )}
-                                  </td>
-                                  <td>
-                                    {convertDateFormat(
-                                      e.Coa_Sso_Received_Date_100
-                                    )}
-                                  </td>
-                                  <td>{e.Billing_Upon_Sso_Coa_100}</td>
-                                  <td>{e.Invoicing_No_Sso_Coa_100}</td>
-                                  <td>{e.Invoicing_Date_Sso_Coa_100}</td>
-                                  <td>
-                                    {convertDateFormat(
-                                      e.Cancelled_Coa_Sso_Received_Date_100
-                                    )}
-                                  </td>
-                                  <td>
-                                    {convertDateFormat(e.Coa_Ni_Date_100)}
-                                  </td>
-                                  <td>{e.Billing_Upon_Coa_Ni_100}</td>
-                                  <td>{e.Invoicing_No_Coa_Ni_100}</td>
-                                  <td>{e.Invoicing_Date_Coa_Ni_100}</td>
-                                  <td>
-                                    {convertDateFormat(
-                                      e.Cancelled_Coa_Ni_Date_100
-                                    )}
-                                  </td>
-                                  <td>{e.Ses_No}</td>
-                                  <td>{e.Ses_Status}</td>
-                                  <td>{e.Link}</td>
-                                  <td>{e.Ni_Coa_Submission_Status}</td>
+                                  <td>{e.Hw_Coa_Received_Date_40}</td>
+                                  <td>{e.Billing_Upon_Hw_Coa_40}</td>
+                                  <td>{e.Invoicing_No_Hw_Coa_40}</td>
+                                  <td>{e.Invoicing_Date_Hw_Coa_40}</td>
+                                  <td>{e.Cancelled_Hw_Coa_40}</td>
+                                  <td>{e.Ni_Coa_Date_40}</td>
+                                  <td>{e.Billing_Upon_Ni_40}</td>
+                                  <td>{e.Invoicing_No_Ni_40}</td>
+                                  <td>{e.Invoicing_Date_Ni_40}</td>
+                                  <td>{e.Cancelled_Ni_40}</td>
+                                  <td>{e.Sso_Coa_Date_20_1}</td>
+                                  <td>{e.Billing_Upon_Sso_20_1}</td>
+                                  <td>{e.Invoicing_No_Sso_20_1}</td>
+                                  <td>{e.Invoicing_Date_Sso_20_1}</td>
+                                  <td>{e.Cancelled_Sso_20}</td>
+                                  <td>{e.Hw_Coa_100}</td>
+                                  <td>{e.Billing_Upon_Hw_Coa_100}</td>
+                                  <td>{e.Invoicing_No_Hw_Coa_100}</td>
+                                  <td>{e.Invoicing_Date_Hw_Coa_100}</td>
+                                  <td>{e.Cancelled_Invoicing_Hw_Coa_100}</td>
+                                  <td>{e.Cancel_Column}</td>
+                                  <td>{e.Reference_Loc_Id_1}</td>
+                                  <td>{e.Po_1}</td>
+                                  <td>{e.Reff}</td>
+                                  <td>{e.Vlookup_For_Billing}</td>
                                 </tr>
                               </React.Fragment>
                             ))}
@@ -2591,4 +2452,4 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps)(MappingSVC);
+export default connect(mapStateToProps)(MappingHW);

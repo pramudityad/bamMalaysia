@@ -929,9 +929,8 @@ class MappingHW extends React.Component {
     this.setState(
       {
         rowsXLS: newDataXLS,
-      }
-      // ,
-      // () => this.chunkArray(this.state.rowsXLS, 2000)
+      },
+      () => this.chunkArray(this.state.rowsXLS, 4000)
     );
   }
 
@@ -958,16 +957,7 @@ class MappingHW extends React.Component {
     });
   };
 
-  toggle = (i) => {
-    const newArray = this.state.dropdownOpen.map((element, index) => {
-      return index === i ? !element : false;
-    });
-    this.setState({
-      dropdownOpen: newArray,
-    });
-  };
-
-  saveBulk = async () => {
+  saveBulk2 = async () => {
     // this.toggleLoading();
     this.togglecreateModal();
     const roles =
@@ -977,32 +967,34 @@ class MappingHW extends React.Component {
         ? 2
         : 3;
     for (
-      let index_xlsx_hw = 0;
-      index_xlsx_hw < this.state.rowsXLS_batch.length;
-      index_xlsx_hw++
+      let index_xlsx = 0;
+      index_xlsx < this.state.rowsXLS_batch.length;
+      index_xlsx++
     ) {
       this.setState({
         action_status: null,
         action_message: null,
       });
-      let num_batch_hw = 1;
+      let num_batch = 1;
       this.toggleLoading();
-      console.log(`hit ${index_xlsx_hw}`);
+      console.log(`hit ${index_xlsx}`);
       const res = await postDatatoAPINODE(
         "/cpoMapping/createCpo",
         {
-          cpo_type: "hw",
+          cpo_type: "svc",
           required_check: true,
           roles: roles,
-          cpo_data: this.state.rowsXLS_batch[index_xlsx_hw],
+          cpo_data: this.state.rowsXLS_batch[index_xlsx],
         },
         this.state.tokenUser
       );
+      console.log(res);
+
       if (res.data !== undefined) {
         if (roles === 2) {
           this.setState({
             action_status: "success",
-            action_message: "success batch " + num_batch_hw,
+            action_message: "success batch " + num_batch,
           });
           this.toggleLoading();
         } else {
@@ -1037,7 +1029,7 @@ class MappingHW extends React.Component {
             if (res.data.warnNotif.length !== 0) {
               let dataEmail = {
                 // "to": creatorEmail,
-                to: "pramudityad@outlook.com",
+                to: "damar.pramuditya@ericsson.com",
                 // to: global.config.role.cpm,
                 subject: "[NOTIFY to CPM] " + modul_name,
                 body: bodyEmail,
@@ -1050,7 +1042,7 @@ class MappingHW extends React.Component {
                   "success with warn " +
                   res.data.warnNotif.map((warn) => warn) +
                   " batch " +
-                  num_batch_hw,
+                  num_batch,
               });
               this.toggleLoading();
               return;
@@ -1060,16 +1052,16 @@ class MappingHW extends React.Component {
             }
             let dataEmail = {
               // "to": creatorEmail,
-              to: "pramudityad@outlook.com",
+              to: "damar.pramuditya@ericsson.com",
               // to: global.config.role.cpm,
               subject: "[NOTIFY to CPM] " + modul_name,
               body: bodyEmail,
             };
-            const sendEmail = await apiSendEmail(dataEmail);
+            // const sendEmail = await apiSendEmail(dataEmail);
             // console.log(sendEmail);
             this.setState({
               action_status: "success",
-              action_message: "success batch " + num_batch_hw,
+              action_message: "success batch " + num_batch,
             });
             this.toggleLoading();
             // setTimeout(function () {
@@ -1078,7 +1070,7 @@ class MappingHW extends React.Component {
           } else {
             this.setState({
               action_status: "success",
-              action_message: "success batch " + num_batch_hw,
+              action_message: "success batch " + num_batch,
             });
             this.toggleLoading();
           }
@@ -1093,12 +1085,12 @@ class MappingHW extends React.Component {
             this.setState({
               action_status: "failed",
               action_message:
-                res.response.data.error.message + "batch " + num_batch_hw,
+                res.response.data.error.message + "batch " + num_batch,
             });
           } else {
             this.setState({
               action_status: "failed",
-              action_message: res.response.data.error + "batch " + num_batch_hw,
+              action_message: res.response.data.error + "batch " + num_batch,
             });
           }
         } else {
@@ -1107,123 +1099,9 @@ class MappingHW extends React.Component {
         this.toggleLoading();
         break;
       }
-      num_batch_hw++;
+      num_batch++;
     }
   };
-
-  // saveBulk = async () => {
-  //   this.toggleLoading();
-  //   this.togglecreateModal();
-  //   const roles =
-  //     this.state.roleUser.includes("BAM-MAT PLANNER") === true
-  //       ? 1
-  //       : this.state.roleUser.includes("BAM-PFM") === true
-  //       ? 2
-  //       : 3;
-  //   const res = await postDatatoAPINODE(
-  //     "/cpoMapping/createCpo",
-  //     {
-  //       cpo_type: "hw",
-  //       required_check: true,
-  //       roles: roles,
-  //       cpo_data: this.state.rowsXLS,
-  //     },
-  //     this.state.tokenUser
-  //   );
-  //   if (res.data !== undefined) {
-  //     if (roles === 2) {
-  //       this.setState({ action_status: "success", action_status: "success" });
-  //       this.toggleLoading();
-  //     } else {
-  //       if (res.data.updateData.length !== 0) {
-  //         const table_header = Object.keys(res.data.updateData[0]);
-  //         const update_Data = res.data.updateData;
-  //         const new_table_header = table_header.slice(0, -2);
-  //         // update_Data.map((row, k) => console.log(row));
-  //         // console.log(table_header);
-  //         let value = "row.";
-  //         const bodyEmail =
-  //           "<h2>DPM - BAM Notification</h2><br/><span>Please be notified that the following " +
-  //           modul_name +
-  //           " data has been updated <br/><br/><table><tr>" +
-  //           new_table_header.map((tab, i) => "<th>" + tab + "</th>").join(" ") +
-  //           "</tr>" +
-  //           update_Data
-  //             .map(
-  //               (row, j) =>
-  //                 "<tr key={" +
-  //                 j +
-  //                 "}>" +
-  //                 new_table_header
-  //                   .map((td) => "<td>" + eval(value + td) + "</td>")
-  //                   .join(" ") +
-  //                 "</tr>"
-  //             )
-  //             .join(" ") +
-  //           "</table>";
-  //         if (res.data.warnNotif.length !== 0) {
-  //           let dataEmail = {
-  //             // "to": creatorEmail,
-  //             // to: "pramudityad@outlook.com",
-  //             to: global.config.role.cpm,
-  //             subject: "[NOTIFY to CPM] " + modul_name,
-  //             body: bodyEmail,
-  //           };
-  //           const sendEmail = await apiSendEmail(dataEmail);
-  //           // console.log(sendEmail);
-  //           this.setState({
-  //             action_status: "warning",
-  //             action_message:
-  //               "success with warn " + res.data.warnNotif.map((warn) => warn),
-  //           });
-  //           this.toggleLoading();
-  //           return;
-  //           // setTimeout(function () {
-  //           //   window.location.reload();
-  //           // }, 1500);
-  //         }
-  //         let dataEmail = {
-  //           // "to": creatorEmail,
-  //           // to: "pramudityad@outlook.com",
-  //           to: global.config.role.cpm,
-  //           subject: "[NOTIFY to CPM] " + modul_name,
-  //           body: bodyEmail,
-  //         };
-  //         const sendEmail = await apiSendEmail(dataEmail);
-  //         // console.log(sendEmail);
-  //         this.setState({ action_status: "success" });
-  //         this.toggleLoading();
-  //         // setTimeout(function () {
-  //         //   window.location.reload();
-  //         // }, 1500);
-  //       } else {
-  //         this.setState({ action_status: "success" });
-  //         this.toggleLoading();
-  //       }
-  //     }
-  //   } else {
-  //     if (
-  //       res.response !== undefined &&
-  //       res.response.data !== undefined &&
-  //       res.response.data.error !== undefined
-  //     ) {
-  //       if (res.response.data.error.message !== undefined) {
-  //         this.setState({
-  //           action_status: "failed",
-  //           action_message: res.response.data.error.message,
-  //         });
-  //       } else {
-  //         this.setState({
-  //           action_status: "failed",
-  //           action_message: res.response.data.error,
-  //         });
-  //       }
-  //     } else {
-  //       this.setState({ action_status: "failed" });
-  //     }
-  //     this.toggleLoading();
-  //   }
-  // };
 
   handleChangeForm = (e) => {
     const value = e.target.value;
@@ -1296,12 +1174,6 @@ class MappingHW extends React.Component {
   toggleLoading = () => {
     this.setState((prevState) => ({
       modal_loading: !prevState.modal_loading,
-    }));
-  };
-
-  toggleProgress = () => {
-    this.setState((prevState) => ({
-      modal_progress: !prevState.modal_progress,
     }));
   };
 
@@ -2654,9 +2526,9 @@ class MappingHW extends React.Component {
                 </tr>
               </tbody>
             </table>
-            {/* <span>
+            <span>
               File will be split into {this.state.rowsXLS_batch.length} batch
-            </span> */}
+            </span>
           </div>
 
           <ModalFooter>
@@ -2665,8 +2537,8 @@ class MappingHW extends React.Component {
               block
               color="success"
               className="btn-pill"
-              disabled={this.state.rowsXLS.length === 0}
-              onClick={this.saveBulk}
+              disabled={this.state.rowsXLS_batch.length === 0}
+              onClick={this.saveBulk2}
               style={{ height: "30px", width: "100px" }}
             >
               Save
@@ -2681,26 +2553,6 @@ class MappingHW extends React.Component {
           className={"modal-sm modal--loading "}
         ></Loading>
         {/* end Modal Loading */}
-
-        <Modal
-          isOpen={this.state.modal_progress}
-          toggle={this.toggleProgress}
-          // className={"modal-sm modal--loading "}
-        >
-          <ModalBody>
-            <div className="animated fadeIn">
-              <div style={{ textAlign: "center" }}>
-                <Progress
-                  value={
-                    (this.state.curr_batch / this.state.rowsXLS_batch.length) *
-                    100
-                    // 50
-                  }
-                />
-              </div>
-            </div>
-          </ModalBody>
-        </Modal>
       </div>
     );
   }
