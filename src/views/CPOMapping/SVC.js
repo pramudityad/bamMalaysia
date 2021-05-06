@@ -27,6 +27,7 @@ import {
   Nav,
   NavItem,
   NavLink,
+  Progress,
 } from "reactstrap";
 import Excel from "exceljs";
 
@@ -99,6 +100,7 @@ class MappingSVC extends React.PureComponent {
       rowsXLS_batch: [],
       modal_loading: false,
       modal_progress: false,
+      batch_file: 0,
       prevPage: 0,
       activePage: 1,
       totalData: 0,
@@ -502,7 +504,6 @@ class MappingSVC extends React.PureComponent {
   };
 
   saveBulk = async () => {
-    // this.toggleLoading();
     this.togglecreateModal();
     const roles =
       this.state.roleUser.includes("BAM-MAT PLANNER") === true
@@ -516,12 +517,11 @@ class MappingSVC extends React.PureComponent {
       index_xlsx++
     ) {
       this.setState({
-        action_status: null,
-        action_message: null,
+        batch_file: index_xlsx + 1,
       });
-      let num_batch = 1;
-      this.toggleLoading();
-      console.log(`hit ${index_xlsx}`);
+
+      this.toggleLoading_batch();
+      console.log(`hit ${index_xlsx + 1}`);
       const res = await postDatatoAPINODE(
         "/cpoMapping/createCpo",
         {
@@ -532,22 +532,23 @@ class MappingSVC extends React.PureComponent {
         },
         this.state.tokenUser
       );
-      console.log(res);
-
       if (res.data !== undefined) {
         if (roles === 2) {
-          this.setState({
-            action_status: "success",
-            action_message: "success batch " + num_batch,
-          });
-          this.toggleLoading();
+          this.toggleLoading_batch();
+          if (index_xlsx === this.state.rowsXLS_batch.length - 1) {
+            this.setState({
+              action_status: "success",
+              action_message:
+                "Success upload all " +
+                this.state.rowsXLS_batch.length +
+                " batch",
+            });
+          }
         } else {
           if (res.data.updateData.length !== 0) {
             const table_header = Object.keys(res.data.updateData[0]);
             const update_Data = res.data.updateData;
             const new_table_header = table_header.slice(0, -2);
-            // update_Data.map((row, k) => console.log(row));
-            // console.log(table_header);
             let value = "row.";
             const bodyEmail =
               "<h2>DPM - BAM Notification</h2><br/><span>Please be notified that the following " +
@@ -583,12 +584,12 @@ class MappingSVC extends React.PureComponent {
               this.setState({
                 action_status: "warning",
                 action_message:
-                  "success with warn " +
+                  "Success with warn " +
                   res.data.warnNotif.map((warn) => warn) +
                   " batch " +
                   num_batch,
               });
-              this.toggleLoading();
+              this.toggleLoading_batch();
               return;
               // setTimeout(function () {
               //   window.location.reload();
@@ -603,20 +604,30 @@ class MappingSVC extends React.PureComponent {
             };
             const sendEmail = await apiSendEmail(dataEmail);
             // console.log(sendEmail);
-            this.setState({
-              action_status: "success",
-              action_message: "success batch " + num_batch,
-            });
-            this.toggleLoading();
+            this.toggleLoading_batch();
+            if (index_xlsx === this.state.rowsXLS_batch.length - 1) {
+              this.setState({
+                action_status: "success",
+                action_message:
+                  "Success upload all " +
+                  this.state.rowsXLS_batch.length +
+                  " batch",
+              });
+            }
             // setTimeout(function () {
             //   window.location.reload();
             // }, 1500);
           } else {
-            this.setState({
-              action_status: "success",
-              action_message: "success batch " + num_batch,
-            });
-            this.toggleLoading();
+            this.toggleLoading_batch();
+            if (index_xlsx === this.state.rowsXLS_batch.length - 1) {
+              this.setState({
+                action_status: "success",
+                action_message:
+                  "Success upload all " +
+                  this.state.rowsXLS_batch.length +
+                  " batch",
+              });
+            }
           }
         }
       } else {
@@ -629,21 +640,25 @@ class MappingSVC extends React.PureComponent {
             this.setState({
               action_status: "failed",
               action_message:
-                res.response.data.error.message + "batch " + num_batch,
+                res.response.data.error.message + " batch " + (index_xlsx + 1),
             });
           } else {
             this.setState({
               action_status: "failed",
-              action_message: res.response.data.error + "batch " + num_batch,
+              action_message:
+                res.response.data.error + " batch " + (index_xlsx + 1),
             });
           }
         } else {
-          this.setState({ action_status: "failed" });
+          this.setState({
+            action_status: "failed",
+            action_message:
+              res.response.data.error + " batch " + (index_xlsx + 1),
+          });
         }
-        this.toggleLoading();
+        this.toggleLoading_batch();
         break;
       }
-      num_batch++;
     }
   };
 
@@ -653,7 +668,7 @@ class MappingSVC extends React.PureComponent {
     }));
   };
 
-  toggleProgress = (params) => {
+  toggleLoading_batch = () => {
     this.setState((prevState) => ({
       modal_progress: !prevState.modal_progress,
     }));
@@ -1744,20 +1759,6 @@ class MappingSVC extends React.PureComponent {
             </span>
           </div>
           <ModalFooter>
-            {/* {role.includes("BAM-ADMIN") === true ||
-            role.includes("BAM-PFM") === true ? (
-              <Button
-                size="sm"
-                block
-                color="secondary"
-                className="btn-pill"
-                disabled={this.state.rowsXLS.length === 0}
-                onClick={this.saveUpdate}
-                style={{ height: "30px", width: "100px" }}
-              >
-                Update
-              </Button>
-            ) : ( */}
             <Button
               size="sm"
               block
@@ -1769,7 +1770,6 @@ class MappingSVC extends React.PureComponent {
             >
               Save
             </Button>
-            {/* )} */}
           </ModalFooter>
         </ModalCreateNew>
 
@@ -1778,6 +1778,29 @@ class MappingSVC extends React.PureComponent {
           isOpen={this.state.modal_loading}
           toggle={this.toggleLoading}
         ></Loading>
+        {/* end Modal Loading */}
+
+        {/* Modal Loading Batch*/}
+        <Modal
+          isOpen={this.state.modal_progress}
+          toggle={this.toggleLoading_batch}
+          className={"modal-sm modal--loading "}
+        >
+          <ModalBody>
+            <div style={{ textAlign: "center" }}>
+              <div className="lds-ring">
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+              </div>
+            </div>
+            <div style={{ textAlign: "center" }}>
+              System is processing batch {this.state.batch_file}/
+              {this.state.rowsXLS_batch.length} ...
+            </div>
+          </ModalBody>
+        </Modal>
         {/* end Modal Loading */}
       </div>
     );
