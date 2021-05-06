@@ -228,3 +228,13 @@ All notable changes to BAM https://bam-my.e-dpm.com will be documented in this f
 ### Fixed
 
 - total amount in lmr creation form readOnly
+
+## [1.3.14] - 2021-05-06
+
+### Added
+
+### Changed
+
+- GL account and vendor name should be disable after LMR child created
+
+### Fixed
