@@ -523,7 +523,7 @@ class MappingSVC extends React.PureComponent {
       this.toggleLoading_batch();
       console.log(`hit ${index_xlsx + 1}`);
       const res = await postDatatoAPINODE(
-        "/cpoMapping/createCpo",
+        "/cpoMapping/createCpo1",
         {
           cpo_type: "svc",
           required_check: true,
@@ -579,7 +579,8 @@ class MappingSVC extends React.PureComponent {
                 subject: "[NOTIFY to CPM] " + modul_name,
                 body: bodyEmail,
               };
-              const sendEmail = await apiSendEmail(dataEmail);
+              //const sendEmail = await apiSendEmail(dataEmail);
+
               // console.log(sendEmail);
               this.setState({
                 action_status: "warning",
@@ -602,7 +603,8 @@ class MappingSVC extends React.PureComponent {
               subject: "[NOTIFY to CPM] " + modul_name,
               body: bodyEmail,
             };
-            const sendEmail = await apiSendEmail(dataEmail);
+            //const sendEmail = await apiSendEmail(dataEmail);
+
             // console.log(sendEmail);
             this.toggleLoading_batch();
             if (index_xlsx === this.state.rowsXLS_batch.length - 1) {
@@ -1122,7 +1124,23 @@ class MappingSVC extends React.PureComponent {
                   &nbsp;&nbsp;&nbsp;
                   <div>
                     <div>
-                      <Button
+                      <Link to={"/cpo-svc-import"} target="_blank">
+                        <Button
+                          color="success"
+                          style={{ float: "right", marginLeft: "8px" }}
+                          size="sm"
+                        >
+                          <i className="fa fa-plus-square" aria-hidden="true">
+                            {" "}
+                            &nbsp;{" "}
+                          </i>{" "}
+                          {role.includes("BAM-ADMIN") === true ||
+                          role.includes("BAM-PFM") === true
+                            ? "Update"
+                            : "New"}
+                        </Button>
+                      </Link>
+                      {/* <Button
                         block
                         color="success"
                         size="sm"
@@ -1136,7 +1154,7 @@ class MappingSVC extends React.PureComponent {
                         role.includes("BAM-PFM") === true
                           ? "Update"
                           : "New"}
-                      </Button>
+                      </Button> */}
                     </div>
                   </div>
                   &nbsp;&nbsp;&nbsp;
