@@ -24,11 +24,9 @@ import {
   getDatafromAPINODE,
   postDatatoAPINODE,
 } from "../../../helper/asyncFunction";
-import { getUniqueListBy, numToSSColumn } from "../../../helper/basicFunction";
+import ReactJson from "react-json-view";
 
-import { saveAs } from "file-saver";
 import { connect } from "react-redux";
-import Select from "react-select";
 import * as XLSX from "xlsx";
 
 const DefaultNotif = React.lazy(() =>
@@ -56,6 +54,7 @@ class ImportSVC extends React.Component {
       batch_log: "",
       upload_finish: false,
       error_log: [],
+      batch_count: 2000,
     };
   }
 
@@ -115,7 +114,7 @@ class ImportSVC extends React.Component {
       {
         rowsXLS: newDataXLS,
       },
-      () => this.chunkArray(this.state.rowsXLS, 2000)
+      () => this.chunkArray(this.state.rowsXLS, this.state.batch_count)
     );
   }
 
@@ -140,9 +139,7 @@ class ImportSVC extends React.Component {
   };
 
   saveBulk = async () => {
-    // this.togglecreateModal();
     let error_containers = [];
-    let line_containers = [];
     const roles =
       this.state.roleUser.includes("BAM-MAT PLANNER") === true
         ? 1
@@ -272,10 +269,14 @@ class ImportSVC extends React.Component {
                 in_err < res.data.errNotif.length;
                 in_err++
               ) {
-                error_containers.push(res.data.errNotif[in_err]);
-                line_containers.push(res.data.errNotif[in_err]);
+                let acc_line = this.state.batch_count * index_xlsx;
+                let err_data = res.data.errNotif[in_err];
+                console.log("before ", err_data);
+                err_data.row = acc_line + err_data.line + 1;
+                err_data.message = err_data.message.message;
+                console.log("after ", err_data);
+                error_containers.push(err_data);
               }
-              // error_containers.push(res.data.errNotif.map((err) => err));
             }
           } else {
             this.toggleLoading_batch();
@@ -288,6 +289,24 @@ class ImportSVC extends React.Component {
             //       " batch",
             //   });
             // }
+            /**
+             *  push errors to array
+             */
+            if (res.data.errNotif.length !== 0) {
+              for (
+                let in_err = 0;
+                in_err < res.data.errNotif.length;
+                in_err++
+              ) {
+                let acc_line = this.state.batch_count * index_xlsx;
+                let err_data = res.data.errNotif[in_err];
+                console.log("before ", err_data);
+                err_data.row = acc_line + err_data.line + 1;
+                err_data.message = err_data.message.message;
+                console.log("after ", err_data);
+                error_containers.push(err_data);
+              }
+            }
           }
         }
       } else {
@@ -322,15 +341,15 @@ class ImportSVC extends React.Component {
     }
     this.setState({
       error_log:
-        // error_containers,
-        error_containers.map(
-          (letter) => letter.message !== undefined && letter.message.message
-        ) +
-        " line " +
-        error_containers.map((err) => err.line),
+        error_containers.length !== 0
+          ? error_containers
+          : [
+              "Success upload all " +
+                this.state.rowsXLS_batch.length +
+                " batch",
+            ],
       upload_finish: true,
     });
-    console.log(this.state.error_log);
     console.log(error_containers);
   };
 
@@ -359,10 +378,14 @@ class ImportSVC extends React.Component {
             <UncontrolledCollapse toggler="#toggler">
               <Card>
                 <CardBody>
-                  {this.state.action_message}
-                  {/* {this.state.error_log.map((err) => (
-                      <span>{err}</span>
-                    ))} */}
+                  <ReactJson
+                    src={this.state.error_log.map((err) => {
+                      delete err.line;
+                      return err;
+                    })}
+                    displayDataTypes={false}
+                    displayObjectSize={false}
+                  />
                 </CardBody>
               </Card>
             </UncontrolledCollapse>
