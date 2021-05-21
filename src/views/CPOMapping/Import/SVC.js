@@ -369,7 +369,7 @@ class ImportSVC extends React.Component {
         ) : (
           <div>
             <Button
-              color="warning"
+              color={this.state.error_log.length !== 0 ? "warning" : "success"}
               id="toggler"
               style={{ marginBottom: "1rem" }}
             >
