@@ -18,6 +18,7 @@ import {
   DropdownMenu,
   DropdownToggle,
   Button,
+  UncontrolledCollapse,
 } from "reactstrap";
 import {
   getDatafromAPINODE,
@@ -30,9 +31,9 @@ import { connect } from "react-redux";
 import Select from "react-select";
 import * as XLSX from "xlsx";
 
-import Excel from "exceljs";
-import AsyncSelect from "react-select/async";
-import Loading from "../../Component/Loading";
+const DefaultNotif = React.lazy(() =>
+  import("../../../views/DefaultView/DefaultNotif")
+);
 
 const modul_name = "SVC Mapping";
 class ImportSVC extends React.Component {
@@ -53,6 +54,8 @@ class ImportSVC extends React.Component {
       modal_progress: false,
       batch_file: 0,
       batch_log: "",
+      upload_finish: false,
+      error_log: [],
     };
   }
 
@@ -138,6 +141,8 @@ class ImportSVC extends React.Component {
 
   saveBulk = async () => {
     // this.togglecreateModal();
+    let error_containers = [];
+    let line_containers = [];
     const roles =
       this.state.roleUser.includes("BAM-MAT PLANNER") === true
         ? 1
@@ -168,15 +173,18 @@ class ImportSVC extends React.Component {
       if (res.data !== undefined) {
         if (roles === 2) {
           this.toggleLoading_batch();
-          if (index_xlsx === this.state.rowsXLS_batch.length - 1) {
-            this.setState({
-              action_status: "success",
-              action_message:
-                "Success upload all " +
-                this.state.rowsXLS_batch.length +
-                " batch",
-            });
-          }
+          /**
+           * success notif
+           */
+          // if (index_xlsx === this.state.rowsXLS_batch.length - 1) {
+          //   this.setState({
+          //     action_status: "success",
+          //     action_message:
+          //       "Success upload all " +
+          //       this.state.rowsXLS_batch.length +
+          //       " batch",
+          //   });
+          // }
         } else {
           if (res.data.updateData.length !== 0) {
             const table_header = Object.keys(res.data.updateData[0]);
@@ -239,29 +247,47 @@ class ImportSVC extends React.Component {
 
             // console.log(sendEmail);
             this.toggleLoading_batch();
-            if (index_xlsx === this.state.rowsXLS_batch.length - 1) {
-              this.setState({
-                action_status: "success",
-                action_message:
-                  "Success upload all " +
-                  this.state.rowsXLS_batch.length +
-                  " batch",
-              });
-            }
+            /**
+             * success notif
+             */
+            // if (index_xlsx === this.state.rowsXLS_batch.length - 1) {
+            //   this.setState({
+            //     action_status: "success",
+            //     action_message:
+            //       "Success upload all " +
+            //       this.state.rowsXLS_batch.length +
+            //       " batch",
+            //   });
+            // }
             // setTimeout(function () {
             //   window.location.reload();
             // }, 1500);
+
+            /**
+             *  push errors to array
+             */
+            if (res.data.errNotif.length !== 0) {
+              for (
+                let in_err = 0;
+                in_err < res.data.errNotif.length;
+                in_err++
+              ) {
+                error_containers.push(res.data.errNotif[in_err]);
+                line_containers.push(res.data.errNotif[in_err]);
+              }
+              // error_containers.push(res.data.errNotif.map((err) => err));
+            }
           } else {
             this.toggleLoading_batch();
-            if (index_xlsx === this.state.rowsXLS_batch.length - 1) {
-              this.setState({
-                action_status: "success",
-                action_message:
-                  "Success upload all " +
-                  this.state.rowsXLS_batch.length +
-                  " batch",
-              });
-            }
+            // if (index_xlsx === this.state.rowsXLS_batch.length - 1) {
+            //   this.setState({
+            //     action_status: "success",
+            //     action_message:
+            //       "Success upload all " +
+            //       this.state.rowsXLS_batch.length +
+            //       " batch",
+            //   });
+            // }
           }
         }
       } else {
@@ -294,11 +320,55 @@ class ImportSVC extends React.Component {
         break;
       }
     }
+    this.setState({
+      error_log:
+        // error_containers,
+        error_containers.map(
+          (letter) => letter.message !== undefined && letter.message.message
+        ) +
+        " line " +
+        error_containers.map((err) => err.line),
+      upload_finish: true,
+    });
+    console.log(this.state.error_log);
+    console.log(error_containers);
   };
 
   render() {
     return (
       <div className="animated fadeIn">
+        <Row className="row-alert-fixed">
+          <Col xs="12" lg="12">
+            <DefaultNotif
+              actionMessage={this.state.action_message}
+              actionStatus={this.state.action_status}
+            />
+          </Col>
+        </Row>
+        {this.state.upload_finish === false ? (
+          ""
+        ) : (
+          <div>
+            <Button
+              color="warning"
+              id="toggler"
+              style={{ marginBottom: "1rem" }}
+            >
+              Toggle Log
+            </Button>
+            <UncontrolledCollapse toggler="#toggler">
+              <Card>
+                <CardBody>
+                  {this.state.action_message}
+                  {/* {this.state.error_log.map((err) => (
+                      <span>{err}</span>
+                    ))} */}
+                </CardBody>
+              </Card>
+            </UncontrolledCollapse>
+          </div>
+        )}
+
         <Card>
           <CardHeader>{modul_name}</CardHeader>
           <CardBody>
