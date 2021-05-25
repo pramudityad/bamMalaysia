@@ -339,17 +339,20 @@ class ImportSVC extends React.Component {
         break;
       }
     }
-    this.setState({
-      error_log:
-        error_containers.length !== 0
-          ? error_containers
-          : [
-              "Success upload all " +
-                this.state.rowsXLS_batch.length +
-                " batch",
-            ],
-      upload_finish: true,
-    });
+    if (error_containers.length !== 0) {
+      this.setState({
+        error_log: error_containers,
+        upload_finish: true,
+        action_message: "There are error(s) please toogle the button",
+        action_status: "failed",
+      });
+    } else {
+      this.setState({
+        action_message:
+          "Success upload all " + this.state.rowsXLS_batch.length + " batch",
+        action_status: "success",
+      });
+    }
     console.log(error_containers);
   };
 
