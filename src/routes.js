@@ -37,6 +37,7 @@ const HWExport = React.lazy(() => import("./views/CPOMapping/Export/HW"));
 const SVCExport = React.lazy(() => import("./views/CPOMapping/Export/SVC"));
 
 const SVCImport = React.lazy(() => import("./views/CPOMapping/Import/SVC"));
+const HWImport = React.lazy(() => import("./views/CPOMapping/Import/HW"));
 
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
 const routes = [
@@ -97,6 +98,12 @@ const routes = [
     exact: true,
     name: "SVC CPO Mapping Import",
     component: SVCImport,
+  },
+  {
+    path: "/cpo-hw-import",
+    exact: true,
+    name: "HW CPO Mapping Import",
+    component: HWImport,
   },
   {
     path: "/svc-dashboard",

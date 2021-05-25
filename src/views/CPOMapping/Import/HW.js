@@ -23,8 +23,8 @@ const DefaultNotif = React.lazy(() =>
   import("../../../views/DefaultView/DefaultNotif")
 );
 
-const modul_name = "SVC Mapping";
-class ImportSVC extends React.Component {
+const modul_name = "HW Mapping";
+class ImportHW extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -150,7 +150,7 @@ class ImportSVC extends React.Component {
       const res = await postDatatoAPINODE(
         "/cpoMapping/createCpo1",
         {
-          cpo_type: "svc",
+          cpo_type: "hw",
           required_check: true,
           roles: roles,
           cpo_data: this.state.rowsXLS_batch[index_xlsx],
@@ -463,4 +463,4 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps)(ImportSVC);
+export default connect(mapStateToProps)(ImportHW);
