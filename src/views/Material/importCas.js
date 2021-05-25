@@ -141,7 +141,11 @@ class importCas extends React.PureComponent {
             {
               rowsXLS: rest.rows,
             },
-            () => this.constructImport(this.state.rowsXLS)
+            () =>
+              this.constructImport(
+                this.state.rowsXLS,
+                this.state.importForm.type_form
+              )
           );
         }
       });

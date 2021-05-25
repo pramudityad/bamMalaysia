@@ -27,10 +27,9 @@ import {
   Nav,
   NavItem,
   NavLink,
-  Progress,
 } from "reactstrap";
 import Excel from "exceljs";
-import Loading from "../Component/Loading";
+
 import { ExcelRenderer } from "react-excel-renderer";
 import {
   getDatafromAPIMY,
@@ -38,10 +37,9 @@ import {
   patchDatatoAPINODE,
   deleteDataFromAPINODE2,
   getDatafromAPINODE,
-  getDatafromAPINODE2,
   apiSendEmail,
+  getDatafromAPINODE2,
 } from "../../helper/asyncFunction";
-import { CSVLink, CSVDownload } from "react-csv";
 import ModalCreateNew from "../Component/ModalCreateNew";
 import Pagination from "react-js-pagination";
 import { saveAs } from "file-saver";
@@ -50,17 +48,18 @@ import {
   getUniqueListBy,
   convertDateFormat,
   formatMoney,
-  arraychunk,
 } from "../../helper/basicFunction";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 import AsyncSelect from "react-select/async";
 import * as XLSX from "xlsx";
 import "../../helper/config";
+
 import "./cpomapping.css";
 const DefaultNotif = React.lazy(() =>
   import("../../views/DefaultView/DefaultNotif")
 );
+const Loading = React.lazy(() => import("../Component/Loading"));
 const Progressbar = React.lazy(() => import("../Component/Progressbar"));
 
 const Checkbox1 = ({
@@ -84,267 +83,10 @@ const Checkbox1 = ({
     matId={matId}
   />
 );
-const Checkbox2 = ({
-  type = "checkbox",
-  name,
-  checked = true,
-  onChange,
-  value,
-  id,
-  matId,
-  key,
-}) => (
-  <input
-    key={key}
-    type={type}
-    name={name}
-    checked={checked}
-    onChange={onChange}
-    value={value}
-    id={id}
-    matId={matId}
-  />
-);
+
 const modul_name = "HW Mapping";
-const header = [
-  "DEAL NAME",
-  "HAMMER ",
-  "PROJECT DESCRIPTION",
-  "PO NUMBER",
-  "1",
-  "LOOKUP REFERENCE",
-  "REGION",
-  "REFERENCE LOC ID",
-  "NEW LOC ID",
-  "SITE NAME",
-  "NEW SITE NAME",
-  "CONFIG",
-  "PO#",
-  "LINE",
-  "LINE ITEM SAP CELCOM",
-  "MATERIAL CODE",
-  "DESCRIPTION",
-  "QTY",
-  "NW#",
-  "ON AIR DATE",
-  "MAPPING DATE",
-  "REMARKS",
-  "GR NO",
-  // "PREMR NO.",
-  "PROCEED BILLING 100%",
-  "CELCOM USER",
-  "PCODE",
-  "UNIT PRICE",
-  "TOTAL PRICE",
-  "DISCOUNTED UNIT PRICE",
-  "DISCOUNTED PO PRICE",
-  "NET UNIT PRICE",
-  "INVOICE TOTAL",
-  "HAMMER 1 HD TOTAL",
-  "SO LINE ITEM DESCRIPTION",
-  "sitePCode",
-  "VlookupWBS",
-  "SO NO.",
-  "WBS  NO.",
-  "FOR CHECKING PURPOSE ONLY-RASHIDAH",
-  "HW COA RECEIVED DATE",
-  "80% BILLING UPON HW COA",
-  "80% INVOICING NO.",
-  "80% INVOICING DATE",
-  "Cancel Invoice",
-  "NI COA DATE (VLOOKUP FROM SERVICES MAPPING)",
-  "20% BILLING UPON NI",
-  "20% INVOICING NO.",
-  "20% INVOICING DATE",
-  "Cancelled",
-  "HW COA RECEIVED DATE",
-  "40% BILLING UPON COA HW",
-  "40% INVOICING NO.",
-  "40% INVOICING DATE",
-  "Cancelled",
-  "NI COA date (vlookup from SERVICES MAPPING)",
-  "40% BILLING UPON COA NI",
-  "40% INVOICING Number",
-  "40% INVOICING DATE",
-  "Cancelled",
-  "SSO COA date (vlookup from SERVICES MAPPING)",
-  "20% BILLING UPON COA SSO",
-  "20% INVOICING NO.",
-  "20% INVOICING DATE",
-  "Cancelled",
-  "100%  HW COA ",
-  "100% BILLING UPON HW COA",
-  "100% INVOICING NO.",
-  "100% INVOICING DATE",
-  "Cancelled",
-  "Cancel column",
-  "REFERENCE LOC ID",
-  "PO#",
-  "REFF",
-  "Vlookup for billing",
-];
 
-const header_model = [
-  "Deal_Name",
-  "Hammer",
-  "Project_Description",
-  "Po_Number",
-  "Data_1",
-  "Lookup_Reference",
-  "Region",
-  "Reference_Loc_Id",
-  "New_Loc_Id",
-  "Site_Name",
-  "New_Site_Name",
-  "Config",
-  "Po",
-  "Line",
-  "Line_Item_Sap",
-  "Material_Code",
-  "Description",
-  "Qty",
-  "NW",
-  "On_Air_Date",
-  "Mapping_Date",
-  "Remarks",
-  "Gr_No",
-  "Proceed_Billing_100",
-  "Celcom_User",
-  "Pcode",
-  "Unit_Price",
-  "Total_Price",
-  "Discounted_Unit_Price",
-  "Discounted_Po_Price",
-  "Net_Unit_Price",
-  "Invoice_Total",
-  "Hammer_1_Hd_Total",
-  "So_Line_Item_Description",
-  "Sitepcode",
-  "VlookupWbs",
-  "So_No",
-  "Wbs_No",
-  "For_Checking_Purpose_Only_Rashidah",
-  "Hw_Coa_Received_Date_80",
-  "Billing_Upon_Hw_Coa_80",
-  "Invoicing_No_Hw_Coa_80",
-  "Invoicing_Date_Hw_Coa_80",
-  "Cancelled_Invoice_Hw_Coa_80",
-  "Ni_Coa_Date_20",
-  "Billing_Upon_Ni_20",
-  "Invoicing_No_Ni_20",
-  "Invoicing_Date_Ni_20",
-  "Cancelled_Invoicing_Ni_20",
-  "Hw_Coa_Received_Date_40",
-  "Billing_Upon_Hw_Coa_40",
-  "Invoicing_No_Hw_Coa_40",
-  "Invoicing_Date_Hw_Coa_40",
-  "Cancelled_Hw_Coa_40",
-  "Ni_Coa_Date_40",
-  "Billing_Upon_Ni_40",
-  "Invoicing_No_Ni_40",
-  "Invoicing_Date_Ni_40",
-  "Cancelled_Ni_40",
-  "Sso_Coa_Date_20_1",
-  "Billing_Upon_Sso_20_1",
-  "Invoicing_No_Sso_20_1",
-  "Invoicing_Date_Sso_20_1",
-  "Cancelled_Sso_20",
-  "Hw_Coa_100",
-  "Billing_Upon_Hw_Coa_100",
-  "Invoicing_No_Hw_Coa_100",
-  "Invoicing_Date_Hw_Coa_100",
-  "Cancelled_Invoicing_Hw_Coa_100",
-  "Cancel_Column",
-  "Reference_Loc_Id_1",
-  "Po_1",
-  "Reff",
-  "Vlookup_For_Billing",
-];
-
-const header_materialmapping = [
-  "Deal_Name",
-  "Hammer",
-  "Project_Description",
-  "Po_Number",
-  "Data_1",
-  "Lookup_Reference",
-  "Region",
-  "Reference_Loc_Id",
-  "New_Loc_Id",
-  "Site_Name",
-  "New_Site_Name",
-  "Config",
-  "Po",
-  "Line",
-  "Line_Item_Sap",
-  "Material_Code",
-  "Description",
-  "Qty",
-  "NW",
-  "On_Air_Date",
-  "Mapping_Date",
-  "Remarks",
-  "Gr_No",
-  "Premr_No",
-  "Proceed_Billing_100",
-  "Celcom_User",
-  "Pcode",
-  "Unit_Price",
-  "Total_Price",
-  "Discounted_Unit_Price",
-  "Discounted_Po_Price",
-];
-
-const header_pfm = [
-  "So_Line_Item_Description",
-  "Sitepcode",
-  "VlookupWbs",
-  "So_No",
-  "Wbs_No",
-  "Hw_Coa_Received_Date_80",
-  "Billing_Upon_Hw_Coa_80",
-  "Invoicing_No_Hw_Coa_80",
-  "Invoicing_Date_Hw_Coa_80",
-  "Cancelled_Invoice_Hw_Coa_80",
-  // "Ni_Coa_Date_20",
-  "Billing_Upon_Ni_20",
-  "Invoicing_No_Ni_20",
-  "Invoicing_Date_Ni_20",
-  "Cancelled_Invoicing_Ni_20",
-  // "Hw_Coa_Received_Date_40",
-  "Billing_Upon_Hw_Coa_40",
-  "Invoicing_No_Hw_Coa_40",
-  "Invoicing_Date_Hw_Coa_40",
-  "Cancelled_Hw_Coa_40",
-  // "Ni_Coa_Date_40",
-  "Billing_Upon_Ni_40",
-  "Invoicing_No_Ni_40",
-  "Invoicing_Date_Ni_40",
-  "Cancelled_Ni_40",
-  // "Sso_Coa_Date_20_1",
-  "Billing_Upon_Sso_20_1",
-  "Invoicing_No_Sso_20_1",
-  "Invoicing_Date_Sso_20_1",
-  "Cancelled_Sso_20",
-  "Hw_Coa_100",
-  // "Billing_Upon_Hw_Coa_100",
-  "Invoicing_No_Hw_Coa_100",
-  "Invoicing_Date_Hw_Coa_100",
-  "Cancelled_Invoicing_Hw_Coa_100",
-];
-
-const header_admin = [
-  // "Gr_No",
-  "For_Checking_Purpose_Only_Rashidah",
-  "Hw_Coa_Received_Date_80",
-  "Invoicing_Date_Hw_Coa_100",
-  "Cancel_Column",
-  "Reference_Loc_Id_1",
-  "Reff",
-];
-
-class MappingHW extends React.Component {
-  // csvLink = React.createRef();
+class MappingHW extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {
@@ -361,57 +103,49 @@ class MappingHW extends React.Component {
       activePage: 1,
       totalData: 0,
       perPage: 10,
-      CPOForm: {},
+      CPOForm: [],
       modalEdit: false,
-      modal_loading: false,
-      modal_callof: false,
-      multiple_select: [],
-      multiple_select2: [],
-      mapping_date: "",
-      po_select: null,
-      reloc_options: [],
       action_status: null,
       action_message: null,
       filter_list: {},
       all_data_master: [],
       all_data_mapping: [],
+      multiple_select: [],
+      multiple_select2: [],
+      mapping_date: "",
+      po_select: null,
+      reloc_options: [],
       dataChecked: new Map(),
       dataChecked_container: [],
       dataChecked_container2: [],
       tabs_submenu: [true, false],
       all_data_true: [],
       dataChecked_all: false,
+      modal_callof: false,
       count_header: {},
     };
-    // this.exportTemplate2 = this.exportTemplate2.bind(this);
   }
 
   componentDidMount() {
-    console.log("token", this.state.tokenUser);
-    // console.log("model_header", header_model.length);
-    // this.getList();
-    // this.getHeader();
-    // this.getListAll();
     this.getMaster();
   }
 
   getHeader() {
-    let filter_array2 = [];
+    let filter_array = [];
     for (const [key, value] of Object.entries(this.state.filter_list)) {
       if (value !== null && value !== undefined) {
-        filter_array2.push(
+        filter_array.push(
           '"' + key + '":{"$regex" : "' + value + '", "$options" : "i"}'
         );
       }
     }
-    let whereAnd2 = "{" + filter_array2.join(",") + "}";
+    let whereAnd = "{" + filter_array.join(",") + "}";
     getDatafromAPINODE(
-      "/cpoMapping/getCpo/required/count/hw?q=" + whereAnd2 + "&noPg=1",
+      "/cpoMapping/getCpo/required/count/hw?q=" + whereAnd + "&noPg=1",
       this.state.tokenUser
     ).then((res) => {
       if (res.data !== undefined) {
         const items3 = res.data.data;
-        // console.log("items3 ", items3);
         this.setState({ count_header: items3 });
       }
     });
@@ -420,8 +154,6 @@ class MappingHW extends React.Component {
   mapHeader(data_header) {
     let header_keys = Object.keys(data_header);
     let header_values = Object.values(data_header);
-    // console.log("header ", header_values);
-    // if (header_keys !== undefined) {
     if (
       header_keys === "Qty" ||
       header_keys === "Unit_Price" ||
@@ -433,7 +165,6 @@ class MappingHW extends React.Component {
     } else {
       return header_values;
     }
-    // }
   }
 
   getMaster() {
@@ -477,26 +208,56 @@ class MappingHW extends React.Component {
     });
   }
 
+  getListAll = async () => {
+    let all_data = [];
+    this.toggleLoading();
+    const t0 = performance.now();
+    getDatafromAPINODE(
+      "/cpoMapping/getCpo/required/hw?noPg=1",
+      this.state.tokenUser
+    ).then((res) => {
+      if (res.data !== undefined) {
+        const items = res.data.data;
+        const t1 = performance.now();
+        console.log("took 1" + (t1 - t0) + " milliseconds.");
+        console.log("len ", items.length);
+        // all_data = items;
+        // return all_data;
+        this.setState(
+          { all_data_mapping: items }
+          //   , () => {
+          //   setTimeout(() => {
+          //     this.csvLink.current.link.click();
+          //   });
+          // }
+        );
+      } else {
+        all_data = [];
+      }
+    });
+    this.toggleLoading();
+  };
+
   loadOptionsReclocID = async (inputValue) => {
     if (!inputValue) {
       return [];
     } else {
-      let asycn_options = [];
-      await getUniqueListBy(
-        this.state.all_data_mapping,
-        "Reference_Loc_Id"
-      ).map((data) =>
-        asycn_options.push({
-          label: data.Reference_Loc_Id,
-          value: data.Reference_Loc_Id,
-          // Reference_Loc_Id: data.Reference_Loc_Id,
-          // Po: data.Po,
-          // Line: data.Line,
-        })
+      let data_list = [];
+      const getWPID = await getDatafromAPINODE(
+        '/cpoMapping/getCpo/required/hw?q={"Reference_Loc_Id":{"$regex":"' +
+          inputValue +
+          '", "$options":"i"}}',
+        this.state.tokenUser
       );
-      return asycn_options.filter((i) =>
-        i.label.toLowerCase().includes(inputValue)
-      );
+      if (getWPID !== undefined && getWPID.data !== undefined) {
+        getUniqueListBy(getWPID.data.data, "Reference_Loc_Id").map((wp) =>
+          data_list.push({
+            value: wp.Reference_Loc_Id,
+            label: wp.Reference_Loc_Id,
+          })
+        );
+      }
+      return data_list;
     }
   };
 
@@ -504,25 +265,27 @@ class MappingHW extends React.Component {
     if (!inputValue) {
       return [];
     } else {
-      let async_options2 = [];
-      await getUniqueListBy(
-        this.state.all_data_master,
-        "Project_Description"
-      ).map((data) =>
-        async_options2.push({
-          label: data.Project_Description,
-          value: data.Project_Description,
-          // Reference_Loc_Id: data.Reference_Loc_Id,
-          // Po: data.Po,
-          // Line: data.Line,
-        })
+      let data_list2 = [];
+      const getWPID = await getDatafromAPINODE(
+        '/cpoMapping/getCpo/required/hw?q={"Project_Description":{"$regex":"' +
+          inputValue +
+          '", "$options":"i"}}',
+        this.state.tokenUser
       );
-      return async_options2.filter((i) =>
-        i.label.toLowerCase().includes(inputValue)
-      );
+      if (getWPID !== undefined && getWPID.data !== undefined) {
+        // this.setState({ list_cd_id: getWPID.data.data });
+        getUniqueListBy(getWPID.data.data, "Project_Description").map((wp) =>
+          data_list2.push({
+            value: wp.Project_Description,
+            label: wp.Project_Description,
+          })
+        );
+      }
+      // console.log("data_list2 ", data_list2);
+      // this.setState({ reloc_options : data_list2 });
+      return data_list2;
     }
   };
-
   handlemultipleRelocID = (datalist) => {
     let multiple_array = [];
     let site_selected = [];
@@ -567,38 +330,8 @@ class MappingHW extends React.Component {
         () => console.log(this.state.multiple_select2)
       );
     } else {
-      this.setState({ datalist: null }, () => console.log(this.state.datalist));
+      this.setState({ datalist: null });
     }
-  };
-
-  getListAll = async () => {
-    let all_data = [];
-    this.toggleLoading();
-    const t0 = performance.now();
-    getDatafromAPINODE(
-      "/cpoMapping/getCpo/required/hw?noPg=1",
-      this.state.tokenUser
-    ).then((res) => {
-      if (res.data !== undefined) {
-        const items = res.data.data;
-        const t1 = performance.now();
-        console.log("took 1" + (t1 - t0) + " milliseconds.");
-        console.log("len ", items.length);
-        // all_data = items;
-        // return all_data;
-        this.setState(
-          { all_data_mapping: items }
-          //   , () => {
-          //   setTimeout(() => {
-          //     this.csvLink.current.link.click();
-          //   });
-          // }
-        );
-      } else {
-        all_data = [];
-      }
-    });
-    this.toggleLoading();
   };
 
   getList2() {
@@ -665,198 +398,6 @@ class MappingHW extends React.Component {
     });
   }
 
-  exportTemplate = async () => {
-    const wb = new Excel.Workbook();
-    const ws = wb.addWorksheet();
-
-    ws.addRow(header_materialmapping);
-    for (let i = 1; i < header_materialmapping.length + 1; i++) {
-      ws.getCell(numToSSColumn(i) + "1").fill = {
-        type: "pattern",
-        pattern: "solid",
-        fgColor: { argb: "FFFFFF00" },
-        bgColor: { argb: "A9A9A9" },
-      };
-    }
-    const PPFormat = await wb.xlsx.writeBuffer();
-    saveAs(
-      new Blob([PPFormat]),
-      this.state.roleUser[1] + " " + modul_name + " Template.xlsx"
-    );
-  };
-
-  exportTemplate2 = async () => {
-    this.toggleLoading();
-    const wb = new Excel.Workbook();
-    const ws = wb.addWorksheet();
-
-    const download_all_template = this.state.all_data_mapping;
-    ws.addRow(header_materialmapping);
-    for (let i = 1; i < header_materialmapping.length + 1; i++) {
-      ws.getCell(numToSSColumn(i) + "1").fill = {
-        type: "pattern",
-        pattern: "solid",
-        fgColor: { argb: "FFFFFF00" },
-        bgColor: { argb: "A9A9A9" },
-      };
-    }
-
-    if (download_all_template !== undefined) {
-      // console.log(download_all_template.data.data.map((u) => u._id));
-
-      for (let i = 0; i < download_all_template.length; i++) {
-        let e = download_all_template[i];
-        ws.addRow([
-          this.LookupField2(e.Po + "-" + e.Line, "Deal_Name"),
-          this.LookupField2(e.Po + "-" + e.Line, "Hammer"),
-          this.LookupField2(e.Po + "-" + e.Line, "Project_Description"),
-          this.LookupField2(e.Po + "-" + e.Line, "Po_Number"),
-          e.Data_1,
-          e.Lookup_Reference,
-          e.Region,
-          e.Reference_Loc_Id,
-          e.New_Loc_Id,
-          e.Site_Name,
-          e.New_Site_Name,
-          e.Config,
-          e.Po,
-          e.Line,
-          e.Line_Item_Sap,
-          e.Material_Code,
-          this.LookupField2(e.Po + "-" + e.Line, "Description"),
-          e.Qty,
-          e.NW,
-          e.On_Air_Date,
-          e.Mapping_Date,
-          e.Remarks,
-          e.Premr_No,
-          e.Proceed_Billing_100,
-          e.Celcom_User,
-          this.LookupField2(e.Po + "-" + e.Line, "Pcode"),
-          this.LookupField2(e.Po + "-" + e.Line, "Unit_Price"),
-          this.LookupField2(e.Po + "-" + e.Line, "Total_Price"),
-          this.LookupField2(e.Po + "-" + e.Line, "Discounted_Unit_Price"),
-          this.LookupField2(e.Po + "-" + e.Line, "Discounted_Po_Price"),
-        ]);
-      }
-    }
-    this.toggleLoading();
-    const PPFormat = await wb.xlsx.writeBuffer();
-    saveAs(
-      new Blob([PPFormat]),
-      this.state.roleUser[1] + " " + modul_name + " All Data.xlsx"
-    );
-  };
-
-  exportTemplateall = async () => {
-    this.toggleLoading();
-    // this.getListAll();
-
-    const wb = new Excel.Workbook();
-    const ws = wb.addWorksheet();
-
-    const download_all_template = this.state.all_data_mapping;
-
-    ws.addRow(header_model);
-    for (let i = 1; i < header_model.length + 1; i++) {
-      ws.getCell(numToSSColumn(i) + "1").fill = {
-        type: "pattern",
-        pattern: "solid",
-        fgColor: { argb: "FFFFFF00" },
-        bgColor: { argb: "A9A9A9" },
-      };
-    }
-
-    if (download_all_template !== undefined) {
-      for (let i = 0; i < download_all_template.length; i++) {
-        let e = download_all_template[i];
-        ws.addRow([
-          this.LookupField2(e.Po + "-" + e.Line, "Deal_Name"),
-          this.LookupField2(e.Po + "-" + e.Line, "Hammer"),
-          this.LookupField2(e.Po + "-" + e.Line, "Project_Description"),
-          this.LookupField2(e.Po + "-" + e.Line, "Po_Number"),
-          e.Data_1,
-          e.Lookup_Reference,
-          e.Region,
-          e.Reference_Loc_Id,
-          e.New_Loc_Id,
-          e.Site_Name,
-          e.New_Site_Name,
-          e.Config,
-          e.Po,
-          e.Line,
-          e.Line_Item_Sap,
-          e.Material_Code,
-          this.LookupField2(e.Po + "-" + e.Line, "Description"),
-          e.Qty,
-          e.NW,
-          e.On_Air_Date,
-          e.Mapping_Date,
-          e.Remarks,
-          e.Premr_No,
-          e.Proceed_Billing_100,
-          e.Celcom_User,
-          this.LookupField2(e.Po + "-" + e.Line, "Pcode"),
-          this.LookupField2(e.Po + "-" + e.Line, "Unit_Price"),
-          this.LookupField2(e.Po + "-" + e.Line, "Total_Price"),
-          this.LookupField2(e.Po + "-" + e.Line, "Discounted_Unit_Price"),
-          this.LookupField2(e.Po + "-" + e.Line, "Discounted_Po_Price"),
-          e.Unit_Price *
-            e.Qty *
-            (this.LookupField2(e.Po + "-" + e.Line, "Hammer_1_Hd") / 100),
-          e.So_Line_Item_Description,
-          e.Sitepcode,
-          e.VlookupWbs,
-          e.So_No,
-          e.Wbs_No,
-          e.For_Checking_Purpose_Only_Rashidah,
-          e.Hw_Coa_Received_Date_80,
-          e.Billing_Upon_Hw_Coa_80,
-          e.Invoicing_No_Hw_Coa_80,
-          e.Invoicing_Date_Hw_Coa_80,
-          e.Cancelled_Invoice_Hw_Coa_80,
-          e.Ni_Coa_Date_20,
-          e.Billing_Upon_Ni_20,
-          e.Invoicing_No_Ni_20,
-          e.Invoicing_Date_Ni_20,
-          e.Cancelled_Invoicing_Ni_20,
-          e.Hw_Coa_Received_Date_40,
-          e.Billing_Upon_Hw_Coa_40,
-          e.Invoicing_No_Hw_Coa_40,
-          e.Invoicing_Date_Hw_Coa_40,
-          e.Cancelled_Hw_Coa_40,
-          e.Ni_Coa_Date_40,
-          e.Billing_Upon_Ni_40,
-          e.Invoicing_No_Ni_40,
-          e.Invoicing_Date_Ni_40,
-          e.Cancelled_Ni_40,
-          e.Sso_Coa_Date_20_1,
-          e.Billing_Upon_Sso_20_1,
-          e.Invoicing_No_Sso_20_1,
-          e.Invoicing_Date_Sso_20_1,
-          e.Cancelled_Sso_20,
-          e.Hw_Coa_100,
-          e.Billing_Upon_Hw_Coa_100,
-          e.Invoicing_No_Hw_Coa_100,
-          e.Invoicing_Date_Hw_Coa_100,
-          e.Cancelled_Invoicing_Hw_Coa_100,
-          e.Cancel_Column,
-          e.Reference_Loc_Id_1,
-          e.Po_1,
-          e.Reff,
-          e.Vlookup_For_Billing,
-        ]);
-      }
-    }
-    const PPFormat = await wb.xlsx.writeBuffer();
-    this.toggleLoading();
-    // };
-    saveAs(
-      new Blob([PPFormat]),
-      this.state.roleUser[1] + " " + modul_name + " All Data.xlsx"
-    );
-  };
-
   togglecreateModal = () => {
     this.setState({
       createModal: !this.state.createModal,
@@ -872,7 +413,6 @@ class MappingHW extends React.Component {
   resettogglecreateModal = () => {
     this.setState({
       rowsXLS: [],
-      rowsXLS_batch: [],
     });
   };
 
@@ -957,8 +497,7 @@ class MappingHW extends React.Component {
     });
   };
 
-  saveBulk2 = async () => {
-    // this.toggleLoading();
+  saveBulk = async () => {
     this.togglecreateModal();
     const roles =
       this.state.roleUser.includes("BAM-MAT PLANNER") === true
@@ -972,38 +511,38 @@ class MappingHW extends React.Component {
       index_xlsx++
     ) {
       this.setState({
-        action_status: null,
-        action_message: null,
+        batch_file: index_xlsx + 1,
       });
-      let num_batch = 1;
-      this.toggleLoading();
-      console.log(`hit ${index_xlsx}`);
+
+      this.toggleLoading_batch();
+      console.log(`hit ${index_xlsx + 1}`);
       const res = await postDatatoAPINODE(
         "/cpoMapping/createCpo",
         {
-          cpo_type: "svc",
+          cpo_type: "hw",
           required_check: true,
           roles: roles,
           cpo_data: this.state.rowsXLS_batch[index_xlsx],
         },
         this.state.tokenUser
       );
-      console.log(res);
-
       if (res.data !== undefined) {
         if (roles === 2) {
-          this.setState({
-            action_status: "success",
-            action_message: "success batch " + num_batch,
-          });
-          this.toggleLoading();
+          this.toggleLoading_batch();
+          if (index_xlsx === this.state.rowsXLS_batch.length - 1) {
+            this.setState({
+              action_status: "success",
+              action_message:
+                "Success upload all " +
+                this.state.rowsXLS_batch.length +
+                " batch",
+            });
+          }
         } else {
           if (res.data.updateData.length !== 0) {
             const table_header = Object.keys(res.data.updateData[0]);
             const update_Data = res.data.updateData;
             const new_table_header = table_header.slice(0, -2);
-            // update_Data.map((row, k) => console.log(row));
-            // console.log(table_header);
             let value = "row.";
             const bodyEmail =
               "<h2>DPM - BAM Notification</h2><br/><span>Please be notified that the following " +
@@ -1039,12 +578,12 @@ class MappingHW extends React.Component {
               this.setState({
                 action_status: "warning",
                 action_message:
-                  "success with warn " +
+                  "Success with warn " +
                   res.data.warnNotif.map((warn) => warn) +
                   " batch " +
                   num_batch,
               });
-              this.toggleLoading();
+              this.toggleLoading_batch();
               return;
               // setTimeout(function () {
               //   window.location.reload();
@@ -1057,22 +596,32 @@ class MappingHW extends React.Component {
               subject: "[NOTIFY to CPM] " + modul_name,
               body: bodyEmail,
             };
-            // const sendEmail = await apiSendEmail(dataEmail);
+            const sendEmail = await apiSendEmail(dataEmail);
             // console.log(sendEmail);
-            this.setState({
-              action_status: "success",
-              action_message: "success batch " + num_batch,
-            });
-            this.toggleLoading();
+            this.toggleLoading_batch();
+            if (index_xlsx === this.state.rowsXLS_batch.length - 1) {
+              this.setState({
+                action_status: "success",
+                action_message:
+                  "Success upload all " +
+                  this.state.rowsXLS_batch.length +
+                  " batch",
+              });
+            }
             // setTimeout(function () {
             //   window.location.reload();
             // }, 1500);
           } else {
-            this.setState({
-              action_status: "success",
-              action_message: "success batch " + num_batch,
-            });
-            this.toggleLoading();
+            this.toggleLoading_batch();
+            if (index_xlsx === this.state.rowsXLS_batch.length - 1) {
+              this.setState({
+                action_status: "success",
+                action_message:
+                  "Success upload all " +
+                  this.state.rowsXLS_batch.length +
+                  " batch",
+              });
+            }
           }
         }
       } else {
@@ -1085,89 +634,25 @@ class MappingHW extends React.Component {
             this.setState({
               action_status: "failed",
               action_message:
-                res.response.data.error.message + "batch " + num_batch,
+                res.response.data.error.message + " batch " + (index_xlsx + 1),
             });
           } else {
             this.setState({
               action_status: "failed",
-              action_message: res.response.data.error + "batch " + num_batch,
+              action_message:
+                res.response.data.error + " batch " + (index_xlsx + 1),
             });
           }
         } else {
-          this.setState({ action_status: "failed" });
+          this.setState({
+            action_status: "failed",
+            action_message:
+              res.response.data.error + " batch " + (index_xlsx + 1),
+          });
         }
-        this.toggleLoading();
+        this.toggleLoading_batch();
         break;
       }
-      num_batch++;
-    }
-  };
-
-  handleChangeForm = (e) => {
-    const value = e.target.value;
-    const unique_code = e.target.name;
-    this.setState({ mapping_date: value });
-  };
-
-  saveUpdate_CallOf = async () => {
-    this.toggleLoading();
-    this.toggleCallOff();
-    let req_body = [];
-    const roles =
-      this.state.roleUser.includes("BAM-MAT PLANNER") === true
-        ? 1
-        : this.state.roleUser.includes("BAM-PFM") === true
-        ? 2
-        : 3;
-    const header_update_Mapping_Date = [
-      ["Po", "Line", "Reference_Loc_Id", "Qty", "Mapping_Date"],
-    ];
-    const body_update_Mapping_Date = this.state.multiple_select2.map((req) =>
-      req_body.push([
-        req.Po,
-        req.Line,
-        req.Reference_Loc_Id,
-        req.Qty,
-        this.state.mapping_date,
-      ])
-    );
-    const res = await postDatatoAPINODE(
-      "/cpoMapping/createCpo",
-      {
-        cpo_type: "hw",
-        required_check: true,
-        roles: roles,
-        cpo_data: header_update_Mapping_Date.concat(req_body),
-      },
-      this.state.tokenUser
-    );
-    if (res.data !== undefined) {
-      this.setState({ action_status: "success" });
-      this.toggleLoading();
-      // setTimeout(function () {
-      //   window.location.reload();
-      // }, 1500);
-    } else {
-      if (
-        res.response !== undefined &&
-        res.response.data !== undefined &&
-        res.response.data.error !== undefined
-      ) {
-        if (res.response.data.error.message !== undefined) {
-          this.setState({
-            action_status: "failed",
-            action_message: res.response.data.error.message,
-          });
-        } else {
-          this.setState({
-            action_status: "failed",
-            action_message: res.response.data.error,
-          });
-        }
-      } else {
-        this.setState({ action_status: "failed" });
-      }
-      this.toggleLoading();
     }
   };
 
@@ -1177,39 +662,23 @@ class MappingHW extends React.Component {
     }));
   };
 
+  toggleLoading_batch = () => {
+    this.setState((prevState) => ({
+      modal_progress: !prevState.modal_progress,
+    }));
+  };
+
   handlePageChange = (pageNumber) => {
     this.setState({ activePage: pageNumber }, () => {
       this.state.tabs_submenu[0] === true ? this.getList() : this.getList2();
     });
   };
 
-  toggleEdit = (e) => {
-    const modalEdit = this.state.modalEdit;
-    if (modalEdit === false) {
-      const value = e.currentTarget.value;
-      const aEdit = this.state.all_data.find((e) => e._id === value);
-      this.setState({ CPOForm: aEdit, selected_id: value });
-    } else {
-      this.setState({ CPOForm: {} });
-    }
-    this.setState((prevState) => ({
-      modalEdit: !prevState.modalEdit,
-    }));
+  handleChangeForm = (e) => {
+    const value = e.target.value;
+    const unique_code = e.target.name;
+    this.setState({ mapping_date: value });
   };
-
-  // handleChangeForm = (e) => {
-  //   const value = e.target.value;
-  //   const name = e.target.name;
-  //   this.setState(
-  //     (prevState) => ({
-  //       CPOForm: {
-  //         ...prevState.CPOForm,
-  //         [name]: value,
-  //       },
-  //     }),
-  //     () => console.log(this.state.CPOForm)
-  //   );
-  // };
 
   saveUpdate = async () => {
     this.toggleLoading();
@@ -1220,42 +689,14 @@ class MappingHW extends React.Component {
         : this.state.roleUser.includes("BAM-PFM") === true
         ? 2
         : 3;
-    let header_move = [
-      "Po_Number",
-      "Data_1",
-      "Lookup_Reference",
-      "Region",
-      "Reference_Loc_Id",
-      "New_Loc_Id",
-      "Site_Name",
-      "New_Site_Name",
-      "Config",
-      "Po",
-      "Line",
-      "Line_Item_Sap",
-      "Material_Code",
-      "Description",
-      "Qty",
-      "NW",
-      "On_Air_Date",
-      "Mapping_Date",
-      "Remarks",
-      "Premr_No",
-      "Proceed_Billing_100",
-      "Celcom_User",
-      "Pcode",
-      "Unit_Price",
-      "Total_Price",
-      "Discounted_Unit_Price",
-      "Discounted_Po_Price",
-      "Deal_Name",
-      "So_Line_Item_Description",
-      "Sitepcode",
+    const header_create_not_req = [
+      global.config.cpo_mapping.hw.header_materialmapping,
     ];
-    const header_create_not_req = [header_move];
     const body_create_not_req = this.state.dataChecked_container.map((data) =>
       Object.keys(data)
-        .filter((key) => header_move.includes(key))
+        .filter((key) =>
+          global.config.cpo_mapping.hw.header_materialmapping.includes(key)
+        )
         .reduce((obj, key) => {
           obj[key] = data[key];
           return obj;
@@ -1264,16 +705,7 @@ class MappingHW extends React.Component {
     const trimm_body_create_not_req = body_create_not_req.map((data) =>
       Object.keys(data).map((key) => data[key])
     );
-    console.log("trimm_body_create_not_req", trimm_body_create_not_req);
-    // console.log(
-    //   "header",
-    //   body_create_not_req.map((data) => Object.keys(data).map((key) => key))
-    // );
-    // console.log("body", trimm_body_create_not_req);
-    // console.log(
-    //   "post not req",
-    //   header_create_not_req.concat(trimm_body_create_not_req)
-    // );
+
     const res = await postDatatoAPINODE(
       "/cpoMapping/createCpo",
       {
@@ -1351,233 +783,66 @@ class MappingHW extends React.Component {
     }
   };
 
-  download_Admin = async () => {
+  saveUpdate_CallOf = async () => {
     this.toggleLoading();
-    const download_all_A = this.state.all_data_mapping;
-
-    const wb = new Excel.Workbook();
-    const ws = wb.addWorksheet();
-
-    ws.addRow(
-      [
-        "Deal_Name",
-        "Hammer",
-        "Project_Description",
-        "Po_Number",
-        "Reference_Loc_Id",
-        "Line",
-        "Po",
-      ].concat(header_admin)
+    this.toggleCallOff();
+    let req_body = [];
+    const roles =
+      this.state.roleUser.includes("BAM-MAT PLANNER") === true
+        ? 1
+        : this.state.roleUser.includes("BAM-PFM") === true
+        ? 2
+        : 3;
+    const header_update_Mapping_Date = [
+      ["Po", "Line", "Reference_Loc_Id", "Qty", "Mapping_Date"],
+    ];
+    const body_update_Mapping_Date = this.state.multiple_select.map((req) =>
+      req_body.push([
+        req.Po,
+        req.Line,
+        req.Reference_Loc_Id,
+        req.Qty,
+        this.state.mapping_date,
+      ])
     );
-    for (let i = 1; i < header_admin.length + 3; i++) {
-      ws.getCell(numToSSColumn(i) + "1").fill = {
-        type: "pattern",
-        pattern: "solid",
-        fgColor: { argb: "FFFFFF00" },
-        bgColor: { argb: "A9A9A9" },
-      };
-    }
-
-    if (download_all_A !== undefined) {
-      for (let i = 0; i < download_all_A.length; i++) {
-        let e = download_all_A[i];
-        ws.addRow([
-          e.Deal_Name,
-          this.LookupField2(e.Po_Number + "-" + e.Line, "Hammer"),
-          this.LookupField2(e.Po_Number + "-" + e.Line, "Project_Description"),
-          e.Po_Number,
-          e.Reference_Loc_Id,
-          e.Line,
-          e.Po,
-          e.For_Checking_Purpose_Only_Rashidah,
-          e.Hw_Coa_Received_Date_80,
-          e.Invoicing_Date_Hw_Coa_100,
-          e.Cancel_Column,
-          e.Reference_Loc_Id_1,
-          e.Reff,
-        ]);
-      }
-    }
-
-    const allocexport = await wb.xlsx.writeBuffer();
-    this.toggleLoading();
-    saveAs(
-      new Blob([allocexport]),
-      "All Data " + this.state.roleUser[1] + " " + modul_name + ".xlsx"
-    );
-  };
-
-  export_Admin = async () => {
-    this.toggleLoading();
-    const download_all_A = await getDatafromAPINODE(
-      "/cpoMapping/getCpo/hw?noPg=1",
+    const res = await postDatatoAPINODE(
+      "/cpoMapping/createCpo",
+      {
+        cpo_type: "hw",
+        required_check: true,
+        roles: roles,
+        cpo_data: header_update_Mapping_Date.concat(req_body),
+      },
       this.state.tokenUser
     );
-
-    const wb = new Excel.Workbook();
-    const ws = wb.addWorksheet();
-
-    ws.addRow(header_admin);
-    for (let i = 1; i < header_admin.length + 1; i++) {
-      ws.getCell(numToSSColumn(i) + "1").fill = {
-        type: "pattern",
-        pattern: "solid",
-        fgColor: { argb: "FFFFFF00" },
-        bgColor: { argb: "A9A9A9" },
-      };
-    }
-
-    const allocexport = await wb.xlsx.writeBuffer();
-    this.toggleLoading();
-    saveAs(
-      new Blob([allocexport]),
-      "Template " + this.state.roleUser[1] + " " + modul_name + ".xlsx"
-    );
-  };
-
-  download_PFM = async () => {
-    this.toggleLoading();
-    const download_all_A = this.state.all_data;
-
-    const wb = new Excel.Workbook();
-    const ws = wb.addWorksheet();
-
-    ws.addRow(
-      [
-        "Deal_Name",
-        "Hammer",
-        "Project_Description",
-        "Po_Number",
-        "Reference_Loc_Id",
-        "Line",
-        "Po",
-        "Proceed_Billing_100",
-      ].concat(header_pfm)
-    );
-    // general info column
-    for (let info = 1; info < 9; info++) {
-      ws.getCell(numToSSColumn(info) + "1").fill = {
-        type: "pattern",
-        pattern: "solid",
-        fgColor: { argb: "FFCCFFCC" },
-      };
-    }
-    // hammer2 column
-    for (let hammer2 = 9; hammer2 < 22; hammer2++) {
-      ws.getCell(numToSSColumn(hammer2) + "1").fill = {
-        type: "pattern",
-        pattern: "solid",
-        fgColor: { argb: "DFDF9F" },
-      };
-    }
-    // hammer1 column
-    for (let hammer1 = 22; hammer1 < 35; hammer1++) {
-      ws.getCell(numToSSColumn(hammer1) + "1").fill = {
-        type: "pattern",
-        pattern: "solid",
-        fgColor: { argb: "FFFFFF00" },
-      };
-    }
-    // billing100 column
-    for (let billing100 = 35; billing100 < 40; billing100++) {
-      ws.getCell(numToSSColumn(billing100) + "1").fill = {
-        type: "pattern",
-        pattern: "solid",
-        fgColor: { argb: "60BF9F" },
-      };
-    }
-
-    if (download_all_A !== undefined) {
-      // console.log(download_all_A.data.map((u) => u._id));
-
-      for (let i = 0; i < download_all_A.length; i++) {
-        let e = download_all_A[i];
-        ws.addRow([
-          e.Deal_Name,
-          this.LookupField2(e.Po + "-" + e.Line, "Hammer"),
-          this.LookupField2(e.Po + "-" + e.Line, "Project_Description"),
-          e.Po_Number,
-          e.Reference_Loc_Id,
-          e.Line,
-          e.Po,
-          e.Proceed_Billing_100,
-          e.So_Line_Item_Description,
-          e.Sitepcode,
-          e.VlookupWbs,
-          e.So_No,
-          e.Wbs_No,
-          e.Hw_Coa_Received_Date_80,
-          e.Billing_Upon_Hw_Coa_80,
-          e.Invoicing_No_Hw_Coa_80,
-          e.Invoicing_Date_Hw_Coa_80,
-          e.Cancelled_Invoice_Hw_Coa_80,
-          e.Billing_Upon_Ni_20,
-          e.Invoicing_No_Ni_20,
-          e.Invoicing_Date_Ni_20,
-          e.Cancelled_Invoicing_Ni_20,
-          e.Billing_Upon_Hw_Coa_40,
-          e.Invoicing_No_Hw_Coa_40,
-          e.Invoicing_Date_Hw_Coa_40,
-          e.Cancelled_Hw_Coa_40,
-          e.Billing_Upon_Ni_40,
-          e.Invoicing_No_Ni_40,
-          e.Invoicing_Date_Ni_40,
-          e.Cancelled_Ni_40,
-          e.Billing_Upon_Sso_20_1,
-          e.Invoicing_No_Sso_20_1,
-          e.Invoicing_Date_Sso_20_1,
-          e.Cancelled_Sso_20,
-          e.Hw_Coa_100,
-          e.Invoicing_No_Hw_Coa_100,
-          e.Invoicing_Date_Hw_Coa_100,
-          e.Cancelled_Invoicing_Hw_Coa_100,
-        ]);
+    if (res.data !== undefined) {
+      this.setState({ action_status: "success" });
+      this.toggleLoading();
+      // setTimeout(function () {
+      //   window.location.reload();
+      // }, 1500);
+    } else {
+      if (
+        res.response !== undefined &&
+        res.response.data !== undefined &&
+        res.response.data.error !== undefined
+      ) {
+        if (res.response.data.error.message !== undefined) {
+          this.setState({
+            action_status: "failed",
+            action_message: res.response.data.error.message,
+          });
+        } else {
+          this.setState({
+            action_status: "failed",
+            action_message: res.response.data.error,
+          });
+        }
+      } else {
+        this.setState({ action_status: "failed" });
       }
+      this.toggleLoading();
     }
-
-    const allocexport = await wb.xlsx.writeBuffer();
-    this.toggleLoading();
-    saveAs(
-      new Blob([allocexport]),
-      "All Data " + this.state.roleUser[1] + " " + modul_name + ".xlsx"
-    );
-  };
-
-  export_PFM = async () => {
-    this.toggleLoading();
-    const download_all_A = await this.state.all_data_mapping;
-
-    const wb = new Excel.Workbook();
-    const ws = wb.addWorksheet();
-
-    ws.addRow(
-      ["Reference_Loc_Id", "Line", "Po", "Proceed_Billing_100"].concat(
-        header_pfm
-      )
-    );
-    for (let i = 1; i < header_pfm.length + 1; i++) {
-      ws.getCell(numToSSColumn(i) + "1").fill = {
-        type: "pattern",
-        pattern: "solid",
-        fgColor: { argb: "FFFFFF00" },
-        bgColor: { argb: "A9A9A9" },
-      };
-    }
-
-    if (download_all_A !== undefined) {
-      // console.log(download_all_A.data.map((u) => u._id));
-      for (let i = 0; i < download_all_A.length; i++) {
-        let e = download_all_A[i];
-        ws.addRow([e.Reference_Loc_Id, e.Line, e.Po, e.Proceed_Billing_100]);
-      }
-    }
-
-    const allocexport = await wb.xlsx.writeBuffer();
-    saveAs(
-      new Blob([allocexport]),
-      "Template" + this.state.roleUser[1] + " " + modul_name + ".xlsx"
-    );
-    this.toggleLoading();
   };
 
   onChangeDebounced = () => {
@@ -1599,7 +864,7 @@ class MappingHW extends React.Component {
 
   loopSearchBar = () => {
     let searchBar = [];
-    for (let i = 0; i < header_model.length; i++) {
+    for (let i = 0; i < global.config.cpo_mapping.hw.header_model.length; i++) {
       searchBar.push(
         <td>
           {/* {i !== 0 && i !== 3 && i !== 5 && i !== 7 && i !== 9 && i !== 10 ? (
@@ -1617,8 +882,12 @@ class MappingHW extends React.Component {
                 type="text"
                 placeholder="Search"
                 onChange={this.handleFilterList}
-                value={this.state.filter_list[header_model[i]]}
-                name={header_model[i]}
+                value={
+                  this.state.filter_list[
+                    global.config.cpo_mapping.hw.header_model[i]
+                  ]
+                }
+                name={global.config.cpo_mapping.hw.header_model[i]}
                 size="sm"
               />
             </InputGroup>
@@ -1685,10 +954,7 @@ class MappingHW extends React.Component {
   };
 
   handleChangeChecklistAll = async (e) => {
-    const getall = await getDatafromAPINODE(
-      "/cpoMapping/getCpo/hw?noPg=1",
-      this.state.tokenUser
-    );
+    const getall = await this.state.all_data_mapping;
     console.log(getall.data);
 
     if (getall.data !== undefined) {
@@ -1762,9 +1028,20 @@ class MappingHW extends React.Component {
     this.setState({ tabs_submenu: tab_submenu });
   };
 
+  countData = () => {};
+
   handleChangeLimit = (e) => {
     let limitpg = e.currentTarget.value;
     this.setState({ perPage: limitpg }, () => this.getList());
+  };
+
+  countheaderNaN = (params_field) => {
+    let value = "element." + params_field;
+    let sumheader = this.state.all_data_mapping.filter(
+      (element) => eval(value) !== null && eval(value) !== ""
+    );
+    return sumheader.length;
+    // console.log(params_field, sumheader);
   };
 
   countheader = (params_field) => {
@@ -1777,31 +1054,14 @@ class MappingHW extends React.Component {
     return Math.round((sumheader + Number.EPSILON) * 100) / 100;
   };
 
-  countheaderNaN = (params_field) => {
-    let value = "element." + params_field;
-    let sumheader = this.state.all_data_mapping.filter(
-      (element) => eval(value) !== null && eval(value) !== ""
-    );
-    return sumheader.length;
-    // console.log(params_field, sumheader);
-  };
-
-  Upload_progress = (value, max) => {
-    const percent = (value / max) * 100;
-    return (
-      <div className="animated fadeIn">
-        <div className="card-header-actions">
-          <div style={{ textAlign: "center" }}>
-            <Progress value={percent} />
-          </div>
-        </div>
-      </div>
-    );
-  };
-
   render() {
     const CPOForm = this.state.CPOForm;
     const role = this.state.roleUser;
+    // {
+    //   React.useMemo(() => {
+    //     console.log("render page");
+    //   });
+    // }
     return (
       <div className="animated fadeIn">
         <Row className="row-alert-fixed">
@@ -1810,7 +1070,6 @@ class MappingHW extends React.Component {
               actionMessage={this.state.action_message}
               actionStatus={this.state.action_status}
             />
-            <Progressbar value={20} />
           </Col>
         </Row>
         <Row>
@@ -1863,80 +1122,6 @@ class MappingHW extends React.Component {
                   </div>
                   &nbsp;&nbsp;&nbsp;
                   <div>
-                    {/* <Dropdown
-                      isOpen={this.state.dropdownOpen[1]}
-                      toggle={() => {
-                        this.toggle(1);
-                      }}
-                    >
-
-                      <DropdownToggle block color="warning" size="sm">
-                        <i className="fa fa-download" aria-hidden="true">
-                          {" "}
-                          &nbsp;{" "}
-                        </i>{" "}
-                        Export
-                      </DropdownToggle>
-                      <DropdownMenu>
-                        <DropdownItem header>Export Data</DropdownItem>
-                        <DropdownItem
-                          disabled={this.state.all_data_mapping.length === 0}
-                          onClick={this.exportTemplateall}
-                        >
-                          {" "}
-                          All Data HW Export
-                        </DropdownItem>
-                        <DropdownItem header>Uploader Template</DropdownItem>
-                        {role.includes("BAM-MAT PLANNER") === true ? (
-                          <>
-                            <DropdownItem
-                              disabled={
-                                this.state.all_data_mapping.length === 0
-                              }
-                              onClick={this.exportTemplate2}
-                            >
-                              {" "}
-                              Mapping Template{" " +
-                                this.state.roleUser[1]}{" "}
-                            </DropdownItem>                   
-                          </>
-                        ) : (
-                          ""
-                        )}
-                        {role.includes("BAM-PFM") === true ? (
-                          <>
-                            <DropdownItem
-                              disabled={
-                                this.state.all_data_mapping.length === 0
-                              }
-                              onClick={this.download_PFM}
-                            >
-                              {" "}
-                              Mapping Template{" " +
-                                this.state.roleUser[1]}{" "}
-                            </DropdownItem>         
-                          </>
-                        ) : (
-                          ""
-                        )}
-                        {role.includes("BAM-ADMIN") === true ? (
-                          <>
-                            <DropdownItem
-                              disabled={
-                                this.state.all_data_mapping.length === 0
-                              }
-                              onClick={this.download_Admin}
-                            >
-                              {" "}
-                              Mapping Template{" " +
-                                this.state.roleUser[1]}{" "}
-                            </DropdownItem>               
-                          </>
-                        ) : (
-                          ""
-                        )}
-                      </DropdownMenu>
-                    </Dropdown> */}
                     <Link to={"/cpo-hw-export"} target="_blank">
                       <Button
                         color="warning"
@@ -1953,7 +1138,6 @@ class MappingHW extends React.Component {
                   </div>
                 </div>
               </CardHeader>
-
               <CardBody>
                 <Row>
                   <Col>
@@ -2024,7 +1208,7 @@ class MappingHW extends React.Component {
                             ) : (
                               ""
                             )}
-                            {header.map((head) => (
+                            {global.config.cpo_mapping.hw.header.map((head) => (
                               <th>{head}</th>
                             ))}
                           </tr>
@@ -2048,9 +1232,11 @@ class MappingHW extends React.Component {
                           ) : (
                             <>
                               <tr align="center">
-                                {header_model.map((head) => (
-                                  <th>{this.countheader(head)}</th>
-                                ))}
+                                {global.config.cpo_mapping.hw.header_model.map(
+                                  (head) => (
+                                    <th>{this.countheaderNaN(head)}</th>
+                                  )
+                                )}
                               </tr>
                             </>
                           )}
@@ -2086,7 +1272,6 @@ class MappingHW extends React.Component {
                                       </Button>
                                     </Link>
                                   </td> */}
-
                                   <td>
                                     <Checkbox1
                                       checked={this.state.dataChecked.get(
@@ -2182,6 +1367,27 @@ class MappingHW extends React.Component {
                             this.state.all_data_true.map((e, i) => (
                               <React.Fragment key={e._id + "frag"}>
                                 <tr align="center" key={e._id}>
+                                  {role.includes("BAM-ADMIN") === true ||
+                                  role.includes("BAM-PFM") === true ? (
+                                    {
+                                      /* <td>
+                                      <Link to={"/hw-cpo/" + e._id}>
+                                        <Button
+                                          size="sm"
+                                          color="secondary"
+                                          title="Edit"
+                                        >
+                                          <i
+                                            className="fa fa-edit"
+                                            aria-hidden="true"
+                                          ></i>
+                                        </Button>
+                                      </Link>
+                                    </td> */
+                                    }
+                                  ) : (
+                                    <td></td>
+                                  )}
                                   <td>{e.Deal_Name}</td>
                                   <td>{e.Hammer}</td>
                                   <td>{e.Project_Description}</td>
@@ -2305,113 +1511,6 @@ class MappingHW extends React.Component {
 
         {/* Modal Update */}
         <Modal
-          isOpen={this.state.modalEdit}
-          toggle={this.toggleEdit}
-          className="modal--form"
-        >
-          <ModalHeader>Form Update</ModalHeader>
-          <ModalBody>
-            <Row>
-              <Col sm="12">
-                <FormGroup row>
-                  <Col xs="4">
-                    <FormGroup>
-                      <Label>Line</Label>
-                      <Input
-                        readOnly
-                        type="text"
-                        name="Line"
-                        placeholder=""
-                        value={CPOForm.Line}
-                        onChange={this.handleChangeForm}
-                      />
-                    </FormGroup>
-                  </Col>
-                  <Col xs="4">
-                    <FormGroup>
-                      <Label>PO</Label>
-                      <Input
-                        readOnly
-                        type="text"
-                        name="Po"
-                        placeholder=""
-                        value={CPOForm.Po}
-                        onChange={this.handleChangeForm}
-                      />
-                    </FormGroup>
-                  </Col>
-                  <Col xs="4">
-                    <FormGroup>
-                      <Label>NEW LOC ID</Label>
-                      <Input
-                        readOnly
-                        type="text"
-                        name="New_Loc_Id"
-                        placeholder=""
-                        value={CPOForm.New_Loc_Id}
-                        onChange={this.handleChangeForm}
-                      />
-                    </FormGroup>
-                  </Col>
-                  <Col xs="12">
-                    <FormGroup>
-                      <Label>Config</Label>
-                      {role.includes("BAM-ADMIN") === true ? (
-                        <Input
-                          type="text"
-                          name="Config"
-                          placeholder=""
-                          value={CPOForm.Config}
-                          onChange={this.handleChangeForm}
-                        />
-                      ) : (
-                        <Input
-                          readOnly
-                          type="text"
-                          name="Config"
-                          placeholder=""
-                          value={CPOForm.Config}
-                          onChange={this.handleChangeForm}
-                        />
-                      )}
-                    </FormGroup>
-                  </Col>
-                  <Col xs="12">
-                    <FormGroup>
-                      <Label>QTY</Label>
-                      {role.includes("BAM-ADMIN") === true ? (
-                        <Input
-                          readOnly
-                          type="number"
-                          name="Qty"
-                          placeholder=""
-                          value={CPOForm.Qty}
-                          onChange={this.handleChangeForm}
-                        />
-                      ) : (
-                        <Input
-                          type="number"
-                          name="Qty"
-                          placeholder=""
-                          value={CPOForm.Qty}
-                          onChange={this.handleChangeForm}
-                        />
-                      )}
-                    </FormGroup>
-                  </Col>
-                </FormGroup>
-              </Col>
-            </Row>
-          </ModalBody>
-          <ModalFooter>
-            <Button color="success" onClick={this.saveUpdate}>
-              Update
-            </Button>
-          </ModalFooter>
-        </Modal>
-
-        {/* Modal Update */}
-        <Modal
           isOpen={this.state.modal_callof}
           toggle={this.toggleCallOff}
           className="modal--form"
@@ -2421,12 +1520,13 @@ class MappingHW extends React.Component {
             <Row>
               <Col sm="8">
                 <FormGroup row>
-                  <Col xs="8">
+                  <Col xs="12">
                     <FormGroup>
                       <Label>Reference Loc ID</Label>
                       <AsyncSelect
                         // isMulti
                         cacheOptions
+                        placeholder={"Type Reference Loc ID"}
                         loadOptions={this.loadOptionsReclocID}
                         defaultOptions
                         onChange={this.handlemultipleRelocID}
@@ -2437,12 +1537,13 @@ class MappingHW extends React.Component {
               </Col>
               <Col sm="8">
                 <FormGroup row>
-                  <Col xs="8">
+                  <Col xs="12">
                     <FormGroup>
                       <Label>Project Description</Label>
                       <AsyncSelect
                         // isMulti
                         cacheOptions
+                        placeholder={"Type Project Description"}
                         loadOptions={this.loadOptionsPO}
                         defaultOptions
                         onChange={this.handleBeforeCallOf}
@@ -2487,7 +1588,7 @@ class MappingHW extends React.Component {
             <Button
               color="success"
               onClick={this.saveUpdate_CallOf}
-              disabled={this.state.multiple_select2.length === 0}
+              disabled={this.state.multiple_select.length === 0}
             >
               Update
             </Button>
@@ -2522,7 +1623,6 @@ class MappingHW extends React.Component {
               File will be split into {this.state.rowsXLS_batch.length} batch
             </span>
           </div>
-
           <ModalFooter>
             <Button
               size="sm"
@@ -2530,7 +1630,7 @@ class MappingHW extends React.Component {
               color="success"
               className="btn-pill"
               disabled={this.state.rowsXLS_batch.length === 0}
-              onClick={this.saveBulk2}
+              onClick={this.saveBulk}
               style={{ height: "30px", width: "100px" }}
             >
               Save
@@ -2542,8 +1642,30 @@ class MappingHW extends React.Component {
         <Loading
           isOpen={this.state.modal_loading}
           toggle={this.toggleLoading}
-          className={"modal-sm modal--loading "}
         ></Loading>
+        {/* end Modal Loading */}
+
+        {/* Modal Loading Batch*/}
+        <Modal
+          isOpen={this.state.modal_progress}
+          toggle={this.toggleLoading_batch}
+          className={"modal-sm modal--loading "}
+        >
+          <ModalBody>
+            <div style={{ textAlign: "center" }}>
+              <div className="lds-ring">
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+              </div>
+            </div>
+            <div style={{ textAlign: "center" }}>
+              System is processing batch {this.state.batch_file}/
+              {this.state.rowsXLS_batch.length} ...
+            </div>
+          </ModalBody>
+        </Modal>
         {/* end Modal Loading */}
       </div>
     );

@@ -3,9 +3,10 @@ import { Col, FormGroup, Row, Table, Card, Container } from "reactstrap";
 import { getDatafromAPINODE } from "../../helper/asyncFunction";
 import Pagination from "react-js-pagination";
 import { saveAs } from "file-saver";
-import { numToSSColumn } from "../../helper/basicFunction";
+import { numToSSColumn, getUniqueListBy } from "../../helper/basicFunction";
 import { connect } from "react-redux";
 import Select from "react-select";
+import AsyncSelect from "react-select/async";
 
 const header = [
   "LINE",
@@ -65,7 +66,7 @@ class ReportHW extends React.Component {
   componentDidMount() {
     // console.log("header", header.length);
     // console.log("model_header", header_model.length);
-    this.getList();
+    // this.getList();
   }
 
   getList() {
@@ -231,6 +232,32 @@ class ReportHW extends React.Component {
         );
   };
 
+  loadOptionsCDID = async (inputValue) => {
+    if (!inputValue) {
+      return [];
+    } else {
+      let data_list = [];
+      const getWPID = await getDatafromAPINODE(
+        '/cpoMapping/getCpo/required/hw?q={"Po":{"$regex":"' +
+          inputValue +
+          '", "$options":"i"}}',
+        this.state.tokenUser
+      );
+      if (getWPID !== undefined && getWPID.data !== undefined) {
+        // this.setState({ list_cd_id: getWPID.data.data });
+        getUniqueListBy(getWPID.data.data, "Po").map((wp) =>
+          data_list.push({
+            value: wp.Po,
+            label: wp.Po,
+          })
+        );
+      }
+      // console.log("data_list ", data_list);
+      this.setState({ po_list: data_list });
+      return data_list;
+    }
+  };
+
   render() {
     return (
       <div>
@@ -241,9 +268,11 @@ class ReportHW extends React.Component {
                 <Col>
                   <FormGroup>
                     {/* <Label>PO</Label> */}
-                    <Select
-                      placeholder="Select PO"
-                      options={this.state.po_list}
+                    <AsyncSelect
+                      placeholder="Type PO"
+                      cacheOptions
+                      loadOptions={this.loadOptionsCDID}
+                      defaultOptions
                       onChange={this.hanldeChangePO}
                     />
                   </FormGroup>
