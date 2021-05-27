@@ -1260,9 +1260,9 @@ class MappingSVC extends React.PureComponent {
                                   0 &&
                                 this.state.count_header.constructor ===
                                   Object ? (
-                                  this.mapHeader(
-                                    this.state.count_header
-                                  ).map((head, j) => <th>{head}</th>)
+                                  this.mapHeader(this.state.count_header).map(
+                                    (head, j) => <th>{head}</th>
+                                  )
                                 ) : (
                                   <></>
                                 )}
@@ -1297,7 +1297,7 @@ class MappingSVC extends React.PureComponent {
                             this.state.all_data.map((e, i) => (
                               <React.Fragment key={e._id + "frag"}>
                                 <tr align="center" key={e._id}>
-                                  {/* <td>
+                                  <td>
                                     <Link to={"/svc-cpo/" + e._id}>
                                       <Button
                                         size="sm"
@@ -1310,7 +1310,7 @@ class MappingSVC extends React.PureComponent {
                                         ></i>
                                       </Button>
                                     </Link>
-                                  </td> */}
+                                  </td>
                                   <td>
                                     <Checkbox1
                                       checked={this.state.dataChecked.get(
