@@ -568,8 +568,8 @@ class MappingHW extends React.PureComponent {
             if (res.data.warnNotif.length !== 0) {
               let dataEmail = {
                 // "to": creatorEmail,
-                to: "damar.pramuditya@ericsson.com",
-                // to: global.config.role.cpm,
+                // to: "damar.pramuditya@ericsson.com",
+                to: global.config.role.cpm,
                 subject: "[NOTIFY to CPM] " + modul_name,
                 body: bodyEmail,
               };
@@ -591,8 +591,8 @@ class MappingHW extends React.PureComponent {
             }
             let dataEmail = {
               // "to": creatorEmail,
-              to: "damar.pramuditya@ericsson.com",
-              // to: global.config.role.cpm,
+              // to: "damar.pramuditya@ericsson.com",
+              to: global.config.role.cpm,
               subject: "[NOTIFY to CPM] " + modul_name,
               body: bodyEmail,
             };
@@ -1221,9 +1221,9 @@ class MappingHW extends React.PureComponent {
                                   0 &&
                                 this.state.count_header.constructor ===
                                   Object ? (
-                                  this.mapHeader(
-                                    this.state.count_header
-                                  ).map((head, j) => <th>{head}</th>)
+                                  this.mapHeader(this.state.count_header).map(
+                                    (head, j) => <th>{head}</th>
+                                  )
                                 ) : (
                                   <></>
                                 )}
