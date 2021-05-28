@@ -1103,21 +1103,22 @@ class MappingHW extends React.PureComponent {
                   &nbsp;&nbsp;&nbsp;
                   <div>
                     <div>
-                      <Button
-                        block
-                        color="success"
-                        size="sm"
-                        onClick={this.togglecreateModal}
-                      >
-                        <i className="fa fa-plus-square" aria-hidden="true">
-                          {" "}
-                          &nbsp;{" "}
-                        </i>{" "}
-                        {role.includes("BAM-ADMIN") === true ||
-                        role.includes("BAM-PFM") === true
-                          ? "Update"
-                          : "New"}
-                      </Button>
+                      <Link to={"/cpo-hw-import"} target="_blank">
+                        <Button
+                          color="success"
+                          style={{ float: "right", marginLeft: "8px" }}
+                          size="sm"
+                        >
+                          <i className="fa fa-plus-square" aria-hidden="true">
+                            {" "}
+                            &nbsp;{" "}
+                          </i>{" "}
+                          {role.includes("BAM-ADMIN") === true ||
+                          role.includes("BAM-PFM") === true
+                            ? "Update"
+                            : "New"}
+                        </Button>
+                      </Link>
                     </div>
                   </div>
                   &nbsp;&nbsp;&nbsp;
