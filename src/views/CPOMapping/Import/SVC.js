@@ -157,6 +157,20 @@ class ImportSVC extends React.Component {
         },
         this.state.tokenUser
       );
+      // console.log("res", res.response);
+      /**
+       *  push errors to array
+       */
+      if (
+        res.response !== undefined &&
+        res.response.data !== undefined &&
+        res.response.data.error !== undefined
+      ) {
+        let err_data = res.response.data.error.message;
+        // if (err_data !== undefined) {
+        error_containers.push(err_data.message);
+        // }
+      }
       if (res.data !== undefined) {
         if (roles === 2) {
           this.toggleLoading_batch();
