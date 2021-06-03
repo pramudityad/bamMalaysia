@@ -22,6 +22,7 @@ import Select from "react-select";
 import Excel from "exceljs";
 import AsyncSelect from "react-select/async";
 import Loading from "../../Component/Loading";
+import "../../../helper/config";
 
 const modul_name = "HW Mapping";
 
@@ -291,8 +292,12 @@ class ExportHW extends React.Component {
     if (getdata.data !== undefined) {
       const download_all_template = await getdata.data.data;
       // console.log("download_all_template ", download_all_template);
-      ws.addRow(header_model);
-      for (let i = 1; i < header_model.length + 1; i++) {
+      ws.addRow(global.config.cpo_mapping.hw.header_model);
+      for (
+        let i = 1;
+        i < global.config.cpo_mapping.hw.header_model.length + 1;
+        i++
+      ) {
         ws.getCell(numToSSColumn(i) + "1").fill = {
           type: "pattern",
           pattern: "solid",
@@ -414,8 +419,12 @@ class ExportHW extends React.Component {
     if (getdata.data !== undefined) {
       const download_all_template = await getdata.data.data;
       // console.log("download_all_template ", download_all_template);
-      ws.addRow(header_materialmapping);
-      for (let i = 1; i < header_materialmapping.length + 1; i++) {
+      ws.addRow(global.config.cpo_mapping.hw.header_materialmapping);
+      for (
+        let i = 1;
+        i < global.config.cpo_mapping.hw.header_materialmapping.length + 1;
+        i++
+      ) {
         ws.getCell(numToSSColumn(i) + "1").fill = {
           type: "pattern",
           pattern: "solid",
@@ -507,7 +516,7 @@ class ExportHW extends React.Component {
           "Line",
           "Po",
           "Proceed_Billing_100",
-        ].concat(header_pfm)
+        ].concat(global.config.cpo_mapping.hw.header_pfm)
       );
       // general info column
       for (let info = 1; info < 9; info++) {
@@ -631,7 +640,7 @@ class ExportHW extends React.Component {
           "Reference_Loc_Id",
           "Line",
           "Po",
-        ].concat(header_admin)
+        ].concat(global.config.cpo_mapping.hw.header_admin)
       );
       for (let i = 1; i < header_admin.length + 3; i++) {
         ws.getCell(numToSSColumn(i) + "1").fill = {

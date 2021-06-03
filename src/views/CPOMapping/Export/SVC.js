@@ -22,182 +22,9 @@ import Select from "react-select";
 import Excel from "exceljs";
 import AsyncSelect from "react-select/async";
 import Loading from "../../Component/Loading";
+import "../../../helper/config";
 
 const modul_name = "SVC Mapping";
-
-const header_model = [
-  "Deal_Name",
-  "Hammer",
-  "Project_Description",
-  "Po_Number",
-  "Data_1",
-  "Lookup_Reference",
-  "Region",
-  "Reference_Loc_Id",
-  "New_Loc_Id",
-  "Site_Name",
-  "New_Site_Name",
-  "Config",
-  "Po",
-  "Line",
-  "Material_Code",
-  "Description",
-  "Line_Item_Sap",
-  "Qty",
-  "CNI_Date",
-  "Mapping_Date",
-  "Remarks",
-  "Gr_No",
-  "Proceed_Billing_100",
-  "Celcom_User",
-  "Pcode",
-  "Unit_Price",
-  "Total_Price",
-  "Commodity",
-  "Discounted_Unit_Price",
-  "Discounted_Po_Price",
-  "Net_Unit_Price",
-  "Invoice_Total",
-  "Hammer_1_Hd_Total",
-  "So_Line_Item_Description",
-  "Sitepcode",
-  "VlookupWbs",
-  "So_No",
-  "Wbs_No",
-  "Billing_100",
-  "Atp_Coa_Received_Date_80",
-  "Billing_Upon_Atp_Coa_80",
-  "Invoicing_No_Atp_Coa_80",
-  "Invoicing_Date_Atp_Coa_80",
-  "Cancelled_Atp_Coa_80",
-  "Ni_Coa_Date_20",
-  "Billing_Upon_Ni_20",
-  "Invoicing_No_Ni_20",
-  "Invoicing_Date_Ni_20",
-  "Cancelled_Invoicing_Ni_20",
-  "Sso_Coa_Date_80",
-  "Billing_Upon_Sso_80",
-  "Invoicing_No_Sso_80",
-  "Invoicing_Date_Sso_80",
-  "Cancelled_Sso_Coa_Date_80",
-  "Coa_Psp_Received_Date_20",
-  "Billing_Upon_Coa_Psp_20",
-  "Invoicing_No_Coa_Psp_20",
-  "Invoicing_Date_Coa_Psp_20",
-  "Cancelled_Coa_Psp_Received_Date_20",
-  "Coa_Ni_Received_Date_40",
-  "Billing_Upon_Coa_Ni_40",
-  "Invoicing_No_Coa_Ni_40",
-  "Invoicing_Date_Coa_Ni_40",
-  "Cancelled_Coa_Ni_Received_Date_40",
-  "Cosso_Received_Date_60",
-  "Billing_Upon_Cosso_60",
-  "Invoicing_No_Cosso_60",
-  "Invoicing_Date_Cosso_60",
-  "Cancelled_Cosso_Received_Date_60",
-  "Coa_Sso_Received_Date_100",
-  "Billing_Upon_Sso_Coa_100",
-  "Invoicing_No_Sso_Coa_100",
-  "Invoicing_Date_Sso_Coa_100",
-  "Cancelled_Coa_Sso_Received_Date_100",
-  "Coa_Ni_Date_100",
-  "Billing_Upon_Coa_Ni_100",
-  "Invoicing_No_Coa_Ni_100",
-  "Invoicing_Date_Coa_Ni_100",
-  "Cancelled_Coa_Ni_Date_100",
-  "Ses_No",
-  "Ses_Status",
-  "Link",
-  "Ni_Coa_Submission_Status",
-];
-
-const header_materialmapping = [
-  "Deal_Name",
-  "Hammer",
-  "Project_Description",
-  "Po_Number",
-  "Data_1",
-  "Lookup_Reference",
-  "Region",
-  "Reference_Loc_Id",
-  "New_Loc_Id",
-  "Site_Name",
-  "New_Site_Name",
-  "Config",
-  "Po",
-  "Line",
-  "Description",
-  "Qty",
-  "CNI_Date",
-  "Mapping_Date",
-  "Remarks",
-  "Gr_No",
-
-  "Premr_No",
-  "Proceed_Billing_100",
-  "Celcom_User",
-  "Pcode",
-  "Unit_Price",
-  "Total_Price",
-  "Commodity",
-  "Discounted_Unit_Price",
-  "Discounted_Po_Price",
-];
-
-const header_pfm = [
-  "So_Line_Item_Description",
-  "Sitepcode",
-  "VlookupWbs",
-  "So_No",
-  "Wbs_No",
-  // "Atp_Coa_Received_Date_80",
-  "Billing_Upon_Atp_Coa_80",
-  "Invoicing_No_Atp_Coa_80",
-  "Invoicing_Date_Atp_Coa_80",
-  "Cancelled_Atp_Coa_80",
-  // "Ni_Coa_Date_20",
-  "Billing_Upon_Ni_20",
-  "Invoicing_No_Ni_20",
-  "Invoicing_Date_Ni_20",
-  "Cancelled_Invoicing_Ni_20",
-  // "Sso_Coa_Date_80",
-  "Billing_Upon_Sso_80",
-  "Invoicing_No_Sso_80",
-  "Invoicing_Date_Sso_80",
-  "Cancelled_Sso_Coa_Date_80",
-  // "Coa_Psp_Received_Date_20",
-  "Billing_Upon_Coa_Psp_20",
-  "Invoicing_No_Coa_Psp_20",
-  "Invoicing_Date_Coa_Psp_20",
-  "Cancelled_Coa_Psp_Received_Date_20",
-  // "Coa_Sso_Received_Date_100",
-  "Billing_Upon_Sso_Coa_100",
-  "Invoicing_No_Sso_Coa_100",
-  "Invoicing_Date_Sso_Coa_100",
-  "Cancelled_Coa_Sso_Received_Date_100",
-  "Coa_Ni_Date_100",
-  "Billing_Upon_Coa_Ni_100",
-  "Invoicing_No_Coa_Ni_100",
-  "Invoicing_Date_Coa_Ni_100",
-  "Cancelled_Coa_Ni_Date_100",
-];
-
-const header_admin = [
-  "Proceed_Billing_100",
-  "Billing_100",
-  "Atp_Coa_Received_Date_80",
-  "Ni_Coa_Date_20",
-  "Sso_Coa_Date_80",
-  "Coa_Psp_Received_Date_20",
-  "Coa_Ni_Received_Date_40",
-  "Cosso_Received_Date_60",
-  "Coa_Sso_Received_Date_100",
-  "Coa_Ni_Date_100",
-  "Ses_No",
-  "Ses_Status",
-  "Link",
-  "Ni_Coa_Submission_Status",
-];
 
 class ExportSVC extends React.Component {
   constructor(props) {
@@ -306,8 +133,12 @@ class ExportSVC extends React.Component {
     if (getdata.data !== undefined) {
       const download_all_template = await getdata.data.data;
       // console.log("download_all_template ", download_all_template);
-      ws.addRow(header_model);
-      for (let i = 1; i < header_model.length + 1; i++) {
+      ws.addRow(global.config.cpo_mapping.svc.header_model);
+      for (
+        let i = 1;
+        i < global.config.cpo_mapping.svc.header_model.length + 1;
+        i++
+      ) {
         ws.getCell(numToSSColumn(i) + "1").fill = {
           type: "pattern",
           pattern: "solid",
@@ -337,7 +168,6 @@ class ExportSVC extends React.Component {
             e.Material_Code,
             e.Description,
             e.Line_Item_Sap,
-
             e.Qty,
             e.CNI_Date,
             e.Mapping_Date,
@@ -441,8 +271,12 @@ class ExportSVC extends React.Component {
     if (getdata.data !== undefined) {
       const download_all_template = await getdata.data.data;
       // console.log("download_all_template ", download_all_template);
-      ws.addRow(header_materialmapping);
-      for (let i = 1; i < header_materialmapping.length + 1; i++) {
+      ws.addRow(global.config.cpo_mapping.svc.header_materialmapping);
+      for (
+        let i = 1;
+        i < global.config.cpo_mapping.svc.header_materialmapping.length + 1;
+        i++
+      ) {
         ws.getCell(numToSSColumn(i) + "1").fill = {
           type: "pattern",
           pattern: "solid",
@@ -594,7 +428,7 @@ class ExportSVC extends React.Component {
           "Line",
           "Po",
           "Proceed_Billing_100",
-        ].concat(header_pfm)
+        ].concat(global.config.cpo_mapping.svc.header_pfm)
       );
       // general info column
       for (let info = 1; info < 9; info++) {
@@ -716,7 +550,7 @@ class ExportSVC extends React.Component {
           "Line",
           "Po",
           "Proceed_Billing_100",
-        ].concat(header_pfm)
+        ].concat(global.config.cpo_mapping.svc.header_admin)
       );
       // general info column
       for (let info = 1; info < 9; info++) {
@@ -893,7 +727,7 @@ class ExportSVC extends React.Component {
                       <DropdownItem header>Export Data</DropdownItem>
                       <DropdownItem onClick={this.exportTemplateall}>
                         {" "}
-                        All Data HW Export
+                        All Data SVC Export
                       </DropdownItem>
                       <DropdownItem header>Uploader Template</DropdownItem>
                       {role.includes("BAM-MAT PLANNER") === true ? (
