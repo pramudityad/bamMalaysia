@@ -1260,9 +1260,9 @@ class MappingSVC extends React.PureComponent {
                                   0 &&
                                 this.state.count_header.constructor ===
                                   Object ? (
-                                  this.mapHeader(
-                                    this.state.count_header
-                                  ).map((head, j) => <th>{head}</th>)
+                                  this.mapHeader(this.state.count_header).map(
+                                    (head, j) => <th>{head}</th>
+                                  )
                                 ) : (
                                   <></>
                                 )}
@@ -1337,8 +1337,8 @@ class MappingSVC extends React.PureComponent {
                                   <td>{e.Po}</td>
                                   <td>{e.Line}</td>
                                   <td>{e.Material_Code}</td>
-                                  <td>{e.Description}</td>
                                   <td>{e.Line_Item_Sap}</td>
+                                  <td>{e.Description}</td>
                                   <td>{e.Qty}</td>
                                   <td>{convertDateFormat(e.CNI_Date)}</td>
                                   <td>{convertDateFormat(e.Mapping_Date)}</td>
