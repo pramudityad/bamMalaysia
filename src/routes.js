@@ -18,7 +18,7 @@ const LMRDetailGR = React.lazy(() =>
 const LMRList = React.lazy(() => import("./views/MYAssignment/MYASGList"));
 const ImportCas = React.lazy(() => import("./views/Material/importCas"));
 
-const HWMapping = React.lazy(() => import("./views/CPOMapping/HW"));
+const HWMapping = React.lazy(() => import("./views/CPOMapping/HW2"));
 const SVCMapping = React.lazy(() => import("./views/CPOMapping/SVC"));
 const Master = React.lazy(() => import("./views/CPOMapping/SummaryMaster"));
 
@@ -32,6 +32,12 @@ const HWDashboard = React.lazy(() => import("./views/CPOMapping/DashboardHW"));
 const SVCDashboard = React.lazy(() =>
   import("./views/CPOMapping/DashboardSVC")
 );
+
+const HWExport = React.lazy(() => import("./views/CPOMapping/Export/HW"));
+const SVCExport = React.lazy(() => import("./views/CPOMapping/Export/SVC"));
+
+const SVCImport = React.lazy(() => import("./views/CPOMapping/Import/SVC"));
+const HWImport = React.lazy(() => import("./views/CPOMapping/Import/HW"));
 
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
 const routes = [
@@ -74,6 +80,30 @@ const routes = [
     exact: true,
     name: "HW Dashboard",
     component: HWDashboard,
+  },
+  {
+    path: "/cpo-hw-export",
+    exact: true,
+    name: "HW CPO Mapping Export",
+    component: HWExport,
+  },
+  {
+    path: "/cpo-svc-export",
+    exact: true,
+    name: "SVC CPO Mapping Export",
+    component: SVCExport,
+  },
+  {
+    path: "/cpo-svc-import",
+    exact: true,
+    name: "SVC CPO Mapping Import",
+    component: SVCImport,
+  },
+  {
+    path: "/cpo-hw-import",
+    exact: true,
+    name: "HW CPO Mapping Import",
+    component: HWImport,
   },
   {
     path: "/svc-dashboard",

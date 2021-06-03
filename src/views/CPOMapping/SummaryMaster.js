@@ -47,89 +47,6 @@ import "../../helper/config";
 import "./cpomapping.css";
 const DefaultNotif = React.lazy(() => import("../DefaultView/DefaultNotif"));
 const modul_name = "Summary Master";
-const header = [
-  // "",
-  "Type",
-  "Deal_Name",
-  "Hammer",
-  "Project_Description",
-  "Po_Number",
-  "Po",
-  "Line_Item",
-  "LINE ITEM SAP CELCOM",
-  "MATERIAL CODE",
-  "Description",
-  "Qty",
-  // "Used",
-  "RESERVED",
-  "CALLOFF",
-  "Balance",
-  "Unit_Price",
-  "Total_Price",
-  "Assigned_Price",
-  "Discounted_Unit_Price",
-  "Discounted_Po_Price",
-  "Discounted_Assigned_Price",
-  "Hammer_1_Hd",
-  "Pcode",
-  "Pcode_Used",
-  "Commodity",
-];
-const header_model = [
-  "type_summary",
-  "Deal_Name",
-  "Hammer",
-  "Project_Description",
-  "Po_Number",
-  "Po",
-  "Line_Item",
-  "Line_Item_Sap",
-  "Material_Code",
-  "Description",
-  "Qty",
-  // "Used",
-  "Reserve",
-  "Called_Off",
-  "Balance",
-  "Unit_Price",
-  "Total_Price",
-  "Assigned_Price",
-  "Discounted_Unit_Price",
-  "Discounted_Po_Price",
-  "Discounted_Assigned_Price",
-  "Hammer_1_Hd",
-  "Pcode",
-  "Pcode_Used",
-  "Commodity",
-];
-
-const header_materialmapping = [
-  "hw_svc",
-  "Deal_Name",
-  "Hammer",
-  "Project_Description",
-  "Po_Number",
-  "Po",
-  "Line_Item",
-  "Line_Item_Sap",
-  "Material_Code",
-  "Description",
-  "Qty",
-  // "Used",
-  // "Balance",
-  "Unit_Price",
-  // "Total_Price",
-  // "Assigned_Price",
-  "Discounted_Unit_Price",
-  // "Discounted_Po_Price",
-  // "Discounted_Assigned_Price",
-  "Hammer_1_Hd",
-  "Pcode",
-  "Pcode_Used",
-  "Commodity",
-];
-
-const td_value = [];
 
 class SVCMaster extends React.Component {
   constructor(props) {
@@ -162,9 +79,6 @@ class SVCMaster extends React.Component {
   }
 
   componentDidMount() {
-    // console.log(global.config.role);
-    // console.log("header", header.length);
-    // console.log("model_header", header_model.length);
     this.getList();
     this.getListAll();
   }
@@ -226,8 +140,12 @@ class SVCMaster extends React.Component {
     const wb = new Excel.Workbook();
     const ws = wb.addWorksheet();
 
-    ws.addRow(header_materialmapping);
-    for (let i = 1; i < header_materialmapping.length + 1; i++) {
+    ws.addRow(global.config.cpo_mapping.master.header_materialmapping);
+    for (
+      let i = 1;
+      i < global.config.cpo_mapping.master.header_materialmapping.length + 1;
+      i++
+    ) {
       ws.getCell(numToSSColumn(i) + "1").fill = {
         type: "pattern",
         pattern: "solid",
@@ -531,8 +449,12 @@ class SVCMaster extends React.Component {
     const wb = new Excel.Workbook();
     const ws = wb.addWorksheet();
 
-    ws.addRow(header_model);
-    for (let i = 1; i < header_model.length + 1; i++) {
+    ws.addRow(global.config.cpo_mapping.master.header_model);
+    for (
+      let i = 1;
+      i < global.config.cpo_mapping.master.header_model.length + 1;
+      i++
+    ) {
       ws.getCell(numToSSColumn(i) + "1").fill = {
         type: "pattern",
         pattern: "solid",
@@ -589,10 +511,10 @@ class SVCMaster extends React.Component {
     const wb = new Excel.Workbook();
     const ws = wb.addWorksheet();
 
-    let header = ["Line", "Po", "New_Loc_Id", "Qty"];
+    let header_b = ["Line", "Po", "New_Loc_Id", "Qty"];
 
-    ws.addRow(header);
-    for (let i = 1; i < header.length + 1; i++) {
+    ws.addRow(header_b);
+    for (let i = 1; i < header_b.length + 1; i++) {
       ws.getCell(numToSSColumn(i) + "1").fill = {
         type: "pattern",
         pattern: "solid",
@@ -634,7 +556,11 @@ class SVCMaster extends React.Component {
 
   loopSearchBar = () => {
     let searchBar = [];
-    for (let i = 0; i < header_model.length; i++) {
+    for (
+      let i = 0;
+      i < global.config.cpo_mapping.master.header_model.length;
+      i++
+    ) {
       searchBar.push(
         <td>
           {/* {i !== 1 && i !== 3 && i !== 5 && i !== 7 && i !== 8 ? (
@@ -652,8 +578,12 @@ class SVCMaster extends React.Component {
                 type="text"
                 placeholder="Search"
                 onChange={this.handleFilterList}
-                value={this.state.filter_list[header_model[i]]}
-                name={header_model[i]}
+                value={
+                  this.state.filter_list[
+                    global.config.cpo_mapping.master.header_model[i]
+                  ]
+                }
+                name={global.config.cpo_mapping.master.header_model[i]}
                 size="sm"
               />
             </InputGroup>
@@ -933,27 +863,30 @@ class SVCMaster extends React.Component {
                         <thead class="thead-dark">
                           <tr align="center">
                             <th></th>
-                            {header.map((head) => (
-                              <th>{head}</th>
-                            ))}
+                            {global.config.cpo_mapping.master.header.map(
+                              (head) => (
+                                <th>{head}</th>
+                              )
+                            )}
                           </tr>
                           <tr align="center">
                             <th></th>
-                            {header_model.map((head, j) =>
-                              head === "Qty" ||
-                              head === "Used" ||
-                              head === "Balance" ||
-                              head === "Unit_Price" ||
-                              head === "Total_Price" ||
-                              head === "Assigned_Price" ||
-                              head === "Total_Po_Amount" ||
-                              head === "Discounted_Unit_Price" ||
-                              head === "Discounted_Po_Price" ||
-                              head === "Discounted_Assigned_Price" ? (
-                                <th>{this.countheader(head)}</th>
-                              ) : (
-                                <th>{this.countheaderNaN(head)}</th>
-                              )
+                            {global.config.cpo_mapping.master.header_model.map(
+                              (head, j) =>
+                                head === "Qty" ||
+                                head === "Used" ||
+                                head === "Balance" ||
+                                head === "Unit_Price" ||
+                                head === "Total_Price" ||
+                                head === "Assigned_Price" ||
+                                head === "Total_Po_Amount" ||
+                                head === "Discounted_Unit_Price" ||
+                                head === "Discounted_Po_Price" ||
+                                head === "Discounted_Assigned_Price" ? (
+                                  <th>{this.countheader(head)}</th>
+                                ) : (
+                                  <th>{this.countheaderNaN(head)}</th>
+                                )
                             )}
                           </tr>
                           <tr align="center">
