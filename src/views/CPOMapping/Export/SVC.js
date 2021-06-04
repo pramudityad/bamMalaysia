@@ -126,7 +126,7 @@ class ExportSVC extends React.Component {
     }
     let whereAnd2 = "{" + filter_array2.join(",") + "}";
     const getdata = await getDatafromAPINODE(
-      "/cpoMapping/getCpo/required/hw?q=" + whereAnd2 + "&noPg=1",
+      "/cpoMapping/getCpo/required/svc?q=" + whereAnd2 + "&noPg=1",
       this.state.tokenUser
     );
 
@@ -411,7 +411,7 @@ class ExportSVC extends React.Component {
     }
     let whereAnd2 = "{" + filter_array2.join(",") + "}";
     const getdata = await getDatafromAPINODE(
-      "/cpoMapping/getCpo/required/hw?q=" + whereAnd2 + "&noPg=1",
+      "/cpoMapping/getCpo/required/svc?q=" + whereAnd2 + "&noPg=1",
       this.state.tokenUser
     );
 
@@ -533,7 +533,7 @@ class ExportSVC extends React.Component {
     }
     let whereAnd2 = "{" + filter_array2.join(",") + "}";
     const getdata = await getDatafromAPINODE(
-      "/cpoMapping/getCpo/required/hw?q=" + whereAnd2 + "&noPg=1",
+      "/cpoMapping/getCpo/required/svc?q=" + whereAnd2 + "&noPg=1",
       this.state.tokenUser
     );
 
