@@ -38,7 +38,7 @@ import {
 import ModalCreateNew from "../Component/ModalCreateNew";
 import Pagination from "react-js-pagination";
 import { saveAs } from "file-saver";
-import { numToSSColumn } from "../../helper/basicFunction";
+import { numToSSColumn, formatMoney } from "../../helper/basicFunction";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 import ModalDelete from "../Component/ModalDelete";
@@ -75,12 +75,50 @@ class SVCMaster extends React.Component {
       selected_name: null,
       selected_vendor: null,
       danger: false,
+      count_header: {},
     };
   }
 
   componentDidMount() {
     this.getList();
     this.getListAll();
+  }
+
+  getHeader() {
+    let filter_array = [];
+    for (const [key, value] of Object.entries(this.state.filter_list)) {
+      if (value !== null && value !== undefined) {
+        filter_array.push(
+          '"' + key + '":{"$regex" : "' + value + '", "$options" : "i"}'
+        );
+      }
+    }
+    let whereAnd = "{" + filter_array.join(",") + "}";
+    getDatafromAPINODE(
+      "/summaryMaster/getSummaryMasterCount?q=" + whereAnd + "&noPg=1",
+      this.state.tokenUser
+    ).then((res) => {
+      if (res.data !== undefined) {
+        const items3 = res.data.data;
+        this.setState({ count_header: items3 });
+      }
+    });
+  }
+
+  mapHeader(data_header) {
+    let header_keys = Object.keys(data_header);
+    let header_values = Object.values(data_header);
+    if (
+      header_keys === "Qty" ||
+      header_keys === "Unit_Price" ||
+      header_keys === "Total_Price" ||
+      header_keys === "Discounted_Unit_Price" ||
+      header_keys === "Discounted_Po_Price"
+    ) {
+      return formatMoney(header_values);
+    } else {
+      return header_values;
+    }
   }
 
   getList() {
@@ -106,7 +144,7 @@ class SVCMaster extends React.Component {
         const items = res.data.data;
         const totalData = res.data.totalResults;
         this.setState({ all_data: items, totalData: totalData }, () =>
-          this.getMapping()
+          this.getHeader()
         );
       }
     });
@@ -871,7 +909,16 @@ class SVCMaster extends React.Component {
                           </tr>
                           <tr align="center">
                             <th></th>
-                            {global.config.cpo_mapping.master.header_model.map(
+                            {Object.keys(this.state.count_header).length !==
+                              0 &&
+                            this.state.count_header.constructor === Object ? (
+                              this.mapHeader(this.state.count_header).map(
+                                (head, j) => <th>{head}</th>
+                              )
+                            ) : (
+                              <></>
+                            )}
+                            {/* {global.config.cpo_mapping.master.header_model.map(
                               (head, j) =>
                                 head === "Qty" ||
                                 head === "Used" ||
@@ -887,7 +934,7 @@ class SVCMaster extends React.Component {
                                 ) : (
                                   <th>{this.countheaderNaN(head)}</th>
                                 )
-                            )}
+                            )} */}
                           </tr>
                           <tr align="center">
                             <td></td>

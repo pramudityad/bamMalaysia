@@ -69,7 +69,7 @@ const Checkbox1 = ({
   onChange,
   value,
   id,
-  matId,
+
   key,
 }) => (
   <input
@@ -80,7 +80,6 @@ const Checkbox1 = ({
     onChange={onChange}
     value={value}
     id={id}
-    matId={matId}
   />
 );
 
@@ -123,6 +122,7 @@ class MappingHW extends React.PureComponent {
       dataChecked_all: false,
       modal_callof: false,
       count_header: {},
+      callof_filter: {},
     };
   }
 
@@ -286,52 +286,35 @@ class MappingHW extends React.PureComponent {
       return data_list2;
     }
   };
+
   handlemultipleRelocID = (datalist) => {
-    let multiple_array = [];
-    let site_selected = [];
-    // console.log("datalist", datalist);
-    if (datalist !== undefined && datalist !== null) {
-      const data_ref = this.state.all_data_mapping
-        .filter((ref) => ref.Reference_Loc_Id === datalist.value)
-        .map((e) =>
-          multiple_array.push({
-            _id: e._id,
-            Reference_Loc_Id: e.Reference_Loc_Id,
-            unique_code: e.unique_code,
-            Project_Description: this.LookupField(
-              e.Po + "-" + e.Line,
-              "Project_Description"
-            ),
-            Mapping_Date: "",
-            Po: e.Po,
-            Line: e.Line,
-            Qty: e.Qty,
-          })
-        );
-      // console.log("dataref", data_ref);
-      this.setState({ multiple_select: multiple_array }, () =>
-        console.log(this.state.multiple_select)
-      );
-    } else {
-      this.setState({ multiple_select: [] }, () =>
-        console.log(this.state.multiple_select)
-      );
-    }
+    let filter_callof = this.state.callof_filter;
+    filter_callof.Reference_Loc_Id = datalist.value;
+    this.setState({ callof_filter: filter_callof }, () =>
+      console.log(this.state.callof_filter)
+    );
   };
 
-  handleBeforeCallOf = (datalist) => {
-    const mapping_data = this.state.multiple_select.filter(
-      (data) => data.Project_Description === datalist.value
+  handleBeforeCallOf = async (datalist) => {
+    let callof_container = [];
+
+    const getCallof_data = await getDatafromAPINODE(
+      '/cpoMapping/getCpo/required/hw?q={"Project_Description":{"$regex" : "' +
+        datalist.value +
+        '", "$options" : "i"},"Reference_Loc_Id":{"$regex" : "' +
+        this.state.callof_filter.Reference_Loc_Id +
+        '", "$options" : "i"}}&noPg=1',
+      this.state.tokenUser
     );
-    // console.log("Project_Description", datalist.value);
-    if (datalist !== undefined && datalist !== null) {
-      this.setState(
-        { multiple_select2: mapping_data, po_select: datalist.value },
-        () => console.log(this.state.multiple_select2)
+    if (getCallof_data !== undefined && getCallof_data.data !== undefined) {
+      getCallof_data.data.data.map((req) =>
+        callof_container.push([req.Po, req.Line, req.Reference_Loc_Id, req.Qty])
       );
-    } else {
-      this.setState({ datalist: null });
     }
+    // console.log(callof_container);
+    this.setState({ multiple_select2: callof_container }, () =>
+      console.log(this.state.multiple_select2)
+    );
   };
 
   getList2() {
@@ -786,6 +769,7 @@ class MappingHW extends React.PureComponent {
   saveUpdate_CallOf = async () => {
     this.toggleLoading();
     this.toggleCallOff();
+
     let req_body = [];
     const roles =
       this.state.roleUser.includes("BAM-MAT PLANNER") === true
@@ -796,15 +780,10 @@ class MappingHW extends React.PureComponent {
     const header_update_Mapping_Date = [
       ["Po", "Line", "Reference_Loc_Id", "Qty", "Mapping_Date"],
     ];
-    const body_update_Mapping_Date = this.state.multiple_select.map((req) =>
-      req_body.push([
-        req.Po,
-        req.Line,
-        req.Reference_Loc_Id,
-        req.Qty,
-        this.state.mapping_date,
-      ])
+    this.state.multiple_select2.map((req) =>
+      req_body.push([...req, this.state.mapping_date])
     );
+
     const res = await postDatatoAPINODE(
       "/cpoMapping/createCpo",
       {
@@ -818,9 +797,9 @@ class MappingHW extends React.PureComponent {
     if (res.data !== undefined) {
       this.setState({ action_status: "success" });
       this.toggleLoading();
-      // setTimeout(function () {
-      //   window.location.reload();
-      // }, 1500);
+      setTimeout(function () {
+        window.location.reload();
+      }, 1500);
     } else {
       if (
         res.response !== undefined &&
@@ -933,9 +912,11 @@ class MappingHW extends React.PureComponent {
   };
 
   handleChangeChecklist = (e) => {
+    console.log(this.state.dataChecked.has(e._id));
     const item = e.target.name;
     const isChecked = e.target.checked;
     const each_data = this.state.all_data;
+    console.log("here", item, isChecked, each_data);
     let dataChecked_container = this.state.dataChecked_container;
     if (isChecked === true) {
       const getCPO = each_data.find((pp) => pp._id === item);
@@ -948,9 +929,12 @@ class MappingHW extends React.PureComponent {
     this.setState({ dataChecked_container: dataChecked_container }, () =>
       console.log("make not req", this.state.dataChecked_container)
     );
-    this.setState((prevState) => ({
-      dataChecked: prevState.dataChecked.set(item, isChecked),
-    }));
+    this.setState(
+      (prevState) => ({
+        dataChecked: prevState.dataChecked.set(item, isChecked),
+      }),
+      () => console.log(this.state.dataChecked)
+    );
   };
 
   handleChangeChecklistAll = async (e) => {
@@ -1303,8 +1287,8 @@ class MappingHW extends React.PureComponent {
                                   <td>{e.Description}</td>
                                   <td>{e.Qty}</td>
                                   <td>{e.NW}</td>
-                                  <td>{e.On_Air_Date}</td>
-                                  <td>{e.Mapping_Date}</td>
+                                  <td>{convertDateFormat(e.On_Air_Date)}</td>
+                                  <td>{convertDateFormat(e.Mapping_Date)}</td>
                                   <td>{e.Remarks}</td>
                                   <td>{e.Gr_No}</td>
                                   <td>{e.Proceed_Billing_100}</td>
@@ -1325,35 +1309,65 @@ class MappingHW extends React.PureComponent {
                                   <td>
                                     {e.For_Checking_Purpose_Only_Rashidah}
                                   </td>
-                                  <td>{e.Hw_Coa_Received_Date_80}</td>
+                                  <td>
+                                    {convertDateFormat(
+                                      e.Hw_Coa_Received_Date_80
+                                    )}
+                                  </td>
                                   <td>{e.Billing_Upon_Hw_Coa_80}</td>
                                   <td>{e.Invoicing_No_Hw_Coa_80}</td>
-                                  <td>{e.Invoicing_Date_Hw_Coa_80}</td>
+                                  <td>
+                                    {convertDateFormat(
+                                      e.Invoicing_Date_Hw_Coa_80
+                                    )}
+                                  </td>
                                   <td>{e.Cancelled_Invoice_Hw_Coa_80}</td>
-                                  <td>{e.Ni_Coa_Date_20}</td>
+                                  <td>{convertDateFormat(e.Ni_Coa_Date_20)}</td>
                                   <td>{e.Billing_Upon_Ni_20}</td>
                                   <td>{e.Invoicing_No_Ni_20}</td>
-                                  <td>{e.Invoicing_Date_Ni_20}</td>
+                                  <td>
+                                    {convertDateFormat(e.Invoicing_Date_Ni_20)}
+                                  </td>
                                   <td>{e.Cancelled_Invoicing_Ni_20}</td>
-                                  <td>{e.Hw_Coa_Received_Date_40}</td>
+                                  <td>
+                                    {convertDateFormat(
+                                      e.Hw_Coa_Received_Date_40
+                                    )}
+                                  </td>
                                   <td>{e.Billing_Upon_Hw_Coa_40}</td>
                                   <td>{e.Invoicing_No_Hw_Coa_40}</td>
-                                  <td>{e.Invoicing_Date_Hw_Coa_40}</td>
+                                  <td>
+                                    {convertDateFormat(
+                                      e.Invoicing_Date_Hw_Coa_40
+                                    )}
+                                  </td>
                                   <td>{e.Cancelled_Hw_Coa_40}</td>
-                                  <td>{e.Ni_Coa_Date_40}</td>
+                                  <td>{convertDateFormat(e.Ni_Coa_Date_40)}</td>
                                   <td>{e.Billing_Upon_Ni_40}</td>
                                   <td>{e.Invoicing_No_Ni_40}</td>
-                                  <td>{e.Invoicing_Date_Ni_40}</td>
+                                  <td>
+                                    {convertDateFormat(e.Invoicing_Date_Ni_40)}
+                                  </td>
                                   <td>{e.Cancelled_Ni_40}</td>
-                                  <td>{e.Sso_Coa_Date_20_1}</td>
+                                  <td>
+                                    {convertDateFormat(e.Sso_Coa_Date_20_1)}
+                                  </td>
                                   <td>{e.Billing_Upon_Sso_20_1}</td>
                                   <td>{e.Invoicing_No_Sso_20_1}</td>
-                                  <td>{e.Invoicing_Date_Sso_20_1}</td>
+                                  <td>
+                                    {convertDateFormat(
+                                      e.Invoicing_Date_Sso_20_1
+                                    )}
+                                  </td>
                                   <td>{e.Cancelled_Sso_20}</td>
                                   <td>{e.Hw_Coa_100}</td>
                                   <td>{e.Billing_Upon_Hw_Coa_100}</td>
                                   <td>{e.Invoicing_No_Hw_Coa_100}</td>
-                                  <td>{e.Invoicing_Date_Hw_Coa_100}</td>
+                                  <td>
+                                    {convertDateFormat(
+                                      e.Invoicing_Date_Hw_Coa_100
+                                    )}
+                                  </td>
                                   <td>{e.Cancelled_Invoicing_Hw_Coa_100}</td>
                                   <td>{e.Cancel_Column}</td>
                                   <td>{e.Reference_Loc_Id_1}</td>
@@ -1408,8 +1422,8 @@ class MappingHW extends React.PureComponent {
                                   <td>{e.Description}</td>
                                   <td>{e.Qty}</td>
                                   <td>{e.NW}</td>
-                                  <td>{e.On_Air_Date}</td>
-                                  <td>{e.Mapping_Date}</td>
+                                  <td>{convertDateFormat(e.On_Air_Date)}</td>
+                                  <td>{convertDateFormat(e.Mapping_Date)}</td>
                                   <td>{e.Remarks}</td>
                                   <td>{e.Gr_No}</td>
                                   <td>{e.Proceed_Billing_100}</td>
@@ -1430,35 +1444,65 @@ class MappingHW extends React.PureComponent {
                                   <td>
                                     {e.For_Checking_Purpose_Only_Rashidah}
                                   </td>
-                                  <td>{e.Hw_Coa_Received_Date_80}</td>
+                                  <td>
+                                    {convertDateFormat(
+                                      e.Hw_Coa_Received_Date_80
+                                    )}
+                                  </td>
                                   <td>{e.Billing_Upon_Hw_Coa_80}</td>
                                   <td>{e.Invoicing_No_Hw_Coa_80}</td>
-                                  <td>{e.Invoicing_Date_Hw_Coa_80}</td>
+                                  <td>
+                                    {convertDateFormat(
+                                      e.Invoicing_Date_Hw_Coa_80
+                                    )}
+                                  </td>
                                   <td>{e.Cancelled_Invoice_Hw_Coa_80}</td>
-                                  <td>{e.Ni_Coa_Date_20}</td>
+                                  <td>{convertDateFormat(e.Ni_Coa_Date_20)}</td>
                                   <td>{e.Billing_Upon_Ni_20}</td>
                                   <td>{e.Invoicing_No_Ni_20}</td>
-                                  <td>{e.Invoicing_Date_Ni_20}</td>
+                                  <td>
+                                    {convertDateFormat(e.Invoicing_Date_Ni_20)}
+                                  </td>
                                   <td>{e.Cancelled_Invoicing_Ni_20}</td>
-                                  <td>{e.Hw_Coa_Received_Date_40}</td>
+                                  <td>
+                                    {convertDateFormat(
+                                      e.Hw_Coa_Received_Date_40
+                                    )}
+                                  </td>
                                   <td>{e.Billing_Upon_Hw_Coa_40}</td>
                                   <td>{e.Invoicing_No_Hw_Coa_40}</td>
-                                  <td>{e.Invoicing_Date_Hw_Coa_40}</td>
+                                  <td>
+                                    {convertDateFormat(
+                                      e.Invoicing_Date_Hw_Coa_40
+                                    )}
+                                  </td>
                                   <td>{e.Cancelled_Hw_Coa_40}</td>
-                                  <td>{e.Ni_Coa_Date_40}</td>
+                                  <td>{convertDateFormat(e.Ni_Coa_Date_40)}</td>
                                   <td>{e.Billing_Upon_Ni_40}</td>
                                   <td>{e.Invoicing_No_Ni_40}</td>
-                                  <td>{e.Invoicing_Date_Ni_40}</td>
+                                  <td>
+                                    {convertDateFormat(e.Invoicing_Date_Ni_40)}
+                                  </td>
                                   <td>{e.Cancelled_Ni_40}</td>
-                                  <td>{e.Sso_Coa_Date_20_1}</td>
+                                  <td>
+                                    {convertDateFormat(e.Sso_Coa_Date_20_1)}
+                                  </td>
                                   <td>{e.Billing_Upon_Sso_20_1}</td>
                                   <td>{e.Invoicing_No_Sso_20_1}</td>
-                                  <td>{e.Invoicing_Date_Sso_20_1}</td>
+                                  <td>
+                                    {convertDateFormat(
+                                      e.Invoicing_Date_Sso_20_1
+                                    )}
+                                  </td>
                                   <td>{e.Cancelled_Sso_20}</td>
                                   <td>{e.Hw_Coa_100}</td>
                                   <td>{e.Billing_Upon_Hw_Coa_100}</td>
                                   <td>{e.Invoicing_No_Hw_Coa_100}</td>
-                                  <td>{e.Invoicing_Date_Hw_Coa_100}</td>
+                                  <td>
+                                    {convertDateFormat(
+                                      e.Invoicing_Date_Hw_Coa_100
+                                    )}
+                                  </td>
                                   <td>{e.Cancelled_Invoicing_Hw_Coa_100}</td>
                                   <td>{e.Cancel_Column}</td>
                                   <td>{e.Reference_Loc_Id_1}</td>
@@ -1554,8 +1598,7 @@ class MappingHW extends React.PureComponent {
                 </FormGroup>
               </Col>
             </Row>
-            {this.state.multiple_select2 !== null &&
-            this.state.po_select !== null ? (
+            {this.state.multiple_select2.length !== 0 ? (
               <>
                 <Row>
                   <Col sm="12">
@@ -1589,7 +1632,10 @@ class MappingHW extends React.PureComponent {
             <Button
               color="success"
               onClick={this.saveUpdate_CallOf}
-              disabled={this.state.multiple_select.length === 0}
+              disabled={
+                this.state.multiple_select2.length === 0 &&
+                this.state.mapping_date !== ""
+              }
             >
               Update
             </Button>
