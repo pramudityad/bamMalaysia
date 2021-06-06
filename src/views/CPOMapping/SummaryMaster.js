@@ -95,7 +95,7 @@ class SVCMaster extends React.Component {
     }
     let whereAnd = "{" + filter_array.join(",") + "}";
     getDatafromAPINODE(
-      "/cpoMapping/getCpo/required/count/hw?q=" + whereAnd + "&noPg=1",
+      "/summaryMaster/getSummaryMasterCount?q=" + whereAnd + "&noPg=1",
       this.state.tokenUser
     ).then((res) => {
       if (res.data !== undefined) {
