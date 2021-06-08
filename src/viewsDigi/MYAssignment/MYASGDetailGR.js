@@ -145,7 +145,7 @@ class MYASGDetail extends Component {
             Required_GR_Qty: "",
             GR_Amount: 0,
             DN_No: "",
-            WCN_Link: "https://mas.pdb.e-dpm.com/grmenu/list/",
+            WCN_Link: "https://digi.pdb.e-dpm.com/grmenu/list/",
             created_by_gr: this.props.dataLogin.userName,
             fileDocument: [],
             Work_Status: "Waiting for GR",
@@ -167,7 +167,7 @@ class MYASGDetail extends Component {
             Required_GR_Qty: "",
             GR_Amount: 0,
             DN_No: "",
-            WCN_Link: "https://mas.pdb.e-dpm.com/grmenu/list/",
+            WCN_Link: "https://digi.pdb.e-dpm.com/grmenu/list/",
             created_by_gr: this.props.dataLogin.userName,
             fileDocument: [],
             Work_Status: "Waiting for GR",
@@ -366,8 +366,7 @@ class MYASGDetail extends Component {
             0
           );
           this.setState(
-            { lmr_detail: dataLMRDetail, prev_gr_qty: prev_gr_qty },
-            () => console.log("prev_gr_qty", prev_gr_qty)
+            { lmr_detail: dataLMRDetail, prev_gr_qty: prev_gr_qty }, () => console.log("lmr_detail", this.state.lmr_detail)
           );
         }
         // console.log("gr data", this.state.lmr_detail);
@@ -610,7 +609,7 @@ class MYASGDetail extends Component {
         PO_Qty: e.PO_Qty,
         Required_GR_Qty: e.Required_GR_Qty,
         DN_No: e.DN_No,
-        WCN_Link: "https://mas.pdb.e-dpm.com/grmenu/list/",
+        WCN_Link: "https://digi.pdb.e-dpm.com/grmenu/list/",
         created_by_gr: this.props.dataLogin.userName,
         // created_by_gr: "EHAYZUX",
         Work_Status: "Waiting for GR",
@@ -666,7 +665,7 @@ class MYASGDetail extends Component {
     }, 1500);
   }
 
-  saveGRdraf = () => {
+  saveGRdraft = () => {
     let grContainer = [];
     const dataChild = this.state.ChildForm;
     dataChild.map((e) =>
@@ -680,7 +679,7 @@ class MYASGDetail extends Component {
         PO_Qty: e.PO_Qty,
         Required_GR_Qty: e.Required_GR_Qty,
         // DN_No: e.DN_No,
-        WCN_Link: "https://mas.pdb.e-dpm.com/grmenu/list/",
+        WCN_Link: "https://digi.pdb.e-dpm.com/grmenu/list/",
         created_by_gr: this.props.dataLogin.userName,
         // created_by_gr: "EHAYZUX",
         Work_Status: "Waiting for GR",
@@ -691,12 +690,7 @@ class MYASGDetail extends Component {
         GR_Document_Qty: null,
       })
     );
-    const params_gr_save =
-      this.state.lmr_lvl2.lmr_id +
-      " /// " +
-      this.state.lmr_lvl2.cdid +
-      " /// " +
-      this.state.lmr_lvl2._id;
+    const params_gr_save = this.state.lmr_lvl2.lmr_id + " /// " + this.state.lmr_lvl2.cdid + " /// " + this.state.lmr_lvl2._id;
     localStorage.setItem(params_gr_save, JSON.stringify(dataChild));
     console.log(JSON.parse(localStorage.getItem(params_gr_save)));
     this.setState({
@@ -743,21 +737,9 @@ class MYASGDetail extends Component {
   }
 
   checkDraft() {
-    const params_gr_save =
-      this.state.lmr_lvl2.lmr_id +
-      " /// " +
-      this.state.lmr_lvl2.cdid +
-      " /// " +
-      this.state.lmr_lvl2._id;
+    const params_gr_save = this.state.lmr_lvl2.lmr_id + " /// " + this.state.lmr_lvl2.cdid + " /// " + this.state.lmr_lvl2._id;
     const draft_gr = JSON.parse(localStorage.getItem(params_gr_save));
-    draft_gr !== null
-      ? this.setState(
-        {
-          ChildForm: draft_gr,
-        },
-        () => console.log(this.state.ChildForm)
-      )
-      : this.setState({ ChildForm: [] });
+    draft_gr !== null ? this.setState({ ChildForm: draft_gr }, () => console.log('check draft', this.state.ChildForm)) : this.setState({ ChildForm: [] });
   }
 
   handleInput(e) {
@@ -1208,7 +1190,7 @@ class MYASGDetail extends Component {
                       <table className="table-header">
                         <tbody>
                           <tr style={{ fontWeight: "425", fontSize: "15px" }}>
-                            <td>CD_ID</td>
+                            <td>CD ID</td>
                             <td>:</td>
                             <td>{this.state.lmr_lvl2.cdid}</td>
                           </tr>
@@ -1324,7 +1306,7 @@ class MYASGDetail extends Component {
                         </th>
                         <th>GR_Document_No</th>
                         <th>Required GR Qty</th>
-                        <th>GR amount</th>
+                        <th>GR Amount</th>
                         <th>DN No</th>
                         <th style={{ width: "10%" }}>File</th>
                         <th>WCN_Link</th>
@@ -1579,10 +1561,7 @@ class MYASGDetail extends Component {
                               id="GR_Amount"
                               disabled
                               readonly
-                              value={
-                                child_data.Required_GR_Qty *
-                                this.state.lmr_lvl2.unit_price
-                              }
+                              value={child_data.Required_GR_Qty * this.state.lmr_lvl2.unit_price}
                               onChange={this.handleInputchild(idx)}
                             // style={{ width: "10%" }}
                             />
@@ -1656,17 +1635,17 @@ class MYASGDetail extends Component {
                   <i className="fa fa-plus">&nbsp;</i> GR Child
                 </Button>) : ("")} */}
                   <Button color="primary" size="sm" onClick={this.addGR}>
-                    <i className="fa fa-plus">&nbsp;</i> GR Child
+                    <i className="fa fa-plus"></i>&nbsp;&nbsp;GR Child
                   </Button>
                   {this.state.ChildForm.length !== 0 && (
                     <Button
                       color="success"
                       size="sm"
-                      onClick={this.saveGRdraf}
+                      onClick={this.saveGRdraft}
                       disabled={this.state.toggle_draft === 0}
                       style={{ float: "right", marginLeft: "10px" }}
                     >
-                      <i className="fa fa-plus-square"></i> Save GR Child
+                      <i className="fa fa-plus-square"></i>&nbsp;&nbsp;Save GR Child
                     </Button>
                   )}
                 </div>
