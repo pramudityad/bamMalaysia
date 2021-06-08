@@ -125,6 +125,7 @@ class MappingSVC extends React.PureComponent {
       dataChecked_all: false,
       modal_callof: false,
       count_header: {},
+      callof_filter: {},
     };
   }
 
@@ -293,51 +294,33 @@ class MappingSVC extends React.PureComponent {
   };
 
   handlemultipleRelocID = (datalist) => {
-    let multiple_array = [];
-    let site_selected = [];
-    // console.log("datalist", datalist);
-    if (datalist !== undefined && datalist !== null) {
-      const data_ref = this.state.all_data_mapping
-        .filter((ref) => ref.Reference_Loc_Id === datalist.value)
-        .map((e) =>
-          multiple_array.push({
-            _id: e._id,
-            Reference_Loc_Id: e.Reference_Loc_Id,
-            unique_code: e.unique_code,
-            Project_Description: this.LookupField(
-              e.Po + "-" + e.Line,
-              "Project_Description"
-            ),
-            Mapping_Date: "",
-            Po: e.Po,
-            Line: e.Line,
-            Qty: e.Qty,
-          })
-        );
-      // console.log("dataref", data_ref);
-      this.setState({ multiple_select: multiple_array }, () =>
-        console.log(this.state.multiple_select)
-      );
-    } else {
-      this.setState({ multiple_select: [] }, () =>
-        console.log(this.state.multiple_select)
-      );
-    }
+    let filter_callof = this.state.callof_filter;
+    filter_callof.Reference_Loc_Id = datalist.value;
+    this.setState({ callof_filter: filter_callof }, () =>
+      console.log(this.state.callof_filter)
+    );
   };
 
-  handleBeforeCallOf = (datalist) => {
-    const mapping_data = this.state.multiple_select.filter(
-      (data) => data.Project_Description === datalist.value
+  handleBeforeCallOf = async (datalist) => {
+    let callof_container = [];
+
+    const getCallof_data = await getDatafromAPINODE(
+      '/cpoMapping/getCpo/required/svc?q={"Project_Description":{"$regex" : "' +
+        datalist.value +
+        '", "$options" : "i"},"Reference_Loc_Id":{"$regex" : "' +
+        this.state.callof_filter.Reference_Loc_Id +
+        '", "$options" : "i"}}&noPg=1',
+      this.state.tokenUser
     );
-    // console.log("Project_Description", datalist.value);
-    if (datalist !== undefined && datalist !== null) {
-      this.setState(
-        { multiple_select2: mapping_data, po_select: datalist.value },
-        () => console.log(this.state.multiple_select2)
+    if (getCallof_data !== undefined && getCallof_data.data !== undefined) {
+      getCallof_data.data.data.map((req) =>
+        callof_container.push([req.Po, req.Line, req.Reference_Loc_Id, req.Qty])
       );
-    } else {
-      this.setState({ datalist: null });
     }
+    // console.log(callof_container);
+    this.setState({ multiple_select2: callof_container }, () =>
+      console.log(this.state.multiple_select2)
+    );
   };
 
   getList2() {
@@ -803,6 +786,7 @@ class MappingSVC extends React.PureComponent {
   saveUpdate_CallOf = async () => {
     this.toggleLoading();
     this.toggleCallOff();
+
     let req_body = [];
     const roles =
       this.state.roleUser.includes("BAM-MAT PLANNER") === true
@@ -813,15 +797,10 @@ class MappingSVC extends React.PureComponent {
     const header_update_Mapping_Date = [
       ["Po", "Line", "Reference_Loc_Id", "Qty", "Mapping_Date"],
     ];
-    const body_update_Mapping_Date = this.state.multiple_select.map((req) =>
-      req_body.push([
-        req.Po,
-        req.Line,
-        req.Reference_Loc_Id,
-        req.Qty,
-        this.state.mapping_date,
-      ])
+    this.state.multiple_select2.map((req) =>
+      req_body.push([...req, this.state.mapping_date])
     );
+
     const res = await postDatatoAPINODE(
       "/cpoMapping/createCpo",
       {
@@ -835,9 +814,9 @@ class MappingSVC extends React.PureComponent {
     if (res.data !== undefined) {
       this.setState({ action_status: "success" });
       this.toggleLoading();
-      // setTimeout(function () {
-      //   window.location.reload();
-      // }, 1500);
+      setTimeout(function () {
+        window.location.reload();
+      }, 1500);
     } else {
       if (
         res.response !== undefined &&
@@ -1706,8 +1685,7 @@ class MappingSVC extends React.PureComponent {
                 </FormGroup>
               </Col>
             </Row>
-            {this.state.multiple_select2 !== null &&
-            this.state.po_select !== null ? (
+            {this.state.multiple_select2 !== null ? (
               <>
                 <Row>
                   <Col sm="12">
@@ -1741,7 +1719,10 @@ class MappingSVC extends React.PureComponent {
             <Button
               color="success"
               onClick={this.saveUpdate_CallOf}
-              disabled={this.state.multiple_select.length === 0}
+              disabled={
+                this.state.multiple_select2.length === 0 &&
+                this.state.mapping_date !== ""
+              }
             >
               Update
             </Button>

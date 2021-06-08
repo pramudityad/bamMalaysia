@@ -1,7 +1,6 @@
 module.exports = global.config = {
   role: {
-    cpm:
-      "you.siong.hong@ericsson.com;mohd.najmuddin.yusoff@ericsson.com;sey.loy.lee@ericsson.com;",
+    cpm: "you.siong.hong@ericsson.com;mohd.najmuddin.yusoff@ericsson.com;sey.loy.lee@ericsson.com;",
   },
   cpo_mapping: {
     hw: {
@@ -530,7 +529,6 @@ module.exports = global.config = {
         "Material_Code",
         "Description",
         "Qty",
-
         "Reserve",
         "Called_Off",
         "Balance",
