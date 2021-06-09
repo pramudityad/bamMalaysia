@@ -1,5 +1,6 @@
 import React, { Component, Fragment, PureComponent } from "react";
 import {
+  Alert,
   Form,
   FormGroup,
   Label,
@@ -33,42 +34,11 @@ import "./LMRMY.css";
 import { getDatafromAPINODE, getDatafromAPIMY } from "../../helper/asyncFunctionDigi";
 import { connect } from "react-redux";
 import Select from "react-select";
-
-import {
-  convertDateFormatfull,
-  convertDateFormat,
-} from "../../helper/basicFunction";
+import { convertDateFormat } from "../../helper/basicFunction";
 
 const DefaultNotif = React.lazy(() =>
   import("../../views/DefaultView/DefaultNotif")
 );
-
-// const BearerToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjYXNfaWQiOiI1MmVhNTZhMS0zNDMxLTRlMmQtYWExZS1hNTc3ODQzMTMxYzEiLCJyb2xlcyI6WyJCQU0tU3VwZXJBZG1pbiJdLCJhY2NvdW50IjoiMSIsImlhdCI6MTU5MTY5MTE4MH0.FpbzlssSQyaAbJOzNf3KLqHPnYo_ccBtBWu6n87h1RQ';
-const BearerToken =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjYXNfaWQiOiIxOTM2YmE0Yy0wMjlkLTQ1MzktYWRkOC1mZjc2OTNiMDlmZmUiLCJyb2xlcyI6WyJCQU0tU3VwZXJBZG1pbiJdLCJhY2NvdW50IjoiMSIsImlhdCI6MTU5MjQ3MDI4Mn0.tIJSzHa-ewhqz0Ail7J0maIZx4R9P1aXE2E_49pe4KY";
-
-const MaterialDB = [
-  {
-    MM_Code: "MM Code",
-    BB_Sub: "BB_sub",
-    SoW_Description: "SoW Description",
-    UoM: "UoM",
-    Region: "Region",
-    Unit_Price: 100,
-    MM_Description: "MM Description",
-    Acceptance: "Acceptance",
-  },
-  {
-    MM_Code: "MM Code1",
-    BB_Sub: "BB_sub1",
-    SoW_Description: "SoW Description1",
-    UoM: "UoM1",
-    Region: "Region1",
-    Unit_Price: 200,
-    MM_Description: "MM Description1",
-    Acceptance: "Acceptance1",
-  },
-];
 
 class MYASGDetail extends PureComponent {
   constructor(props) {
@@ -129,6 +99,7 @@ class MYASGDetail extends PureComponent {
         region: "",
       },
       hide_region: false,
+      gr_error_log: null,
       vendor_code: "",
       list_cd_id: [],
       cd_id_selected: "",
@@ -593,29 +564,42 @@ class MYASGDetail extends PureComponent {
     this.setState({ rowsXLSGR: newDataXLS }, () => console.log('isi excel gr', this.state.rowsXLSGR));
   }
 
-  uploadGRBulk = () => {
+  uploadGRBulk = async () => {
     this.toggleGRBulk();
     let gr_bulk = this.state.rowsXLSGR.splice(1);
-    let gr_to_be_saved = [];
+    let gr_to_be_saved = [], failed_gr = [];
     for (let i = 0; i < gr_bulk.length; i++) {
       const pr_po = this.state.list_pr_po.find((e) => e.id_child_doc === gr_bulk[i][0]);
+      let prev_gr_qty = 0;
+      await getDatafromAPINODE("/aspassignment/getGrByLmrChild/" + gr_bulk[i][0], this.state.tokenUser).then((res) => {
+        if (res.data !== undefined) {
+          const dataLMRDetail = res.data.data;
+          prev_gr_qty = dataLMRDetail.reduce((n, { Required_GR_Qty }) => n + Required_GR_Qty, 0);
+        }
+      });
       let gr = {
         DN_No: "",
         Item_Status: pr_po.Item_Status,
-        GR_Amount: gr_bulk[i][8] * pr_po.Price,
+        GR_Amount: gr_bulk[i][19] * pr_po.Price,
         PO_Item: pr_po.PO_Item,
         PO_Number: pr_po.PO_Number,
         PO_Qty: pr_po.PO_Qty,
         Plant: pr_po.Plant,
         Request_Type: "Add GR",
-        Required_GR_Qty: gr_bulk[i][8],
+        Required_GR_Qty: gr_bulk[i][19],
         WCN_Link: "https://digi.pdb.e-dpm.com/grmenu/list/",
         Work_Status: "Waiting for GR",
         created_by_gr: this.props.dataLogin.userName,
         fileDocument: [],
         id_child: pr_po.id_child_doc
       }
-      gr_to_be_saved.push(gr);
+      if (gr_bulk[i][19] === 0) {
+        failed_gr.push(`Required GR Qty cannot be 0 on row ${i + 2}`);
+      } else if (pr_po.Qty >= prev_gr_qty + gr_bulk[i][19]) {
+        gr_to_be_saved.push(gr);
+      } else {
+        failed_gr.push(`Required GR Qty exceeds material qty on row ${i + 2}`);
+      }
       if (i + 1 === gr_bulk.length || gr_bulk[i][0] !== gr_bulk[i + 1][0]) {
         const params_gr_save = pr_po.LMR_No + " /// " + pr_po.CDID + " /// " + pr_po.id_child_doc;
         localStorage.setItem(params_gr_save, JSON.stringify(gr_to_be_saved));
@@ -623,10 +607,16 @@ class MYASGDetail extends PureComponent {
         gr_to_be_saved.splice(0, gr_to_be_saved.length);
       }
     }
-    this.setState({
-      action_status: "success",
-      action_message: "GR has been saved as draft",
-    });
+    if (failed_gr.length > 0) {
+      this.setState({
+        gr_error_log: failed_gr.join("\r\n"),
+      });
+    } else {
+      this.setState({
+        action_status: "success",
+        action_message: "GR has been saved as draft",
+      });
+    }
   }
 
   getProjectList() {
@@ -1385,10 +1375,21 @@ class MYASGDetail extends PureComponent {
 
     let headerRow = [
       "LMR Child ID",
+      "Project Name",
+      "WP ID",
+      "CD ID",
+      "Site ID",
+      "SO / NW",
+      "Activity",
+      "Tax Code",
       "Material",
       "Material Description",
-      "Plant",
-      "Request Type",
+      "Price",
+      "Quantity",
+      "Total Price",
+      "Delivery Date",
+      "Item Status",
+      "Work Status",
       "PO Number",
       "PO Item",
       "PO Qty",
@@ -1403,10 +1404,21 @@ class MYASGDetail extends PureComponent {
     for (let i = 0; i < list_pr_po.length; i++) {
       let childRow = [
         list_pr_po[i].id_child_doc,
+        list_pr_po[i].Project,
+        list_pr_po[i].WP_ID,
+        list_pr_po[i].CDID,
+        list_pr_po[i].Item_Text_Site_Id,
+        list_pr_po[i].NW,
+        list_pr_po[i].NW_Activity,
+        list_pr_po[i].Tax_Code,
         list_pr_po[i].Material_Code,
         list_pr_po[i].Description,
-        list_pr_po[i].Plant,
-        "Add GR",
+        list_pr_po[i].Price,
+        list_pr_po[i].Qty,
+        list_pr_po[i].Total_Amount,
+        list_pr_po[i].Request_Delivery_Date,
+        list_pr_po[i].Item_Status,
+        list_pr_po[i].Work_Status,
         list_pr_po[i].PO_Number,
         list_pr_po[i].PO_Item,
         list_pr_po[i].PO_Qty,
@@ -1417,7 +1429,7 @@ class MYASGDetail extends PureComponent {
 
     for (let i = 1; i <= list_pr_po.length + 1; i++) {
       for (let j = 1; j <= headerRow.length; j++) {
-        if (j === 9) {
+        if (j === 20) {
           ws.getCell(this.numToSSColumn(j) + i).fill = {
             type: 'pattern',
             pattern: 'solid',
@@ -1924,17 +1936,17 @@ class MYASGDetail extends PureComponent {
         />
         <Row>
           <Col xl="12">
+            <Alert color="danger" style={{ whiteSpace: "pre", maxHeight: "200px", overflowY: "scroll" }} hidden={this.state.gr_error_log === null}>
+              {this.state.gr_error_log}
+            </Alert>
             <Card>
               <CardHeader>
-                <span style={{ lineHeight: "2", fontSize: "17px" }}>
-                  {" "}
-                  LMR Detail{" "}
-                </span>
+                <span style={{ lineHeight: "2", fontSize: "17px" }}>LMR Detail</span>
                 <div
                   className="card-header-actions"
                   style={{ display: "inline-flex" }}
                 >
-                  <div style={{ marginRight: "16px" }}>
+                  <div style={{ marginRight: "16px" }} hidden={this.state.list_pr_po.length === 0 || this.state.list_pr_po[0].PO_Number === null || this.state.list_pr_po[0].PO_Item === null}>
                     <Dropdown
                       isOpen={this.state.dropdownOpen[0]}
                       toggle={() => {
