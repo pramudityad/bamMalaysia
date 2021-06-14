@@ -15,6 +15,7 @@ import {
 } from "reactstrap";
 import { postDatatoAPINODE, apiSendEmail } from "../../../helper/asyncFunction";
 import ReactJson from "react-json-view";
+import "../../../helper/config";
 
 import { connect } from "react-redux";
 import * as XLSX from "xlsx";

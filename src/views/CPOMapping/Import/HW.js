@@ -15,6 +15,7 @@ import {
 } from "reactstrap";
 import { postDatatoAPINODE, apiSendEmail } from "../../../helper/asyncFunction";
 import ReactJson from "react-json-view";
+import "../../../helper/config";
 
 import { connect } from "react-redux";
 import * as XLSX from "xlsx";
@@ -386,10 +387,14 @@ class ImportHW extends React.Component {
               <Card>
                 <CardBody>
                   <ReactJson
-                    src={this.state.error_log.map((err) => {
-                      delete err.line;
-                      return err;
-                    })}
+                    src={
+                      this.state.error_log !== undefined &&
+                      this.state.error_log !== null &&
+                      this.state.error_log.map((err) => {
+                        delete err.line;
+                        return err;
+                      })
+                    }
                     displayDataTypes={false}
                     displayObjectSize={false}
                   />
