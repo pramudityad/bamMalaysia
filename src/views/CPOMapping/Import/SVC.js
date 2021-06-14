@@ -386,10 +386,14 @@ class ImportSVC extends React.Component {
               <Card>
                 <CardBody>
                   <ReactJson
-                    src={this.state.error_log.map((err) => {
-                      delete err.line;
-                      return err;
-                    })}
+                    src={
+                      this.state.error_log !== undefined &&
+                      this.state.error_log !== null &&
+                      this.state.error_log.map((err) => {
+                        delete err.line;
+                        return err;
+                      })
+                    }
                     displayDataTypes={false}
                     displayObjectSize={false}
                   />

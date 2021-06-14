@@ -509,7 +509,7 @@ class ExportHW extends React.Component {
 
     if (getdata.data !== undefined) {
       const download_all_A = await getdata.data.data;
-      // console.log("download_all_template ", download_all_template);
+      console.log("download_all_A ", download_all_A);
       ws.addRow(
         [
           "Deal_Name",
