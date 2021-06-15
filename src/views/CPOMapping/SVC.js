@@ -47,7 +47,7 @@ import { saveAs } from "file-saver";
 import {
   numToSSColumn,
   getUniqueListBy,
-  convertDateFormat,
+  convertDateFormat_firefox,
   formatMoney,
 } from "../../helper/basicFunction";
 import { connect } from "react-redux";
@@ -1319,8 +1319,12 @@ class MappingSVC extends React.PureComponent {
                                   <td>{e.Line_Item_Sap}</td>
                                   <td>{e.Description}</td>
                                   <td>{e.Qty}</td>
-                                  <td>{convertDateFormat(e.CNI_Date)}</td>
-                                  <td>{convertDateFormat(e.Mapping_Date)}</td>
+                                  <td>
+                                    {convertDateFormat_firefox(e.CNI_Date)}
+                                  </td>
+                                  <td>
+                                    {convertDateFormat_firefox(e.Mapping_Date)}
+                                  </td>
                                   <td>{e.Remarks}</td>
                                   <td>{e.Gr_No}</td>
                                   <td>{e.Proceed_Billing_100}</td>
@@ -1341,7 +1345,7 @@ class MappingSVC extends React.PureComponent {
                                   <td>{e.Wbs_No}</td>
                                   <td>{e.Billing_100}</td>
                                   <td>
-                                    {convertDateFormat(
+                                    {convertDateFormat_firefox(
                                       e.Atp_Coa_Received_Date_80
                                     )}
                                   </td>
@@ -1349,26 +1353,34 @@ class MappingSVC extends React.PureComponent {
                                   <td>{e.Invoicing_No_Atp_Coa_80}</td>
                                   <td>{e.Invoicing_Date_Atp_Coa_80}</td>
                                   <td>{e.Cancelled_Atp_Coa_80}</td>
-                                  <td>{convertDateFormat(e.Ni_Coa_Date_20)}</td>
+                                  <td>
+                                    {convertDateFormat_firefox(
+                                      e.Ni_Coa_Date_20
+                                    )}
+                                  </td>
                                   <td>{e.Billing_Upon_Ni_20}</td>
                                   <td>{e.Invoicing_No_Ni_20}</td>
                                   <td>{e.Invoicing_Date_Ni_20}</td>
                                   <td>{e.Cancelled_Invoicing_Ni_20}</td>
                                   <td>
-                                    {convertDateFormat(e.Sso_Coa_Date_80)}
+                                    {convertDateFormat_firefox(
+                                      e.Sso_Coa_Date_80
+                                    )}
                                   </td>
                                   <td>{e.Billing_Upon_Sso_80}</td>
                                   <td>{e.Invoicing_No_Sso_80}</td>
                                   <td>
-                                    {convertDateFormat(e.Invoicing_Date_Sso_80)}
+                                    {convertDateFormat_firefox(
+                                      e.Invoicing_Date_Sso_80
+                                    )}
                                   </td>
                                   <td>
-                                    {convertDateFormat(
+                                    {convertDateFormat_firefox(
                                       e.Cancelled_Sso_Coa_Date_80
                                     )}
                                   </td>
                                   <td>
-                                    {convertDateFormat(
+                                    {convertDateFormat_firefox(
                                       e.Coa_Psp_Received_Date_20
                                     )}
                                   </td>
@@ -1376,12 +1388,12 @@ class MappingSVC extends React.PureComponent {
                                   <td>{e.Invoicing_No_Coa_Psp_20}</td>
                                   <td>{e.Invoicing_Date_Coa_Psp_20}</td>
                                   <td>
-                                    {convertDateFormat(
+                                    {convertDateFormat_firefox(
                                       e.Cancelled_Coa_Psp_Received_Date_20
                                     )}
                                   </td>
                                   <td>
-                                    {convertDateFormat(
+                                    {convertDateFormat_firefox(
                                       e.Coa_Ni_Received_Date_40
                                     )}
                                   </td>
@@ -1389,12 +1401,12 @@ class MappingSVC extends React.PureComponent {
                                   <td>{e.Invoicing_No_Coa_Ni_40}</td>
                                   <td>{e.Invoicing_Date_Coa_Ni_40}</td>
                                   <td>
-                                    {convertDateFormat(
+                                    {convertDateFormat_firefox(
                                       e.Cancelled_Coa_Ni_Received_Date_40
                                     )}
                                   </td>
                                   <td>
-                                    {convertDateFormat(
+                                    {convertDateFormat_firefox(
                                       e.Cosso_Received_Date_60
                                     )}
                                   </td>
@@ -1402,12 +1414,12 @@ class MappingSVC extends React.PureComponent {
                                   <td>{e.Invoicing_No_Cosso_60}</td>
                                   <td>{e.Invoicing_Date_Cosso_60}</td>
                                   <td>
-                                    {convertDateFormat(
+                                    {convertDateFormat_firefox(
                                       e.Cancelled_Cosso_Received_Date_60
                                     )}
                                   </td>
                                   <td>
-                                    {convertDateFormat(
+                                    {convertDateFormat_firefox(
                                       e.Coa_Sso_Received_Date_100
                                     )}
                                   </td>
@@ -1415,18 +1427,20 @@ class MappingSVC extends React.PureComponent {
                                   <td>{e.Invoicing_No_Sso_Coa_100}</td>
                                   <td>{e.Invoicing_Date_Sso_Coa_100}</td>
                                   <td>
-                                    {convertDateFormat(
+                                    {convertDateFormat_firefox(
                                       e.Cancelled_Coa_Sso_Received_Date_100
                                     )}
                                   </td>
                                   <td>
-                                    {convertDateFormat(e.Coa_Ni_Date_100)}
+                                    {convertDateFormat_firefox(
+                                      e.Coa_Ni_Date_100
+                                    )}
                                   </td>
                                   <td>{e.Billing_Upon_Coa_Ni_100}</td>
                                   <td>{e.Invoicing_No_Coa_Ni_100}</td>
                                   <td>{e.Invoicing_Date_Coa_Ni_100}</td>
                                   <td>
-                                    {convertDateFormat(
+                                    {convertDateFormat_firefox(
                                       e.Cancelled_Coa_Ni_Date_100
                                     )}
                                   </td>
@@ -1481,8 +1495,12 @@ class MappingSVC extends React.PureComponent {
                                   <td>{e.Description}</td>
                                   <td>{e.Line_Item_Sap}</td>
                                   <td>{e.Qty}</td>
-                                  <td>{convertDateFormat(e.CNI_Date)}</td>
-                                  <td>{convertDateFormat(e.Mapping_Date)}</td>
+                                  <td>
+                                    {convertDateFormat_firefox(e.CNI_Date)}
+                                  </td>
+                                  <td>
+                                    {convertDateFormat_firefox(e.Mapping_Date)}
+                                  </td>
                                   <td>{e.Remarks}</td>
                                   <td>{e.Gr_No}</td>
                                   <td>{e.Proceed_Billing_100}</td>
@@ -1503,7 +1521,7 @@ class MappingSVC extends React.PureComponent {
                                   <td>{e.Wbs_No}</td>
                                   <td>{e.Billing_100}</td>
                                   <td>
-                                    {convertDateFormat(
+                                    {convertDateFormat_firefox(
                                       e.Atp_Coa_Received_Date_80
                                     )}
                                   </td>
@@ -1511,26 +1529,34 @@ class MappingSVC extends React.PureComponent {
                                   <td>{e.Invoicing_No_Atp_Coa_80}</td>
                                   <td>{e.Invoicing_Date_Atp_Coa_80}</td>
                                   <td>{e.Cancelled_Atp_Coa_80}</td>
-                                  <td>{convertDateFormat(e.Ni_Coa_Date_20)}</td>
+                                  <td>
+                                    {convertDateFormat_firefox(
+                                      e.Ni_Coa_Date_20
+                                    )}
+                                  </td>
                                   <td>{e.Billing_Upon_Ni_20}</td>
                                   <td>{e.Invoicing_No_Ni_20}</td>
                                   <td>{e.Invoicing_Date_Ni_20}</td>
                                   <td>{e.Cancelled_Invoicing_Ni_20}</td>
                                   <td>
-                                    {convertDateFormat(e.Sso_Coa_Date_80)}
+                                    {convertDateFormat_firefox(
+                                      e.Sso_Coa_Date_80
+                                    )}
                                   </td>
                                   <td>{e.Billing_Upon_Sso_80}</td>
                                   <td>{e.Invoicing_No_Sso_80}</td>
                                   <td>
-                                    {convertDateFormat(e.Invoicing_Date_Sso_80)}
+                                    {convertDateFormat_firefox(
+                                      e.Invoicing_Date_Sso_80
+                                    )}
                                   </td>
                                   <td>
-                                    {convertDateFormat(
+                                    {convertDateFormat_firefox(
                                       e.Cancelled_Sso_Coa_Date_80
                                     )}
                                   </td>
                                   <td>
-                                    {convertDateFormat(
+                                    {convertDateFormat_firefox(
                                       e.Coa_Psp_Received_Date_20
                                     )}
                                   </td>
@@ -1538,12 +1564,12 @@ class MappingSVC extends React.PureComponent {
                                   <td>{e.Invoicing_No_Coa_Psp_20}</td>
                                   <td>{e.Invoicing_Date_Coa_Psp_20}</td>
                                   <td>
-                                    {convertDateFormat(
+                                    {convertDateFormat_firefox(
                                       e.Cancelled_Coa_Psp_Received_Date_20
                                     )}
                                   </td>
                                   <td>
-                                    {convertDateFormat(
+                                    {convertDateFormat_firefox(
                                       e.Coa_Ni_Received_Date_40
                                     )}
                                   </td>
@@ -1551,12 +1577,12 @@ class MappingSVC extends React.PureComponent {
                                   <td>{e.Invoicing_No_Coa_Ni_40}</td>
                                   <td>{e.Invoicing_Date_Coa_Ni_40}</td>
                                   <td>
-                                    {convertDateFormat(
+                                    {convertDateFormat_firefox(
                                       e.Cancelled_Coa_Ni_Received_Date_40
                                     )}
                                   </td>
                                   <td>
-                                    {convertDateFormat(
+                                    {convertDateFormat_firefox(
                                       e.Cosso_Received_Date_60
                                     )}
                                   </td>
@@ -1564,12 +1590,12 @@ class MappingSVC extends React.PureComponent {
                                   <td>{e.Invoicing_No_Cosso_60}</td>
                                   <td>{e.Invoicing_Date_Cosso_60}</td>
                                   <td>
-                                    {convertDateFormat(
+                                    {convertDateFormat_firefox(
                                       e.Cancelled_Cosso_Received_Date_60
                                     )}
                                   </td>
                                   <td>
-                                    {convertDateFormat(
+                                    {convertDateFormat_firefox(
                                       e.Coa_Sso_Received_Date_100
                                     )}
                                   </td>
@@ -1577,18 +1603,20 @@ class MappingSVC extends React.PureComponent {
                                   <td>{e.Invoicing_No_Sso_Coa_100}</td>
                                   <td>{e.Invoicing_Date_Sso_Coa_100}</td>
                                   <td>
-                                    {convertDateFormat(
+                                    {convertDateFormat_firefox(
                                       e.Cancelled_Coa_Sso_Received_Date_100
                                     )}
                                   </td>
                                   <td>
-                                    {convertDateFormat(e.Coa_Ni_Date_100)}
+                                    {convertDateFormat_firefox(
+                                      e.Coa_Ni_Date_100
+                                    )}
                                   </td>
                                   <td>{e.Billing_Upon_Coa_Ni_100}</td>
                                   <td>{e.Invoicing_No_Coa_Ni_100}</td>
                                   <td>{e.Invoicing_Date_Coa_Ni_100}</td>
                                   <td>
-                                    {convertDateFormat(
+                                    {convertDateFormat_firefox(
                                       e.Cancelled_Coa_Ni_Date_100
                                     )}
                                   </td>
