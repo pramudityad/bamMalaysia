@@ -43,6 +43,27 @@ export const convertDateFormat = (jsondate) => {
   return null;
 };
 
+export const convertDateFormat_firefox = (jsondate) => {
+  if (jsondate !== null && jsondate !== undefined) {
+    let timestring = ["T17:00:00.000Z"];
+    let time = jsondate.split("T");
+    jsondate = time[0].concat(timestring);
+    let date = new Date(jsondate);
+    let year = date.getFullYear();
+    let month = date.getMonth() + 1;
+    let dt = date.getDate();
+
+    if (dt < 10) {
+      dt = "0" + dt;
+    }
+    if (month < 10) {
+      month = "0" + month;
+    }
+    return year + "-" + month + "-" + dt;
+  }
+  return null;
+};
+
 // full dateformat hh:mm:ss
 export const convertDateFormatfull = (jsondate) => {
   if (jsondate !== undefined && jsondate !== null) {

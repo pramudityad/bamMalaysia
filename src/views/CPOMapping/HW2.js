@@ -46,7 +46,7 @@ import { saveAs } from "file-saver";
 import {
   numToSSColumn,
   getUniqueListBy,
-  convertDateFormat,
+  convertDateFormat_firefox,
   formatMoney,
 } from "../../helper/basicFunction";
 import { connect } from "react-redux";
@@ -1287,8 +1287,12 @@ class MappingHW extends React.PureComponent {
                                   <td>{e.Description}</td>
                                   <td>{e.Qty}</td>
                                   <td>{e.NW}</td>
-                                  <td>{convertDateFormat(e.On_Air_Date)}</td>
-                                  <td>{convertDateFormat(e.Mapping_Date)}</td>
+                                  <td>
+                                    {convertDateFormat_firefox(e.On_Air_Date)}
+                                  </td>
+                                  <td>
+                                    {convertDateFormat_firefox(e.Mapping_Date)}
+                                  </td>
                                   <td>{e.Remarks}</td>
                                   <td>{e.Gr_No}</td>
                                   <td>{e.Proceed_Billing_100}</td>
@@ -1307,55 +1311,71 @@ class MappingHW extends React.PureComponent {
                                   <td>{e.So_No}</td>
                                   <td>{e.Wbs_No}</td>
                                   <td>
-                                    {e.For_Checking_Purpose_Only_Rashidah}
+                                    {convertDateFormat_firefox(
+                                      e.For_Checking_Purpose_Only_Rashidah
+                                    )}
                                   </td>
                                   <td>
-                                    {convertDateFormat(
+                                    {convertDateFormat_firefox(
                                       e.Hw_Coa_Received_Date_80
                                     )}
                                   </td>
                                   <td>{e.Billing_Upon_Hw_Coa_80}</td>
                                   <td>{e.Invoicing_No_Hw_Coa_80}</td>
                                   <td>
-                                    {convertDateFormat(
+                                    {convertDateFormat_firefox(
                                       e.Invoicing_Date_Hw_Coa_80
                                     )}
                                   </td>
                                   <td>{e.Cancelled_Invoice_Hw_Coa_80}</td>
-                                  <td>{convertDateFormat(e.Ni_Coa_Date_20)}</td>
+                                  <td>
+                                    {convertDateFormat_firefox(
+                                      e.Ni_Coa_Date_20
+                                    )}
+                                  </td>
                                   <td>{e.Billing_Upon_Ni_20}</td>
                                   <td>{e.Invoicing_No_Ni_20}</td>
                                   <td>
-                                    {convertDateFormat(e.Invoicing_Date_Ni_20)}
+                                    {convertDateFormat_firefox(
+                                      e.Invoicing_Date_Ni_20
+                                    )}
                                   </td>
                                   <td>{e.Cancelled_Invoicing_Ni_20}</td>
                                   <td>
-                                    {convertDateFormat(
+                                    {convertDateFormat_firefox(
                                       e.Hw_Coa_Received_Date_40
                                     )}
                                   </td>
                                   <td>{e.Billing_Upon_Hw_Coa_40}</td>
                                   <td>{e.Invoicing_No_Hw_Coa_40}</td>
                                   <td>
-                                    {convertDateFormat(
+                                    {convertDateFormat_firefox(
                                       e.Invoicing_Date_Hw_Coa_40
                                     )}
                                   </td>
                                   <td>{e.Cancelled_Hw_Coa_40}</td>
-                                  <td>{convertDateFormat(e.Ni_Coa_Date_40)}</td>
+                                  <td>
+                                    {convertDateFormat_firefox(
+                                      e.Ni_Coa_Date_40
+                                    )}
+                                  </td>
                                   <td>{e.Billing_Upon_Ni_40}</td>
                                   <td>{e.Invoicing_No_Ni_40}</td>
                                   <td>
-                                    {convertDateFormat(e.Invoicing_Date_Ni_40)}
+                                    {convertDateFormat_firefox(
+                                      e.Invoicing_Date_Ni_40
+                                    )}
                                   </td>
                                   <td>{e.Cancelled_Ni_40}</td>
                                   <td>
-                                    {convertDateFormat(e.Sso_Coa_Date_20_1)}
+                                    {convertDateFormat_firefox(
+                                      e.Sso_Coa_Date_20_1
+                                    )}
                                   </td>
                                   <td>{e.Billing_Upon_Sso_20_1}</td>
                                   <td>{e.Invoicing_No_Sso_20_1}</td>
                                   <td>
-                                    {convertDateFormat(
+                                    {convertDateFormat_firefox(
                                       e.Invoicing_Date_Sso_20_1
                                     )}
                                   </td>
@@ -1364,7 +1384,7 @@ class MappingHW extends React.PureComponent {
                                   <td>{e.Billing_Upon_Hw_Coa_100}</td>
                                   <td>{e.Invoicing_No_Hw_Coa_100}</td>
                                   <td>
-                                    {convertDateFormat(
+                                    {convertDateFormat_firefox(
                                       e.Invoicing_Date_Hw_Coa_100
                                     )}
                                   </td>
@@ -1422,8 +1442,12 @@ class MappingHW extends React.PureComponent {
                                   <td>{e.Description}</td>
                                   <td>{e.Qty}</td>
                                   <td>{e.NW}</td>
-                                  <td>{convertDateFormat(e.On_Air_Date)}</td>
-                                  <td>{convertDateFormat(e.Mapping_Date)}</td>
+                                  <td>
+                                    {convertDateFormat_firefox(e.On_Air_Date)}
+                                  </td>
+                                  <td>
+                                    {convertDateFormat_firefox(e.Mapping_Date)}
+                                  </td>
                                   <td>{e.Remarks}</td>
                                   <td>{e.Gr_No}</td>
                                   <td>{e.Proceed_Billing_100}</td>
@@ -1445,52 +1469,66 @@ class MappingHW extends React.PureComponent {
                                     {e.For_Checking_Purpose_Only_Rashidah}
                                   </td>
                                   <td>
-                                    {convertDateFormat(
+                                    {convertDateFormat_firefox(
                                       e.Hw_Coa_Received_Date_80
                                     )}
                                   </td>
                                   <td>{e.Billing_Upon_Hw_Coa_80}</td>
                                   <td>{e.Invoicing_No_Hw_Coa_80}</td>
                                   <td>
-                                    {convertDateFormat(
+                                    {convertDateFormat_firefox(
                                       e.Invoicing_Date_Hw_Coa_80
                                     )}
                                   </td>
                                   <td>{e.Cancelled_Invoice_Hw_Coa_80}</td>
-                                  <td>{convertDateFormat(e.Ni_Coa_Date_20)}</td>
+                                  <td>
+                                    {convertDateFormat_firefox(
+                                      e.Ni_Coa_Date_20
+                                    )}
+                                  </td>
                                   <td>{e.Billing_Upon_Ni_20}</td>
                                   <td>{e.Invoicing_No_Ni_20}</td>
                                   <td>
-                                    {convertDateFormat(e.Invoicing_Date_Ni_20)}
+                                    {convertDateFormat_firefox(
+                                      e.Invoicing_Date_Ni_20
+                                    )}
                                   </td>
                                   <td>{e.Cancelled_Invoicing_Ni_20}</td>
                                   <td>
-                                    {convertDateFormat(
+                                    {convertDateFormat_firefox(
                                       e.Hw_Coa_Received_Date_40
                                     )}
                                   </td>
                                   <td>{e.Billing_Upon_Hw_Coa_40}</td>
                                   <td>{e.Invoicing_No_Hw_Coa_40}</td>
                                   <td>
-                                    {convertDateFormat(
+                                    {convertDateFormat_firefox(
                                       e.Invoicing_Date_Hw_Coa_40
                                     )}
                                   </td>
                                   <td>{e.Cancelled_Hw_Coa_40}</td>
-                                  <td>{convertDateFormat(e.Ni_Coa_Date_40)}</td>
+                                  <td>
+                                    {convertDateFormat_firefox(
+                                      e.Ni_Coa_Date_40
+                                    )}
+                                  </td>
                                   <td>{e.Billing_Upon_Ni_40}</td>
                                   <td>{e.Invoicing_No_Ni_40}</td>
                                   <td>
-                                    {convertDateFormat(e.Invoicing_Date_Ni_40)}
+                                    {convertDateFormat_firefox(
+                                      e.Invoicing_Date_Ni_40
+                                    )}
                                   </td>
                                   <td>{e.Cancelled_Ni_40}</td>
                                   <td>
-                                    {convertDateFormat(e.Sso_Coa_Date_20_1)}
+                                    {convertDateFormat_firefox(
+                                      e.Sso_Coa_Date_20_1
+                                    )}
                                   </td>
                                   <td>{e.Billing_Upon_Sso_20_1}</td>
                                   <td>{e.Invoicing_No_Sso_20_1}</td>
                                   <td>
-                                    {convertDateFormat(
+                                    {convertDateFormat_firefox(
                                       e.Invoicing_Date_Sso_20_1
                                     )}
                                   </td>
@@ -1499,7 +1537,7 @@ class MappingHW extends React.PureComponent {
                                   <td>{e.Billing_Upon_Hw_Coa_100}</td>
                                   <td>{e.Invoicing_No_Hw_Coa_100}</td>
                                   <td>
-                                    {convertDateFormat(
+                                    {convertDateFormat_firefox(
                                       e.Invoicing_Date_Hw_Coa_100
                                     )}
                                   </td>
