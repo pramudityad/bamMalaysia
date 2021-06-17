@@ -62,14 +62,14 @@ const DefaultNotif = React.lazy(() =>
 const Loading = React.lazy(() => import("../Component/Loading"));
 const Progressbar = React.lazy(() => import("../Component/Progressbar"));
 
-const Checkbox = ({
+const Checkbox1 = ({
   type = "checkbox",
   name,
   checked = false,
   onChange,
   value,
   id,
-
+  matId,
   key,
 }) => (
   <input
@@ -80,6 +80,7 @@ const Checkbox = ({
     onChange={onChange}
     value={value}
     id={id}
+    matId={matId}
   />
 );
 
@@ -1258,7 +1259,7 @@ class MappingHW extends React.PureComponent {
                                     </Link>
                                   </td> */}
                                   <td>
-                                    <Checkbox
+                                    <Checkbox1
                                       checked={this.state.dataChecked.get(
                                         e._id
                                       )}
