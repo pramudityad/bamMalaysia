@@ -1664,9 +1664,11 @@ class MappingHW extends React.Component {
   };
 
   handleChangeChecklist = (e) => {
+    console.log(this.state.dataChecked.has(e._id));
     const item = e.target.name;
     const isChecked = e.target.checked;
     const each_data = this.state.all_data;
+    console.log("here", item, isChecked, each_data);
     let dataChecked_container = this.state.dataChecked_container;
     if (isChecked === true) {
       const getCPO = each_data.find((pp) => pp._id === item);
@@ -1679,9 +1681,12 @@ class MappingHW extends React.Component {
     this.setState({ dataChecked_container: dataChecked_container }, () =>
       console.log("make not req", this.state.dataChecked_container)
     );
-    this.setState((prevState) => ({
-      dataChecked: prevState.dataChecked.set(item, isChecked),
-    }));
+    this.setState(
+      (prevState) => ({
+        dataChecked: prevState.dataChecked.set(item, isChecked),
+      }),
+      () => console.log(this.state.dataChecked)
+    );
   };
 
   handleChangeChecklistAll = async (e) => {
@@ -2037,9 +2042,9 @@ class MappingHW extends React.Component {
                                   0 &&
                                 this.state.count_header.constructor ===
                                   Object ? (
-                                  this.mapHeader(
-                                    this.state.count_header
-                                  ).map((head, j) => <th>{head}</th>)
+                                  this.mapHeader(this.state.count_header).map(
+                                    (head, j) => <th>{head}</th>
+                                  )
                                 ) : (
                                   <></>
                                 )}
