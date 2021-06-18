@@ -589,7 +589,7 @@ class ExportSVC extends React.Component {
         };
       }
 
-      if (download_all_A.data !== undefined) {
+      if (download_all_A !== undefined) {
         for (let i = 0; i < download_all_A.length; i++) {
           let e = download_all_A[i];
           ws.addRow([

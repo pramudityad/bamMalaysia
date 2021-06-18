@@ -666,7 +666,7 @@ class ExportHW extends React.Component {
             e.Reference_Loc_Id,
             e.Line,
             e.Po,
-            e.For_Checking_Purpose_Only_Rashidah,
+            convertDateFormat_firefox(e.For_Checking_Purpose_Only_Rashidah),
             convertDateFormat_firefox(e.Hw_Coa_Received_Date_40),
             convertDateFormat_firefox(e.Hw_Coa_Received_Date_80),
             convertDateFormat_firefox(e.Hw_Coa_100),
