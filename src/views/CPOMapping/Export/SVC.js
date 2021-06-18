@@ -557,7 +557,7 @@ class ExportSVC extends React.Component {
         ].concat(global.config.cpo_mapping.svc.header_admin)
       );
       // general info column
-      for (let info = 1; info < 9; info++) {
+      for (let info = 1; info < 8; info++) {
         ws.getCell(numToSSColumn(info) + "1").fill = {
           type: "pattern",
           pattern: "solid",
@@ -565,7 +565,7 @@ class ExportSVC extends React.Component {
         };
       }
       // hammer2 column
-      for (let hammer2 = 9; hammer2 < 22; hammer2++) {
+      for (let hammer2 = 8; hammer2 < 22; hammer2++) {
         ws.getCell(numToSSColumn(hammer2) + "1").fill = {
           type: "pattern",
           pattern: "solid",

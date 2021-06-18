@@ -475,7 +475,6 @@ module.exports = global.config = {
       ],
 
       header_admin: [
-        "Proceed_Billing_100",
         "Billing_100",
         "Atp_Coa_Received_Date_80",
         "Ni_Coa_Date_20",
