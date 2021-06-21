@@ -42,6 +42,7 @@ import { numToSSColumn, formatMoney } from "../../helper/basicFunction";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 import ModalDelete from "../Component/ModalDelete";
+import debounce from "lodash.debounce";
 
 import "../../helper/config";
 import "./cpomapping.css";
@@ -77,6 +78,7 @@ class SVCMaster extends React.Component {
       danger: false,
       count_header: {},
     };
+    this.onChangeDebounced = debounce(this.onChangeDebounced, 500);
   }
 
   componentDidMount() {
@@ -573,9 +575,9 @@ class SVCMaster extends React.Component {
     this.toggleLoading();
   };
 
-  onChangeDebounced = () => {
+  onChangeDebounced() {
     this.getList();
-  };
+  }
 
   handleFilterList = (e) => {
     const index = e.target.name;
