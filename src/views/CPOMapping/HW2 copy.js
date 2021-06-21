@@ -27,43 +27,40 @@ import {
   Nav,
   NavItem,
   NavLink,
-  Progress,
 } from "reactstrap";
 import Excel from "exceljs";
-import Loading from "../Component/Loading";
-import { ExcelRenderer } from "react-excel-renderer";
-import debounce from "lodash.debounce";
 
+import { ExcelRenderer } from "react-excel-renderer";
 import {
   getDatafromAPIMY,
   postDatatoAPINODE,
   patchDatatoAPINODE,
   deleteDataFromAPINODE2,
   getDatafromAPINODE,
-  getDatafromAPINODE2,
   apiSendEmail,
+  getDatafromAPINODE2,
 } from "../../helper/asyncFunction";
-import { CSVLink, CSVDownload } from "react-csv";
 import ModalCreateNew from "../Component/ModalCreateNew";
 import Pagination from "react-js-pagination";
 import { saveAs } from "file-saver";
 import {
   numToSSColumn,
   getUniqueListBy,
-  convertDateFormat,
-  formatMoney,
-  arraychunk,
   convertDateFormat_firefox,
+  formatMoney,
 } from "../../helper/basicFunction";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 import AsyncSelect from "react-select/async";
 import * as XLSX from "xlsx";
 import "../../helper/config";
+
 import "./cpomapping.css";
 const DefaultNotif = React.lazy(() =>
   import("../../views/DefaultView/DefaultNotif")
 );
+const Loading = React.lazy(() => import("../Component/Loading"));
+const Progressbar = React.lazy(() => import("../Component/Progressbar"));
 
 const Checkbox1 = ({
   type = "checkbox",
@@ -86,30 +83,10 @@ const Checkbox1 = ({
     matId={matId}
   />
 );
-const Checkbox2 = ({
-  type = "checkbox",
-  name,
-  checked = true,
-  onChange,
-  value,
-  id,
-  matId,
-  key,
-}) => (
-  <input
-    key={key}
-    type={type}
-    name={name}
-    checked={checked}
-    onChange={onChange}
-    value={value}
-    id={id}
-    matId={matId}
-  />
-);
+
 const modul_name = "HW Mapping";
-class MappingHW extends React.Component {
-  // csvLink = React.createRef();
+
+class MappingHW extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {
@@ -126,54 +103,50 @@ class MappingHW extends React.Component {
       activePage: 1,
       totalData: 0,
       perPage: 10,
-      CPOForm: {},
+      CPOForm: [],
       modalEdit: false,
-      modal_loading: false,
-      modal_callof: false,
-      multiple_select: [],
-      multiple_select2: [],
-      mapping_date: "",
-      po_select: null,
-      reloc_options: [],
       action_status: null,
       action_message: null,
       filter_list: {},
       all_data_master: [],
       all_data_mapping: [],
+      multiple_select: [],
+      multiple_select2: [],
+      mapping_date: "",
+      po_select: null,
+      reloc_options: [],
       dataChecked: new Map(),
       dataChecked_container: [],
       dataChecked_container2: [],
       tabs_submenu: [true, false],
       all_data_true: [],
       dataChecked_all: false,
+      modal_callof: false,
       count_header: {},
       callof_filter: {},
     };
-    this.onChangeDebounced = debounce(this.onChangeDebounced, 500);
   }
 
   componentDidMount() {
-    // console.log("token", this.state.tokenUser);
     this.getMaster();
   }
 
   getHeader() {
-    let filter_array2 = [];
+    let filter_array = [];
     for (const [key, value] of Object.entries(this.state.filter_list)) {
       if (value !== null && value !== undefined) {
-        filter_array2.push(
+        filter_array.push(
           '"' + key + '":{"$regex" : "' + value + '", "$options" : "i"}'
         );
       }
     }
-    let whereAnd2 = "{" + filter_array2.join(",") + "}";
+    let whereAnd = "{" + filter_array.join(",") + "}";
     getDatafromAPINODE(
-      "/cpoMapping/getCpo/required/count/hw?q=" + whereAnd2 + "&noPg=1",
+      "/cpoMapping/getCpo/required/count/hw?q=" + whereAnd + "&noPg=1",
       this.state.tokenUser
     ).then((res) => {
       if (res.data !== undefined) {
         const items3 = res.data.data;
-        // console.log("items3 ", items3);
         this.setState({ count_header: items3 });
       }
     });
@@ -182,8 +155,6 @@ class MappingHW extends React.Component {
   mapHeader(data_header) {
     let header_keys = Object.keys(data_header);
     let header_values = Object.values(data_header);
-    // console.log("header ", header_values);
-    // if (header_keys !== undefined) {
     if (
       header_keys === "Qty" ||
       header_keys === "Unit_Price" ||
@@ -195,7 +166,6 @@ class MappingHW extends React.Component {
     } else {
       return header_values;
     }
-    // }
   }
 
   getMaster() {
@@ -239,6 +209,36 @@ class MappingHW extends React.Component {
     });
   }
 
+  getListAll = async () => {
+    let all_data = [];
+    this.toggleLoading();
+    const t0 = performance.now();
+    getDatafromAPINODE(
+      "/cpoMapping/getCpo/required/hw?noPg=1",
+      this.state.tokenUser
+    ).then((res) => {
+      if (res.data !== undefined) {
+        const items = res.data.data;
+        const t1 = performance.now();
+        console.log("took 1" + (t1 - t0) + " milliseconds.");
+        console.log("len ", items.length);
+        // all_data = items;
+        // return all_data;
+        this.setState(
+          { all_data_mapping: items }
+          //   , () => {
+          //   setTimeout(() => {
+          //     this.csvLink.current.link.click();
+          //   });
+          // }
+        );
+      } else {
+        all_data = [];
+      }
+    });
+    this.toggleLoading();
+  };
+
   loadOptionsReclocID = async (inputValue) => {
     if (!inputValue) {
       return [];
@@ -274,6 +274,7 @@ class MappingHW extends React.Component {
         this.state.tokenUser
       );
       if (getWPID !== undefined && getWPID.data !== undefined) {
+        // this.setState({ list_cd_id: getWPID.data.data });
         getUniqueListBy(getWPID.data.data, "Project_Description").map((wp) =>
           data_list2.push({
             value: wp.Project_Description,
@@ -281,6 +282,8 @@ class MappingHW extends React.Component {
           })
         );
       }
+      // console.log("data_list2 ", data_list2);
+      // this.setState({ reloc_options : data_list2 });
       return data_list2;
     }
   };
@@ -391,6 +394,84 @@ class MappingHW extends React.Component {
     });
   };
 
+  resettogglecreateModal = () => {
+    this.setState({
+      rowsXLS: [],
+    });
+  };
+
+  fileHandlerMaterial = (input) => {
+    const file = input.target.files[0];
+    const reader = new FileReader();
+    const rABS = !!reader.readAsBinaryString;
+    // console.log("rABS");
+    reader.onload = (e) => {
+      /* Parse data */
+      const bstr = e.target.result;
+      const wb = XLSX.read(bstr, {
+        type: rABS ? "binary" : "array",
+        cellDates: true,
+      });
+      /* Get first worksheet */
+      const wsname = wb.SheetNames[0];
+      const ws = wb.Sheets[wsname];
+      /* Convert array of arrays */
+      const data = XLSX.utils.sheet_to_json(ws, { header: 1, devfal: null });
+      /* Update state */
+      this.ArrayEmptytoNull(data);
+    };
+    if (rABS) reader.readAsBinaryString(file);
+    else reader.readAsArrayBuffer(file);
+  };
+
+  checkValue(props) {
+    // if value undefined return null
+    if (typeof props === "undefined") {
+      return null;
+    } else {
+      return props;
+    }
+  }
+
+  ArrayEmptytoNull(dataXLS) {
+    let newDataXLS = [];
+    for (let i = 0; i < dataXLS.length; i++) {
+      let col = [];
+      for (let j = 0; j < dataXLS[0].length; j++) {
+        if (typeof dataXLS[i][j] === "object") {
+          let dataObject = this.checkValue(JSON.stringify(dataXLS[i][j]));
+          if (dataObject !== null) {
+            dataObject = dataObject.replace(/"/g, "");
+          }
+          col.push(dataObject);
+        } else {
+          col.push(this.checkValue(dataXLS[i][j]));
+        }
+      }
+      newDataXLS.push(col);
+    }
+    this.setState(
+      {
+        rowsXLS: newDataXLS,
+      },
+      () => this.chunkArray(this.state.rowsXLS, 4000)
+    );
+  }
+
+  chunkArray = (array, size) => {
+    let result = [];
+    // console.log("origin ", array.splice(1, array.length));
+    let arrayCopy = [...array.splice(1, array.length)];
+    let header_change = [...array.splice(0, 1)];
+    while (arrayCopy.length > 0) {
+      result.push(header_change.concat(arrayCopy.splice(0, size)));
+    }
+    console.log("res len, ", result.length);
+    console.log("result ", result);
+    this.setState({ rowsXLS_batch: result });
+    // return result;
+  };
+
   toggle = (i) => {
     const newArray = this.state.dropdownOpen.map((element, index) => {
       return index === i ? !element : false;
@@ -400,71 +481,162 @@ class MappingHW extends React.Component {
     });
   };
 
-  handleChangeForm = (e) => {
-    const value = e.target.value;
-    const unique_code = e.target.name;
-    this.setState({ mapping_date: value });
-  };
-
-  saveUpdate_CallOf = async () => {
-    this.toggleLoading();
-    this.toggleCallOff();
-    let req_body = [];
+  saveBulk = async () => {
+    this.togglecreateModal();
     const roles =
       this.state.roleUser.includes("BAM-MAT PLANNER") === true
         ? 1
         : this.state.roleUser.includes("BAM-PFM") === true
         ? 2
         : 3;
-    const header_update_Mapping_Date = [
-      ["Po", "Line", "Reference_Loc_Id", "Qty", "Mapping_Date"],
-    ];
-    const body_update_Mapping_Date = this.state.multiple_select2.map((req) =>
-      req_body.push([
-        req.Po,
-        req.Line,
-        req.Reference_Loc_Id,
-        req.Qty,
-        this.state.mapping_date,
-      ])
-    );
-    const res = await postDatatoAPINODE(
-      "/cpoMapping/createCpo",
-      {
-        cpo_type: "hw",
-        required_check: true,
-        roles: roles,
-        cpo_data: header_update_Mapping_Date.concat(req_body),
-      },
-      this.state.tokenUser
-    );
-    if (res.data !== undefined) {
-      this.setState({ action_status: "success" });
-      this.toggleLoading();
-      // setTimeout(function () {
-      //   window.location.reload();
-      // }, 1500);
-    } else {
-      if (
-        res.response !== undefined &&
-        res.response.data !== undefined &&
-        res.response.data.error !== undefined
-      ) {
-        if (res.response.data.error.message !== undefined) {
-          this.setState({
-            action_status: "failed",
-            action_message: res.response.data.error.message,
-          });
+    for (
+      let index_xlsx = 0;
+      index_xlsx < this.state.rowsXLS_batch.length;
+      index_xlsx++
+    ) {
+      this.setState({
+        batch_file: index_xlsx + 1,
+      });
+
+      this.toggleLoading_batch();
+      console.log(`hit ${index_xlsx + 1}`);
+      const res = await postDatatoAPINODE(
+        "/cpoMapping/createCpo",
+        {
+          cpo_type: "hw",
+          required_check: true,
+          roles: roles,
+          cpo_data: this.state.rowsXLS_batch[index_xlsx],
+        },
+        this.state.tokenUser
+      );
+      if (res.data !== undefined) {
+        if (roles === 2) {
+          this.toggleLoading_batch();
+          if (index_xlsx === this.state.rowsXLS_batch.length - 1) {
+            this.setState({
+              action_status: "success",
+              action_message:
+                "Success upload all " +
+                this.state.rowsXLS_batch.length +
+                " batch",
+            });
+          }
+        } else {
+          if (res.data.updateData.length !== 0) {
+            const table_header = Object.keys(res.data.updateData[0]);
+            const update_Data = res.data.updateData;
+            const new_table_header = table_header.slice(0, -2);
+            let value = "row.";
+            const bodyEmail =
+              "<h2>DPM - BAM Notification</h2><br/><span>Please be notified that the following " +
+              modul_name +
+              " data has been updated <br/><br/><table><tr>" +
+              new_table_header
+                .map((tab, i) => "<th>" + tab + "</th>")
+                .join(" ") +
+              "</tr>" +
+              update_Data
+                .map(
+                  (row, j) =>
+                    "<tr key={" +
+                    j +
+                    "}>" +
+                    new_table_header
+                      .map((td) => "<td>" + eval(value + td) + "</td>")
+                      .join(" ") +
+                    "</tr>"
+                )
+                .join(" ") +
+              "</table>";
+            if (res.data.warnNotif.length !== 0) {
+              let dataEmail = {
+                // "to": creatorEmail,
+                // to: "damar.pramuditya@ericsson.com",
+                to: global.config.role.cpm,
+                subject: "[NOTIFY to CPM] " + modul_name,
+                body: bodyEmail,
+              };
+              const sendEmail = await apiSendEmail(dataEmail);
+              // console.log(sendEmail);
+              this.setState({
+                action_status: "warning",
+                action_message:
+                  "Success with warn " +
+                  res.data.warnNotif.map((warn) => warn) +
+                  " batch " +
+                  num_batch,
+              });
+              this.toggleLoading_batch();
+              return;
+              // setTimeout(function () {
+              //   window.location.reload();
+              // }, 1500);
+            }
+            let dataEmail = {
+              // "to": creatorEmail,
+              // to: "damar.pramuditya@ericsson.com",
+              to: global.config.role.cpm,
+              subject: "[NOTIFY to CPM] " + modul_name,
+              body: bodyEmail,
+            };
+            const sendEmail = await apiSendEmail(dataEmail);
+            // console.log(sendEmail);
+            this.toggleLoading_batch();
+            if (index_xlsx === this.state.rowsXLS_batch.length - 1) {
+              this.setState({
+                action_status: "success",
+                action_message:
+                  "Success upload all " +
+                  this.state.rowsXLS_batch.length +
+                  " batch",
+              });
+            }
+            // setTimeout(function () {
+            //   window.location.reload();
+            // }, 1500);
+          } else {
+            this.toggleLoading_batch();
+            if (index_xlsx === this.state.rowsXLS_batch.length - 1) {
+              this.setState({
+                action_status: "success",
+                action_message:
+                  "Success upload all " +
+                  this.state.rowsXLS_batch.length +
+                  " batch",
+              });
+            }
+          }
+        }
+      } else {
+        if (
+          res.response !== undefined &&
+          res.response.data !== undefined &&
+          res.response.data.error !== undefined
+        ) {
+          if (res.response.data.error.message !== undefined) {
+            this.setState({
+              action_status: "failed",
+              action_message:
+                res.response.data.error.message + " batch " + (index_xlsx + 1),
+            });
+          } else {
+            this.setState({
+              action_status: "failed",
+              action_message:
+                res.response.data.error + " batch " + (index_xlsx + 1),
+            });
+          }
         } else {
           this.setState({
             action_status: "failed",
-            action_message: res.response.data.error,
+            action_message:
+              res.response.data.error + " batch " + (index_xlsx + 1),
           });
         }
-      } else {
-        this.setState({ action_status: "failed" });
+        this.toggleLoading_batch();
+        break;
       }
-      this.toggleLoading();
     }
   };
 
@@ -474,24 +646,22 @@ class MappingHW extends React.Component {
     }));
   };
 
+  toggleLoading_batch = () => {
+    this.setState((prevState) => ({
+      modal_progress: !prevState.modal_progress,
+    }));
+  };
+
   handlePageChange = (pageNumber) => {
     this.setState({ activePage: pageNumber }, () => {
       this.state.tabs_submenu[0] === true ? this.getList() : this.getList2();
     });
   };
 
-  toggleEdit = (e) => {
-    const modalEdit = this.state.modalEdit;
-    if (modalEdit === false) {
-      const value = e.currentTarget.value;
-      const aEdit = this.state.all_data.find((e) => e._id === value);
-      this.setState({ CPOForm: aEdit, selected_id: value });
-    } else {
-      this.setState({ CPOForm: {} });
-    }
-    this.setState((prevState) => ({
-      modalEdit: !prevState.modalEdit,
-    }));
+  handleChangeForm = (e) => {
+    const value = e.target.value;
+    const unique_code = e.target.name;
+    this.setState({ mapping_date: value });
   };
 
   saveUpdate = async () => {
@@ -597,9 +767,67 @@ class MappingHW extends React.Component {
     }
   };
 
-  onChangeDebounced() {
+  saveUpdate_CallOf = async () => {
+    this.toggleLoading();
+    this.toggleCallOff();
+
+    let req_body = [];
+    const roles =
+      this.state.roleUser.includes("BAM-MAT PLANNER") === true
+        ? 1
+        : this.state.roleUser.includes("BAM-PFM") === true
+        ? 2
+        : 3;
+    const header_update_Mapping_Date = [
+      ["Po", "Line", "Reference_Loc_Id", "Qty", "Mapping_Date"],
+    ];
+    this.state.multiple_select2.map((req) =>
+      req_body.push([...req, this.state.mapping_date])
+    );
+
+    const res = await postDatatoAPINODE(
+      "/cpoMapping/createCpo",
+      {
+        cpo_type: "hw",
+        required_check: true,
+        roles: roles,
+        cpo_data: header_update_Mapping_Date.concat(req_body),
+      },
+      this.state.tokenUser
+    );
+    if (res.data !== undefined) {
+      this.setState({ action_status: "success" });
+      this.toggleLoading();
+      setTimeout(function () {
+        window.location.reload();
+      }, 1500);
+    } else {
+      if (
+        res.response !== undefined &&
+        res.response.data !== undefined &&
+        res.response.data.error !== undefined
+      ) {
+        if (res.response.data.error.message !== undefined) {
+          this.setState({
+            action_status: "failed",
+            action_message: res.response.data.error.message,
+          });
+        } else {
+          this.setState({
+            action_status: "failed",
+            action_message: res.response.data.error,
+          });
+        }
+      } else {
+        this.setState({ action_status: "failed" });
+      }
+      this.toggleLoading();
+    }
+  };
+
+  onChangeDebounced = () => {
     this.state.tabs_submenu[0] === true ? this.getList() : this.getList2();
-  }
+  };
 
   handleFilterList = (e) => {
     const index = e.target.name;
@@ -651,15 +879,48 @@ class MappingHW extends React.Component {
     return searchBar;
   };
 
+  LookupField = (unique_id_master, params_field) => {
+    let value = "objectData." + params_field;
+    let objectData = this.state.all_data_master.find(
+      (e) => e.unique_code === unique_id_master
+    );
+    if (objectData !== undefined) {
+      if (
+        params_field === "Unit_Price" ||
+        params_field === "Total_Price" ||
+        params_field === "Discounted_Unit_Price" ||
+        params_field === "Discounted_Po_Price" ||
+        params_field === "Net_Unit_Price"
+      ) {
+        return formatMoney(eval(value));
+      }
+      return eval(value);
+    } else {
+      return null;
+    }
+  };
+
+  LookupField2 = (unique_id_master, params_field) => {
+    let value = "objectData." + params_field;
+    let objectData = this.state.all_data_master.find(
+      (e) => e.unique_code === unique_id_master
+    );
+    if (objectData !== undefined) {
+      return eval(value);
+    } else {
+      return null;
+    }
+  };
+
   handleChangeChecklist = (e) => {
-    console.log(this.state.dataChecked.has(e._id));
+    console.log(this.state.dataChecked.get(e._id));
     const item = e.target.name;
     const isChecked = e.target.checked;
     const each_data = this.state.all_data;
     console.log("here", item, isChecked, each_data);
     let dataChecked_container = this.state.dataChecked_container;
     if (isChecked === true) {
-      let getCPO = each_data.find((pp) => pp._id === item);
+      const getCPO = each_data.find((pp) => pp._id === item);
       dataChecked_container.push(getCPO);
     } else {
       dataChecked_container = dataChecked_container.filter(function (pp) {
@@ -673,7 +934,7 @@ class MappingHW extends React.Component {
       (prevState) => ({
         dataChecked: prevState.dataChecked.set(item, isChecked),
       }),
-      () => console.log("dataChecked ", this.state.dataChecked)
+      () => console.log(this.state.dataChecked)
     );
   };
 
@@ -685,20 +946,12 @@ class MappingHW extends React.Component {
     this.setState({ tabs_submenu: tab_submenu });
   };
 
+  countData = () => {};
+
   handleChangeLimit = (e) => {
     let limitpg = e.currentTarget.value;
     this.setState({ perPage: limitpg }, () => this.getList());
   };
-
-  // countheader = (params_field) => {
-  //   let value = "curr." + params_field;
-  //   let sumheader = this.state.all_data_mapping.reduce(
-  //     (acc, curr) => acc + eval(value),
-  //     0
-  //   );
-  //   // console.log(sumheader);
-  //   return Math.round((sumheader + Number.EPSILON) * 100) / 100;
-  // };
 
   countheaderNaN = (params_field) => {
     let value = "element." + params_field;
@@ -709,9 +962,24 @@ class MappingHW extends React.Component {
     // console.log(params_field, sumheader);
   };
 
+  countheader = (params_field) => {
+    let value = "curr." + params_field;
+    let sumheader = this.state.all_data_mapping.reduce(
+      (acc, curr) => acc + eval(value),
+      0
+    );
+    // console.log(sumheader);
+    return Math.round((sumheader + Number.EPSILON) * 100) / 100;
+  };
+
   render() {
     const CPOForm = this.state.CPOForm;
     const role = this.state.roleUser;
+    // {
+    //   React.useMemo(() => {
+    //     console.log("render page");
+    //   });
+    // }
     return (
       <div className="animated fadeIn">
         <Row className="row-alert-fixed">
@@ -1068,6 +1336,27 @@ class MappingHW extends React.Component {
                             this.state.all_data_true.map((e, i) => (
                               <React.Fragment key={e._id + "frag"}>
                                 <tr align="center" key={e._id}>
+                                  {role.includes("BAM-ADMIN") === true ||
+                                  role.includes("BAM-PFM") === true ? (
+                                    {
+                                      /* <td>
+                                      <Link to={"/hw-cpo/" + e._id}>
+                                        <Button
+                                          size="sm"
+                                          color="secondary"
+                                          title="Edit"
+                                        >
+                                          <i
+                                            className="fa fa-edit"
+                                            aria-hidden="true"
+                                          ></i>
+                                        </Button>
+                                      </Link>
+                                    </td> */
+                                    }
+                                  ) : (
+                                    <td></td>
+                                  )}
                                   <td>{e.Deal_Name}</td>
                                   <td>{e.Hammer}</td>
                                   <td>{e.Project_Description}</td>
@@ -1111,9 +1400,7 @@ class MappingHW extends React.Component {
                                   <td>{e.So_No}</td>
                                   <td>{e.Wbs_No}</td>
                                   <td>
-                                    {convertDateFormat_firefox(
-                                      e.For_Checking_Purpose_Only_Rashidah
-                                    )}
+                                    {e.For_Checking_Purpose_Only_Rashidah}
                                   </td>
                                   <td>
                                     {convertDateFormat_firefox(
@@ -1239,12 +1526,165 @@ class MappingHW extends React.Component {
           </Col>
         </Row>
 
+        {/* Modal Update */}
+        <Modal
+          isOpen={this.state.modal_callof}
+          toggle={this.toggleCallOff}
+          className="modal--form"
+        >
+          <ModalHeader>Form Call Off</ModalHeader>
+          <ModalBody>
+            <Row>
+              <Col sm="8">
+                <FormGroup row>
+                  <Col xs="12">
+                    <FormGroup>
+                      <Label>Reference Loc ID</Label>
+                      <AsyncSelect
+                        // isMulti
+                        cacheOptions
+                        placeholder={"Type Reference Loc ID"}
+                        loadOptions={this.loadOptionsReclocID}
+                        defaultOptions
+                        onChange={this.handlemultipleRelocID}
+                      />
+                    </FormGroup>
+                  </Col>
+                </FormGroup>
+              </Col>
+              <Col sm="8">
+                <FormGroup row>
+                  <Col xs="12">
+                    <FormGroup>
+                      <Label>Project Description</Label>
+                      <AsyncSelect
+                        // isMulti
+                        cacheOptions
+                        placeholder={"Type Project Description"}
+                        loadOptions={this.loadOptionsPO}
+                        defaultOptions
+                        onChange={this.handleBeforeCallOf}
+                      />
+                    </FormGroup>
+                  </Col>
+                </FormGroup>
+              </Col>
+            </Row>
+            {this.state.multiple_select2.length !== 0 ? (
+              <>
+                <Row>
+                  <Col sm="12">
+                    <FormGroup row>
+                      <Col xs="8">
+                        <FormGroup>
+                          <Label>
+                            <h6>
+                              There are {this.state.multiple_select2.length}{" "}
+                              items under this combination
+                            </h6>
+                          </Label>
+                          <Input
+                            type="date"
+                            name={"unique_code"}
+                            placeholder=""
+                            value={CPOForm.Line}
+                            onChange={this.handleChangeForm}
+                          />
+                        </FormGroup>
+                      </Col>
+                    </FormGroup>
+                  </Col>
+                </Row>
+              </>
+            ) : (
+              ""
+            )}
+          </ModalBody>
+          <ModalFooter>
+            <Button
+              color="success"
+              onClick={this.saveUpdate_CallOf}
+              disabled={
+                this.state.multiple_select2.length === 0 &&
+                this.state.mapping_date !== ""
+              }
+            >
+              Update
+            </Button>
+          </ModalFooter>
+        </Modal>
+
+        {/* Modal create New */}
+        <ModalCreateNew
+          isOpen={this.state.createModal}
+          toggle={this.togglecreateModal}
+          className={this.props.className}
+          onClosed={this.resettogglecreateModal}
+          title={"Manage " + modul_name}
+        >
+          <div>
+            <table>
+              <tbody>
+                <tr>
+                  <td>Upload</td>
+                  <td>:</td>
+                  <td>
+                    <input
+                      type="file"
+                      onChange={this.fileHandlerMaterial.bind(this)}
+                      style={{ padding: "10px", visiblity: "hidden" }}
+                    />
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <span>
+              File will be split into {this.state.rowsXLS_batch.length} batch
+            </span>
+          </div>
+          <ModalFooter>
+            <Button
+              size="sm"
+              block
+              color="success"
+              className="btn-pill"
+              disabled={this.state.rowsXLS_batch.length === 0}
+              onClick={this.saveBulk}
+              style={{ height: "30px", width: "100px" }}
+            >
+              Save
+            </Button>
+          </ModalFooter>
+        </ModalCreateNew>
+
         {/* Modal Loading */}
         <Loading
           isOpen={this.state.modal_loading}
           toggle={this.toggleLoading}
-          className={"modal-sm modal--loading "}
         ></Loading>
+        {/* end Modal Loading */}
+
+        {/* Modal Loading Batch*/}
+        <Modal
+          isOpen={this.state.modal_progress}
+          toggle={this.toggleLoading_batch}
+          className={"modal-sm modal--loading "}
+        >
+          <ModalBody>
+            <div style={{ textAlign: "center" }}>
+              <div className="lds-ring">
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+              </div>
+            </div>
+            <div style={{ textAlign: "center" }}>
+              System is processing batch {this.state.batch_file}/
+              {this.state.rowsXLS_batch.length} ...
+            </div>
+          </ModalBody>
+        </Modal>
         {/* end Modal Loading */}
       </div>
     );
