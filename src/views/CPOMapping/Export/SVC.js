@@ -235,7 +235,7 @@ class ExportSVC extends React.Component {
             convertDateFormat_firefox(e.Invoicing_Date_Coa_Ni_100),
             convertDateFormat_firefox(e.Cancelled_Coa_Ni_Date_100),
             e.Ses_No,
-            e.Ses_Status,
+            convertDateFormat_firefox(e.Ses_Status),
             e.Link,
             e.Ni_Coa_Submission_Status,
           ]);
@@ -382,7 +382,7 @@ class ExportSVC extends React.Component {
             convertDateFormat_firefox(e.Invoicing_Date_Coa_Ni_100),
             e.Cancelled_Coa_Ni_Date_100,
             e.Ses_No,
-            e.Ses_Status,
+            convertDateFormat_firefox(e.Ses_Status),
             e.Link,
             e.Ni_Coa_Submission_Status,
           ]);
