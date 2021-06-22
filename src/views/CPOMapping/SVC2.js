@@ -1084,7 +1084,9 @@ class MappingSVC extends React.Component {
                                     )}
                                   </td>
                                   <td>{e.Ses_No}</td>
-                                  <td>{e.Ses_Status}</td>
+                                  <td>
+                                    {convertDateFormat_firefox(e.Ses_Status)}
+                                  </td>
                                   <td>{e.Link}</td>
                                   <td>{e.Ni_Coa_Submission_Status}</td>
                                 </tr>
@@ -1239,7 +1241,9 @@ class MappingSVC extends React.Component {
                                     )}
                                   </td>
                                   <td>{e.Ses_No}</td>
-                                  <td>{e.Ses_Status}</td>
+                                  <td>
+                                    {convertDateFormat_firefox(e.Ses_Status)}
+                                  </td>
                                   <td>{e.Link}</td>
                                   <td>{e.Ni_Coa_Submission_Status}</td>
                                 </tr>
