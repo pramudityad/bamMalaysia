@@ -1046,7 +1046,9 @@ class MappingHW extends React.Component {
                                     )}
                                   </td>
                                   <td>{e.Cancelled_Sso_20}</td>
-                                  <td>{e.Hw_Coa_100}</td>
+                                  <td>
+                                    {convertDateFormat_firefox(e.Hw_Coa_100)}
+                                  </td>
                                   <td>{e.Billing_Upon_Hw_Coa_100}</td>
                                   <td>{e.Invoicing_No_Hw_Coa_100}</td>
                                   <td>
