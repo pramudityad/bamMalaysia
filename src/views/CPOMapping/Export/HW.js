@@ -376,7 +376,7 @@ class ExportHW extends React.Component {
             e.Invoicing_No_Sso_20_1,
             convertDateFormat_firefox(e.Invoicing_Date_Sso_20_1),
             e.Cancelled_Sso_20,
-            e.Hw_Coa_100,
+            convertDateFormat_firefox(e.Hw_Coa_100),
             e.Billing_Upon_Hw_Coa_100,
             e.Invoicing_No_Hw_Coa_100,
             convertDateFormat_firefox(e.Invoicing_Date_Hw_Coa_100),
@@ -595,7 +595,7 @@ class ExportHW extends React.Component {
             e.Invoicing_No_Sso_20_1,
             convertDateFormat_firefox(e.Invoicing_Date_Sso_20_1),
             e.Cancelled_Sso_20,
-            e.Hw_Coa_100,
+            convertDateFormat_firefox(e.Hw_Coa_100),
             e.Invoicing_No_Hw_Coa_100,
             convertDateFormat_firefox(e.Invoicing_Date_Hw_Coa_100),
             e.Cancelled_Invoicing_Hw_Coa_100,
@@ -644,6 +644,7 @@ class ExportHW extends React.Component {
           "Reference_Loc_Id",
           "Line",
           "Po",
+          "Proceed_Billing_100",
         ].concat(global.config.cpo_mapping.hw.header_admin)
       );
       for (let i = 1; i < header_admin.length + 3; i++) {
@@ -666,6 +667,7 @@ class ExportHW extends React.Component {
             e.Reference_Loc_Id,
             e.Line,
             e.Po,
+            e.Proceed_Billing_100,
             convertDateFormat_firefox(e.For_Checking_Purpose_Only_Rashidah),
             convertDateFormat_firefox(e.Hw_Coa_Received_Date_40),
             convertDateFormat_firefox(e.Hw_Coa_Received_Date_80),
