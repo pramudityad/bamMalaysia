@@ -64,6 +64,82 @@ import "./cpomapping.css";
 const DefaultNotif = React.lazy(() =>
   import("../../views/DefaultView/DefaultNotif")
 );
+const save_update_header = [
+  "Po_Number",
+  "Data_1",
+  "Lookup_Reference",
+  "Region",
+  "Reference_Loc_Id",
+  "New_Loc_Id",
+  "Site_Name",
+  "New_Site_Name",
+  "Config",
+  "Po",
+  "Line",
+  "Description",
+  "Qty",
+  "NW",
+  "On_Air_Date",
+  "Mapping_Date",
+  "Remarks",
+  "Proceed_Billing_100",
+  "Celcom_User",
+  "Pcode",
+  "Unit_Price",
+  "Total_Price",
+  "Discounted_Unit_Price",
+  "Discounted_Po_Price",
+  "So_Line_Item_Description",
+  "Sitepcode",
+  "VlookupWbs",
+  "So_No",
+  "Wbs_No",
+  "For_Checking_Purpose_Only_Rashidah",
+  "Hw_Coa_Received_Date_80",
+  "Billing_Upon_Hw_Coa_80",
+  "Invoicing_No_Hw_Coa_80",
+  "Invoicing_Date_Hw_Coa_80",
+  "Cancelled_Invoice_Hw_Coa_80",
+  "Ni_Coa_Date_20",
+  "Billing_Upon_Ni_20",
+  "Invoicing_No_Ni_20",
+  "Invoicing_Date_Ni_20",
+  "Cancelled_Invoicing_Ni_20",
+  "Hw_Coa_Received_Date_40",
+  "Billing_Upon_Hw_Coa_40",
+  "Invoicing_No_Hw_Coa_40",
+  "Invoicing_Date_Hw_Coa_40",
+  "Cancelled_Hw_Coa_40",
+  "Ni_Coa_Date_40",
+  "Billing_Upon_Ni_40",
+  "Invoicing_No_Ni_40",
+  "Invoicing_Date_Ni_40",
+  "Cancelled_Ni_40",
+  "Sso_Coa_Date_20_1",
+  "Billing_Upon_Sso_20_1",
+  "Invoicing_No_Sso_20_1",
+  "Invoicing_Date_Sso_20_1",
+  "Cancelled_Sso_20",
+  "Hw_Coa_100",
+  "Billing_Upon_Hw_Coa_100",
+  "Invoicing_No_Hw_Coa_100",
+  "Invoicing_Date_Hw_Coa_100",
+  "Cancelled_Invoicing_Hw_Coa_100",
+  "Cancel_Column",
+  "Reference_Loc_Id_1",
+  "Po_1",
+  "Reff",
+  "Vlookup_For_Billing",
+  "Deal_Name",
+  "Hammer",
+  "Hammer_1_Hd_Total",
+  "Project_Description",
+  "Gr_No",
+  "Line_Item_Sap",
+  "Material_Code",
+  "Net_Unit_Price",
+  "Invoice_Total",
+];
 
 const Checkbox1 = ({
   type = "checkbox",
@@ -503,19 +579,18 @@ class MappingHW extends React.Component {
         : this.state.roleUser.includes("BAM-PFM") === true
         ? 2
         : 3;
-    const header_create_not_req = [
-      global.config.cpo_mapping.hw.header_materialmapping,
-    ];
+    const header_create_not_req = [save_update_header];
     const body_create_not_req = this.state.dataChecked_container.map((data) =>
       Object.keys(data)
         .filter((key) =>
-          global.config.cpo_mapping.hw.header_materialmapping.includes(key)
+          global.config.cpo_mapping.hw.header_model.includes(key)
         )
         .reduce((obj, key) => {
           obj[key] = data[key];
           return obj;
         }, {})
     );
+    console.log("body_create_not_req", body_create_not_req);
     const trimm_body_create_not_req = body_create_not_req.map((data) =>
       Object.keys(data).map((key) => data[key])
     );
