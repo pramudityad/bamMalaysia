@@ -65,6 +65,90 @@ const DefaultNotif = React.lazy(() =>
   import("../../views/DefaultView/DefaultNotif")
 );
 
+const save_update_header = [
+  "Po_Number",
+  "Data_1",
+  "Lookup_Reference",
+  "Region",
+  "Reference_Loc_Id",
+  "New_Loc_Id",
+  "Site_Name",
+  "New_Site_Name",
+  "Config",
+  "Po",
+  "Line",
+  "Description",
+  "Qty",
+  "CNI_Date",
+  "Mapping_Date",
+  "Remarks",
+  "Proceed_Billing_100",
+  "Celcom_User",
+  "Pcode",
+  "Unit_Price",
+  "Total_Price",
+  "Discounted_Unit_Price",
+  "Discounted_Po_Price",
+  "So_Line_Item_Description",
+  "Sitepcode",
+  "VlookupWbs",
+  "So_No",
+  "Wbs_No",
+  "Billing_100",
+  "Atp_Coa_Received_Date_80",
+  "Billing_Upon_Atp_Coa_80",
+  "Invoicing_No_Atp_Coa_80",
+  "Invoicing_Date_Atp_Coa_80",
+  "Cancelled_Atp_Coa_80",
+  "Ni_Coa_Date_20",
+  "Billing_Upon_Ni_20",
+  "Invoicing_No_Ni_20",
+  "Invoicing_Date_Ni_20",
+  "Cancelled_Invoicing_Ni_20",
+  "Sso_Coa_Date_80",
+  "Billing_Upon_Sso_80",
+  "Invoicing_No_Sso_80",
+  "Invoicing_Date_Sso_80",
+  "Cancelled_Sso_Coa_Date_80",
+  "Coa_Psp_Received_Date_20",
+  "Billing_Upon_Coa_Psp_20",
+  "Invoicing_No_Coa_Psp_20",
+  "Invoicing_Date_Coa_Psp_20",
+  "Cancelled_Coa_Psp_Received_Date_20",
+  "Coa_Ni_Received_Date_40",
+  "Billing_Upon_Coa_Ni_40",
+  "Invoicing_No_Coa_Ni_40",
+  "Invoicing_Date_Coa_Ni_40",
+  "Cancelled_Coa_Ni_Received_Date_40",
+  "Cosso_Received_Date_60",
+  "Billing_Upon_Cosso_60",
+  "Invoicing_No_Cosso_60",
+  "Invoicing_Date_Cosso_60",
+  "Cancelled_Cosso_Received_Date_60",
+  "Coa_Sso_Received_Date_100",
+  "Billing_Upon_Sso_Coa_100",
+  "Invoicing_No_Sso_Coa_100",
+  "Invoicing_Date_Sso_Coa_100",
+  "Coa_Ni_Date_100",
+  "Billing_Upon_Coa_Ni_100",
+  "Invoicing_No_Coa_Ni_100",
+  "Invoicing_Date_Coa_Ni_100",
+  "Cancelled_Coa_Ni_Date_100",
+  "Ses_No",
+  "Ses_Status",
+  "Link",
+  "Ni_Coa_Submission_Status",
+  "Deal_Name",
+  "Hammer",
+  "Hammer_1_Hd_Total",
+  "Project_Description",
+  "Commodity",
+  "Gr_No",
+  "Line_Item_Sap",
+  "Material_Code",
+  "Net_Unit_Price",
+  "Invoice_Total",
+];
 const Checkbox11 = ({
   type = "checkbox",
   name,
@@ -503,19 +587,19 @@ class MappingSVC extends React.Component {
         : this.state.roleUser.includes("BAM-PFM") === true
         ? 2
         : 3;
-    const header_create_not_req = [
-      global.config.cpo_mapping.svc.header_materialmapping,
-    ];
+    const header_create_not_req = [save_update_header];
     const body_create_not_req = this.state.dataChecked_container.map((data) =>
       Object.keys(data)
         .filter((key) =>
-          global.config.cpo_mapping.svc.header_materialmapping.includes(key)
+          global.config.cpo_mapping.svc.header_model.includes(key)
         )
         .reduce((obj, key) => {
           obj[key] = data[key];
           return obj;
         }, {})
     );
+    console.log("body_create_not_req", body_create_not_req);
+
     const trimm_body_create_not_req = body_create_not_req.map((data) =>
       Object.keys(data).map((key) => data[key])
     );
