@@ -40,6 +40,9 @@ const DefaultNotif = React.lazy(() =>
   import("../../views/DefaultView/DefaultNotif")
 );
 
+const date = new Date();
+const currentDate = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, "0")}-${date.getDate().toString().padStart(2, "0")}`;
+
 class MYASGDetail extends PureComponent {
   constructor(props) {
     super(props);
@@ -2247,7 +2250,8 @@ class MYASGDetail extends PureComponent {
                               <td>
                                 {this.state.list_pr_po.find((f) => f.id_child_doc === e._id) !== undefined &&
                                   this.state.list_pr_po.find((f) => f.id_child_doc === e._id).PO_Number !== null &&
-                                  this.state.list_pr_po.find((f) => f.id_child_doc === e._id).PO_Item !== null ? (
+                                  this.state.list_pr_po.find((f) => f.id_child_doc === e._id).PO_Item !== null &&
+                                  this.state.list_pr_po.find((f) => f.id_child_doc === e._id).updated_on.substr(0, 10) !== currentDate ? (
                                   <Link to={"/lmr-detail/" + this.props.match.params.id + "/gr-detail/" + e._id}>
                                     <Button color="info">
                                       <i className="fa fa-info-circle" aria-hidden="true"></i>&nbsp;GR
