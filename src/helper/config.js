@@ -223,7 +223,9 @@ module.exports = global.config = {
       ],
       header_admin: [
         "For_Checking_Purpose_Only_Rashidah",
+        "Hw_Coa_Received_Date_40",
         "Hw_Coa_Received_Date_80",
+        "Hw_Coa_100",
         "Invoicing_Date_Hw_Coa_100",
         "Cancel_Column",
         "Reference_Loc_Id_1",
@@ -473,7 +475,6 @@ module.exports = global.config = {
       ],
 
       header_admin: [
-        "Proceed_Billing_100",
         "Billing_100",
         "Atp_Coa_Received_Date_80",
         "Ni_Coa_Date_20",

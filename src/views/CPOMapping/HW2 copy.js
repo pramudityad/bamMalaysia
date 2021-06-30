@@ -27,7 +27,6 @@ import {
   Nav,
   NavItem,
   NavLink,
-  Progress,
 } from "reactstrap";
 import Excel from "exceljs";
 
@@ -47,7 +46,7 @@ import { saveAs } from "file-saver";
 import {
   numToSSColumn,
   getUniqueListBy,
-  convertDateFormat,
+  convertDateFormat_firefox,
   formatMoney,
 } from "../../helper/basicFunction";
 import { connect } from "react-redux";
@@ -85,9 +84,9 @@ const Checkbox1 = ({
   />
 );
 
-const modul_name = "SVC Mapping";
+const modul_name = "HW Mapping";
 
-class MappingSVC extends React.PureComponent {
+class MappingHW extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {
@@ -100,7 +99,6 @@ class MappingSVC extends React.PureComponent {
       rowsXLS_batch: [],
       modal_loading: false,
       modal_progress: false,
-      batch_file: 0,
       prevPage: 0,
       activePage: 1,
       totalData: 0,
@@ -144,7 +142,7 @@ class MappingSVC extends React.PureComponent {
     }
     let whereAnd = "{" + filter_array.join(",") + "}";
     getDatafromAPINODE(
-      "/cpoMapping/getCpo/required/count/svc?q=" + whereAnd + "&noPg=1",
+      "/cpoMapping/getCpo/required/count/hw?q=" + whereAnd + "&noPg=1",
       this.state.tokenUser
     ).then((res) => {
       if (res.data !== undefined) {
@@ -157,8 +155,6 @@ class MappingSVC extends React.PureComponent {
   mapHeader(data_header) {
     let header_keys = Object.keys(data_header);
     let header_values = Object.values(data_header);
-    // console.log("header ", header_values);
-    // if (header_keys !== undefined) {
     if (
       header_keys === "Qty" ||
       header_keys === "Unit_Price" ||
@@ -170,7 +166,6 @@ class MappingSVC extends React.PureComponent {
     } else {
       return header_values;
     }
-    // }
   }
 
   getMaster() {
@@ -196,7 +191,7 @@ class MappingSVC extends React.PureComponent {
     }
     let whereAnd = "{" + filter_array.join(",") + "}";
     getDatafromAPINODE(
-      "/cpoMapping/getCpo/required/svc?q=" +
+      "/cpoMapping/getCpo/required/hw?q=" +
         whereAnd +
         "&lmt=" +
         this.state.perPage +
@@ -219,7 +214,7 @@ class MappingSVC extends React.PureComponent {
     this.toggleLoading();
     const t0 = performance.now();
     getDatafromAPINODE(
-      "/cpoMapping/getCpo/required/svc?noPg=1",
+      "/cpoMapping/getCpo/required/hw?noPg=1",
       this.state.tokenUser
     ).then((res) => {
       if (res.data !== undefined) {
@@ -250,7 +245,7 @@ class MappingSVC extends React.PureComponent {
     } else {
       let data_list = [];
       const getWPID = await getDatafromAPINODE(
-        '/cpoMapping/getCpo/required/svc?q={"Reference_Loc_Id":{"$regex":"' +
+        '/cpoMapping/getCpo/required/hw?q={"Reference_Loc_Id":{"$regex":"' +
           inputValue +
           '", "$options":"i"}}',
         this.state.tokenUser
@@ -273,7 +268,7 @@ class MappingSVC extends React.PureComponent {
     } else {
       let data_list2 = [];
       const getWPID = await getDatafromAPINODE(
-        '/cpoMapping/getCpo/required/svc?q={"Project_Description":{"$regex":"' +
+        '/cpoMapping/getCpo/required/hw?q={"Project_Description":{"$regex":"' +
           inputValue +
           '", "$options":"i"}}',
         this.state.tokenUser
@@ -305,7 +300,7 @@ class MappingSVC extends React.PureComponent {
     let callof_container = [];
 
     const getCallof_data = await getDatafromAPINODE(
-      '/cpoMapping/getCpo/required/svc?q={"Project_Description":{"$regex" : "' +
+      '/cpoMapping/getCpo/required/hw?q={"Project_Description":{"$regex" : "' +
         datalist.value +
         '", "$options" : "i"},"Reference_Loc_Id":{"$regex" : "' +
         this.state.callof_filter.Reference_Loc_Id +
@@ -371,7 +366,7 @@ class MappingSVC extends React.PureComponent {
     // filter_array.push('"Not_Required":' + true);
     let whereAnd = "{" + filter_array.join(",") + "}";
     getDatafromAPINODE(
-      "/cpoMapping/getCpo/svc?q=" +
+      "/cpoMapping/getCpo/hw?q=" +
         whereAnd +
         "&lmt=" +
         this.state.perPage +
@@ -459,7 +454,7 @@ class MappingSVC extends React.PureComponent {
       {
         rowsXLS: newDataXLS,
       },
-      () => this.chunkArray(this.state.rowsXLS, 2000)
+      () => this.chunkArray(this.state.rowsXLS, 4000)
     );
   }
 
@@ -506,9 +501,9 @@ class MappingSVC extends React.PureComponent {
       this.toggleLoading_batch();
       console.log(`hit ${index_xlsx + 1}`);
       const res = await postDatatoAPINODE(
-        "/cpoMapping/createCpo1",
+        "/cpoMapping/createCpo",
         {
-          cpo_type: "svc",
+          cpo_type: "hw",
           required_check: true,
           roles: roles,
           cpo_data: this.state.rowsXLS_batch[index_xlsx],
@@ -557,13 +552,12 @@ class MappingSVC extends React.PureComponent {
             if (res.data.warnNotif.length !== 0) {
               let dataEmail = {
                 // "to": creatorEmail,
-                to: "damar.pramuditya@ericsson.com",
-                // to: global.config.role.cpm,
+                // to: "damar.pramuditya@ericsson.com",
+                to: global.config.role.cpm,
                 subject: "[NOTIFY to CPM] " + modul_name,
                 body: bodyEmail,
               };
-              //const sendEmail = await apiSendEmail(dataEmail);
-
+              const sendEmail = await apiSendEmail(dataEmail);
               // console.log(sendEmail);
               this.setState({
                 action_status: "warning",
@@ -581,13 +575,12 @@ class MappingSVC extends React.PureComponent {
             }
             let dataEmail = {
               // "to": creatorEmail,
-              to: "damar.pramuditya@ericsson.com",
-              // to: global.config.role.cpm,
+              // to: "damar.pramuditya@ericsson.com",
+              to: global.config.role.cpm,
               subject: "[NOTIFY to CPM] " + modul_name,
               body: bodyEmail,
             };
-            //const sendEmail = await apiSendEmail(dataEmail);
-
+            const sendEmail = await apiSendEmail(dataEmail);
             // console.log(sendEmail);
             this.toggleLoading_batch();
             if (index_xlsx === this.state.rowsXLS_batch.length - 1) {
@@ -681,12 +674,12 @@ class MappingSVC extends React.PureComponent {
         ? 2
         : 3;
     const header_create_not_req = [
-      global.config.cpo_mapping.svc.header_materialmapping,
+      global.config.cpo_mapping.hw.header_materialmapping,
     ];
     const body_create_not_req = this.state.dataChecked_container.map((data) =>
       Object.keys(data)
         .filter((key) =>
-          global.config.cpo_mapping.svc.header_materialmapping.includes(key)
+          global.config.cpo_mapping.hw.header_materialmapping.includes(key)
         )
         .reduce((obj, key) => {
           obj[key] = data[key];
@@ -697,19 +690,10 @@ class MappingSVC extends React.PureComponent {
       Object.keys(data).map((key) => data[key])
     );
 
-    // console.log(
-    //   "header",
-    //   body_create_not_req.map((data) => Object.keys(data).map((key) => key))
-    // );
-    // console.log("body", trimm_body_create_not_req);
-    // console.log(
-    //   "post not req",
-    //   header_create_not_req.concat(trimm_body_create_not_req)
-    // );
     const res = await postDatatoAPINODE(
       "/cpoMapping/createCpo",
       {
-        cpo_type: "svc",
+        cpo_type: "hw",
         required_check: false,
         roles: roles,
         cpo_data: header_create_not_req.concat(trimm_body_create_not_req),
@@ -727,7 +711,7 @@ class MappingSVC extends React.PureComponent {
         "/cpoMapping/deleteCpo",
         this.state.tokenUser,
         {
-          cpo_type: "svc",
+          cpo_type: "hw",
           data: req_body_del,
         }
       );
@@ -804,7 +788,7 @@ class MappingSVC extends React.PureComponent {
     const res = await postDatatoAPINODE(
       "/cpoMapping/createCpo",
       {
-        cpo_type: "svc",
+        cpo_type: "hw",
         required_check: true,
         roles: roles,
         cpo_data: header_update_Mapping_Date.concat(req_body),
@@ -860,11 +844,7 @@ class MappingSVC extends React.PureComponent {
 
   loopSearchBar = () => {
     let searchBar = [];
-    for (
-      let i = 0;
-      i < global.config.cpo_mapping.svc.header_model.length;
-      i++
-    ) {
+    for (let i = 0; i < global.config.cpo_mapping.hw.header_model.length; i++) {
       searchBar.push(
         <td>
           {/* {i !== 0 && i !== 3 && i !== 5 && i !== 7 && i !== 9 && i !== 10 ? (
@@ -884,10 +864,10 @@ class MappingSVC extends React.PureComponent {
                 onChange={this.handleFilterList}
                 value={
                   this.state.filter_list[
-                    global.config.cpo_mapping.svc.header_model[i]
+                    global.config.cpo_mapping.hw.header_model[i]
                   ]
                 }
-                name={global.config.cpo_mapping.svc.header_model[i]}
+                name={global.config.cpo_mapping.hw.header_model[i]}
                 size="sm"
               />
             </InputGroup>
@@ -933,9 +913,11 @@ class MappingSVC extends React.PureComponent {
   };
 
   handleChangeChecklist = (e) => {
+    console.log(this.state.dataChecked.get(e._id));
     const item = e.target.name;
     const isChecked = e.target.checked;
     const each_data = this.state.all_data;
+    console.log("here", item, isChecked, each_data);
     let dataChecked_container = this.state.dataChecked_container;
     if (isChecked === true) {
       const getCPO = each_data.find((pp) => pp._id === item);
@@ -948,76 +930,12 @@ class MappingSVC extends React.PureComponent {
     this.setState({ dataChecked_container: dataChecked_container }, () =>
       console.log("make not req", this.state.dataChecked_container)
     );
-    this.setState((prevState) => ({
-      dataChecked: prevState.dataChecked.set(item, isChecked),
-    }));
-  };
-
-  handleChangeChecklistAll = async (e) => {
-    const getall = await this.state.all_data_mapping;
-    console.log(getall.data);
-
-    if (getall.data !== undefined) {
-      if (e.target !== null) {
-        const isChecked = e.target.checked;
-        let dataChecked_container = this.state.dataChecked_container;
-        let each_data = getall.data.data;
-        if (isChecked) {
-          each_data = each_data.filter(
-            (e) =>
-              dataChecked_container.map((m) => m._id).includes(e._id) !== true
-          );
-          for (let x = 0; x < each_data.length; x++) {
-            dataChecked_container.push(each_data[x]);
-            this.setState((prevState) => ({
-              dataChecked_container: prevState.dataChecked_container.set(
-                each_data[x]._id,
-                isChecked
-              ),
-            }));
-          }
-          this.setState({ dataChecked_container: dataChecked_container });
-        } else {
-          for (let x = 0; x < each_data.length; x++) {
-            this.setState(
-              (prevState) => ({
-                dataChecked_container: prevState.dataChecked_container.set(
-                  each_data[x]._id,
-                  isChecked
-                ),
-              }),
-              () => console.log(this.state.dataChecked_container)
-            );
-          }
-          dataChecked_container.length = 0;
-          this.setState({ dataChecked_container: dataChecked_container });
-        }
-        this.setState((prevState) => ({
-          dataChecked_all: !prevState.dataChecked_all,
-        }));
-      }
-    }
-  };
-
-  handleChangeChecklist2 = (e) => {
-    const item2 = e.target.name;
-    const isChecked2 = e.target.checked;
-    const each_data2 = this.state.all_data_true;
-    let dataChecked_container2 = this.state.dataChecked_container2;
-    if (isChecked2 === false) {
-      const getCPO2 = each_data2.find((pp) => pp._id === item2);
-      dataChecked_container2.push(getCPO2);
-    } else {
-      dataChecked_container2 = dataChecked_container2.filter(function (pp) {
-        return pp._id !== item2;
-      });
-    }
-    this.setState({ dataChecked_container2: dataChecked_container2 }, () =>
-      console.log(this.state.dataChecked_container2)
+    this.setState(
+      (prevState) => ({
+        dataChecked: prevState.dataChecked.set(item, isChecked),
+      }),
+      () => console.log(this.state.dataChecked)
     );
-    this.setState((prevState) => ({
-      dataChecked: prevState.dataChecked.set(item2, isChecked2),
-    }));
   };
 
   changeTabsSubmenu = (e) => {
@@ -1103,7 +1021,7 @@ class MappingSVC extends React.PureComponent {
                   &nbsp;&nbsp;&nbsp;
                   <div>
                     <div>
-                      <Link to={"/cpo-svc-import"} target="_blank">
+                      <Link to={"/cpo-hw-import"} target="_blank">
                         <Button
                           color="success"
                           style={{ float: "right", marginLeft: "8px" }}
@@ -1119,26 +1037,11 @@ class MappingSVC extends React.PureComponent {
                             : "New"}
                         </Button>
                       </Link>
-                      {/* <Button
-                        block
-                        color="success"
-                        size="sm"
-                        onClick={this.togglecreateModal}
-                      >
-                        <i className="fa fa-plus-square" aria-hidden="true">
-                          {" "}
-                          &nbsp;{" "}
-                        </i>{" "}
-                        {role.includes("BAM-ADMIN") === true ||
-                        role.includes("BAM-PFM") === true
-                          ? "Update"
-                          : "New"}
-                      </Button> */}
                     </div>
                   </div>
                   &nbsp;&nbsp;&nbsp;
                   <div>
-                    <Link to={"/cpo-svc-export"} target="_blank">
+                    <Link to={"/cpo-hw-export"} target="_blank">
                       <Button
                         color="warning"
                         style={{ float: "right", marginLeft: "8px" }}
@@ -1224,11 +1127,9 @@ class MappingSVC extends React.PureComponent {
                             ) : (
                               ""
                             )}
-                            {global.config.cpo_mapping.svc.header.map(
-                              (head) => (
-                                <th>{head}</th>
-                              )
-                            )}
+                            {global.config.cpo_mapping.hw.header.map((head) => (
+                              <th>{head}</th>
+                            ))}
                           </tr>
                           {this.state.tabs_submenu[0] === true ? (
                             <>
@@ -1250,7 +1151,7 @@ class MappingSVC extends React.PureComponent {
                           ) : (
                             <>
                               <tr align="center">
-                                {global.config.cpo_mapping.svc.header_model.map(
+                                {global.config.cpo_mapping.hw.header_model.map(
                                   (head) => (
                                     <th>{this.countheaderNaN(head)}</th>
                                   )
@@ -1277,7 +1178,7 @@ class MappingSVC extends React.PureComponent {
                               <React.Fragment key={e._id + "frag"}>
                                 <tr align="center" key={e._id}>
                                   {/* <td>
-                                    <Link to={"/svc-cpo/" + e._id}>
+                                    <Link to={"/hw-cpo/" + e._id}>
                                       <Button
                                         size="sm"
                                         color="secondary"
@@ -1315,12 +1216,17 @@ class MappingSVC extends React.PureComponent {
                                   <td>{e.Config}</td>
                                   <td>{e.Po}</td>
                                   <td>{e.Line}</td>
-                                  <td>{e.Material_Code}</td>
                                   <td>{e.Line_Item_Sap}</td>
+                                  <td>{e.Material_Code}</td>
                                   <td>{e.Description}</td>
                                   <td>{e.Qty}</td>
-                                  <td>{convertDateFormat(e.CNI_Date)}</td>
-                                  <td>{convertDateFormat(e.Mapping_Date)}</td>
+                                  <td>{e.NW}</td>
+                                  <td>
+                                    {convertDateFormat_firefox(e.On_Air_Date)}
+                                  </td>
+                                  <td>
+                                    {convertDateFormat_firefox(e.Mapping_Date)}
+                                  </td>
                                   <td>{e.Remarks}</td>
                                   <td>{e.Gr_No}</td>
                                   <td>{e.Proceed_Billing_100}</td>
@@ -1328,7 +1234,6 @@ class MappingSVC extends React.PureComponent {
                                   <td>{e.Pcode}</td>
                                   <td>{e.Unit_Price}</td>
                                   <td>{e.Total_Price}</td>
-                                  <td>{e.Commodity}</td>
                                   <td>{e.Discounted_Unit_Price}</td>
                                   <td>{e.Discounted_Po_Price}</td>
                                   <td>{e.Net_Unit_Price}</td>
@@ -1339,101 +1244,90 @@ class MappingSVC extends React.PureComponent {
                                   <td>{e.VlookupWbs}</td>
                                   <td>{e.So_No}</td>
                                   <td>{e.Wbs_No}</td>
-                                  <td>{e.Billing_100}</td>
                                   <td>
-                                    {convertDateFormat(
-                                      e.Atp_Coa_Received_Date_80
+                                    {convertDateFormat_firefox(
+                                      e.For_Checking_Purpose_Only_Rashidah
                                     )}
                                   </td>
-                                  <td>{e.Billing_Upon_Atp_Coa_80}</td>
-                                  <td>{e.Invoicing_No_Atp_Coa_80}</td>
-                                  <td>{e.Invoicing_Date_Atp_Coa_80}</td>
-                                  <td>{e.Cancelled_Atp_Coa_80}</td>
-                                  <td>{convertDateFormat(e.Ni_Coa_Date_20)}</td>
+                                  <td>
+                                    {convertDateFormat_firefox(
+                                      e.Hw_Coa_Received_Date_80
+                                    )}
+                                  </td>
+                                  <td>{e.Billing_Upon_Hw_Coa_80}</td>
+                                  <td>{e.Invoicing_No_Hw_Coa_80}</td>
+                                  <td>
+                                    {convertDateFormat_firefox(
+                                      e.Invoicing_Date_Hw_Coa_80
+                                    )}
+                                  </td>
+                                  <td>{e.Cancelled_Invoice_Hw_Coa_80}</td>
+                                  <td>
+                                    {convertDateFormat_firefox(
+                                      e.Ni_Coa_Date_20
+                                    )}
+                                  </td>
                                   <td>{e.Billing_Upon_Ni_20}</td>
                                   <td>{e.Invoicing_No_Ni_20}</td>
-                                  <td>{e.Invoicing_Date_Ni_20}</td>
+                                  <td>
+                                    {convertDateFormat_firefox(
+                                      e.Invoicing_Date_Ni_20
+                                    )}
+                                  </td>
                                   <td>{e.Cancelled_Invoicing_Ni_20}</td>
                                   <td>
-                                    {convertDateFormat(e.Sso_Coa_Date_80)}
-                                  </td>
-                                  <td>{e.Billing_Upon_Sso_80}</td>
-                                  <td>{e.Invoicing_No_Sso_80}</td>
-                                  <td>
-                                    {convertDateFormat(e.Invoicing_Date_Sso_80)}
-                                  </td>
-                                  <td>
-                                    {convertDateFormat(
-                                      e.Cancelled_Sso_Coa_Date_80
+                                    {convertDateFormat_firefox(
+                                      e.Hw_Coa_Received_Date_40
                                     )}
                                   </td>
+                                  <td>{e.Billing_Upon_Hw_Coa_40}</td>
+                                  <td>{e.Invoicing_No_Hw_Coa_40}</td>
                                   <td>
-                                    {convertDateFormat(
-                                      e.Coa_Psp_Received_Date_20
+                                    {convertDateFormat_firefox(
+                                      e.Invoicing_Date_Hw_Coa_40
                                     )}
                                   </td>
-                                  <td>{e.Billing_Upon_Coa_Psp_20}</td>
-                                  <td>{e.Invoicing_No_Coa_Psp_20}</td>
-                                  <td>{e.Invoicing_Date_Coa_Psp_20}</td>
+                                  <td>{e.Cancelled_Hw_Coa_40}</td>
                                   <td>
-                                    {convertDateFormat(
-                                      e.Cancelled_Coa_Psp_Received_Date_20
+                                    {convertDateFormat_firefox(
+                                      e.Ni_Coa_Date_40
                                     )}
                                   </td>
+                                  <td>{e.Billing_Upon_Ni_40}</td>
+                                  <td>{e.Invoicing_No_Ni_40}</td>
                                   <td>
-                                    {convertDateFormat(
-                                      e.Coa_Ni_Received_Date_40
+                                    {convertDateFormat_firefox(
+                                      e.Invoicing_Date_Ni_40
                                     )}
                                   </td>
-                                  <td>{e.Billing_Upon_Coa_Ni_40}</td>
-                                  <td>{e.Invoicing_No_Coa_Ni_40}</td>
-                                  <td>{e.Invoicing_Date_Coa_Ni_40}</td>
+                                  <td>{e.Cancelled_Ni_40}</td>
                                   <td>
-                                    {convertDateFormat(
-                                      e.Cancelled_Coa_Ni_Received_Date_40
+                                    {convertDateFormat_firefox(
+                                      e.Sso_Coa_Date_20_1
                                     )}
                                   </td>
+                                  <td>{e.Billing_Upon_Sso_20_1}</td>
+                                  <td>{e.Invoicing_No_Sso_20_1}</td>
                                   <td>
-                                    {convertDateFormat(
-                                      e.Cosso_Received_Date_60
+                                    {convertDateFormat_firefox(
+                                      e.Invoicing_Date_Sso_20_1
                                     )}
                                   </td>
-                                  <td>{e.Billing_Upon_Cosso_60}</td>
-                                  <td>{e.Invoicing_No_Cosso_60}</td>
-                                  <td>{e.Invoicing_Date_Cosso_60}</td>
+                                  <td>{e.Cancelled_Sso_20}</td>
+                                  <td>{e.Hw_Coa_100}</td>
+                                  <td>{e.Billing_Upon_Hw_Coa_100}</td>
+                                  <td>{e.Invoicing_No_Hw_Coa_100}</td>
                                   <td>
-                                    {convertDateFormat(
-                                      e.Cancelled_Cosso_Received_Date_60
+                                    {convertDateFormat_firefox(
+                                      e.Invoicing_Date_Hw_Coa_100
                                     )}
                                   </td>
-                                  <td>
-                                    {convertDateFormat(
-                                      e.Coa_Sso_Received_Date_100
-                                    )}
-                                  </td>
-                                  <td>{e.Billing_Upon_Sso_Coa_100}</td>
-                                  <td>{e.Invoicing_No_Sso_Coa_100}</td>
-                                  <td>{e.Invoicing_Date_Sso_Coa_100}</td>
-                                  <td>
-                                    {convertDateFormat(
-                                      e.Cancelled_Coa_Sso_Received_Date_100
-                                    )}
-                                  </td>
-                                  <td>
-                                    {convertDateFormat(e.Coa_Ni_Date_100)}
-                                  </td>
-                                  <td>{e.Billing_Upon_Coa_Ni_100}</td>
-                                  <td>{e.Invoicing_No_Coa_Ni_100}</td>
-                                  <td>{e.Invoicing_Date_Coa_Ni_100}</td>
-                                  <td>
-                                    {convertDateFormat(
-                                      e.Cancelled_Coa_Ni_Date_100
-                                    )}
-                                  </td>
-                                  <td>{e.Ses_No}</td>
-                                  <td>{e.Ses_Status}</td>
-                                  <td>{e.Link}</td>
-                                  <td>{e.Ni_Coa_Submission_Status}</td>
+                                  <td>{e.Cancelled_Invoicing_Hw_Coa_100}</td>
+                                  <td>{e.Cancel_Column}</td>
+                                  <td>{e.Reference_Loc_Id_1}</td>
+                                  <td>{e.Po_1}</td>
+                                  <td>{e.Reff}</td>
+                                  <td>{e.Vlookup_For_Billing}</td>
                                 </tr>
                               </React.Fragment>
                             ))}
@@ -1446,7 +1340,7 @@ class MappingSVC extends React.PureComponent {
                                   role.includes("BAM-PFM") === true ? (
                                     {
                                       /* <td>
-                                      <Link to={"/svc-cpo/" + e._id}>
+                                      <Link to={"/hw-cpo/" + e._id}>
                                         <Button
                                           size="sm"
                                           color="secondary"
@@ -1477,12 +1371,17 @@ class MappingSVC extends React.PureComponent {
                                   <td>{e.Config}</td>
                                   <td>{e.Po}</td>
                                   <td>{e.Line}</td>
+                                  <td>{e.Line_Item_Sap}</td>
                                   <td>{e.Material_Code}</td>
                                   <td>{e.Description}</td>
-                                  <td>{e.Line_Item_Sap}</td>
                                   <td>{e.Qty}</td>
-                                  <td>{convertDateFormat(e.CNI_Date)}</td>
-                                  <td>{convertDateFormat(e.Mapping_Date)}</td>
+                                  <td>{e.NW}</td>
+                                  <td>
+                                    {convertDateFormat_firefox(e.On_Air_Date)}
+                                  </td>
+                                  <td>
+                                    {convertDateFormat_firefox(e.Mapping_Date)}
+                                  </td>
                                   <td>{e.Remarks}</td>
                                   <td>{e.Gr_No}</td>
                                   <td>{e.Proceed_Billing_100}</td>
@@ -1490,7 +1389,6 @@ class MappingSVC extends React.PureComponent {
                                   <td>{e.Pcode}</td>
                                   <td>{e.Unit_Price}</td>
                                   <td>{e.Total_Price}</td>
-                                  <td>{e.Commodity}</td>
                                   <td>{e.Discounted_Unit_Price}</td>
                                   <td>{e.Discounted_Po_Price}</td>
                                   <td>{e.Net_Unit_Price}</td>
@@ -1501,101 +1399,88 @@ class MappingSVC extends React.PureComponent {
                                   <td>{e.VlookupWbs}</td>
                                   <td>{e.So_No}</td>
                                   <td>{e.Wbs_No}</td>
-                                  <td>{e.Billing_100}</td>
                                   <td>
-                                    {convertDateFormat(
-                                      e.Atp_Coa_Received_Date_80
+                                    {e.For_Checking_Purpose_Only_Rashidah}
+                                  </td>
+                                  <td>
+                                    {convertDateFormat_firefox(
+                                      e.Hw_Coa_Received_Date_80
                                     )}
                                   </td>
-                                  <td>{e.Billing_Upon_Atp_Coa_80}</td>
-                                  <td>{e.Invoicing_No_Atp_Coa_80}</td>
-                                  <td>{e.Invoicing_Date_Atp_Coa_80}</td>
-                                  <td>{e.Cancelled_Atp_Coa_80}</td>
-                                  <td>{convertDateFormat(e.Ni_Coa_Date_20)}</td>
+                                  <td>{e.Billing_Upon_Hw_Coa_80}</td>
+                                  <td>{e.Invoicing_No_Hw_Coa_80}</td>
+                                  <td>
+                                    {convertDateFormat_firefox(
+                                      e.Invoicing_Date_Hw_Coa_80
+                                    )}
+                                  </td>
+                                  <td>{e.Cancelled_Invoice_Hw_Coa_80}</td>
+                                  <td>
+                                    {convertDateFormat_firefox(
+                                      e.Ni_Coa_Date_20
+                                    )}
+                                  </td>
                                   <td>{e.Billing_Upon_Ni_20}</td>
                                   <td>{e.Invoicing_No_Ni_20}</td>
-                                  <td>{e.Invoicing_Date_Ni_20}</td>
+                                  <td>
+                                    {convertDateFormat_firefox(
+                                      e.Invoicing_Date_Ni_20
+                                    )}
+                                  </td>
                                   <td>{e.Cancelled_Invoicing_Ni_20}</td>
                                   <td>
-                                    {convertDateFormat(e.Sso_Coa_Date_80)}
-                                  </td>
-                                  <td>{e.Billing_Upon_Sso_80}</td>
-                                  <td>{e.Invoicing_No_Sso_80}</td>
-                                  <td>
-                                    {convertDateFormat(e.Invoicing_Date_Sso_80)}
-                                  </td>
-                                  <td>
-                                    {convertDateFormat(
-                                      e.Cancelled_Sso_Coa_Date_80
+                                    {convertDateFormat_firefox(
+                                      e.Hw_Coa_Received_Date_40
                                     )}
                                   </td>
+                                  <td>{e.Billing_Upon_Hw_Coa_40}</td>
+                                  <td>{e.Invoicing_No_Hw_Coa_40}</td>
                                   <td>
-                                    {convertDateFormat(
-                                      e.Coa_Psp_Received_Date_20
+                                    {convertDateFormat_firefox(
+                                      e.Invoicing_Date_Hw_Coa_40
                                     )}
                                   </td>
-                                  <td>{e.Billing_Upon_Coa_Psp_20}</td>
-                                  <td>{e.Invoicing_No_Coa_Psp_20}</td>
-                                  <td>{e.Invoicing_Date_Coa_Psp_20}</td>
+                                  <td>{e.Cancelled_Hw_Coa_40}</td>
                                   <td>
-                                    {convertDateFormat(
-                                      e.Cancelled_Coa_Psp_Received_Date_20
+                                    {convertDateFormat_firefox(
+                                      e.Ni_Coa_Date_40
                                     )}
                                   </td>
+                                  <td>{e.Billing_Upon_Ni_40}</td>
+                                  <td>{e.Invoicing_No_Ni_40}</td>
                                   <td>
-                                    {convertDateFormat(
-                                      e.Coa_Ni_Received_Date_40
+                                    {convertDateFormat_firefox(
+                                      e.Invoicing_Date_Ni_40
                                     )}
                                   </td>
-                                  <td>{e.Billing_Upon_Coa_Ni_40}</td>
-                                  <td>{e.Invoicing_No_Coa_Ni_40}</td>
-                                  <td>{e.Invoicing_Date_Coa_Ni_40}</td>
+                                  <td>{e.Cancelled_Ni_40}</td>
                                   <td>
-                                    {convertDateFormat(
-                                      e.Cancelled_Coa_Ni_Received_Date_40
+                                    {convertDateFormat_firefox(
+                                      e.Sso_Coa_Date_20_1
                                     )}
                                   </td>
+                                  <td>{e.Billing_Upon_Sso_20_1}</td>
+                                  <td>{e.Invoicing_No_Sso_20_1}</td>
                                   <td>
-                                    {convertDateFormat(
-                                      e.Cosso_Received_Date_60
+                                    {convertDateFormat_firefox(
+                                      e.Invoicing_Date_Sso_20_1
                                     )}
                                   </td>
-                                  <td>{e.Billing_Upon_Cosso_60}</td>
-                                  <td>{e.Invoicing_No_Cosso_60}</td>
-                                  <td>{e.Invoicing_Date_Cosso_60}</td>
+                                  <td>{e.Cancelled_Sso_20}</td>
+                                  <td>{e.Hw_Coa_100}</td>
+                                  <td>{e.Billing_Upon_Hw_Coa_100}</td>
+                                  <td>{e.Invoicing_No_Hw_Coa_100}</td>
                                   <td>
-                                    {convertDateFormat(
-                                      e.Cancelled_Cosso_Received_Date_60
+                                    {convertDateFormat_firefox(
+                                      e.Invoicing_Date_Hw_Coa_100
                                     )}
                                   </td>
-                                  <td>
-                                    {convertDateFormat(
-                                      e.Coa_Sso_Received_Date_100
-                                    )}
-                                  </td>
-                                  <td>{e.Billing_Upon_Sso_Coa_100}</td>
-                                  <td>{e.Invoicing_No_Sso_Coa_100}</td>
-                                  <td>{e.Invoicing_Date_Sso_Coa_100}</td>
-                                  <td>
-                                    {convertDateFormat(
-                                      e.Cancelled_Coa_Sso_Received_Date_100
-                                    )}
-                                  </td>
-                                  <td>
-                                    {convertDateFormat(e.Coa_Ni_Date_100)}
-                                  </td>
-                                  <td>{e.Billing_Upon_Coa_Ni_100}</td>
-                                  <td>{e.Invoicing_No_Coa_Ni_100}</td>
-                                  <td>{e.Invoicing_Date_Coa_Ni_100}</td>
-                                  <td>
-                                    {convertDateFormat(
-                                      e.Cancelled_Coa_Ni_Date_100
-                                    )}
-                                  </td>
-                                  <td>{e.Ses_No}</td>
-                                  <td>{e.Ses_Status}</td>
-                                  <td>{e.Link}</td>
-                                  <td>{e.Ni_Coa_Submission_Status}</td>
+                                  <td>{e.Cancelled_Invoicing_Hw_Coa_100}</td>
+                                  <td>{e.Cancel_Column}</td>
+                                  <td>{e.Reference_Loc_Id_1}</td>
+                                  <td>{e.Po_1}</td>
+                                  <td>{e.Reff}</td>
+                                  <td>{e.Vlookup_For_Billing}</td>
                                 </tr>
                               </React.Fragment>
                             ))}
@@ -1685,7 +1570,7 @@ class MappingSVC extends React.PureComponent {
                 </FormGroup>
               </Col>
             </Row>
-            {this.state.multiple_select2 !== null ? (
+            {this.state.multiple_select2.length !== 0 ? (
               <>
                 <Row>
                   <Col sm="12">
@@ -1813,4 +1698,4 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps)(MappingSVC);
+export default connect(mapStateToProps)(MappingHW);

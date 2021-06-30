@@ -15,6 +15,7 @@ import {
 } from "reactstrap";
 import { postDatatoAPINODE, apiSendEmail } from "../../../helper/asyncFunction";
 import ReactJson from "react-json-view";
+import "../../../helper/config";
 
 import { connect } from "react-redux";
 import * as XLSX from "xlsx";
@@ -44,6 +45,7 @@ class ImportHW extends React.Component {
       batch_log: "",
       upload_finish: false,
       error_log: [],
+      warn_log: [],
       batch_count: 2000,
     };
   }
@@ -130,6 +132,8 @@ class ImportHW extends React.Component {
 
   saveBulk = async () => {
     let error_containers = [];
+    let warn_containers = [];
+
     const roles =
       this.state.roleUser.includes("BAM-MAT PLANNER") === true
         ? 1
@@ -214,6 +218,15 @@ class ImportHW extends React.Component {
                 .join(" ") +
               "</table>";
             if (res.data.warnNotif.length !== 0) {
+              for (
+                let in_warn = 0;
+                in_warn < res.data.warnNotif.length;
+                in_warn++
+              ) {
+                let warn_data = res.data.warnNotif[in_warn];
+
+                warn_containers.push(warn_data);
+              }
               let dataEmail = {
                 // "to": creatorEmail,
                 // to: "damar.pramuditya@ericsson.com",
@@ -311,6 +324,17 @@ class ImportHW extends React.Component {
                 error_containers.push(err_data);
               }
             }
+            if (res.data.warnNotif.length !== 0) {
+              for (
+                let in_warn = 0;
+                in_warn < res.data.warnNotif.length;
+                in_warn++
+              ) {
+                let warn_data = res.data.warnNotif[in_warn];
+
+                warn_containers.push(warn_data);
+              }
+            }
           }
         }
       } else {
@@ -343,11 +367,13 @@ class ImportHW extends React.Component {
         break;
       }
     }
-    if (error_containers.length !== 0) {
+    if (error_containers.length !== 0 || warn_containers.length !== 0) {
       this.setState({
         error_log: error_containers,
+        warn_log: warn_containers,
         upload_finish: true,
-        action_message: "There are error(s) please toogle the button",
+        action_message:
+          "There are error(s) and/or warning(s) please toogle the button",
         action_status: "failed",
       });
     } else {
@@ -357,7 +383,8 @@ class ImportHW extends React.Component {
         action_status: "success",
       });
     }
-    console.log(error_containers);
+    console.log("error_containers", error_containers);
+    console.log("warn_containers", warn_containers);
   };
 
   render() {
@@ -379,6 +406,7 @@ class ImportHW extends React.Component {
               color={this.state.error_log.length !== 0 ? "warning" : "success"}
               id="toggler"
               style={{ marginBottom: "1rem" }}
+              disabled={this.state.error_log.length === 0}
             >
               Toggle Log
             </Button>
@@ -386,10 +414,40 @@ class ImportHW extends React.Component {
               <Card>
                 <CardBody>
                   <ReactJson
-                    src={this.state.error_log.map((err) => {
-                      delete err.line;
-                      return err;
-                    })}
+                    src={
+                      this.state.error_log !== undefined &&
+                      this.state.error_log !== null &&
+                      this.state.error_log.map((err) => {
+                        delete err.line;
+                        return err;
+                      })
+                    }
+                    displayDataTypes={false}
+                    displayObjectSize={false}
+                  />
+                </CardBody>
+              </Card>
+            </UncontrolledCollapse>
+            &nbsp;&nbsp;&nbsp;
+            <Button
+              color={this.state.warn_log.length !== 0 ? "warning" : "success"}
+              id="toggler2"
+              style={{ marginBottom: "1rem" }}
+              disabled={this.state.warn_log.length === 0}
+            >
+              Toggle Warn Log
+            </Button>
+            <UncontrolledCollapse toggler="#toggler2">
+              <Card>
+                <CardBody>
+                  <ReactJson
+                    src={
+                      this.state.warn_log !== undefined &&
+                      this.state.warn_log !== null &&
+                      this.state.warn_log.map((warn) => {
+                        return warn;
+                      })
+                    }
                     displayDataTypes={false}
                     displayObjectSize={false}
                   />
