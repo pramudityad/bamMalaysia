@@ -200,10 +200,13 @@ module.exports = global.config = {
         "Invoicing_No_Hw_Coa_80",
         "Invoicing_Date_Hw_Coa_80",
         "Cancelled_Invoice_Hw_Coa_80",
+        "Ni_Coa_Date_20",
         "Billing_Upon_Ni_20",
         "Invoicing_No_Ni_20",
         "Invoicing_Date_Ni_20",
         "Cancelled_Invoicing_Ni_20",
+        "Hw_Coa_Received_Date_40",
+        "Ni_Coa_Date_40",
         "Billing_Upon_Hw_Coa_40",
         "Invoicing_No_Hw_Coa_40",
         "Invoicing_Date_Hw_Coa_40",
@@ -212,6 +215,7 @@ module.exports = global.config = {
         "Invoicing_No_Ni_40",
         "Invoicing_Date_Ni_40",
         "Cancelled_Ni_40",
+        "Sso_Coa_Date_20_1",
         "Billing_Upon_Sso_20_1",
         "Invoicing_No_Sso_20_1",
         "Invoicing_Date_Sso_20_1",
@@ -318,7 +322,6 @@ module.exports = global.config = {
         "LINK",
         "NI COA SUBMISSION STATUS",
       ],
-
       header_model: [
         "Deal_Name",
         "Hammer",
@@ -435,7 +438,6 @@ module.exports = global.config = {
         "Discounted_Unit_Price",
         "Discounted_Po_Price",
       ],
-
       header_pfm: [
         "So_Line_Item_Description",
         "Sitepcode",
@@ -473,7 +475,6 @@ module.exports = global.config = {
         "Invoicing_Date_Coa_Ni_100",
         "Cancelled_Coa_Ni_Date_100",
       ],
-
       header_admin: [
         "Billing_100",
         "Atp_Coa_Received_Date_80",
