@@ -459,11 +459,7 @@ class MYASGList extends Component {
                   size="sm"
                   onClick={this.downloadLMRlist}
                 >
-                  <i
-                    className="fa fa-download"
-                    style={{ marginRight: "8px" }}
-                  ></i>
-                  Download LMR List
+                  <i className="fa fa-download" style={{ marginRight: "8px" }}></i>Download LMR List
                 </Button>
               </CardHeader>
               <CardBody>
@@ -489,11 +485,7 @@ class MYASGList extends Component {
                           <td>
                             <Link to={"/lmr-detail/" + e._id}>
                               <Button color="info" size="sm">
-                                <i
-                                  className="fa fa-info-circle"
-                                  style={{ marginRight: "8px" }}
-                                ></i>
-                                Detail
+                                <i className="fa fa-info-circle" style={{ marginRight: "8px" }}></i>Detail
                               </Button>
                             </Link>
                           </td>
@@ -508,9 +500,7 @@ class MYASGList extends Component {
                   </tbody>
                 </Table>
                 <div style={{ margin: "8px 0px" }}>
-                  <small>
-                    Showing {this.state.totalData} entries
-                  </small>
+                  <small>Showing {this.state.lmr_list.length > 0 ? this.state.activePage * 10 - 9 : "0"} to {this.state.activePage * 10 > this.state.totalData ? this.state.totalData : this.state.activePage * 10} of {this.state.totalData} entries</small>
                 </div>
                 <Pagination
                   activePage={this.state.activePage}

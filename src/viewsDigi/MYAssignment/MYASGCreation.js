@@ -368,7 +368,9 @@ class MYASGCreation extends Component {
       query_param: {
         table: "p_digi_madd_m_site_data",
         columns: [
-          "JSON_UNQUOTE(JSON_EXTRACT(p_digi_madd_m_site_data.custom_property, '$.\"70b54a94-8b77-11eb-8bb2-000d3aa2f57d\".\"value\"')) as fas_id"
+          "JSON_UNQUOTE(JSON_EXTRACT(p_digi_madd_m_site_data.custom_property, '$.\"c0edbe63-8616-11eb-9b96-000d3aa2f57d\".\"value\"')) as workplan_id",
+          "JSON_UNQUOTE(JSON_EXTRACT(p_digi_madd_m_site_data.custom_property, '$.\"70b54a94-8b77-11eb-8bb2-000d3aa2f57d\".\"value\"')) as fas_id",
+          "JSON_UNQUOTE(JSON_EXTRACT(p_digi_madd_m_site_data.custom_property, '$.\"c5f952dc-ce6c-11eb-a6bd-000d3aa2f57d\".\"value\"')) as fas_name"
         ],
         join: {},
         condition: {},
@@ -618,8 +620,14 @@ class MYASGCreation extends Component {
       if (resCD.data !== undefined) {
         if (resCD.data.result !== undefined) {
           const list_fas = resCD.data.result.raw_data;
-          const Unique_fas = [...new Set(list_fas.map((item) => item.fas_id))];
-          this.setState({ list_fas: Unique_fas });
+          console.log('list_fas', list_fas)
+          const unique_fas = [...new Set(list_fas.map((item) => item.fas_id + ' - ' + item.fas_name))];
+          for (let i = 0; i < unique_fas.length; i++) {
+            if (unique_fas[i].includes('null')) {
+              unique_fas.splice(i, 1);
+            }
+          }
+          this.setState({ list_fas: unique_fas });
         }
       }
       if (resCD === 500) {
@@ -1542,7 +1550,7 @@ class MYASGCreation extends Component {
                 onConfirm={() => this.hideAlert()}
               >
                 WP ID: {failed_update_wp.join(', ')}
-              Message: {failed_update_wp_message.join(', ')}
+                Message: {failed_update_wp_message.join(', ')}
               </SweetAlert>
             );
 
@@ -1785,6 +1793,8 @@ class MYASGCreation extends Component {
     }
     if (name === "gl_account" && value !== null) {
       lmr_form[name.toString()] = value.split(" - ")[1];
+    } else if (name === "fas_id") {
+      lmr_form["fas_id"] = value.split(" - ")[0]
     } else {
       lmr_form[name.toString()] = value;
     }
