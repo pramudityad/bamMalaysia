@@ -550,11 +550,10 @@ class MatNRO extends React.Component {
       );
       if (dataExistIdx !== -1) {
         if (value === false) {
-          dataVendorMatUpdate[dataExistIdx][
-            "Vendor_List"
-          ] = dataVendorMatUpdate[dataExistIdx].Vendor_List.filter(
-            (ven) => ven.Vendor_Code !== data_id_vendor
-          );
+          dataVendorMatUpdate[dataExistIdx]["Vendor_List"] =
+            dataVendorMatUpdate[dataExistIdx].Vendor_List.filter(
+              (ven) => ven.Vendor_Code !== data_id_vendor
+            );
         } else {
           const dataVendorExist = dataVendorMatUpdate[
             dataExistIdx
@@ -574,11 +573,10 @@ class MatNRO extends React.Component {
         });
       }
       if (value === false) {
-        dataVendorMatUpdate[dataVendorMatUpdate.length - 1][
-          "Vendor_List"
-        ] = dataVendorMatUpdate[
-          dataVendorMatUpdate.length - 1
-        ].Vendor_List.filter((ven) => ven.Vendor_Code !== data_id_vendor);
+        dataVendorMatUpdate[dataVendorMatUpdate.length - 1]["Vendor_List"] =
+          dataVendorMatUpdate[
+            dataVendorMatUpdate.length - 1
+          ].Vendor_List.filter((ven) => ven.Vendor_Code !== data_id_vendor);
         console.log(
           dataVendorMatUpdate[
             dataVendorMatUpdate.length - 1
@@ -633,7 +631,10 @@ class MatNRO extends React.Component {
   };
 
   handleCheckVendor = (event) => {
+    console.log(event);
+
     const isChecked = event.target.checked;
+    // console.log(isChecked);
 
     const Identifier = event.target.name;
     console.log(Identifier);

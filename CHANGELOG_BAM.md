@@ -228,3 +228,16 @@ All notable changes to BAM https://bam-my.e-dpm.com will be documented in this f
 ### Fixed
 
 - total amount in lmr creation form readOnly
+
+## [1.4.1] - 2021-06-1
+
+### Added
+
+### Changed
+
+- dependent page fo import hw/svc
+- dependent page fo export hw/svc
+
+### Fixed
+
+- normalize value Discounted_Po_Price for summary master

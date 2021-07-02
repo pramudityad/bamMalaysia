@@ -1931,6 +1931,9 @@ class MYASGCreation extends Component {
 
                         {this.state.lmr_form.lmr_type === "Cost Collector" ? (
                           <Input
+                            disabled={
+                              this.state.creation_lmr_child_form.length !== 0
+                            }
                             type="select"
                             name="gl_account"
                             id="gl_account"
@@ -2009,6 +2012,9 @@ class MYASGCreation extends Component {
                       <FormGroup>
                         <Label>Vendor Name</Label>
                         <Input
+                          disabled={
+                            this.state.creation_lmr_child_form.length !== 0
+                          }
                           type="select"
                           name="vendor_name"
                           id="vendor_name"

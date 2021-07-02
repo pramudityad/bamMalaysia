@@ -38,98 +38,16 @@ import {
 import ModalCreateNew from "../Component/ModalCreateNew";
 import Pagination from "react-js-pagination";
 import { saveAs } from "file-saver";
-import { numToSSColumn } from "../../helper/basicFunction";
+import { numToSSColumn, formatMoney } from "../../helper/basicFunction";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
 import ModalDelete from "../Component/ModalDelete";
+import debounce from "lodash.debounce";
 
 import "../../helper/config";
 import "./cpomapping.css";
 const DefaultNotif = React.lazy(() => import("../DefaultView/DefaultNotif"));
 const modul_name = "Summary Master";
-const header = [
-  // "",
-  "Type",
-  "Deal_Name",
-  "Hammer",
-  "Project_Description",
-  "Po_Number",
-  "Po",
-  "Line_Item",
-  "LINE ITEM SAP CELCOM",
-  "MATERIAL CODE",
-  "Description",
-  "Qty",
-  // "Used",
-  "RESERVED",
-  "CALLOFF",
-  "Balance",
-  "Unit_Price",
-  "Total_Price",
-  "Assigned_Price",
-  "Discounted_Unit_Price",
-  "Discounted_Po_Price",
-  "Discounted_Assigned_Price",
-  "Hammer_1_Hd",
-  "Pcode",
-  "Pcode_Used",
-  "Commodity",
-];
-const header_model = [
-  "type_summary",
-  "Deal_Name",
-  "Hammer",
-  "Project_Description",
-  "Po_Number",
-  "Po",
-  "Line_Item",
-  "Line_Item_Sap",
-  "Material_Code",
-  "Description",
-  "Qty",
-  // "Used",
-  "Reserve",
-  "Called_Off",
-  "Balance",
-  "Unit_Price",
-  "Total_Price",
-  "Assigned_Price",
-  "Discounted_Unit_Price",
-  "Discounted_Po_Price",
-  "Discounted_Assigned_Price",
-  "Hammer_1_Hd",
-  "Pcode",
-  "Pcode_Used",
-  "Commodity",
-];
-
-const header_materialmapping = [
-  "hw_svc",
-  "Deal_Name",
-  "Hammer",
-  "Project_Description",
-  "Po_Number",
-  "Po",
-  "Line_Item",
-  "Line_Item_Sap",
-  "Material_Code",
-  "Description",
-  "Qty",
-  // "Used",
-  // "Balance",
-  "Unit_Price",
-  // "Total_Price",
-  // "Assigned_Price",
-  "Discounted_Unit_Price",
-  // "Discounted_Po_Price",
-  // "Discounted_Assigned_Price",
-  "Hammer_1_Hd",
-  "Pcode",
-  "Pcode_Used",
-  "Commodity",
-];
-
-const td_value = [];
 
 class SVCMaster extends React.Component {
   constructor(props) {
@@ -158,15 +76,51 @@ class SVCMaster extends React.Component {
       selected_name: null,
       selected_vendor: null,
       danger: false,
+      count_header: {},
     };
+    this.onChangeDebounced = debounce(this.onChangeDebounced, 500);
   }
 
   componentDidMount() {
-    // console.log(global.config.role);
-    // console.log("header", header.length);
-    // console.log("model_header", header_model.length);
     this.getList();
     this.getListAll();
+  }
+
+  getHeader() {
+    let filter_array = [];
+    for (const [key, value] of Object.entries(this.state.filter_list)) {
+      if (value !== null && value !== undefined) {
+        filter_array.push(
+          '"' + key + '":{"$regex" : "' + value + '", "$options" : "i"}'
+        );
+      }
+    }
+    let whereAnd = "{" + filter_array.join(",") + "}";
+    getDatafromAPINODE(
+      "/summaryMaster/getSummaryMasterCount?q=" + whereAnd + "&noPg=1",
+      this.state.tokenUser
+    ).then((res) => {
+      if (res.data !== undefined) {
+        const items3 = res.data.data;
+        this.setState({ count_header: items3 });
+      }
+    });
+  }
+
+  mapHeader(data_header) {
+    let header_keys = Object.keys(data_header);
+    let header_values = Object.values(data_header);
+    if (
+      header_keys === "Qty" ||
+      header_keys === "Unit_Price" ||
+      header_keys === "Total_Price" ||
+      header_keys === "Discounted_Unit_Price" ||
+      header_keys === "Discounted_Po_Price"
+    ) {
+      return formatMoney(header_values);
+    } else {
+      return header_values;
+    }
   }
 
   getList() {
@@ -192,7 +146,7 @@ class SVCMaster extends React.Component {
         const items = res.data.data;
         const totalData = res.data.totalResults;
         this.setState({ all_data: items, totalData: totalData }, () =>
-          this.getMapping()
+          this.getHeader()
         );
       }
     });
@@ -226,8 +180,12 @@ class SVCMaster extends React.Component {
     const wb = new Excel.Workbook();
     const ws = wb.addWorksheet();
 
-    ws.addRow(header_materialmapping);
-    for (let i = 1; i < header_materialmapping.length + 1; i++) {
+    ws.addRow(global.config.cpo_mapping.master.header_materialmapping);
+    for (
+      let i = 1;
+      i < global.config.cpo_mapping.master.header_materialmapping.length + 1;
+      i++
+    ) {
       ws.getCell(numToSSColumn(i) + "1").fill = {
         type: "pattern",
         pattern: "solid",
@@ -531,8 +489,12 @@ class SVCMaster extends React.Component {
     const wb = new Excel.Workbook();
     const ws = wb.addWorksheet();
 
-    ws.addRow(header_model);
-    for (let i = 1; i < header_model.length + 1; i++) {
+    ws.addRow(global.config.cpo_mapping.master.header_model);
+    for (
+      let i = 1;
+      i < global.config.cpo_mapping.master.header_model.length + 1;
+      i++
+    ) {
       ws.getCell(numToSSColumn(i) + "1").fill = {
         type: "pattern",
         pattern: "solid",
@@ -589,10 +551,10 @@ class SVCMaster extends React.Component {
     const wb = new Excel.Workbook();
     const ws = wb.addWorksheet();
 
-    let header = ["Line", "Po", "New_Loc_Id", "Qty"];
+    let header_b = ["Line", "Po", "New_Loc_Id", "Qty"];
 
-    ws.addRow(header);
-    for (let i = 1; i < header.length + 1; i++) {
+    ws.addRow(header_b);
+    for (let i = 1; i < header_b.length + 1; i++) {
       ws.getCell(numToSSColumn(i) + "1").fill = {
         type: "pattern",
         pattern: "solid",
@@ -613,9 +575,9 @@ class SVCMaster extends React.Component {
     this.toggleLoading();
   };
 
-  onChangeDebounced = () => {
+  onChangeDebounced() {
     this.getList();
-  };
+  }
 
   handleFilterList = (e) => {
     const index = e.target.name;
@@ -634,7 +596,11 @@ class SVCMaster extends React.Component {
 
   loopSearchBar = () => {
     let searchBar = [];
-    for (let i = 0; i < header_model.length; i++) {
+    for (
+      let i = 0;
+      i < global.config.cpo_mapping.master.header_model.length;
+      i++
+    ) {
       searchBar.push(
         <td>
           {/* {i !== 1 && i !== 3 && i !== 5 && i !== 7 && i !== 8 ? (
@@ -652,8 +618,12 @@ class SVCMaster extends React.Component {
                 type="text"
                 placeholder="Search"
                 onChange={this.handleFilterList}
-                value={this.state.filter_list[header_model[i]]}
-                name={header_model[i]}
+                value={
+                  this.state.filter_list[
+                    global.config.cpo_mapping.master.header_model[i]
+                  ]
+                }
+                name={global.config.cpo_mapping.master.header_model[i]}
                 size="sm"
               />
             </InputGroup>
@@ -933,28 +903,40 @@ class SVCMaster extends React.Component {
                         <thead class="thead-dark">
                           <tr align="center">
                             <th></th>
-                            {header.map((head) => (
-                              <th>{head}</th>
-                            ))}
+                            {global.config.cpo_mapping.master.header.map(
+                              (head) => (
+                                <th>{head}</th>
+                              )
+                            )}
                           </tr>
                           <tr align="center">
                             <th></th>
-                            {header_model.map((head, j) =>
-                              head === "Qty" ||
-                              head === "Used" ||
-                              head === "Balance" ||
-                              head === "Unit_Price" ||
-                              head === "Total_Price" ||
-                              head === "Assigned_Price" ||
-                              head === "Total_Po_Amount" ||
-                              head === "Discounted_Unit_Price" ||
-                              head === "Discounted_Po_Price" ||
-                              head === "Discounted_Assigned_Price" ? (
-                                <th>{this.countheader(head)}</th>
-                              ) : (
-                                <th>{this.countheaderNaN(head)}</th>
+                            {Object.keys(this.state.count_header).length !==
+                              0 &&
+                            this.state.count_header.constructor === Object ? (
+                              this.mapHeader(this.state.count_header).map(
+                                (head, j) => <th>{head}</th>
                               )
+                            ) : (
+                              <></>
                             )}
+                            {/* {global.config.cpo_mapping.master.header_model.map(
+                              (head, j) =>
+                                head === "Qty" ||
+                                head === "Used" ||
+                                head === "Balance" ||
+                                head === "Unit_Price" ||
+                                head === "Total_Price" ||
+                                head === "Assigned_Price" ||
+                                head === "Total_Po_Amount" ||
+                                head === "Discounted_Unit_Price" ||
+                                head === "Discounted_Po_Price" ||
+                                head === "Discounted_Assigned_Price" ? (
+                                  <th>{this.countheader(head)}</th>
+                                ) : (
+                                  <th>{this.countheaderNaN(head)}</th>
+                                )
+                            )} */}
                           </tr>
                           <tr align="center">
                             <td></td>
@@ -966,35 +948,40 @@ class SVCMaster extends React.Component {
                             this.state.all_data.map((e, i) => (
                               <React.Fragment key={e._id + "frag"}>
                                 <tr key={e._id} align="center">
-                                  <td>
-                                    <Link to={"/summary-master/" + e._id}>
+                                  {role.includes("BAM-MAT PLANNER") === true ? (
+                                    <td>
+                                      <Link to={"/summary-master/" + e._id}>
+                                        <Button
+                                          size="sm"
+                                          color="secondary"
+                                          title="Edit"
+                                          // value={e._id}
+                                          // onClick={this.toggleEdit}
+                                        >
+                                          <i
+                                            className="fa fa-edit"
+                                            aria-hidden="true"
+                                          ></i>
+                                        </Button>
+                                      </Link>{" "}
                                       <Button
                                         size="sm"
-                                        color="secondary"
-                                        title="Edit"
-                                        // value={e._id}
-                                        // onClick={this.toggleEdit}
+                                        color="danger"
+                                        value={e._id}
+                                        name={e.unique_code}
+                                        onClick={this.toggleDelete}
+                                        title="Delete"
                                       >
                                         <i
-                                          className="fa fa-edit"
+                                          className="fa fa-trash"
                                           aria-hidden="true"
                                         ></i>
                                       </Button>
-                                    </Link>{" "}
-                                    <Button
-                                      size="sm"
-                                      color="danger"
-                                      value={e._id}
-                                      name={e.unique_code}
-                                      onClick={this.toggleDelete}
-                                      title="Delete"
-                                    >
-                                      <i
-                                        className="fa fa-trash"
-                                        aria-hidden="true"
-                                      ></i>
-                                    </Button>
-                                  </td>
+                                    </td>
+                                  ) : (
+                                    <td></td>
+                                  )}
+
                                   <td>{e.type_summary.toUpperCase()}</td>
                                   <td>{e.Deal_Name}</td>
                                   <td>{e.Hammer}</td>

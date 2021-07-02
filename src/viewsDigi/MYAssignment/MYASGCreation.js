@@ -368,7 +368,9 @@ class MYASGCreation extends Component {
       query_param: {
         table: "p_digi_madd_m_site_data",
         columns: [
-          "JSON_UNQUOTE(JSON_EXTRACT(p_digi_madd_m_site_data.custom_property, '$.\"70b54a94-8b77-11eb-8bb2-000d3aa2f57d\".\"value\"')) as fas_id"
+          "JSON_UNQUOTE(JSON_EXTRACT(p_digi_madd_m_site_data.custom_property, '$.\"c0edbe63-8616-11eb-9b96-000d3aa2f57d\".\"value\"')) as workplan_id",
+          "JSON_UNQUOTE(JSON_EXTRACT(p_digi_madd_m_site_data.custom_property, '$.\"70b54a94-8b77-11eb-8bb2-000d3aa2f57d\".\"value\"')) as fas_id",
+          "JSON_UNQUOTE(JSON_EXTRACT(p_digi_madd_m_site_data.custom_property, '$.\"c5f952dc-ce6c-11eb-a6bd-000d3aa2f57d\".\"value\"')) as fas_name"
         ],
         join: {},
         condition: {},
@@ -411,7 +413,9 @@ class MYASGCreation extends Component {
             "JSON_UNQUOTE(JSON_EXTRACT(p_digi_madd_m_site_data.custom_property, '$.\"c0fb474f-8616-11eb-9b96-000d3aa2f57d\".\"value\"')) as lmr_survey_nw_number",
             "JSON_UNQUOTE(JSON_EXTRACT(p_digi_madd_m_site_data.custom_property, '$.\"c0feffd5-8616-11eb-9b96-000d3aa2f57d\".\"value\"')) as lmr_survey_number",
             "JSON_UNQUOTE(JSON_EXTRACT(p_digi_madd_m_site_data.custom_property, '$.\"c10794d4-8616-11eb-9b96-000d3aa2f57d\".\"value\"')) as lmr_ti_nw_number",
-            "JSON_UNQUOTE(JSON_EXTRACT(p_digi_madd_m_site_data.custom_property, '$.\"c10aade8-8616-11eb-9b96-000d3aa2f57d\".\"value\"')) as lmr_ti_number"
+            "JSON_UNQUOTE(JSON_EXTRACT(p_digi_madd_m_site_data.custom_property, '$.\"c10aade8-8616-11eb-9b96-000d3aa2f57d\".\"value\"')) as lmr_ti_number",
+            "JSON_UNQUOTE(JSON_EXTRACT(p_digi_madd_m_site_data.custom_property, '$.\"4fe7cc81-8ae4-11eb-9de5-000d3aa2f57d\".\"value\"')) as lmr_ndo_number",
+            "JSON_UNQUOTE(JSON_EXTRACT(p_digi_madd_m_site_data.custom_property, '$.\"fc305b4f-8af5-11eb-9de5-000d3aa2f57d\".\"value\"')) as lmr_integration_number"
           ],
           "join": {},
           "condition": {
@@ -616,8 +620,14 @@ class MYASGCreation extends Component {
       if (resCD.data !== undefined) {
         if (resCD.data.result !== undefined) {
           const list_fas = resCD.data.result.raw_data;
-          const Unique_fas = [...new Set(list_fas.map((item) => item.fas_id))];
-          this.setState({ list_fas: Unique_fas });
+          console.log('list_fas', list_fas)
+          const unique_fas = [...new Set(list_fas.map((item) => item.fas_id + ' - ' + item.fas_name))];
+          for (let i = 0; i < unique_fas.length; i++) {
+            if (unique_fas[i].includes('null')) {
+              unique_fas.splice(i, 1);
+            }
+          }
+          this.setState({ list_fas: unique_fas });
         }
       }
       if (resCD === 500) {
@@ -1468,6 +1478,117 @@ class MYASGCreation extends Component {
     } else {
       console.log("dataLMR", dataLMR);
       console.log("dataLMRChild", dataLMRChild);
+
+      let check_wp_id = [];
+      let gl_account_to_be_checked;
+
+      if (dataLMR.gl_type === 'ITC + Transport') {
+        gl_account_to_be_checked = 'lmr_ti_number';
+      } else if (dataLMR.gl_type === 'Survey') {
+        gl_account_to_be_checked = 'lmr_survey_number';
+      } else if (dataLMR.gl_type === 'NDO') {
+        gl_account_to_be_checked = 'lmr_ndo_number';
+      } else if (dataLMR.gl_type === 'Integration') {
+        gl_account_to_be_checked = 'lmr_integration_number';
+      }
+
+      // disabled temporarily
+      // for (let i = 0; i < dataLMRChild.length; i++) {
+      //   let getWPID = await this.getWPfromACT("https://dev-corsanywhere.e-dpm.com/", "https://api.act.e-dpm.com/api/get_data_auth", dataLMRChild[i]['wp_id']);
+      //   if (getWPID !== undefined && getWPID.data !== undefined) {
+      //     if (getWPID.data.result.raw_data[0][gl_account_to_be_checked] !== null && getWPID.data.result.raw_data[0][gl_account_to_be_checked] !== "") {
+      //       check_wp_id.push(dataLMRChild[i]['wp_id']);
+      //     }
+      //   }
+      // }
+
+      // if (check_wp_id.length > 0) {
+      //   let distinct_wp_id = [...new Set(check_wp_id)];
+      //   let message = `LMR with current GL Account and WP ID: ${distinct_wp_id.join(', ')} have already been created previously!`;
+      //   const getAlert = () => (
+      //     <SweetAlert
+      //       danger
+      //       title="Error!"
+      //       onConfirm={() => this.hideAlert()}
+      //     >
+      //       {message}
+      //     </SweetAlert>
+      //   );
+
+      //   this.setState({
+      //     sweet_alert: getAlert()
+      //   });
+      //   this.toggleLoading();
+      // } else {
+      //   const respondSaveLMR = await this.postDatatoAPINODE("/aspassignment/createOneAspAssignment", { asp_data: dataLMR, asp_data_child: dataLMRChild });
+      //   if (respondSaveLMR.data !== undefined && respondSaveLMR.status >= 200 && respondSaveLMR.status <= 300) {
+      //     localStorage.removeItem("asp_data");
+      //     localStorage.removeItem("asp_data_child");
+
+      //     let failed_update_wp = [];
+      //     let failed_update_wp_message = [];
+
+      //     for (let i = 0; i < dataChildForm.length; i++) {
+      //       let date = new Date();
+      //       if (this.state.lmr_form.gl_account_actual !== 'Transport - 402603') {
+      //         let updateLMRtoACT = await this.updateLMRtoACT("https://dev-corsanywhere.e-dpm.com/", "https://api.act.e-dpm.com/api/update_site_data", dataChildForm[i].m_id_wp, respondSaveLMR.data.parent.lmr_id, convertDateFormat(date));
+      //         if (updateLMRtoACT !== undefined && updateLMRtoACT.data !== undefined && updateLMRtoACT.data.result.status >= 200 && updateLMRtoACT.data.result.status <= 300) {
+      //           console.log('success update WP', dataChildForm[i].wp_id);
+      //         } else {
+      //           failed_update_wp.push(dataChildForm[i].wp_id);
+      //           failed_update_wp_message.push(JSON.stringify(updateLMRtoACT.data));
+      //         }
+      //       }
+      //     }
+
+      //     if (failed_update_wp.length === 0) {
+      //       this.setState({ action_status: "success", action_message: "LMR has been created!", redirect: "lmr-detail/" + respondSaveLMR.data.parent._id });
+      //     } else {
+      //       const getAlert = () => (
+      //         <SweetAlert
+      //           danger
+      //           title="Successfully created LMR but failed to update to Erisite!"
+      //           onConfirm={() => this.hideAlert()}
+      //         >
+      //           WP ID: {failed_update_wp.join(', ')}
+      //           Message: {failed_update_wp_message.join(', ')}
+      //         </SweetAlert>
+      //       );
+
+      //       this.setState({
+      //         sweet_alert: getAlert()
+      //       });
+      //     }
+
+      //     this.toggleLoading();
+      //   } else {
+      //     localStorage.setItem("asp_data", JSON.stringify(dataLMR));
+      //     localStorage.setItem("asp_data_child", JSON.stringify(dataLMRChild));
+      //     if (respondSaveLMR.response !== undefined && respondSaveLMR.response.data !== undefined && respondSaveLMR.response.data.error !== undefined) {
+      //       if (respondSaveLMR.response.data.error.message !== undefined) {
+      //         this.setState({
+      //           action_status: "failed",
+      //           action_message: respondSaveLMR.response.data.error.message,
+      //         });
+      //         this.toggleLoading();
+      //       } else {
+      //         this.setState({
+      //           action_status: "failed",
+      //           action_message: respondSaveLMR.response.data.error,
+      //         });
+      //         this.toggleLoading();
+      //       }
+      //     } else {
+      //       this.setState({
+      //         action_status: "failed",
+      //         action_message: "There is something error. Don't worry, we saved a draft for you. Please refresh the page"
+      //       });
+      //       this.toggleLoading();
+      //     }
+      //   }
+      // }
+
+      // temporary create LMR
       const respondSaveLMR = await this.postDatatoAPINODE("/aspassignment/createOneAspAssignment", { asp_data: dataLMR, asp_data_child: dataLMRChild });
       if (respondSaveLMR.data !== undefined && respondSaveLMR.status >= 200 && respondSaveLMR.status <= 300) {
         localStorage.removeItem("asp_data");
@@ -1518,40 +1639,12 @@ class MYASGCreation extends Component {
               action_status: "failed",
               action_message: respondSaveLMR.response.data.error.message,
             });
-
-            // const getAlert = () => (
-            //   <SweetAlert
-            //     danger
-            //     title="Error!"
-            //     onConfirm={() => this.hideAlert()}
-            //   >
-            //     {respondSaveLMR.response.data.error.message.toString()}
-            //   </SweetAlert>
-            // );
-
-            // this.setState({
-            //   sweet_alert: getAlert()
-            // });
             this.toggleLoading();
           } else {
             this.setState({
               action_status: "failed",
               action_message: respondSaveLMR.response.data.error,
             });
-
-            // const getAlert = () => (
-            //   <SweetAlert
-            //     danger
-            //     title="Error!"
-            //     onConfirm={() => this.hideAlert()}
-            //   >
-            //     {respondSaveLMR.response.data.error.toString()}
-            //   </SweetAlert>
-            // );
-
-            // this.setState({
-            //   sweet_alert: getAlert()
-            // });
             this.toggleLoading();
           }
         } else {
@@ -1559,20 +1652,6 @@ class MYASGCreation extends Component {
             action_status: "failed",
             action_message: "There is something error. Don't worry, we saved a draft for you. Please refresh the page"
           });
-
-          // const getAlert = () => (
-          //   <SweetAlert
-          //     danger
-          //     title="Error!"
-          //     onConfirm={() => this.hideAlert()}
-          //   >
-          //     There is something error. Don't worry, we saved a draft for you. Please refresh the page
-          //   </SweetAlert>
-          // );
-
-          // this.setState({
-          //   sweet_alert: getAlert()
-          // });
           this.toggleLoading();
         }
       }
@@ -1783,6 +1862,8 @@ class MYASGCreation extends Component {
     }
     if (name === "gl_account" && value !== null) {
       lmr_form[name.toString()] = value.split(" - ")[1];
+    } else if (name === "fas_id") {
+      lmr_form["fas_id"] = value.split(" - ")[0]
     } else {
       lmr_form[name.toString()] = value;
     }
@@ -2268,18 +2349,51 @@ class MYASGCreation extends Component {
     } else {
       if (response.response !== undefined && response.response.data !== undefined && response.response.data.error !== undefined) {
         if (response.response.data.error.message !== undefined) {
+          let message = response.response.data.error.message;
+          const getAlert = () => (
+            <SweetAlert
+              danger
+              title="Error!"
+              onConfirm={() => this.hideAlert()}
+            >
+              {message}
+            </SweetAlert>
+          );
+
           this.setState({
-            action_status: "failed",
-            action_message: response.response.data.error.message,
+            sweet_alert: getAlert()
           });
         } else {
+          let message = response.response.data.error;
+          const getAlert = () => (
+            <SweetAlert
+              danger
+              title="Error!"
+              onConfirm={() => this.hideAlert()}
+            >
+              {message}
+            </SweetAlert>
+          );
+
           this.setState({
-            action_status: "failed",
-            action_message: response.response.data.error,
+            sweet_alert: getAlert()
           });
         }
       } else {
-        this.setState({ action_status: "failed" });
+        let message = 'Error!';
+        const getAlert = () => (
+          <SweetAlert
+            danger
+            title="Error!"
+            onConfirm={() => this.hideAlert()}
+          >
+            {message}
+          </SweetAlert>
+        );
+
+        this.setState({
+          sweet_alert: getAlert()
+        });
       }
     }
     this.toggleLoading();
@@ -2333,20 +2447,53 @@ class MYASGCreation extends Component {
       if (response.response !== undefined && response.response.data !== undefined && response.response.data.error !== undefined) {
         if (response.response.data.error.message !== undefined) {
           this.toggleLoading();
+          let message = response.response.data.error.message;
+          const getAlert = () => (
+            <SweetAlert
+              danger
+              title="Error!"
+              onConfirm={() => this.hideAlert()}
+            >
+              {message}
+            </SweetAlert>
+          );
+
           this.setState({
-            action_status: "failed",
-            action_message: response.response.data.error.message,
+            sweet_alert: getAlert()
           });
         } else {
           this.toggleLoading();
+          let message = response.response.data.error;
+          const getAlert = () => (
+            <SweetAlert
+              danger
+              title="Error!"
+              onConfirm={() => this.hideAlert()}
+            >
+              {message}
+            </SweetAlert>
+          );
+
           this.setState({
-            action_status: "failed",
-            action_message: response.response.data.error,
+            sweet_alert: getAlert()
           });
         }
       } else {
         this.toggleLoading();
-        this.setState({ action_status: "failed" });
+        let message = 'Error!';
+        const getAlert = () => (
+          <SweetAlert
+            danger
+            title="Error!"
+            onConfirm={() => this.hideAlert()}
+          >
+            {message}
+          </SweetAlert>
+        );
+
+        this.setState({
+          sweet_alert: getAlert()
+        });
       }
     }
   }

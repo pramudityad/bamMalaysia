@@ -391,7 +391,7 @@ class MappingHW extends React.Component {
     // console.log("model_header", header_model.length);
     // this.getList();
     // this.getHeader();
-    this.getListAll();
+    // this.getListAll();
     this.getMaster();
   }
 
@@ -929,9 +929,8 @@ class MappingHW extends React.Component {
     this.setState(
       {
         rowsXLS: newDataXLS,
-      }
-      // ,
-      // () => this.chunkArray(this.state.rowsXLS, 2000)
+      },
+      () => this.chunkArray(this.state.rowsXLS, 4000)
     );
   }
 
@@ -958,165 +957,8 @@ class MappingHW extends React.Component {
     });
   };
 
-  toggle = (i) => {
-    const newArray = this.state.dropdownOpen.map((element, index) => {
-      return index === i ? !element : false;
-    });
-    this.setState({
-      dropdownOpen: newArray,
-    });
-  };
-
-  // saveBulk = async () => {
-  //   // this.toggleLoading();
-  //   this.togglecreateModal();
-  //   const roles =
-  //     this.state.roleUser.includes("BAM-MAT PLANNER") === true
-  //       ? 1
-  //       : this.state.roleUser.includes("BAM-PFM") === true
-  //       ? 2
-  //       : 3;
-  //   for (
-  //     let index_xlsx = 0;
-  //     index_xlsx < this.state.rowsXLS_batch.length;
-  //     index_xlsx++
-  //   ) {
-  //     this.toggleLoading();
-  //     console.log(`hit ${index_xlsx}`);
-  //     // this.toggleLoading();
-  //     const res = await postDatatoAPINODE(
-  //       "/cpoMapping/createCpo",
-  //       {
-  //         cpo_type: "hw",
-  //         required_check: true,
-  //         roles: roles,
-  //         cpo_data: this.state.rowsXLS_batch[index_xlsx],
-  //       },
-  //       this.state.tokenUser
-  //     );
-  //     if (res.data !== undefined) {
-  //       if (roles === 2) {
-  //         this.setState({
-  //           action_status: "success",
-  //           action_message: "success batch " + index_xlsx,
-  //         });
-  //         this.toggleLoading();
-  //       } else {
-  //         console.log("just ", index_xlsx);
-  //         this.setState({
-  //           action_status: "success",
-  //           action_message: "success batch " + index_xlsx,
-  //         });
-  //         this.toggleLoading();
-  //         // if (res.data.updateData.length !== 0) {
-  //         //   const table_header = Object.keys(res.data.updateData[0]);
-  //         //   const update_Data = res.data.updateData;
-  //         //   const new_table_header = table_header.slice(0, -2);
-  //         //   // update_Data.map((row, k) => console.log(row));
-  //         //   // console.log(table_header);
-  //         //   let value = "row.";
-  //         //   const bodyEmail =
-  //         //     "<h2>DPM - BAM Notification</h2><br/><span>Please be notified that the following " +
-  //         //     modul_name +
-  //         //     " data has been updated <br/><br/><table><tr>" +
-  //         //     new_table_header
-  //         //       .map((tab, i) => "<th>" + tab + "</th>")
-  //         //       .join(" ") +
-  //         //     "</tr>" +
-  //         //     update_Data
-  //         //       .map(
-  //         //         (row, j) =>
-  //         //           "<tr key={" +
-  //         //           j +
-  //         //           "}>" +
-  //         //           new_table_header
-  //         //             .map((td) => "<td>" + eval(value + td) + "</td>")
-  //         //             .join(" ") +
-  //         //           "</tr>"
-  //         //       )
-  //         //       .join(" ") +
-  //         //     "</table>";
-  //         //   if (res.data.warnNotif.length !== 0) {
-  //         //     console.log("there are warn");
-  //         //     let dataEmail = {
-  //         //       // "to": creatorEmail,
-  //         //       to: "pramudityad@outlook.com",
-  //         //       // to: global.config.role.cpm,
-  //         //       subject: "[NOTIFY to CPM] " + modul_name,
-  //         //       body: bodyEmail,
-  //         //     };
-  //         //     const sendEmail = await apiSendEmail(dataEmail);
-  //         //     // console.log(sendEmail);
-  //         //     this.setState({
-  //         //       action_status: "warning",
-  //         //       action_message:
-  //         //         "success with warn " +
-  //         //         res.data.warnNotif.map((warn) => warn) +
-  //         //         " batch " +
-  //         //         index_xlsx,
-  //         //     });
-  //         //     this.toggleLoading();
-  //         //     // return;
-  //         //     // setTimeout(function () {
-  //         //     //   window.location.reload();
-  //         //     // }, 1500);
-  //         //   }
-  //         //   let dataEmail = {
-  //         //     // "to": creatorEmail,
-  //         //     to: "pramudityad@outlook.com",
-  //         //     // to: global.config.role.cpm,
-  //         //     subject: "[NOTIFY to CPM] " + modul_name,
-  //         //     body: bodyEmail,
-  //         //   };
-  //         //   const sendEmail = await apiSendEmail(dataEmail);
-  //         //   // console.log(sendEmail);
-  //         //   this.setState({
-  //         //     action_status: "success",
-  //         //     action_message: "success batch " + index_xlsx,
-  //         //   });
-  //         //   this.toggleLoading();
-  //         //   // setTimeout(function () {
-  //         //   //   window.location.reload();
-  //         //   // }, 1500);
-  //         // } else {
-  //         //   console.log("just ", index_xlsx);
-  //         //   this.setState({
-  //         //     action_status: "success",
-  //         //     action_message: "success batch " + index_xlsx,
-  //         //   });
-  //         //   this.toggleLoading();
-  //         // }
-  //       }
-  //     } else {
-  //       console.log("err ", index_xlsx);
-  //       if (
-  //         res.response !== undefined &&
-  //         res.response.data !== undefined &&
-  //         res.response.data.error !== undefined
-  //       ) {
-  //         if (res.response.data.error.message !== undefined) {
-  //           this.setState({
-  //             action_status: "failed",
-  //             action_message:
-  //               res.response.data.error.message + "batch " + index_xlsx,
-  //           });
-  //         } else {
-  //           this.setState({
-  //             action_status: "failed",
-  //             action_message: res.response.data.error + "batch " + index_xlsx,
-  //           });
-  //         }
-  //       } else {
-  //         this.setState({ action_status: "failed" });
-  //       }
-  //       this.toggleLoading();
-  //       // break;
-  //     }
-  //   }
-  // };
-
-  saveBulk = async () => {
-    this.toggleLoading();
+  saveBulk2 = async () => {
+    // this.toggleLoading();
     this.togglecreateModal();
     const roles =
       this.state.roleUser.includes("BAM-MAT PLANNER") === true
@@ -1124,108 +966,140 @@ class MappingHW extends React.Component {
         : this.state.roleUser.includes("BAM-PFM") === true
         ? 2
         : 3;
-    const res = await postDatatoAPINODE(
-      "/cpoMapping/createCpo",
-      {
-        cpo_type: "hw",
-        required_check: true,
-        roles: roles,
-        cpo_data: this.state.rowsXLS,
-      },
-      this.state.tokenUser
-    );
-    if (res.data !== undefined) {
-      if (roles === 2) {
-        this.setState({ action_status: "success", action_status: "success" });
-        this.toggleLoading();
-      } else {
-        if (res.data.updateData.length !== 0) {
-          const table_header = Object.keys(res.data.updateData[0]);
-          const update_Data = res.data.updateData;
-          const new_table_header = table_header.slice(0, -2);
-          // update_Data.map((row, k) => console.log(row));
-          // console.log(table_header);
-          let value = "row.";
-          const bodyEmail =
-            "<h2>DPM - BAM Notification</h2><br/><span>Please be notified that the following " +
-            modul_name +
-            " data has been updated <br/><br/><table><tr>" +
-            new_table_header.map((tab, i) => "<th>" + tab + "</th>").join(" ") +
-            "</tr>" +
-            update_Data
-              .map(
-                (row, j) =>
-                  "<tr key={" +
-                  j +
-                  "}>" +
-                  new_table_header
-                    .map((td) => "<td>" + eval(value + td) + "</td>")
-                    .join(" ") +
-                  "</tr>"
-              )
-              .join(" ") +
-            "</table>";
-          if (res.data.warnNotif.length !== 0) {
+    for (
+      let index_xlsx = 0;
+      index_xlsx < this.state.rowsXLS_batch.length;
+      index_xlsx++
+    ) {
+      this.setState({
+        action_status: null,
+        action_message: null,
+      });
+      let num_batch = 1;
+      this.toggleLoading();
+      console.log(`hit ${index_xlsx}`);
+      const res = await postDatatoAPINODE(
+        "/cpoMapping/createCpo",
+        {
+          cpo_type: "svc",
+          required_check: true,
+          roles: roles,
+          cpo_data: this.state.rowsXLS_batch[index_xlsx],
+        },
+        this.state.tokenUser
+      );
+      console.log(res);
+
+      if (res.data !== undefined) {
+        if (roles === 2) {
+          this.setState({
+            action_status: "success",
+            action_message: "success batch " + num_batch,
+          });
+          this.toggleLoading();
+        } else {
+          if (res.data.updateData.length !== 0) {
+            const table_header = Object.keys(res.data.updateData[0]);
+            const update_Data = res.data.updateData;
+            const new_table_header = table_header.slice(0, -2);
+            // update_Data.map((row, k) => console.log(row));
+            // console.log(table_header);
+            let value = "row.";
+            const bodyEmail =
+              "<h2>DPM - BAM Notification</h2><br/><span>Please be notified that the following " +
+              modul_name +
+              " data has been updated <br/><br/><table><tr>" +
+              new_table_header
+                .map((tab, i) => "<th>" + tab + "</th>")
+                .join(" ") +
+              "</tr>" +
+              update_Data
+                .map(
+                  (row, j) =>
+                    "<tr key={" +
+                    j +
+                    "}>" +
+                    new_table_header
+                      .map((td) => "<td>" + eval(value + td) + "</td>")
+                      .join(" ") +
+                    "</tr>"
+                )
+                .join(" ") +
+              "</table>";
+            if (res.data.warnNotif.length !== 0) {
+              let dataEmail = {
+                // "to": creatorEmail,
+                to: "damar.pramuditya@ericsson.com",
+                // to: global.config.role.cpm,
+                subject: "[NOTIFY to CPM] " + modul_name,
+                body: bodyEmail,
+              };
+              const sendEmail = await apiSendEmail(dataEmail);
+              // console.log(sendEmail);
+              this.setState({
+                action_status: "warning",
+                action_message:
+                  "success with warn " +
+                  res.data.warnNotif.map((warn) => warn) +
+                  " batch " +
+                  num_batch,
+              });
+              this.toggleLoading();
+              return;
+              // setTimeout(function () {
+              //   window.location.reload();
+              // }, 1500);
+            }
             let dataEmail = {
               // "to": creatorEmail,
-              // to: "pramudityad@outlook.com",
-              to: global.config.role.cpm,
+              to: "damar.pramuditya@ericsson.com",
+              // to: global.config.role.cpm,
               subject: "[NOTIFY to CPM] " + modul_name,
               body: bodyEmail,
             };
-            const sendEmail = await apiSendEmail(dataEmail);
+            // const sendEmail = await apiSendEmail(dataEmail);
             // console.log(sendEmail);
             this.setState({
-              action_status: "warning",
-              action_message:
-                "success with warn " + res.data.warnNotif.map((warn) => warn),
+              action_status: "success",
+              action_message: "success batch " + num_batch,
             });
             this.toggleLoading();
-            return;
             // setTimeout(function () {
             //   window.location.reload();
             // }, 1500);
+          } else {
+            this.setState({
+              action_status: "success",
+              action_message: "success batch " + num_batch,
+            });
+            this.toggleLoading();
           }
-          let dataEmail = {
-            // "to": creatorEmail,
-            // to: "pramudityad@outlook.com",
-            to: global.config.role.cpm,
-            subject: "[NOTIFY to CPM] " + modul_name,
-            body: bodyEmail,
-          };
-          const sendEmail = await apiSendEmail(dataEmail);
-          // console.log(sendEmail);
-          this.setState({ action_status: "success" });
-          this.toggleLoading();
-          // setTimeout(function () {
-          //   window.location.reload();
-          // }, 1500);
-        } else {
-          this.setState({ action_status: "success" });
-          this.toggleLoading();
-        }
-      }
-    } else {
-      if (
-        res.response !== undefined &&
-        res.response.data !== undefined &&
-        res.response.data.error !== undefined
-      ) {
-        if (res.response.data.error.message !== undefined) {
-          this.setState({
-            action_status: "failed",
-            action_message: res.response.data.error.message,
-          });
-        } else {
-          this.setState({
-            action_status: "failed",
-            action_message: res.response.data.error,
-          });
         }
       } else {
-        this.setState({ action_status: "failed" });
+        if (
+          res.response !== undefined &&
+          res.response.data !== undefined &&
+          res.response.data.error !== undefined
+        ) {
+          if (res.response.data.error.message !== undefined) {
+            this.setState({
+              action_status: "failed",
+              action_message:
+                res.response.data.error.message + "batch " + num_batch,
+            });
+          } else {
+            this.setState({
+              action_status: "failed",
+              action_message: res.response.data.error + "batch " + num_batch,
+            });
+          }
+        } else {
+          this.setState({ action_status: "failed" });
+        }
+        this.toggleLoading();
+        break;
       }
-      this.toggleLoading();
+      num_batch++;
     }
   };
 
@@ -1300,12 +1174,6 @@ class MappingHW extends React.Component {
   toggleLoading = () => {
     this.setState((prevState) => ({
       modal_loading: !prevState.modal_loading,
-    }));
-  };
-
-  toggleProgress = () => {
-    this.setState((prevState) => ({
-      modal_progress: !prevState.modal_progress,
     }));
   };
 
@@ -1796,9 +1664,11 @@ class MappingHW extends React.Component {
   };
 
   handleChangeChecklist = (e) => {
+    console.log(this.state.dataChecked.has(e._id));
     const item = e.target.name;
     const isChecked = e.target.checked;
     const each_data = this.state.all_data;
+    console.log("here", item, isChecked, each_data);
     let dataChecked_container = this.state.dataChecked_container;
     if (isChecked === true) {
       const getCPO = each_data.find((pp) => pp._id === item);
@@ -1811,79 +1681,12 @@ class MappingHW extends React.Component {
     this.setState({ dataChecked_container: dataChecked_container }, () =>
       console.log("make not req", this.state.dataChecked_container)
     );
-    this.setState((prevState) => ({
-      dataChecked: prevState.dataChecked.set(item, isChecked),
-    }));
-  };
-
-  handleChangeChecklistAll = async (e) => {
-    const getall = await getDatafromAPINODE(
-      "/cpoMapping/getCpo/hw?noPg=1",
-      this.state.tokenUser
+    this.setState(
+      (prevState) => ({
+        dataChecked: prevState.dataChecked.set(item, isChecked),
+      }),
+      () => console.log("dataChecked ", this.state.dataChecked)
     );
-    console.log(getall.data);
-
-    if (getall.data !== undefined) {
-      if (e.target !== null) {
-        const isChecked = e.target.checked;
-        let dataChecked_container = this.state.dataChecked_container;
-        let each_data = getall.data.data;
-        if (isChecked) {
-          each_data = each_data.filter(
-            (e) =>
-              dataChecked_container.map((m) => m._id).includes(e._id) !== true
-          );
-          for (let x = 0; x < each_data.length; x++) {
-            dataChecked_container.push(each_data[x]);
-            this.setState((prevState) => ({
-              dataChecked_container: prevState.dataChecked_container.set(
-                each_data[x]._id,
-                isChecked
-              ),
-            }));
-          }
-          this.setState({ dataChecked_container: dataChecked_container });
-        } else {
-          for (let x = 0; x < each_data.length; x++) {
-            this.setState(
-              (prevState) => ({
-                dataChecked_container: prevState.dataChecked_container.set(
-                  each_data[x]._id,
-                  isChecked
-                ),
-              }),
-              () => console.log(this.state.dataChecked_container)
-            );
-          }
-          dataChecked_container.length = 0;
-          this.setState({ dataChecked_container: dataChecked_container });
-        }
-        this.setState((prevState) => ({
-          dataChecked_all: !prevState.dataChecked_all,
-        }));
-      }
-    }
-  };
-
-  handleChangeChecklist2 = (e) => {
-    const item2 = e.target.name;
-    const isChecked2 = e.target.checked;
-    const each_data2 = this.state.all_data_true;
-    let dataChecked_container2 = this.state.dataChecked_container2;
-    if (isChecked2 === false) {
-      const getCPO2 = each_data2.find((pp) => pp._id === item2);
-      dataChecked_container2.push(getCPO2);
-    } else {
-      dataChecked_container2 = dataChecked_container2.filter(function (pp) {
-        return pp._id !== item2;
-      });
-    }
-    this.setState({ dataChecked_container2: dataChecked_container2 }, () =>
-      console.log(this.state.dataChecked_container2)
-    );
-    this.setState((prevState) => ({
-      dataChecked: prevState.dataChecked.set(item2, isChecked2),
-    }));
   };
 
   changeTabsSubmenu = (e) => {
@@ -1994,24 +1797,14 @@ class MappingHW extends React.Component {
                     </div>
                   </div>
                   &nbsp;&nbsp;&nbsp;
-                  {/* <div>
-                    <Button onClick={this.getListAll}>CSV file</Button>
-                    <CSVLink
-                      data={this.state.all_data_mapping}
-                      separator={";"}
-                      ref={this.csvLink}
-                      target="_blank"
-                      filename={"All Data HW Export.csv"}
-                    />               
-                  </div>
-                  &nbsp;&nbsp;&nbsp; */}
                   <div>
-                    <Dropdown
+                    {/* <Dropdown
                       isOpen={this.state.dropdownOpen[1]}
                       toggle={() => {
                         this.toggle(1);
                       }}
                     >
+
                       <DropdownToggle block color="warning" size="sm">
                         <i className="fa fa-download" aria-hidden="true">
                           {" "}
@@ -2040,12 +1833,7 @@ class MappingHW extends React.Component {
                               {" "}
                               Mapping Template{" " +
                                 this.state.roleUser[1]}{" "}
-                            </DropdownItem>
-                            {/* <DropdownItem onClick={this.exportTemplate2}>
-                              {" "}
-                              All Data Template{" " +
-                                this.state.roleUser[1]}{" "}
-                            </DropdownItem> */}
+                            </DropdownItem>                   
                           </>
                         ) : (
                           ""
@@ -2061,10 +1849,7 @@ class MappingHW extends React.Component {
                               {" "}
                               Mapping Template{" " +
                                 this.state.roleUser[1]}{" "}
-                            </DropdownItem>
-                            {/* <DropdownItem onClick={this.download_PFM}>
-                              All Data Template{" " + this.state.roleUser[1]}{" "}
-                            </DropdownItem> */}
+                            </DropdownItem>         
                           </>
                         ) : (
                           ""
@@ -2080,16 +1865,26 @@ class MappingHW extends React.Component {
                               {" "}
                               Mapping Template{" " +
                                 this.state.roleUser[1]}{" "}
-                            </DropdownItem>
-                            {/* <DropdownItem onClick={this.download_Admin}>
-                              All Data Template{" " + this.state.roleUser[1]}{" "}
-                            </DropdownItem> */}
+                            </DropdownItem>               
                           </>
                         ) : (
                           ""
                         )}
                       </DropdownMenu>
-                    </Dropdown>
+                    </Dropdown> */}
+                    <Link to={"/cpo-hw-export"} target="_blank">
+                      <Button
+                        color="warning"
+                        style={{ float: "right", marginLeft: "8px" }}
+                        size="sm"
+                      >
+                        <i className="fa fa-download" aria-hidden="true">
+                          {" "}
+                          &nbsp;{" "}
+                        </i>{" "}
+                        Export
+                      </Button>
+                    </Link>
                   </div>
                 </div>
               </CardHeader>
@@ -2177,9 +1972,9 @@ class MappingHW extends React.Component {
                                   0 &&
                                 this.state.count_header.constructor ===
                                   Object ? (
-                                  this.mapHeader(
-                                    this.state.count_header
-                                  ).map((head, j) => <th>{head}</th>)
+                                  this.mapHeader(this.state.count_header).map(
+                                    (head, j) => <th>{head}</th>
+                                  )
                                 ) : (
                                   <></>
                                 )}
@@ -2658,9 +2453,9 @@ class MappingHW extends React.Component {
                 </tr>
               </tbody>
             </table>
-            {/* <span>
+            <span>
               File will be split into {this.state.rowsXLS_batch.length} batch
-            </span> */}
+            </span>
           </div>
 
           <ModalFooter>
@@ -2669,8 +2464,8 @@ class MappingHW extends React.Component {
               block
               color="success"
               className="btn-pill"
-              disabled={this.state.rowsXLS.length === 0}
-              onClick={this.saveBulk}
+              disabled={this.state.rowsXLS_batch.length === 0}
+              onClick={this.saveBulk2}
               style={{ height: "30px", width: "100px" }}
             >
               Save
@@ -2685,26 +2480,6 @@ class MappingHW extends React.Component {
           className={"modal-sm modal--loading "}
         ></Loading>
         {/* end Modal Loading */}
-
-        <Modal
-          isOpen={this.state.modal_progress}
-          toggle={this.toggleProgress}
-          // className={"modal-sm modal--loading "}
-        >
-          <ModalBody>
-            <div className="animated fadeIn">
-              <div style={{ textAlign: "center" }}>
-                <Progress
-                  value={
-                    (this.state.curr_batch / this.state.rowsXLS_batch.length) *
-                    100
-                    // 50
-                  }
-                />
-              </div>
-            </div>
-          </ModalBody>
-        </Modal>
       </div>
     );
   }

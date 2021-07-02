@@ -131,6 +131,7 @@ class MYASGDetail extends PureComponent {
       vendor_code: "",
       list_cd_id: [],
       cd_id_selected: "",
+      full_approved_po: [],
     };
     this.toggleAddNew = this.toggleAddNew.bind(this);
     this.handleFilterList = this.handleFilterList.bind(this);
@@ -146,9 +147,8 @@ class MYASGDetail extends PureComponent {
     this.addLMR = this.addLMR.bind(this);
     this.createLMRChild = this.createLMRChild.bind(this);
     this.handleChangeMaterial = this.handleChangeMaterial.bind(this);
-    this.handleChangeFormLMRChildMultiple = this.handleChangeFormLMRChildMultiple.bind(
-      this
-    );
+    this.handleChangeFormLMRChildMultiple =
+      this.handleChangeFormLMRChildMultiple.bind(this);
     this.deleteLMR = this.deleteLMR.bind(this);
     this.handleMaterialFilter = this.handleMaterialFilter.bind(this);
   }
@@ -163,8 +163,9 @@ class MYASGDetail extends PureComponent {
   }
 
   decideToggleMaterial = (number_child_form) => {
-    let Mat_type = this.state.creation_lmr_child_form[number_child_form]
-      .Per_Site_Material_Type;
+    let Mat_type =
+      this.state.creation_lmr_child_form[number_child_form]
+        .Per_Site_Material_Type;
     console.log(Mat_type);
     switch (Mat_type) {
       case "NRO":
@@ -935,17 +936,58 @@ class MYASGDetail extends PureComponent {
     );
   }
 
+  getFullApprovedPO(po_num) {
+    this.getDatafromAPIMY(
+      '/po_status_data?where={"PO": "' + po_num + '"}'
+    ).then((res) => {
+      if (res.data !== undefined) {
+        const full_approved = res.data._items;
+        const po_test = [
+          {
+            _id: "5fff076b991a077facdafd3d",
+            Quotation_LMR_No: "LMR-201208-0313",
+            PO: "4523970829",
+            PO_Status: "Fully approved",
+            updated_on: "2021-07-01 14:44:59",
+            created_on: "2021-01-13 14:44:59",
+            _etag: "0ce674cd892c63ff0e18ec7bb75d770560605d75",
+          },
+        ];
+        this.setState({
+          full_approved_po: full_approved,
+        });
+      }
+    });
+  }
+
+  ChecktodayPO(updatedOn) {
+    const today = new Date();
+    const dd = String(today.getDate()).padStart(2, "0");
+    const mm = String(today.getMonth() + 1).padStart(2, "0"); //January is 0!
+    const yyyy = today.getFullYear();
+
+    const today1 = yyyy + "-" + mm + "-" + dd;
+    // console.log("today1 ", today1);
+    updatedOn.split(" ");
+    let date_today = updatedOn[0];
+    console.log("comparation ", date_today === today1);
+    return date_today === today1;
+  }
+
   getDataPRPO(LMR_ID) {
     this.getDatafromAPIMY(
       '/prpo_data?where={"LMR_No" : "' + LMR_ID + '"}'
     ).then((res) => {
       if (res.data !== undefined) {
         const dataLMRDetailPRPO = res.data._items;
-        this.setState({
-          list_pr_po: dataLMRDetailPRPO,
-          check_prpo:
-            dataLMRDetailPRPO[0] !== undefined ? dataLMRDetailPRPO[0] : {},
-        });
+        this.setState(
+          {
+            list_pr_po: dataLMRDetailPRPO,
+            check_prpo:
+              dataLMRDetailPRPO[0] !== undefined ? dataLMRDetailPRPO[0] : {},
+          },
+          () => this.getFullApprovedPO(dataLMRDetailPRPO[0].PO_Number)
+        );
         // console.log('0 ', this.state.list_pr_po[0])
       }
     });
@@ -1773,7 +1815,6 @@ class MYASGDetail extends PureComponent {
     this.state.list_cd_id.map((e) =>
       cd_id_list.push({ label: e.CD_ID, value: e.CD_ID })
     );
-    const prpo = this.state.list_pr_po;
     const matfilter = this.state.matfilter;
     return (
       <div>
@@ -2109,9 +2150,12 @@ class MYASGDetail extends PureComponent {
                             (this.state.roleUser.includes("BAM-PA") === true &&
                               this.state.lmr_detail.mm_data_type === "ARP") ? (
                               <td>
-                                {this.state.list_pr_po[0] !== undefined &&
-                                this.state.list_pr_po[0].PO_Number !== null &&
-                                this.state.list_pr_po[0].PO_Item !== null ? (
+                                {this.state.full_approved_po.length !== 0 &&
+                                this.ChecktodayPO(
+                                  this.state.list_pr_po.find(
+                                    (f) => f.id_child_doc === e._id
+                                  ).updated_on
+                                ) === false ? (
                                   <Link
                                     to={
                                       "/lmr-detail/" +

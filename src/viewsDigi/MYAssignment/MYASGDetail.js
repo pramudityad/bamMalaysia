@@ -1,5 +1,6 @@
 import React, { Component, Fragment, PureComponent } from "react";
 import {
+  Alert,
   Form,
   FormGroup,
   Label,
@@ -33,42 +34,14 @@ import "./LMRMY.css";
 import { getDatafromAPINODE, getDatafromAPIMY } from "../../helper/asyncFunctionDigi";
 import { connect } from "react-redux";
 import Select from "react-select";
-
-import {
-  convertDateFormatfull,
-  convertDateFormat,
-} from "../../helper/basicFunction";
+import { convertDateFormat } from "../../helper/basicFunction";
 
 const DefaultNotif = React.lazy(() =>
   import("../../views/DefaultView/DefaultNotif")
 );
 
-// const BearerToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjYXNfaWQiOiI1MmVhNTZhMS0zNDMxLTRlMmQtYWExZS1hNTc3ODQzMTMxYzEiLCJyb2xlcyI6WyJCQU0tU3VwZXJBZG1pbiJdLCJhY2NvdW50IjoiMSIsImlhdCI6MTU5MTY5MTE4MH0.FpbzlssSQyaAbJOzNf3KLqHPnYo_ccBtBWu6n87h1RQ';
-const BearerToken =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjYXNfaWQiOiIxOTM2YmE0Yy0wMjlkLTQ1MzktYWRkOC1mZjc2OTNiMDlmZmUiLCJyb2xlcyI6WyJCQU0tU3VwZXJBZG1pbiJdLCJhY2NvdW50IjoiMSIsImlhdCI6MTU5MjQ3MDI4Mn0.tIJSzHa-ewhqz0Ail7J0maIZx4R9P1aXE2E_49pe4KY";
-
-const MaterialDB = [
-  {
-    MM_Code: "MM Code",
-    BB_Sub: "BB_sub",
-    SoW_Description: "SoW Description",
-    UoM: "UoM",
-    Region: "Region",
-    Unit_Price: 100,
-    MM_Description: "MM Description",
-    Acceptance: "Acceptance",
-  },
-  {
-    MM_Code: "MM Code1",
-    BB_Sub: "BB_sub1",
-    SoW_Description: "SoW Description1",
-    UoM: "UoM1",
-    Region: "Region1",
-    Unit_Price: 200,
-    MM_Description: "MM Description1",
-    Acceptance: "Acceptance1",
-  },
-];
+const date = new Date();
+const currentDate = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, "0")}-${date.getDate().toString().padStart(2, "0")}`;
 
 class MYASGDetail extends PureComponent {
   constructor(props) {
@@ -78,7 +51,6 @@ class MYASGDetail extends PureComponent {
       activity_list: [],
       // tokenUser: this.props.dataLogin.token,
       roleUser: this.props.dataLogin.role,
-
       tokenUser: this.props.dataLogin.token,
       lmr_child_form: {},
       modal_loading: false,
@@ -91,6 +63,7 @@ class MYASGDetail extends PureComponent {
       data_cpo: null,
       data_cpo_db: [],
       modal_postgr: false,
+      modal_grbulk: false,
       dn_no: "",
       file_upload: null,
       prevPage: 0,
@@ -98,6 +71,7 @@ class MYASGDetail extends PureComponent {
       totalData: 0,
       perPage: 10,
       rowsXLS: [],
+      rowsXLSGR: [],
       dropdownOpen: new Array(6).fill(false),
       modalPOForm: false,
       POForm: new Array(5).fill(null),
@@ -128,6 +102,7 @@ class MYASGDetail extends PureComponent {
         region: "",
       },
       hide_region: false,
+      gr_error_log: null,
       vendor_code: "",
       list_cd_id: [],
       cd_id_selected: "",
@@ -363,7 +338,13 @@ class MYASGDetail extends PureComponent {
     this.setState({
       modal_postgr: !this.state.modal_postgr,
     });
-  };
+  }
+
+  toggleGRBulk = () => {
+    this.setState({
+      modal_grbulk: !this.state.modal_grbulk,
+    });
+  }
 
   checkValue(props) {
     // if value undefined return null
@@ -541,6 +522,104 @@ class MYASGDetail extends PureComponent {
     this.setState({
       rowsXLS: newDataXLS,
     });
+  }
+
+  fileHandlerGR = (input) => {
+    const file = input.target.files[0];
+    const reader = new FileReader();
+    const rABS = !!reader.readAsBinaryString;
+    console.log("rABS", rABS);
+    reader.onload = (e) => {
+      /* Parse data */
+      const bstr = e.target.result;
+      const wb = XLSX.read(bstr, {
+        type: rABS ? "binary" : "array",
+        cellDates: true,
+      });
+      const wsname = wb.SheetNames[0];
+      const ws = wb.Sheets[wsname];
+      /* Convert array of arrays */
+      const data = XLSX.utils.sheet_to_json(ws, { header: 1, devfal: null });
+      /* Update state */
+      this.ArrayEmptytoNullGR(data);
+    };
+    if (rABS) reader.readAsBinaryString(file);
+    else reader.readAsArrayBuffer(file);
+  }
+
+  ArrayEmptytoNullGR(dataXLS) {
+    let newDataXLS = [];
+    for (let i = 0; i < dataXLS.length; i++) {
+      let col = [];
+      for (let j = 0; j < dataXLS[0].length; j++) {
+        if (typeof dataXLS[i][j] === "object") {
+          let dataObject = this.checkValue(JSON.stringify(dataXLS[i][j]));
+          if (dataObject !== null) {
+            dataObject = dataObject.replace(/"/g, "");
+          }
+          col.push(dataObject);
+        } else {
+          col.push(this.checkValue(dataXLS[i][j]));
+        }
+      }
+      newDataXLS.push(col);
+    }
+    this.setState({ rowsXLSGR: newDataXLS }, () => console.log('isi excel gr', this.state.rowsXLSGR));
+  }
+
+  uploadGRBulk = async () => {
+    this.toggleGRBulk();
+    let gr_bulk = this.state.rowsXLSGR.splice(1);
+    let gr_to_be_saved = [], failed_gr = [];
+    for (let i = 0; i < gr_bulk.length; i++) {
+      const pr_po = this.state.list_pr_po.find((e) => e.id_child_doc === gr_bulk[i][0]);
+      let prev_gr_qty = 0;
+      await getDatafromAPINODE("/aspassignment/getGrByLmrChild/" + gr_bulk[i][0], this.state.tokenUser).then((res) => {
+        if (res.data !== undefined) {
+          const dataLMRDetail = res.data.data;
+          prev_gr_qty = dataLMRDetail.reduce((n, { Required_GR_Qty }) => n + Required_GR_Qty, 0);
+        }
+      });
+      let gr = {
+        DN_No: "",
+        Item_Status: pr_po.Item_Status,
+        GR_Amount: gr_bulk[i][19] * pr_po.Price,
+        PO_Item: pr_po.PO_Item,
+        PO_Number: pr_po.PO_Number,
+        PO_Qty: pr_po.PO_Qty,
+        Plant: pr_po.Plant,
+        Request_Type: "Add GR",
+        Required_GR_Qty: gr_bulk[i][19],
+        WCN_Link: "https://digi.pdb.e-dpm.com/grmenu/list/",
+        Work_Status: "Waiting for GR",
+        created_by_gr: this.props.dataLogin.userName,
+        fileDocument: [],
+        id_child: pr_po.id_child_doc
+      }
+      if (gr_bulk[i][19] === 0) {
+        failed_gr.push(`Required GR Qty cannot be 0 on row ${i + 2}`);
+      } else if (pr_po.Qty >= prev_gr_qty + gr_bulk[i][19]) {
+        gr_to_be_saved.push(gr);
+      } else {
+        failed_gr.push(`Required GR Qty exceeds material qty on row ${i + 2}`);
+      }
+      if (i + 1 === gr_bulk.length || gr_bulk[i][0] !== gr_bulk[i + 1][0]) {
+        const params_gr_save = pr_po.LMR_No + " /// " + pr_po.CDID + " /// " + pr_po.id_child_doc;
+        localStorage.setItem(params_gr_save, JSON.stringify(gr_to_be_saved));
+        console.log(JSON.parse(localStorage.getItem(params_gr_save)));
+        gr_to_be_saved.splice(0, gr_to_be_saved.length);
+      }
+    }
+    if (failed_gr.length > 0) {
+      this.setState({
+        gr_error_log: failed_gr.join("\r\n"),
+      });
+    } else {
+      this.setState({
+        action_status: "success",
+        action_message: "GR has been saved as draft",
+      });
+    }
   }
 
   getProjectList() {
@@ -1280,6 +1359,103 @@ class MYASGDetail extends PureComponent {
     saveAs(new Blob([allocexport]), "New Format Child.xlsx");
   };
 
+  numToSSColumn(num) {
+    var s = '', t;
+
+    while (num > 0) {
+      t = (num - 1) % 26;
+      s = String.fromCharCode(65 + t) + s;
+      num = (num - t) / 26 | 0;
+    }
+    return s || undefined;
+  }
+
+  downloadGRBulkTemplate = async () => {
+    const wb = new Excel.Workbook();
+    const ws = wb.addWorksheet();
+
+    const list_pr_po = this.state.list_pr_po;
+
+    let headerRow = [
+      "LMR Child ID",
+      "Project Name",
+      "WP ID",
+      "CD ID",
+      "Site ID",
+      "SO / NW",
+      "Activity",
+      "Tax Code",
+      "Material",
+      "Material Description",
+      "Price",
+      "Quantity",
+      "Total Price",
+      "Delivery Date",
+      "Item Status",
+      "Work Status",
+      "PO Number",
+      "PO Item",
+      "PO Qty",
+      "Required GR Qty"
+    ];
+    ws.addRow(headerRow);
+
+    for (let i = 1; i <= headerRow.length; i++) {
+      ws.getCell(this.numToSSColumn(i) + '1').font = { size: 11, bold: true };
+    }
+
+    for (let i = 0; i < list_pr_po.length; i++) {
+      let childRow = [
+        list_pr_po[i].id_child_doc,
+        list_pr_po[i].Project,
+        list_pr_po[i].WP_ID,
+        list_pr_po[i].CDID,
+        list_pr_po[i].Item_Text_Site_Id,
+        list_pr_po[i].NW,
+        list_pr_po[i].NW_Activity,
+        list_pr_po[i].Tax_Code,
+        list_pr_po[i].Material_Code,
+        list_pr_po[i].Description,
+        list_pr_po[i].Price,
+        list_pr_po[i].Qty,
+        list_pr_po[i].Total_Amount,
+        list_pr_po[i].Request_Delivery_Date,
+        list_pr_po[i].Item_Status,
+        list_pr_po[i].Work_Status,
+        list_pr_po[i].PO_Number,
+        list_pr_po[i].PO_Item,
+        list_pr_po[i].PO_Qty,
+        0
+      ]
+      ws.addRow(childRow);
+    }
+
+    for (let i = 1; i <= list_pr_po.length + 1; i++) {
+      for (let j = 1; j <= headerRow.length; j++) {
+        if (j === 20) {
+          ws.getCell(this.numToSSColumn(j) + i).fill = {
+            type: 'pattern',
+            pattern: 'solid',
+            fgColor: {
+              argb: 'FFFF00'
+            }
+          };
+        } else {
+          ws.getCell(this.numToSSColumn(j) + i).fill = {
+            type: 'pattern',
+            pattern: 'solid',
+            fgColor: {
+              argb: '808080'
+            }
+          };
+        }
+      }
+    }
+
+    const allocexport = await wb.xlsx.writeBuffer();
+    saveAs(new Blob([allocexport]), "GR Bulk Template.xlsx");
+  }
+
   componentDidMount() {
     if (this.props.match.params.id === undefined) {
       this.getLMRDetailData();
@@ -1763,36 +1939,31 @@ class MYASGDetail extends PureComponent {
         />
         <Row>
           <Col xl="12">
+            <Alert color="danger" style={{ whiteSpace: "pre", maxHeight: "200px", overflowY: "scroll" }} hidden={this.state.gr_error_log === null}>
+              {this.state.gr_error_log}
+            </Alert>
             <Card>
               <CardHeader>
-                <span style={{ lineHeight: "2", fontSize: "17px" }}>
-                  {" "}
-                  LMR Detail{" "}
-                </span>
+                <span style={{ lineHeight: "2", fontSize: "17px" }}>LMR Detail</span>
                 <div
                   className="card-header-actions"
                   style={{ display: "inline-flex" }}
                 >
-                  {/* <div style={{ marginRight: "10px" }}>
+                  <div style={{ marginRight: "16px" }} hidden={this.state.list_pr_po.length === 0 || this.state.list_pr_po[0].PO_Number === null || this.state.list_pr_po[0].PO_Item === null}>
                     <Dropdown
                       isOpen={this.state.dropdownOpen[0]}
                       toggle={() => {
                         this.toggle(0);
                       }}
                     >
-                      <DropdownToggle caret color="light">
-                        Download Template
-                      </DropdownToggle>
+                      <DropdownToggle caret color="light">GR Bulk</DropdownToggle>
                       <DropdownMenu>
-                        <DropdownItem header>File</DropdownItem>
-                        <DropdownItem onClick={this.downloadFormatNewChild}>
-                          {" "}
-                          New LMR Child Format
-                        </DropdownItem>
+                        <DropdownItem onClick={this.downloadGRBulkTemplate}>Download GR Bulk Template</DropdownItem>
+                        <DropdownItem onClick={this.toggleGRBulk}>Upload GR Bulk</DropdownItem>
                       </DropdownMenu>
                     </Dropdown>
                   </div>
-                  <Button
+                  {/* <Button
                     block
                     color="success"
                     size="sm"
@@ -2077,36 +2248,18 @@ class MYASGDetail extends PureComponent {
                           <tr>
                             {this.state.roleUser.includes("BAM-CPM") === true || this.state.roleUser.includes("BAM-GR PA") === true ? (
                               <td>
-                                {this.state.list_pr_po[0] !== undefined &&
-                                  this.state.list_pr_po[0].PO_Number !== null &&
-                                  this.state.list_pr_po[0].PO_Item !== null ? (
-                                  <Link
-                                    to={
-                                      "/lmr-detail/" +
-                                      this.props.match.params.id +
-                                      "/gr-detail/" +
-                                      e._id
-                                    }
-                                  >
+                                {this.state.list_pr_po.find((f) => f.id_child_doc === e._id) !== undefined &&
+                                  this.state.list_pr_po.find((f) => f.id_child_doc === e._id).PO_Number !== null &&
+                                  this.state.list_pr_po.find((f) => f.id_child_doc === e._id).PO_Item !== null &&
+                                  this.state.list_pr_po.find((f) => f.id_child_doc === e._id).updated_on.substr(0, 10) !== currentDate ? (
+                                  <Link to={"/lmr-detail/" + this.props.match.params.id + "/gr-detail/" + e._id}>
                                     <Button color="info">
-                                      <i
-                                        className="fa fa-info-circle"
-                                        aria-hidden="true"
-                                      >
-                                        &nbsp;
-                                      </i>
-                                      &nbsp;GR
+                                      <i className="fa fa-info-circle" aria-hidden="true"></i>&nbsp;GR
                                     </Button>
                                   </Link>
                                 ) : (
                                   <Button color="info" disabled>
-                                    <i
-                                      className="fa fa-info-circle"
-                                      aria-hidden="true"
-                                    >
-                                      &nbsp;
-                                    </i>
-                                    &nbsp;GR
+                                    <i className="fa fa-info-circle" aria-hidden="true"></i>&nbsp;GR
                                   </Button>
                                 )}
                               </td>
@@ -3085,6 +3238,42 @@ class MYASGDetail extends PureComponent {
               disabled={
                 this.state.dn_no === "" && this.state.rowsXLS.length === 0
               }
+            >
+              Submit
+            </Button>
+          </ModalFooter>
+        </Modal>
+
+        {/* Modal GR Bulk */}
+        <Modal
+          isOpen={this.state.modal_grbulk}
+          toggle={this.toggleGRBulk}
+          className="modal--form"
+        >
+          <ModalHeader>Upload GR Bulk Template</ModalHeader>
+          <ModalBody>
+            <Row>
+              <Col sm="8">
+                <FormGroup row>
+                  <Col xs="8">
+                    <FormGroup>
+                      <Label>Input File</Label>
+                      <input
+                        type="file"
+                        onChange={this.fileHandlerGR.bind(this)}
+                        style={{ padding: "10px", visiblity: "hidden" }}
+                      />
+                    </FormGroup>
+                  </Col>
+                </FormGroup>
+              </Col>
+            </Row>
+          </ModalBody>
+          <ModalFooter>
+            <Button
+              color="success"
+              onClick={this.uploadGRBulk}
+              disabled={this.state.rowsXLSGR.length === 0}
             >
               Submit
             </Button>
