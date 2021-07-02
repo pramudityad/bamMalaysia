@@ -1949,20 +1949,22 @@ class MYASGDetail extends PureComponent {
                   className="card-header-actions"
                   style={{ display: "inline-flex" }}
                 >
-                  <div style={{ marginRight: "16px", display: "none" }} hidden={this.state.list_pr_po.length === 0 || this.state.list_pr_po[0].PO_Number === null || this.state.list_pr_po[0].PO_Item === null}>
-                    <Dropdown
-                      isOpen={this.state.dropdownOpen[0]}
-                      toggle={() => {
-                        this.toggle(0);
-                      }}
-                    >
-                      <DropdownToggle caret color="light">GR Bulk</DropdownToggle>
-                      <DropdownMenu>
-                        <DropdownItem onClick={this.downloadGRBulkTemplate}>Download GR Bulk Template</DropdownItem>
-                        <DropdownItem onClick={this.toggleGRBulk}>Upload GR Bulk</DropdownItem>
-                      </DropdownMenu>
-                    </Dropdown>
-                  </div>
+                  {this.state.roleUser.includes("BAM-CPM") === true || this.state.roleUser.includes("BAM-GR PA") === true && (
+                    <div style={{ marginRight: "16px" }} hidden={this.state.list_pr_po.length === 0 || this.state.list_pr_po[0].PO_Number === null || this.state.list_pr_po[0].PO_Item === null}>
+                      <Dropdown
+                        isOpen={this.state.dropdownOpen[0]}
+                        toggle={() => {
+                          this.toggle(0);
+                        }}
+                      >
+                        <DropdownToggle caret color="light">GR Bulk</DropdownToggle>
+                        <DropdownMenu>
+                          <DropdownItem onClick={this.downloadGRBulkTemplate}>Download GR Bulk Template</DropdownItem>
+                          <DropdownItem onClick={this.toggleGRBulk}>Upload GR Bulk</DropdownItem>
+                        </DropdownMenu>
+                      </Dropdown>
+                    </div>
+                  )}
                   {/* <Button
                     block
                     color="success"
