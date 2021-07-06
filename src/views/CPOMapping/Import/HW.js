@@ -153,7 +153,7 @@ class ImportHW extends React.Component {
       const res = await postDatatoAPINODE(
         "/cpoMapping/createCpo2",
         {
-          cpo_type: "svc",
+          cpo_type: "hw",
           required_check: true,
           roles: roles,
           cpo_data: this.state.rowsXLS_batch[index_xlsx],
