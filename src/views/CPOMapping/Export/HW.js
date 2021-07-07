@@ -487,6 +487,315 @@ class ExportHW extends React.Component {
     }
   };
 
+  exportTemplate_new = async () => {
+    this.toggleLoading();
+
+    const wb = new Excel.Workbook();
+    const ws = wb.addWorksheet();
+    const ws2 = wb.addWorksheet();
+
+    ws.name = "Reference";
+    ws2.name = "Script";
+
+    let filter_array2 = [];
+    for (const [key, value] of Object.entries(this.state.filter_list)) {
+      if (value !== null && value !== undefined) {
+        filter_array2.push(
+          '"' + key + '":{"$regex" : "' + value + '", "$options" : "i"}'
+        );
+      }
+    }
+    let whereAnd2 = "{" + filter_array2.join(",") + "}";
+    const getdata = await getDatafromAPINODE(
+      "/cpoMapping/getCpo/required/hw?q=" + whereAnd2 + "&noPg=1",
+      this.state.tokenUser
+    );
+
+    if (getdata.data !== undefined) {
+      const download_all_template = await getdata.data.data;
+      // console.log("download_all_template ", download_all_template);
+      ws.addRow(global.config.cpo_mapping.hw.header_materialmapping);
+      for (
+        let i = 1;
+        i < global.config.cpo_mapping.hw.header_materialmapping.length + 1;
+        i++
+      ) {
+        ws.getCell(numToSSColumn(i) + "1").fill = {
+          type: "pattern",
+          pattern: "solid",
+          fgColor: { argb: "FFFFFF00" },
+          bgColor: { argb: "A9A9A9" },
+        };
+      }
+
+      if (download_all_template !== undefined) {
+        // console.log(download_all_template.data.data.map((u) => u._id));
+
+        for (let i = 0; i < download_all_template.length; i++) {
+          let e = download_all_template[i];
+          ws.addRow([
+            e.Deal_Name,
+            e.Hammer,
+            e.Project_Description,
+            e.Po_Number,
+            e.Data_1,
+            e.Lookup_Reference,
+            e.Region,
+            e.Reference_Loc_Id,
+            e.New_Loc_Id,
+            e.Site_Name,
+            e.New_Site_Name,
+            e.Config,
+            e.Po,
+            e.Line,
+            e.Line_Item_Sap,
+            e.Material_Code,
+            e.Description,
+            e.Qty,
+            e.NW,
+            convertDateFormat_firefox(e.On_Air_Date),
+            convertDateFormat_firefox(e.Mapping_Date),
+            e.Remarks,
+            e.Premr_No,
+            e.Proceed_Billing_100,
+            e.Celcom_User,
+            e.Pcode,
+            e.Unit_Price,
+            e.Total_Price,
+            e.Discounted_Unit_Price,
+            e.Discounted_Po_Price,
+          ]);
+        }
+      }
+
+      if (this.state.roleUser.includes("BAM-MAT PLANNER") === true) {
+        ws2.addRow(global.config.cpo_mapping.hw.header_materialmapping);
+        for (
+          let i = 1;
+          i < global.config.cpo_mapping.hw.header_materialmapping.length + 1;
+          i++
+        ) {
+          ws2.getCell(numToSSColumn(i) + "1").fill = {
+            type: "pattern",
+            pattern: "solid",
+            fgColor: { argb: "FFFFFF00" },
+            bgColor: { argb: "A9A9A9" },
+          };
+        }
+        if (download_all_template !== undefined) {
+          // console.log(download_all_template.data.data.map((u) => u._id));
+
+          for (let i = 0; i < download_all_template.length; i++) {
+            let e = download_all_template[i];
+            ws2.addRow([
+              e.Deal_Name,
+              e.Hammer,
+              e.Project_Description,
+              e.Po_Number,
+              e.Data_1,
+              e.Lookup_Reference,
+              e.Region,
+              e.Reference_Loc_Id,
+              e.New_Loc_Id,
+              e.Site_Name,
+              e.New_Site_Name,
+              e.Config,
+              e.Po,
+              e.Line,
+              e.Line_Item_Sap,
+              e.Material_Code,
+              e.Description,
+              e.Qty,
+              e.NW,
+              convertDateFormat_firefox(e.On_Air_Date),
+              convertDateFormat_firefox(e.Mapping_Date),
+              e.Remarks,
+              e.Premr_No,
+              e.Proceed_Billing_100,
+              e.Celcom_User,
+              e.Pcode,
+              e.Unit_Price,
+              e.Total_Price,
+              e.Discounted_Unit_Price,
+              e.Discounted_Po_Price,
+            ]);
+          }
+        }
+      }
+      if (this.state.roleUser.includes("BAM-PFM") === true) {
+        ws2.addRow(
+          [
+            "Deal_Name",
+            "Hammer",
+            "Project_Description",
+            "Po_Number",
+            "Data_1",
+            "Lookup_Reference",
+            "Region",
+            "Reference_Loc_Id",
+            "New_Loc_Id",
+            "Site_Name",
+            "New_Site_Name",
+            "Config",
+            "Po",
+            "Line",
+            "Line_Item_Sap",
+            "Material_Code",
+            "Description",
+            "Qty",
+            "NW",
+            "On_Air_Date",
+            "Mapping_Date",
+            "Remarks",
+            "Gr_No",
+            "Premr_No",
+            "Proceed_Billing_100",
+            "Celcom_User",
+            "Pcode",
+            "Unit_Price",
+          ].concat(global.config.cpo_mapping.hw.header_pfm)
+        );
+        // general info column
+        for (let info = 1; info < 9; info++) {
+          ws2.getCell(numToSSColumn(info) + "1").fill = {
+            type: "pattern",
+            pattern: "solid",
+            fgColor: { argb: "FFCCFFCC" },
+          };
+        }
+        // hammer2 column
+        for (let hammer2 = 9; hammer2 < 22; hammer2++) {
+          ws2.getCell(numToSSColumn(hammer2) + "1").fill = {
+            type: "pattern",
+            pattern: "solid",
+            fgColor: { argb: "DFDF9F" },
+          };
+        }
+        // hammer1 column
+        for (let hammer1 = 22; hammer1 < 35; hammer1++) {
+          ws2.getCell(numToSSColumn(hammer1) + "1").fill = {
+            type: "pattern",
+            pattern: "solid",
+            fgColor: { argb: "FFFFFF00" },
+          };
+        }
+        // billing100 column
+        for (let billing100 = 35; billing100 < 40; billing100++) {
+          ws2.getCell(numToSSColumn(billing100) + "1").fill = {
+            type: "pattern",
+            pattern: "solid",
+            fgColor: { argb: "60BF9F" },
+          };
+        }
+
+        if (download_all_template !== undefined) {
+          for (let i = 0; i < download_all_template.length; i++) {
+            let e = download_all_template[i];
+            ws2.addRow([
+              e.Deal_Name,
+              e.Hammer,
+              e.Project_Description,
+              e.Po_Number,
+              e.Data_1,
+              e.Lookup_Reference,
+              e.Region,
+              e.Reference_Loc_Id,
+              e.New_Loc_Id,
+              e.Site_Name,
+              e.New_Site_Name,
+              e.Config,
+              e.Po,
+              e.Line,
+              e.Line_Item_Sap,
+              e.Material_Code,
+              e.Description,
+              e.Qty,
+              e.NW,
+              e.On_Air_Date,
+              e.Mapping_Date,
+              e.Remarks,
+              e.Gr_No,
+              e.Premr_No,
+              e.Proceed_Billing_100,
+              e.Celcom_User,
+              e.Pcode,
+              e.Unit_Price,
+            ]);
+          }
+        }
+      }
+      if (this.state.roleUser.includes("BAM-ADMIN") === true) {
+        ws2.addRow(
+          [
+            "Deal_Name",
+            "Hammer",
+            "Project_Description",
+            "Po_Number",
+            "Reference_Loc_Id",
+            "Line",
+            "Po",
+          ].concat(global.config.cpo_mapping.hw.header_admin)
+        );
+        // general info column
+        for (let info = 1; info < 8; info++) {
+          ws2.getCell(numToSSColumn(info) + "1").fill = {
+            type: "pattern",
+            pattern: "solid",
+            fgColor: { argb: "FFCCFFCC" },
+          };
+        }
+        // hammer2 column
+        for (let hammer2 = 8; hammer2 < 22; hammer2++) {
+          ws2.getCell(numToSSColumn(hammer2) + "1").fill = {
+            type: "pattern",
+            pattern: "solid",
+            fgColor: { argb: "DFDF9F" },
+          };
+        }
+        // hammer1 column
+        for (let hammer1 = 22; hammer1 < 35; hammer1++) {
+          ws2.getCell(numToSSColumn(hammer1) + "1").fill = {
+            type: "pattern",
+            pattern: "solid",
+            fgColor: { argb: "FFFFFF00" },
+          };
+        }
+        // billing100 column
+        for (let billing100 = 35; billing100 < 40; billing100++) {
+          ws2.getCell(numToSSColumn(billing100) + "1").fill = {
+            type: "pattern",
+            pattern: "solid",
+            fgColor: { argb: "60BF9F" },
+          };
+        }
+
+        if (download_all_template !== undefined) {
+          for (let i = 0; i < download_all_template.length; i++) {
+            let e = download_all_template[i];
+            ws2.addRow([
+              e.Deal_Name,
+              e.Hammer,
+              e.Project_Description,
+              e.Po_Number,
+              e.Reference_Loc_Id,
+              e.Line,
+              e.Po,
+            ]);
+          }
+        }
+      }
+
+      this.toggleLoading();
+
+      const PPFormat = await wb.xlsx.writeBuffer();
+
+      saveAs(
+        new Blob([PPFormat]),
+        this.state.roleUser[1] + " " + modul_name + " All Data_script.xlsx"
+      );
+    }
+  };
+
   download_PFM = async () => {
     this.toggleLoading();
     // this.getListAll();
@@ -778,11 +1087,11 @@ class ExportHW extends React.Component {
                     </DropdownToggle>
                     <DropdownMenu>
                       <DropdownItem header>Export Data</DropdownItem>
-                      <DropdownItem onClick={this.exportTemplateall}>
+                      <DropdownItem onClick={this.exportTemplate_new}>
                         {" "}
                         All Data HW Export
                       </DropdownItem>
-                      <DropdownItem header>Uploader Template</DropdownItem>
+                      {/* <DropdownItem header>Uploader Template</DropdownItem>
                       {role.includes("BAM-MAT PLANNER") === true ? (
                         <>
                           <DropdownItem onClick={this.exportTemplate2}>
@@ -812,7 +1121,7 @@ class ExportHW extends React.Component {
                         </>
                       ) : (
                         ""
-                      )}
+                      )} */}
                     </DropdownMenu>
                   </Dropdown>
                 </Col>

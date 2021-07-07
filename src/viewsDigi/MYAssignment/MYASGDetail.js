@@ -106,6 +106,7 @@ class MYASGDetail extends PureComponent {
       vendor_code: "",
       list_cd_id: [],
       cd_id_selected: "",
+      po_fully_approved: false
     };
     this.toggleAddNew = this.toggleAddNew.bind(this);
     this.handleFilterList = this.handleFilterList.bind(this);
@@ -978,16 +979,10 @@ class MYASGDetail extends PureComponent {
       (res) => {
         if (res.data !== undefined) {
           const dataLMRDetail = res.data.data;
-          this.setState(
-            {
-              lmr_detail: dataLMRDetail,
-              vendor_code: dataLMRDetail.vendor_code_actual,
-            },
-            () => {
-              // this.toggleLoading();
-              this.getDataPRPO(dataLMRDetail.lmr_id);
-              // this.postAllGR_draft();
-            }
+          this.setState({ lmr_detail: dataLMRDetail, vendor_code: dataLMRDetail.vendor_code_actual }, () => {
+            this.getDataPRPO(dataLMRDetail.lmr_id);
+            this.checkPOStatus();
+          }
           );
         }
       }
@@ -1924,6 +1919,14 @@ class MYASGDetail extends PureComponent {
     }
   };
 
+  checkPOStatus = () => {
+    getDatafromAPIMY('/po_status_data?where={"Quotation_LMR_No" : "' + this.state.lmr_detail.lmr_id + '"}').then((res) => {
+      if (res.data !== undefined && res.data._items.length > 0) {
+        this.setState({ po_fully_approved: true });
+      }
+    });
+  }
+
   render() {
     const cd_id_list = [];
     this.state.list_cd_id.map((e) =>
@@ -1949,20 +1952,22 @@ class MYASGDetail extends PureComponent {
                   className="card-header-actions"
                   style={{ display: "inline-flex" }}
                 >
-                  <div style={{ marginRight: "16px", display: "none" }} hidden={this.state.list_pr_po.length === 0 || this.state.list_pr_po[0].PO_Number === null || this.state.list_pr_po[0].PO_Item === null}>
-                    <Dropdown
-                      isOpen={this.state.dropdownOpen[0]}
-                      toggle={() => {
-                        this.toggle(0);
-                      }}
-                    >
-                      <DropdownToggle caret color="light">GR Bulk</DropdownToggle>
-                      <DropdownMenu>
-                        <DropdownItem onClick={this.downloadGRBulkTemplate}>Download GR Bulk Template</DropdownItem>
-                        <DropdownItem onClick={this.toggleGRBulk}>Upload GR Bulk</DropdownItem>
-                      </DropdownMenu>
-                    </Dropdown>
-                  </div>
+                  {this.state.roleUser.includes("BAM-CPM") === true || this.state.roleUser.includes("BAM-GR PA") === true && (
+                    // use this one later
+                    // <div style={{ marginRight: "16px" }} hidden={this.state.list_pr_po.length === 0 || this.state.list_pr_po[0].PO_Number === null || this.state.list_pr_po[0].PO_Item === null || this.state.list_pr_po[0].updated_on.substr(0, 10) === currentDate || this.state.po_fully_approved === false}>
+                    <div style={{ marginRight: "16px" }} hidden={this.state.list_pr_po.length === 0 || this.state.list_pr_po[0].PO_Number === null || this.state.list_pr_po[0].PO_Item === null || this.state.list_pr_po[0].updated_on.substr(0, 10) === currentDate}>
+                      <Dropdown
+                        isOpen={this.state.dropdownOpen[0]}
+                        toggle={() => { this.toggle(0); }}
+                      >
+                        <DropdownToggle caret color="light">GR Bulk</DropdownToggle>
+                        <DropdownMenu>
+                          <DropdownItem onClick={this.downloadGRBulkTemplate}>Download GR Bulk Template</DropdownItem>
+                          <DropdownItem onClick={this.toggleGRBulk}>Upload GR Bulk</DropdownItem>
+                        </DropdownMenu>
+                      </Dropdown>
+                    </div>
+                  )}
                   {/* <Button
                     block
                     color="success"
@@ -2248,6 +2253,22 @@ class MYASGDetail extends PureComponent {
                           <tr>
                             {this.state.roleUser.includes("BAM-CPM") === true || this.state.roleUser.includes("BAM-GR PA") === true ? (
                               <td>
+                                {/* use this one later */}
+                                {/* {this.state.list_pr_po.find((f) => f.id_child_doc === e._id) !== undefined &&
+                                  this.state.list_pr_po.find((f) => f.id_child_doc === e._id).PO_Number !== null &&
+                                  this.state.list_pr_po.find((f) => f.id_child_doc === e._id).PO_Item !== null &&
+                                  this.state.list_pr_po.find((f) => f.id_child_doc === e._id).updated_on.substr(0, 10) !== currentDate &&
+                                  this.state.po_fully_approved === true ? (
+                                  <Link to={"/lmr-detail/" + this.props.match.params.id + "/gr-detail/" + e._id}>
+                                    <Button color="info">
+                                      <i className="fa fa-info-circle" aria-hidden="true"></i>&nbsp;GR
+                                    </Button>
+                                  </Link>
+                                ) : (
+                                  <Button color="info" disabled>
+                                    <i className="fa fa-info-circle" aria-hidden="true"></i>&nbsp;GR
+                                  </Button>
+                                )} */}
                                 {this.state.list_pr_po.find((f) => f.id_child_doc === e._id) !== undefined &&
                                   this.state.list_pr_po.find((f) => f.id_child_doc === e._id).PO_Number !== null &&
                                   this.state.list_pr_po.find((f) => f.id_child_doc === e._id).PO_Item !== null &&
