@@ -63,8 +63,9 @@ class ImportHW extends React.Component {
         type: rABS ? "binary" : "array",
         cellDates: true,
       });
-      /* Get first worksheet */
-      const wsname = wb.SheetNames[0];
+      /* Get second worksheet */
+      const wsname = wb.SheetNames[1];
+      console.log("wsname", wsname);
       const ws = wb.Sheets[wsname];
       /* Convert array of arrays */
       const data = XLSX.utils.sheet_to_json(ws, { header: 1, devfal: null });
@@ -151,7 +152,7 @@ class ImportHW extends React.Component {
       this.toggleLoading_batch();
       console.log(`hit ${index_xlsx + 1}`);
       const res = await postDatatoAPINODE(
-        "/cpoMapping/createCpo1",
+        "/cpoMapping/createCpo2",
         {
           cpo_type: "hw",
           required_check: true,
@@ -350,7 +351,6 @@ class ImportHW extends React.Component {
     // console.log("error_containers", error_containers);
     // console.log("warn_containers", warn_containers);
   };
-
   render() {
     return (
       <div className="animated fadeIn">
