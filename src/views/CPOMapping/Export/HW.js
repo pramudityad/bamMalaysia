@@ -406,85 +406,29 @@ class ExportHW extends React.Component {
 
     const wb = new Excel.Workbook();
     const ws = wb.addWorksheet();
-    let filter_array2 = [];
-    for (const [key, value] of Object.entries(this.state.filter_list)) {
-      if (value !== null && value !== undefined) {
-        filter_array2.push(
-          '"' + key + '":{"$regex" : "' + value + '", "$options" : "i"}'
-        );
-      }
+    const ws2 = wb.addWorksheet();
+
+    ws2.addRow(global.config.cpo_mapping.hw.header_materialmapping);
+    for (
+      let i = 1;
+      i < global.config.cpo_mapping.hw.header_materialmapping.length + 1;
+      i++
+    ) {
+      ws2.getCell(numToSSColumn(i) + "1").fill = {
+        type: "pattern",
+        pattern: "solid",
+        fgColor: { argb: "FFFFFF00" },
+        bgColor: { argb: "A9A9A9" },
+      };
     }
-    let whereAnd2 = "{" + filter_array2.join(",") + "}";
-    const getdata = await getDatafromAPINODE(
-      "/cpoMapping/getCpo/required/hw?q=" + whereAnd2 + "&noPg=1",
-      this.state.tokenUser
+    this.toggleLoading();
+
+    const PPFormat = await wb.xlsx.writeBuffer();
+
+    saveAs(
+      new Blob([PPFormat]),
+      this.state.roleUser[1] + " " + modul_name + " All Data.xlsx"
     );
-
-    if (getdata.data !== undefined) {
-      const download_all_template = await getdata.data.data;
-      // console.log("download_all_template ", download_all_template);
-      ws.addRow(global.config.cpo_mapping.hw.header_materialmapping);
-      for (
-        let i = 1;
-        i < global.config.cpo_mapping.hw.header_materialmapping.length + 1;
-        i++
-      ) {
-        ws.getCell(numToSSColumn(i) + "1").fill = {
-          type: "pattern",
-          pattern: "solid",
-          fgColor: { argb: "FFFFFF00" },
-          bgColor: { argb: "A9A9A9" },
-        };
-      }
-
-      if (download_all_template !== undefined) {
-        // console.log(download_all_template.data.data.map((u) => u._id));
-
-        for (let i = 0; i < download_all_template.length; i++) {
-          let e = download_all_template[i];
-          ws.addRow([
-            e.Deal_Name,
-            e.Hammer,
-            e.Project_Description,
-            e.Po_Number,
-            e.Data_1,
-            e.Lookup_Reference,
-            e.Region,
-            e.Reference_Loc_Id,
-            e.New_Loc_Id,
-            e.Site_Name,
-            e.New_Site_Name,
-            e.Config,
-            e.Po,
-            e.Line,
-            e.Line_Item_Sap,
-            e.Material_Code,
-            e.Description,
-            e.Qty,
-            e.NW,
-            convertDateFormat_firefox(e.On_Air_Date),
-            convertDateFormat_firefox(e.Mapping_Date),
-            e.Remarks,
-            e.Premr_No,
-            e.Proceed_Billing_100,
-            e.Celcom_User,
-            e.Pcode,
-            e.Unit_Price,
-            e.Total_Price,
-            e.Discounted_Unit_Price,
-            e.Discounted_Po_Price,
-          ]);
-        }
-      }
-      this.toggleLoading();
-
-      const PPFormat = await wb.xlsx.writeBuffer();
-
-      saveAs(
-        new Blob([PPFormat]),
-        this.state.roleUser[1] + " " + modul_name + " All Data.xlsx"
-      );
-    }
   };
 
   exportTemplate_new = async () => {
@@ -1135,37 +1079,18 @@ class ExportHW extends React.Component {
                         {" "}
                         All Data HW Export
                       </DropdownItem>
-                      {/* <DropdownItem header>Uploader Template</DropdownItem>
+                      <DropdownItem header>For New Entries</DropdownItem>
                       {role.includes("BAM-MAT PLANNER") === true ? (
                         <>
                           <DropdownItem onClick={this.exportTemplate2}>
                             {" "}
-                            Mapping Template{" " + this.state.roleUser[1]}{" "}
+                            Mapping Template Hw{" " +
+                              this.state.roleUser[1]}{" "}
                           </DropdownItem>
                         </>
                       ) : (
                         ""
                       )}
-                      {role.includes("BAM-PFM") === true ? (
-                        <>
-                          <DropdownItem onClick={this.download_PFM}>
-                            {" "}
-                            Mapping Template{" " + this.state.roleUser[1]}{" "}
-                          </DropdownItem>
-                        </>
-                      ) : (
-                        ""
-                      )}
-                      {role.includes("BAM-ADMIN") === true ? (
-                        <>
-                          <DropdownItem onClick={this.download_Admin}>
-                            {" "}
-                            Mapping Template{" " + this.state.roleUser[1]}{" "}
-                          </DropdownItem>
-                        </>
-                      ) : (
-                        ""
-                      )} */}
                     </DropdownMenu>
                   </Dropdown>
                 </Col>
