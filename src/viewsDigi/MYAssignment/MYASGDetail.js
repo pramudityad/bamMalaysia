@@ -1953,12 +1953,12 @@ class MYASGDetail extends PureComponent {
                   style={{ display: "inline-flex" }}
                 >
                   {this.state.roleUser.includes("BAM-CPM") === true || this.state.roleUser.includes("BAM-GR PA") === true && (
+                    // use this one later
+                    // <div style={{ marginRight: "16px" }} hidden={this.state.list_pr_po.length === 0 || this.state.list_pr_po[0].PO_Number === null || this.state.list_pr_po[0].PO_Item === null || this.state.list_pr_po[0].updated_on.substr(0, 10) === currentDate || this.state.po_fully_approved === false}>
                     <div style={{ marginRight: "16px" }} hidden={this.state.list_pr_po.length === 0 || this.state.list_pr_po[0].PO_Number === null || this.state.list_pr_po[0].PO_Item === null || this.state.list_pr_po[0].updated_on.substr(0, 10) === currentDate}>
                       <Dropdown
                         isOpen={this.state.dropdownOpen[0]}
-                        toggle={() => {
-                          this.toggle(0);
-                        }}
+                        toggle={() => { this.toggle(0); }}
                       >
                         <DropdownToggle caret color="light">GR Bulk</DropdownToggle>
                         <DropdownMenu>
@@ -2253,11 +2253,26 @@ class MYASGDetail extends PureComponent {
                           <tr>
                             {this.state.roleUser.includes("BAM-CPM") === true || this.state.roleUser.includes("BAM-GR PA") === true ? (
                               <td>
-                                {this.state.list_pr_po.find((f) => f.id_child_doc === e._id) !== undefined &&
+                                {/* use this one later */}
+                                {/* {this.state.list_pr_po.find((f) => f.id_child_doc === e._id) !== undefined &&
                                   this.state.list_pr_po.find((f) => f.id_child_doc === e._id).PO_Number !== null &&
                                   this.state.list_pr_po.find((f) => f.id_child_doc === e._id).PO_Item !== null &&
                                   this.state.list_pr_po.find((f) => f.id_child_doc === e._id).updated_on.substr(0, 10) !== currentDate &&
                                   this.state.po_fully_approved === true ? (
+                                  <Link to={"/lmr-detail/" + this.props.match.params.id + "/gr-detail/" + e._id}>
+                                    <Button color="info">
+                                      <i className="fa fa-info-circle" aria-hidden="true"></i>&nbsp;GR
+                                    </Button>
+                                  </Link>
+                                ) : (
+                                  <Button color="info" disabled>
+                                    <i className="fa fa-info-circle" aria-hidden="true"></i>&nbsp;GR
+                                  </Button>
+                                )} */}
+                                {this.state.list_pr_po.find((f) => f.id_child_doc === e._id) !== undefined &&
+                                  this.state.list_pr_po.find((f) => f.id_child_doc === e._id).PO_Number !== null &&
+                                  this.state.list_pr_po.find((f) => f.id_child_doc === e._id).PO_Item !== null &&
+                                  this.state.list_pr_po.find((f) => f.id_child_doc === e._id).updated_on.substr(0, 10) !== currentDate ? (
                                   <Link to={"/lmr-detail/" + this.props.match.params.id + "/gr-detail/" + e._id}>
                                     <Button color="info">
                                       <i className="fa fa-info-circle" aria-hidden="true"></i>&nbsp;GR
