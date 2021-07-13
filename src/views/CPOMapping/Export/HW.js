@@ -514,10 +514,10 @@ class ExportHW extends React.Component {
     if (getdata.data !== undefined) {
       const download_all_template = await getdata.data.data;
       // console.log("download_all_template ", download_all_template);
-      ws.addRow(global.config.cpo_mapping.hw.header_materialmapping);
+      ws.addRow(global.config.cpo_mapping.hw.header_model);
       for (
         let i = 1;
-        i < global.config.cpo_mapping.hw.header_materialmapping.length + 1;
+        i < global.config.cpo_mapping.hw.header_model.length + 1;
         i++
       ) {
         ws.getCell(numToSSColumn(i) + "1").fill = {
@@ -556,7 +556,7 @@ class ExportHW extends React.Component {
             convertDateFormat_firefox(e.On_Air_Date),
             convertDateFormat_firefox(e.Mapping_Date),
             e.Remarks,
-            e.Premr_No,
+            e.Gr_No,
             e.Proceed_Billing_100,
             e.Celcom_User,
             e.Pcode,
@@ -564,6 +564,50 @@ class ExportHW extends React.Component {
             e.Total_Price,
             e.Discounted_Unit_Price,
             e.Discounted_Po_Price,
+            e.Net_Unit_Price,
+            e.Invoice_Total,
+            e.Hammer_1_Hd_Total,
+            e.So_Line_Item_Description,
+            e.Sitepcode,
+            e.VlookupWbs,
+            e.So_No,
+            e.Wbs_No,
+            convertDateFormat_firefox(e.For_Checking_Purpose_Only_Rashidah),
+            convertDateFormat_firefox(e.Hw_Coa_Received_Date_80),
+            e.Billing_Upon_Hw_Coa_80,
+            e.Invoicing_No_Hw_Coa_80,
+            convertDateFormat_firefox(e.Invoicing_Date_Hw_Coa_80),
+            e.Cancelled_Invoice_Hw_Coa_80,
+            convertDateFormat_firefox(e.Ni_Coa_Date_20),
+            e.Billing_Upon_Ni_20,
+            e.Invoicing_No_Ni_20,
+            convertDateFormat_firefox(e.Invoicing_Date_Ni_20),
+            e.Cancelled_Invoicing_Ni_20,
+            convertDateFormat_firefox(e.Hw_Coa_Received_Date_40),
+            e.Billing_Upon_Hw_Coa_40,
+            e.Invoicing_No_Hw_Coa_40,
+            convertDateFormat_firefox(e.Invoicing_Date_Hw_Coa_40),
+            e.Cancelled_Hw_Coa_40,
+            convertDateFormat_firefox(e.Ni_Coa_Date_40),
+            e.Billing_Upon_Ni_40,
+            e.Invoicing_No_Ni_40,
+            convertDateFormat_firefox(e.Invoicing_Date_Ni_40),
+            e.Cancelled_Ni_40,
+            convertDateFormat_firefox(e.Sso_Coa_Date_20_1),
+            e.Billing_Upon_Sso_20_1,
+            e.Invoicing_No_Sso_20_1,
+            convertDateFormat_firefox(e.Invoicing_Date_Sso_20_1),
+            e.Cancelled_Sso_20,
+            convertDateFormat_firefox(e.Hw_Coa_100),
+            e.Billing_Upon_Hw_Coa_100,
+            e.Invoicing_No_Hw_Coa_100,
+            convertDateFormat_firefox(e.Invoicing_Date_Hw_Coa_100),
+            e.Cancelled_Invoicing_Hw_Coa_100,
+            e.Cancel_Column,
+            e.Reference_Loc_Id_1,
+            e.Po_1,
+            e.Reff,
+            e.Vlookup_For_Billing,
           ]);
         }
       }
