@@ -1,7 +1,6 @@
 module.exports = global.config = {
   role: {
-    cpm:
-      "you.siong.hong@ericsson.com;mohd.najmuddin.yusoff@ericsson.com;sey.loy.lee@ericsson.com;",
+    cpm: "you.siong.hong@ericsson.com;mohd.najmuddin.yusoff@ericsson.com;sey.loy.lee@ericsson.com;",
   },
   cpo_mapping: {
     hw: {
@@ -201,10 +200,13 @@ module.exports = global.config = {
         "Invoicing_No_Hw_Coa_80",
         "Invoicing_Date_Hw_Coa_80",
         "Cancelled_Invoice_Hw_Coa_80",
+        "Ni_Coa_Date_20",
         "Billing_Upon_Ni_20",
         "Invoicing_No_Ni_20",
         "Invoicing_Date_Ni_20",
         "Cancelled_Invoicing_Ni_20",
+        "Hw_Coa_Received_Date_40",
+        "Ni_Coa_Date_40",
         "Billing_Upon_Hw_Coa_40",
         "Invoicing_No_Hw_Coa_40",
         "Invoicing_Date_Hw_Coa_40",
@@ -213,6 +215,7 @@ module.exports = global.config = {
         "Invoicing_No_Ni_40",
         "Invoicing_Date_Ni_40",
         "Cancelled_Ni_40",
+        "Sso_Coa_Date_20_1",
         "Billing_Upon_Sso_20_1",
         "Invoicing_No_Sso_20_1",
         "Invoicing_Date_Sso_20_1",
@@ -224,7 +227,9 @@ module.exports = global.config = {
       ],
       header_admin: [
         "For_Checking_Purpose_Only_Rashidah",
+        "Hw_Coa_Received_Date_40",
         "Hw_Coa_Received_Date_80",
+        "Hw_Coa_100",
         "Invoicing_Date_Hw_Coa_100",
         "Cancel_Column",
         "Reference_Loc_Id_1",
@@ -317,7 +322,6 @@ module.exports = global.config = {
         "LINK",
         "NI COA SUBMISSION STATUS",
       ],
-
       header_model: [
         "Deal_Name",
         "Hammer",
@@ -434,34 +438,35 @@ module.exports = global.config = {
         "Discounted_Unit_Price",
         "Discounted_Po_Price",
       ],
-
       header_pfm: [
         "So_Line_Item_Description",
         "Sitepcode",
         "VlookupWbs",
         "So_No",
         "Wbs_No",
-        // "Atp_Coa_Received_Date_80",
+        "Atp_Coa_Received_Date_80",
         "Billing_Upon_Atp_Coa_80",
         "Invoicing_No_Atp_Coa_80",
         "Invoicing_Date_Atp_Coa_80",
         "Cancelled_Atp_Coa_80",
-        // "Ni_Coa_Date_20",
+        "Ni_Coa_Date_20",
         "Billing_Upon_Ni_20",
         "Invoicing_No_Ni_20",
         "Invoicing_Date_Ni_20",
         "Cancelled_Invoicing_Ni_20",
-        // "Sso_Coa_Date_80",
+        "Sso_Coa_Date_80",
         "Billing_Upon_Sso_80",
         "Invoicing_No_Sso_80",
         "Invoicing_Date_Sso_80",
         "Cancelled_Sso_Coa_Date_80",
-        // "Coa_Psp_Received_Date_20",
+        "Coa_Psp_Received_Date_20",
+        "Coa_Ni_Received_Date_40",
+        "Cosso_Received_Date_60",
         "Billing_Upon_Coa_Psp_20",
         "Invoicing_No_Coa_Psp_20",
         "Invoicing_Date_Coa_Psp_20",
         "Cancelled_Coa_Psp_Received_Date_20",
-        // "Coa_Sso_Received_Date_100",
+        "Coa_Sso_Received_Date_100",
         "Billing_Upon_Sso_Coa_100",
         "Invoicing_No_Sso_Coa_100",
         "Invoicing_Date_Sso_Coa_100",
@@ -472,9 +477,7 @@ module.exports = global.config = {
         "Invoicing_Date_Coa_Ni_100",
         "Cancelled_Coa_Ni_Date_100",
       ],
-
       header_admin: [
-        "Proceed_Billing_100",
         "Billing_100",
         "Atp_Coa_Received_Date_80",
         "Ni_Coa_Date_20",
@@ -530,7 +533,6 @@ module.exports = global.config = {
         "Material_Code",
         "Description",
         "Qty",
-
         "Reserve",
         "Called_Off",
         "Balance",

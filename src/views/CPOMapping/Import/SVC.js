@@ -15,6 +15,7 @@ import {
 } from "reactstrap";
 import { postDatatoAPINODE, apiSendEmail } from "../../../helper/asyncFunction";
 import ReactJson from "react-json-view";
+import "../../../helper/config";
 
 import { connect } from "react-redux";
 import * as XLSX from "xlsx";
@@ -44,6 +45,7 @@ class ImportSVC extends React.Component {
       batch_log: "",
       upload_finish: false,
       error_log: [],
+      warn_log: [],
       batch_count: 2000,
     };
   }
@@ -61,8 +63,9 @@ class ImportSVC extends React.Component {
         type: rABS ? "binary" : "array",
         cellDates: true,
       });
-      /* Get first worksheet */
-      const wsname = wb.SheetNames[0];
+      /* Get second worksheet */
+      const wsname = wb.SheetNames[1];
+      console.log("wsname", wsname);
       const ws = wb.Sheets[wsname];
       /* Convert array of arrays */
       const data = XLSX.utils.sheet_to_json(ws, { header: 1, devfal: null });
@@ -130,8 +133,11 @@ class ImportSVC extends React.Component {
 
   saveBulk = async () => {
     let error_containers = [];
+    let warn_containers = [];
     const roles =
-      this.state.roleUser.includes("BAM-MAT PLANNER") === true
+      this.state.roleUser.includes("BAM-MAT PLANNER") === true ||
+      this.state.roleUser.includes("BAM-IM") === true ||
+      this.state.roleUser.includes("BAM-IE") === true
         ? 1
         : this.state.roleUser.includes("BAM-PFM") === true
         ? 2
@@ -148,7 +154,7 @@ class ImportSVC extends React.Component {
       this.toggleLoading_batch();
       console.log(`hit ${index_xlsx + 1}`);
       const res = await postDatatoAPINODE(
-        "/cpoMapping/createCpo1",
+        "/cpoMapping/createCpo2",
         {
           cpo_type: "svc",
           required_check: true,
@@ -157,21 +163,23 @@ class ImportSVC extends React.Component {
         },
         this.state.tokenUser
       );
+      // console.log("res", res.response);
+      /**
+       *  push errors to array
+       */
+      if (
+        res.response !== undefined &&
+        res.response.data !== undefined &&
+        res.response.data.error !== undefined
+      ) {
+        let err_data = res.response.data.error.message;
+        // if (err_data !== undefined) {
+        error_containers.push(err_data.message);
+        // }
+      }
       if (res.data !== undefined) {
         if (roles === 2) {
           this.toggleLoading_batch();
-          /**
-           * success notif
-           */
-          // if (index_xlsx === this.state.rowsXLS_batch.length - 1) {
-          //   this.setState({
-          //     action_status: "success",
-          //     action_message:
-          //       "Success upload all " +
-          //       this.state.rowsXLS_batch.length +
-          //       " batch",
-          //   });
-          // }
         } else {
           if (res.data.updateData.length !== 0) {
             const table_header = Object.keys(res.data.updateData[0]);
@@ -199,30 +207,30 @@ class ImportSVC extends React.Component {
                 )
                 .join(" ") +
               "</table>";
-            if (res.data.warnNotif.length !== 0) {
-              let dataEmail = {
-                // "to": creatorEmail,
-                // to: "damar.pramuditya@ericsson.com",
-                to: global.config.role.cpm,
-                subject: "[NOTIFY to CPM] " + modul_name,
-                body: bodyEmail,
-              };
-              const sendEmail = await apiSendEmail(dataEmail);
+            // if (res.data.warnNotif.length !== 0) {
+            //   let dataEmail = {
+            //     // "to": creatorEmail,
+            //     // to: "damar.pramuditya@ericsson.com",
+            //     to: global.config.role.cpm,
+            //     subject: "[NOTIFY to CPM] " + modul_name,
+            //     body: bodyEmail,
+            //   };
+            //   const sendEmail = await apiSendEmail(dataEmail);
 
-              // console.log(sendEmail);
-              this.setState({
-                action_status: "warning",
-                action_message:
-                  "Success with warn " +
-                  res.data.warnNotif.map((warn) => warn) +
-                  " batch ",
-              });
-              this.toggleLoading_batch();
-              return;
-              // setTimeout(function () {
-              //   window.location.reload();
-              // }, 1500);
-            }
+            //   // console.log(sendEmail);
+            //   // this.setState({
+            //   //   action_status: "warning",
+            //   //   action_message:
+            //   //     "Success with warn " +
+            //   //     res.data.warnNotif.map((warn) => warn) +
+            //   //     " batch ",
+            //   // });
+            //   // this.toggleLoading_batch();
+            //   // return;
+            //   // setTimeout(function () {
+            //   //   window.location.reload();
+            //   // }, 1500);
+            // }
             let dataEmail = {
               // "to": creatorEmail,
               // to: "damar.pramuditya@ericsson.com",
@@ -234,22 +242,6 @@ class ImportSVC extends React.Component {
 
             // console.log(sendEmail);
             this.toggleLoading_batch();
-            /**
-             * success notif
-             */
-            // if (index_xlsx === this.state.rowsXLS_batch.length - 1) {
-            //   this.setState({
-            //     action_status: "success",
-            //     action_message:
-            //       "Success upload all " +
-            //       this.state.rowsXLS_batch.length +
-            //       " batch",
-            //   });
-            // }
-            // setTimeout(function () {
-            //   window.location.reload();
-            // }, 1500);
-
             /**
              *  push errors to array
              */
@@ -268,17 +260,19 @@ class ImportSVC extends React.Component {
                 error_containers.push(err_data);
               }
             }
+            if (res.data.warnNotif.length !== 0) {
+              for (
+                let in_warn = 0;
+                in_warn < res.data.warnNotif.length;
+                in_warn++
+              ) {
+                let warn_data = res.data.warnNotif[in_warn];
+
+                warn_containers.push(warn_data);
+              }
+            }
           } else {
             this.toggleLoading_batch();
-            // if (index_xlsx === this.state.rowsXLS_batch.length - 1) {
-            //   this.setState({
-            //     action_status: "success",
-            //     action_message:
-            //       "Success upload all " +
-            //       this.state.rowsXLS_batch.length +
-            //       " batch",
-            //   });
-            // }
             /**
              *  push errors to array
              */
@@ -295,6 +289,17 @@ class ImportSVC extends React.Component {
                 err_data.message = err_data.message.message;
                 // console.log("after ", err_data);
                 error_containers.push(err_data);
+              }
+            }
+            if (res.data.warnNotif.length !== 0) {
+              for (
+                let in_warn = 0;
+                in_warn < res.data.warnNotif.length;
+                in_warn++
+              ) {
+                let warn_data = res.data.warnNotif[in_warn];
+
+                warn_containers.push(warn_data);
               }
             }
           }
@@ -329,11 +334,13 @@ class ImportSVC extends React.Component {
         break;
       }
     }
-    if (error_containers.length !== 0) {
+    if (error_containers.length !== 0 || warn_containers.length !== 0) {
       this.setState({
         error_log: error_containers,
+        warn_log: warn_containers,
         upload_finish: true,
-        action_message: "There are error(s) please toogle the button",
+        action_message:
+          "There are error(s) and/or warning(s) please toogle the button",
         action_status: "failed",
       });
     } else {
@@ -343,7 +350,8 @@ class ImportSVC extends React.Component {
         action_status: "success",
       });
     }
-    console.log(error_containers);
+    // console.log("error_containers", error_containers);
+    // console.log("warn_containers", warn_containers);
   };
 
   render() {
@@ -362,20 +370,51 @@ class ImportSVC extends React.Component {
         ) : (
           <div>
             <Button
-              color={this.state.error_log.length !== 0 ? "warning" : "success"}
+              color={this.state.error_log.length !== 0 ? "danger" : "success"}
               id="toggler"
               style={{ marginBottom: "1rem" }}
+              disabled={this.state.error_log.length === 0}
             >
-              Toggle Log
+              Toggle Error Log
             </Button>
             <UncontrolledCollapse toggler="#toggler">
               <Card>
                 <CardBody>
                   <ReactJson
-                    src={this.state.error_log.map((err) => {
-                      delete err.line;
-                      return err;
-                    })}
+                    src={
+                      this.state.error_log !== undefined &&
+                      this.state.error_log !== null &&
+                      this.state.error_log.map((err) => {
+                        delete err.line;
+                        return err;
+                      })
+                    }
+                    displayDataTypes={false}
+                    displayObjectSize={false}
+                  />
+                </CardBody>
+              </Card>
+            </UncontrolledCollapse>
+            &nbsp;&nbsp;&nbsp;
+            <Button
+              color={this.state.warn_log.length !== 0 ? "warning" : "success"}
+              id="toggler2"
+              style={{ marginBottom: "1rem" }}
+              disabled={this.state.warn_log.length === 0}
+            >
+              Toggle Warn Log
+            </Button>
+            <UncontrolledCollapse toggler="#toggler2">
+              <Card>
+                <CardBody>
+                  <ReactJson
+                    src={
+                      this.state.warn_log !== undefined &&
+                      this.state.warn_log !== null &&
+                      this.state.warn_log.map((warn) => {
+                        return warn;
+                      })
+                    }
                     displayDataTypes={false}
                     displayObjectSize={false}
                   />

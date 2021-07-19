@@ -1664,9 +1664,11 @@ class MappingHW extends React.Component {
   };
 
   handleChangeChecklist = (e) => {
+    console.log(this.state.dataChecked.has(e._id));
     const item = e.target.name;
     const isChecked = e.target.checked;
     const each_data = this.state.all_data;
+    console.log("here", item, isChecked, each_data);
     let dataChecked_container = this.state.dataChecked_container;
     if (isChecked === true) {
       const getCPO = each_data.find((pp) => pp._id === item);
@@ -1679,79 +1681,12 @@ class MappingHW extends React.Component {
     this.setState({ dataChecked_container: dataChecked_container }, () =>
       console.log("make not req", this.state.dataChecked_container)
     );
-    this.setState((prevState) => ({
-      dataChecked: prevState.dataChecked.set(item, isChecked),
-    }));
-  };
-
-  handleChangeChecklistAll = async (e) => {
-    const getall = await getDatafromAPINODE(
-      "/cpoMapping/getCpo/hw?noPg=1",
-      this.state.tokenUser
+    this.setState(
+      (prevState) => ({
+        dataChecked: prevState.dataChecked.set(item, isChecked),
+      }),
+      () => console.log("dataChecked ", this.state.dataChecked)
     );
-    console.log(getall.data);
-
-    if (getall.data !== undefined) {
-      if (e.target !== null) {
-        const isChecked = e.target.checked;
-        let dataChecked_container = this.state.dataChecked_container;
-        let each_data = getall.data.data;
-        if (isChecked) {
-          each_data = each_data.filter(
-            (e) =>
-              dataChecked_container.map((m) => m._id).includes(e._id) !== true
-          );
-          for (let x = 0; x < each_data.length; x++) {
-            dataChecked_container.push(each_data[x]);
-            this.setState((prevState) => ({
-              dataChecked_container: prevState.dataChecked_container.set(
-                each_data[x]._id,
-                isChecked
-              ),
-            }));
-          }
-          this.setState({ dataChecked_container: dataChecked_container });
-        } else {
-          for (let x = 0; x < each_data.length; x++) {
-            this.setState(
-              (prevState) => ({
-                dataChecked_container: prevState.dataChecked_container.set(
-                  each_data[x]._id,
-                  isChecked
-                ),
-              }),
-              () => console.log(this.state.dataChecked_container)
-            );
-          }
-          dataChecked_container.length = 0;
-          this.setState({ dataChecked_container: dataChecked_container });
-        }
-        this.setState((prevState) => ({
-          dataChecked_all: !prevState.dataChecked_all,
-        }));
-      }
-    }
-  };
-
-  handleChangeChecklist2 = (e) => {
-    const item2 = e.target.name;
-    const isChecked2 = e.target.checked;
-    const each_data2 = this.state.all_data_true;
-    let dataChecked_container2 = this.state.dataChecked_container2;
-    if (isChecked2 === false) {
-      const getCPO2 = each_data2.find((pp) => pp._id === item2);
-      dataChecked_container2.push(getCPO2);
-    } else {
-      dataChecked_container2 = dataChecked_container2.filter(function (pp) {
-        return pp._id !== item2;
-      });
-    }
-    this.setState({ dataChecked_container2: dataChecked_container2 }, () =>
-      console.log(this.state.dataChecked_container2)
-    );
-    this.setState((prevState) => ({
-      dataChecked: prevState.dataChecked.set(item2, isChecked2),
-    }));
   };
 
   changeTabsSubmenu = (e) => {
@@ -2037,9 +1972,9 @@ class MappingHW extends React.Component {
                                   0 &&
                                 this.state.count_header.constructor ===
                                   Object ? (
-                                  this.mapHeader(
-                                    this.state.count_header
-                                  ).map((head, j) => <th>{head}</th>)
+                                  this.mapHeader(this.state.count_header).map(
+                                    (head, j) => <th>{head}</th>
+                                  )
                                 ) : (
                                   <></>
                                 )}

@@ -13,7 +13,11 @@ import {
   Button,
 } from "reactstrap";
 import { getDatafromAPINODE } from "../../../helper/asyncFunction";
-import { getUniqueListBy, numToSSColumn } from "../../../helper/basicFunction";
+import {
+  getUniqueListBy,
+  numToSSColumn,
+  convertDateFormat_firefox,
+} from "../../../helper/basicFunction";
 
 import { saveAs } from "file-saver";
 import { connect } from "react-redux";
@@ -22,6 +26,7 @@ import Select from "react-select";
 import Excel from "exceljs";
 import AsyncSelect from "react-select/async";
 import Loading from "../../Component/Loading";
+import "../../../helper/config";
 
 const modul_name = "HW Mapping";
 
@@ -291,8 +296,12 @@ class ExportHW extends React.Component {
     if (getdata.data !== undefined) {
       const download_all_template = await getdata.data.data;
       // console.log("download_all_template ", download_all_template);
-      ws.addRow(header_model);
-      for (let i = 1; i < header_model.length + 1; i++) {
+      ws.addRow(global.config.cpo_mapping.hw.header_model);
+      for (
+        let i = 1;
+        i < global.config.cpo_mapping.hw.header_model.length + 1;
+        i++
+      ) {
         ws.getCell(numToSSColumn(i) + "1").fill = {
           type: "pattern",
           pattern: "solid",
@@ -324,8 +333,8 @@ class ExportHW extends React.Component {
             e.Description,
             e.Qty,
             e.NW,
-            e.On_Air_Date,
-            e.Mapping_Date,
+            convertDateFormat_firefox(e.On_Air_Date),
+            convertDateFormat_firefox(e.Mapping_Date),
             e.Remarks,
             e.Premr_No,
             e.Proceed_Billing_100,
@@ -342,35 +351,35 @@ class ExportHW extends React.Component {
             e.So_No,
             e.Wbs_No,
             e.For_Checking_Purpose_Only_Rashidah,
-            e.Hw_Coa_Received_Date_80,
+            convertDateFormat_firefox(e.Hw_Coa_Received_Date_80),
             e.Billing_Upon_Hw_Coa_80,
             e.Invoicing_No_Hw_Coa_80,
-            e.Invoicing_Date_Hw_Coa_80,
+            convertDateFormat_firefox(e.Invoicing_Date_Hw_Coa_80),
             e.Cancelled_Invoice_Hw_Coa_80,
-            e.Ni_Coa_Date_20,
+            convertDateFormat_firefox(e.Ni_Coa_Date_20),
             e.Billing_Upon_Ni_20,
             e.Invoicing_No_Ni_20,
-            e.Invoicing_Date_Ni_20,
+            convertDateFormat_firefox(e.Invoicing_Date_Ni_20),
             e.Cancelled_Invoicing_Ni_20,
             e.Hw_Coa_Received_Date_40,
             e.Billing_Upon_Hw_Coa_40,
             e.Invoicing_No_Hw_Coa_40,
-            e.Invoicing_Date_Hw_Coa_40,
+            convertDateFormat_firefox(e.Invoicing_Date_Hw_Coa_40),
             e.Cancelled_Hw_Coa_40,
-            e.Ni_Coa_Date_40,
+            convertDateFormat_firefox(e.Ni_Coa_Date_40),
             e.Billing_Upon_Ni_40,
             e.Invoicing_No_Ni_40,
-            e.Invoicing_Date_Ni_40,
+            convertDateFormat_firefox(e.Invoicing_Date_Ni_40),
             e.Cancelled_Ni_40,
             e.Sso_Coa_Date_20_1,
             e.Billing_Upon_Sso_20_1,
             e.Invoicing_No_Sso_20_1,
-            e.Invoicing_Date_Sso_20_1,
+            convertDateFormat_firefox(e.Invoicing_Date_Sso_20_1),
             e.Cancelled_Sso_20,
-            e.Hw_Coa_100,
+            convertDateFormat_firefox(e.Hw_Coa_100),
             e.Billing_Upon_Hw_Coa_100,
             e.Invoicing_No_Hw_Coa_100,
-            e.Invoicing_Date_Hw_Coa_100,
+            convertDateFormat_firefox(e.Invoicing_Date_Hw_Coa_100),
             e.Cancelled_Invoicing_Hw_Coa_100,
             e.Cancel_Column,
             e.Reference_Loc_Id_1,
@@ -397,6 +406,41 @@ class ExportHW extends React.Component {
 
     const wb = new Excel.Workbook();
     const ws = wb.addWorksheet();
+    const ws2 = wb.addWorksheet();
+
+    ws2.addRow(global.config.cpo_mapping.hw.header_materialmapping);
+    for (
+      let i = 1;
+      i < global.config.cpo_mapping.hw.header_materialmapping.length + 1;
+      i++
+    ) {
+      ws2.getCell(numToSSColumn(i) + "1").fill = {
+        type: "pattern",
+        pattern: "solid",
+        fgColor: { argb: "FFFFFF00" },
+        bgColor: { argb: "A9A9A9" },
+      };
+    }
+    this.toggleLoading();
+
+    const PPFormat = await wb.xlsx.writeBuffer();
+
+    saveAs(
+      new Blob([PPFormat]),
+      this.state.roleUser[1] + " " + modul_name + " All Data.xlsx"
+    );
+  };
+
+  exportTemplate_new = async () => {
+    this.toggleLoading();
+
+    const wb = new Excel.Workbook();
+    const ws = wb.addWorksheet();
+    const ws2 = wb.addWorksheet();
+
+    ws.name = "Reference";
+    ws2.name = "Script";
+
     let filter_array2 = [];
     for (const [key, value] of Object.entries(this.state.filter_list)) {
       if (value !== null && value !== undefined) {
@@ -414,8 +458,12 @@ class ExportHW extends React.Component {
     if (getdata.data !== undefined) {
       const download_all_template = await getdata.data.data;
       // console.log("download_all_template ", download_all_template);
-      ws.addRow(header_materialmapping);
-      for (let i = 1; i < header_materialmapping.length + 1; i++) {
+      ws.addRow(global.config.cpo_mapping.hw.header_model);
+      for (
+        let i = 1;
+        i < global.config.cpo_mapping.hw.header_model.length + 1;
+        i++
+      ) {
         ws.getCell(numToSSColumn(i) + "1").fill = {
           type: "pattern",
           pattern: "solid",
@@ -449,10 +497,10 @@ class ExportHW extends React.Component {
             e.Description,
             e.Qty,
             e.NW,
-            e.On_Air_Date,
-            e.Mapping_Date,
+            convertDateFormat_firefox(e.On_Air_Date),
+            convertDateFormat_firefox(e.Mapping_Date),
             e.Remarks,
-            e.Premr_No,
+            e.Gr_No,
             e.Proceed_Billing_100,
             e.Celcom_User,
             e.Pcode,
@@ -460,16 +508,278 @@ class ExportHW extends React.Component {
             e.Total_Price,
             e.Discounted_Unit_Price,
             e.Discounted_Po_Price,
+            e.Net_Unit_Price,
+            e.Invoice_Total,
+            e.Hammer_1_Hd_Total,
+            e.So_Line_Item_Description,
+            e.Sitepcode,
+            e.VlookupWbs,
+            e.So_No,
+            e.Wbs_No,
+            convertDateFormat_firefox(e.For_Checking_Purpose_Only_Rashidah),
+            convertDateFormat_firefox(e.Hw_Coa_Received_Date_80),
+            e.Billing_Upon_Hw_Coa_80,
+            e.Invoicing_No_Hw_Coa_80,
+            convertDateFormat_firefox(e.Invoicing_Date_Hw_Coa_80),
+            e.Cancelled_Invoice_Hw_Coa_80,
+            convertDateFormat_firefox(e.Ni_Coa_Date_20),
+            e.Billing_Upon_Ni_20,
+            e.Invoicing_No_Ni_20,
+            convertDateFormat_firefox(e.Invoicing_Date_Ni_20),
+            e.Cancelled_Invoicing_Ni_20,
+            convertDateFormat_firefox(e.Hw_Coa_Received_Date_40),
+            e.Billing_Upon_Hw_Coa_40,
+            e.Invoicing_No_Hw_Coa_40,
+            convertDateFormat_firefox(e.Invoicing_Date_Hw_Coa_40),
+            e.Cancelled_Hw_Coa_40,
+            convertDateFormat_firefox(e.Ni_Coa_Date_40),
+            e.Billing_Upon_Ni_40,
+            e.Invoicing_No_Ni_40,
+            convertDateFormat_firefox(e.Invoicing_Date_Ni_40),
+            e.Cancelled_Ni_40,
+            convertDateFormat_firefox(e.Sso_Coa_Date_20_1),
+            e.Billing_Upon_Sso_20_1,
+            e.Invoicing_No_Sso_20_1,
+            convertDateFormat_firefox(e.Invoicing_Date_Sso_20_1),
+            e.Cancelled_Sso_20,
+            convertDateFormat_firefox(e.Hw_Coa_100),
+            e.Billing_Upon_Hw_Coa_100,
+            e.Invoicing_No_Hw_Coa_100,
+            convertDateFormat_firefox(e.Invoicing_Date_Hw_Coa_100),
+            e.Cancelled_Invoicing_Hw_Coa_100,
+            e.Cancel_Column,
+            e.Reference_Loc_Id_1,
+            e.Po_1,
+            e.Reff,
+            e.Vlookup_For_Billing,
           ]);
         }
       }
+
+      if (this.state.roleUser.includes("BAM-MAT PLANNER") === true) {
+        ws2.addRow(global.config.cpo_mapping.hw.header_materialmapping);
+        for (
+          let i = 1;
+          i < global.config.cpo_mapping.hw.header_materialmapping.length + 1;
+          i++
+        ) {
+          ws2.getCell(numToSSColumn(i) + "1").fill = {
+            type: "pattern",
+            pattern: "solid",
+            fgColor: { argb: "FFFFFF00" },
+            bgColor: { argb: "A9A9A9" },
+          };
+        }
+        if (download_all_template !== undefined) {
+          // console.log(download_all_template.data.data.map((u) => u._id));
+
+          for (let i = 0; i < download_all_template.length; i++) {
+            let e = download_all_template[i];
+            ws2.addRow([
+              e.Deal_Name,
+              e.Hammer,
+              e.Project_Description,
+              e.Po_Number,
+              e.Data_1,
+              e.Lookup_Reference,
+              e.Region,
+              e.Reference_Loc_Id,
+              e.New_Loc_Id,
+              e.Site_Name,
+              e.New_Site_Name,
+              e.Config,
+              e.Po,
+              e.Line,
+              e.Line_Item_Sap,
+              e.Material_Code,
+              e.Description,
+              e.Qty,
+              e.NW,
+              convertDateFormat_firefox(e.On_Air_Date),
+              convertDateFormat_firefox(e.Mapping_Date),
+              e.Remarks,
+              e.Premr_No,
+              e.Proceed_Billing_100,
+              e.Celcom_User,
+              e.Pcode,
+              e.Unit_Price,
+              e.Total_Price,
+              e.Discounted_Unit_Price,
+              e.Discounted_Po_Price,
+            ]);
+          }
+        }
+      }
+      if (this.state.roleUser.includes("BAM-PFM") === true) {
+        ws2.addRow(
+          [
+            "Deal_Name",
+            "Hammer",
+            "Project_Description",
+            "Po_Number",
+            "Data_1",
+            "Lookup_Reference",
+            "Region",
+            "Reference_Loc_Id",
+            "New_Loc_Id",
+            "Site_Name",
+            "New_Site_Name",
+            "Config",
+            "Po",
+            "Line",
+            "Line_Item_Sap",
+            "Material_Code",
+            "Description",
+            "Qty",
+            "NW",
+            "On_Air_Date",
+            "Mapping_Date",
+            "Remarks",
+            "Gr_No",
+            "Premr_No",
+            "Proceed_Billing_100",
+            "Celcom_User",
+            "Pcode",
+            "Unit_Price",
+          ].concat(global.config.cpo_mapping.hw.header_pfm)
+        );
+        // general info column
+        for (let info = 1; info < 9; info++) {
+          ws2.getCell(numToSSColumn(info) + "1").fill = {
+            type: "pattern",
+            pattern: "solid",
+            fgColor: { argb: "FFCCFFCC" },
+          };
+        }
+        // hammer2 column
+        for (let hammer2 = 9; hammer2 < 22; hammer2++) {
+          ws2.getCell(numToSSColumn(hammer2) + "1").fill = {
+            type: "pattern",
+            pattern: "solid",
+            fgColor: { argb: "DFDF9F" },
+          };
+        }
+        // hammer1 column
+        for (let hammer1 = 22; hammer1 < 35; hammer1++) {
+          ws2.getCell(numToSSColumn(hammer1) + "1").fill = {
+            type: "pattern",
+            pattern: "solid",
+            fgColor: { argb: "FFFFFF00" },
+          };
+        }
+        // billing100 column
+        for (let billing100 = 35; billing100 < 40; billing100++) {
+          ws2.getCell(numToSSColumn(billing100) + "1").fill = {
+            type: "pattern",
+            pattern: "solid",
+            fgColor: { argb: "60BF9F" },
+          };
+        }
+
+        if (download_all_template !== undefined) {
+          for (let i = 0; i < download_all_template.length; i++) {
+            let e = download_all_template[i];
+            ws2.addRow([
+              e.Deal_Name,
+              e.Hammer,
+              e.Project_Description,
+              e.Po_Number,
+              e.Data_1,
+              e.Lookup_Reference,
+              e.Region,
+              e.Reference_Loc_Id,
+              e.New_Loc_Id,
+              e.Site_Name,
+              e.New_Site_Name,
+              e.Config,
+              e.Po,
+              e.Line,
+              e.Line_Item_Sap,
+              e.Material_Code,
+              e.Description,
+              e.Qty,
+              e.NW,
+              e.On_Air_Date,
+              e.Mapping_Date,
+              e.Remarks,
+              e.Gr_No,
+              e.Premr_No,
+              e.Proceed_Billing_100,
+              e.Celcom_User,
+              e.Pcode,
+              e.Unit_Price,
+            ]);
+          }
+        }
+      }
+      if (this.state.roleUser.includes("BAM-ADMIN") === true) {
+        ws2.addRow(
+          [
+            "Deal_Name",
+            "Hammer",
+            "Project_Description",
+            "Po_Number",
+            "Reference_Loc_Id",
+            "Line",
+            "Po",
+          ].concat(global.config.cpo_mapping.hw.header_admin)
+        );
+        // general info column
+        for (let info = 1; info < 8; info++) {
+          ws2.getCell(numToSSColumn(info) + "1").fill = {
+            type: "pattern",
+            pattern: "solid",
+            fgColor: { argb: "FFCCFFCC" },
+          };
+        }
+        // hammer2 column
+        for (let hammer2 = 8; hammer2 < 22; hammer2++) {
+          ws2.getCell(numToSSColumn(hammer2) + "1").fill = {
+            type: "pattern",
+            pattern: "solid",
+            fgColor: { argb: "DFDF9F" },
+          };
+        }
+        // hammer1 column
+        for (let hammer1 = 22; hammer1 < 35; hammer1++) {
+          ws2.getCell(numToSSColumn(hammer1) + "1").fill = {
+            type: "pattern",
+            pattern: "solid",
+            fgColor: { argb: "FFFFFF00" },
+          };
+        }
+        // billing100 column
+        for (let billing100 = 35; billing100 < 40; billing100++) {
+          ws2.getCell(numToSSColumn(billing100) + "1").fill = {
+            type: "pattern",
+            pattern: "solid",
+            fgColor: { argb: "60BF9F" },
+          };
+        }
+
+        if (download_all_template !== undefined) {
+          for (let i = 0; i < download_all_template.length; i++) {
+            let e = download_all_template[i];
+            ws2.addRow([
+              e.Deal_Name,
+              e.Hammer,
+              e.Project_Description,
+              e.Po_Number,
+              e.Reference_Loc_Id,
+              e.Line,
+              e.Po,
+            ]);
+          }
+        }
+      }
+
       this.toggleLoading();
 
       const PPFormat = await wb.xlsx.writeBuffer();
 
       saveAs(
         new Blob([PPFormat]),
-        this.state.roleUser[1] + " " + modul_name + " All Data.xlsx"
+        this.state.roleUser[1] + " " + modul_name + " All Data_script.xlsx"
       );
     }
   };
@@ -496,7 +806,7 @@ class ExportHW extends React.Component {
 
     if (getdata.data !== undefined) {
       const download_all_A = await getdata.data.data;
-      // console.log("download_all_template ", download_all_template);
+      console.log("download_all_A ", download_all_A);
       ws.addRow(
         [
           "Deal_Name",
@@ -507,7 +817,7 @@ class ExportHW extends React.Component {
           "Line",
           "Po",
           "Proceed_Billing_100",
-        ].concat(header_pfm)
+        ].concat(global.config.cpo_mapping.hw.header_pfm)
       );
       // general info column
       for (let info = 1; info < 9; info++) {
@@ -561,30 +871,34 @@ class ExportHW extends React.Component {
             e.VlookupWbs,
             e.So_No,
             e.Wbs_No,
-            e.Hw_Coa_Received_Date_80,
+            convertDateFormat_firefox(e.Hw_Coa_Received_Date_80),
             e.Billing_Upon_Hw_Coa_80,
             e.Invoicing_No_Hw_Coa_80,
-            e.Invoicing_Date_Hw_Coa_80,
+            convertDateFormat_firefox(e.Invoicing_Date_Hw_Coa_80),
             e.Cancelled_Invoice_Hw_Coa_80,
+            e.Ni_Coa_Date_20,
             e.Billing_Upon_Ni_20,
             e.Invoicing_No_Ni_20,
-            e.Invoicing_Date_Ni_20,
+            convertDateFormat_firefox(e.Invoicing_Date_Ni_20),
             e.Cancelled_Invoicing_Ni_20,
+            convertDateFormat_firefox(e.Hw_Coa_Received_Date_40),
+            convertDateFormat_firefox(e.Ni_Coa_Date_40),
             e.Billing_Upon_Hw_Coa_40,
             e.Invoicing_No_Hw_Coa_40,
-            e.Invoicing_Date_Hw_Coa_40,
+            convertDateFormat_firefox(e.Invoicing_Date_Hw_Coa_40),
             e.Cancelled_Hw_Coa_40,
             e.Billing_Upon_Ni_40,
             e.Invoicing_No_Ni_40,
-            e.Invoicing_Date_Ni_40,
+            convertDateFormat_firefox(e.Invoicing_Date_Ni_40),
             e.Cancelled_Ni_40,
+            convertDateFormat_firefox(e.Sso_Coa_Date_20_1),
             e.Billing_Upon_Sso_20_1,
             e.Invoicing_No_Sso_20_1,
-            e.Invoicing_Date_Sso_20_1,
+            convertDateFormat_firefox(e.Invoicing_Date_Sso_20_1),
             e.Cancelled_Sso_20,
-            e.Hw_Coa_100,
+            convertDateFormat_firefox(e.Hw_Coa_100),
             e.Invoicing_No_Hw_Coa_100,
-            e.Invoicing_Date_Hw_Coa_100,
+            convertDateFormat_firefox(e.Invoicing_Date_Hw_Coa_100),
             e.Cancelled_Invoicing_Hw_Coa_100,
           ]);
         }
@@ -631,7 +945,8 @@ class ExportHW extends React.Component {
           "Reference_Loc_Id",
           "Line",
           "Po",
-        ].concat(header_admin)
+          "Proceed_Billing_100",
+        ].concat(global.config.cpo_mapping.hw.header_admin)
       );
       for (let i = 1; i < header_admin.length + 3; i++) {
         ws.getCell(numToSSColumn(i) + "1").fill = {
@@ -653,9 +968,12 @@ class ExportHW extends React.Component {
             e.Reference_Loc_Id,
             e.Line,
             e.Po,
-            e.For_Checking_Purpose_Only_Rashidah,
-            e.Hw_Coa_Received_Date_80,
-            e.Invoicing_Date_Hw_Coa_100,
+            e.Proceed_Billing_100,
+            convertDateFormat_firefox(e.For_Checking_Purpose_Only_Rashidah),
+            convertDateFormat_firefox(e.Hw_Coa_Received_Date_40),
+            convertDateFormat_firefox(e.Hw_Coa_Received_Date_80),
+            convertDateFormat_firefox(e.Hw_Coa_100),
+            convertDateFormat_firefox(e.Invoicing_Date_Hw_Coa_100),
             e.Cancel_Column,
             e.Reference_Loc_Id_1,
             e.Reff,
@@ -757,36 +1075,17 @@ class ExportHW extends React.Component {
                     </DropdownToggle>
                     <DropdownMenu>
                       <DropdownItem header>Export Data</DropdownItem>
-                      <DropdownItem onClick={this.exportTemplateall}>
+                      <DropdownItem onClick={this.exportTemplate_new}>
                         {" "}
                         All Data HW Export
                       </DropdownItem>
-                      <DropdownItem header>Uploader Template</DropdownItem>
+                      <DropdownItem header>For New Entries</DropdownItem>
                       {role.includes("BAM-MAT PLANNER") === true ? (
                         <>
                           <DropdownItem onClick={this.exportTemplate2}>
                             {" "}
-                            Mapping Template{" " + this.state.roleUser[1]}{" "}
-                          </DropdownItem>
-                        </>
-                      ) : (
-                        ""
-                      )}
-                      {role.includes("BAM-PFM") === true ? (
-                        <>
-                          <DropdownItem onClick={this.download_PFM}>
-                            {" "}
-                            Mapping Template{" " + this.state.roleUser[1]}{" "}
-                          </DropdownItem>
-                        </>
-                      ) : (
-                        ""
-                      )}
-                      {role.includes("BAM-ADMIN") === true ? (
-                        <>
-                          <DropdownItem onClick={this.download_Admin}>
-                            {" "}
-                            Mapping Template{" " + this.state.roleUser[1]}{" "}
+                            Mapping Template Hw{" " +
+                              this.state.roleUser[1]}{" "}
                           </DropdownItem>
                         </>
                       ) : (

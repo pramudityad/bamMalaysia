@@ -64,6 +64,7 @@ import "./cpomapping.css";
 const DefaultNotif = React.lazy(() =>
   import("../../views/DefaultView/DefaultNotif")
 );
+
 const save_update_header = [
   "Po_Number",
   "Data_1",
@@ -78,8 +79,7 @@ const save_update_header = [
   "Line",
   "Description",
   "Qty",
-  "NW",
-  "On_Air_Date",
+  "CNI_Date",
   "Mapping_Date",
   "Remarks",
   "Proceed_Billing_100",
@@ -94,54 +94,62 @@ const save_update_header = [
   "VlookupWbs",
   "So_No",
   "Wbs_No",
-  "For_Checking_Purpose_Only_Rashidah",
-  "Hw_Coa_Received_Date_80",
-  "Billing_Upon_Hw_Coa_80",
-  "Invoicing_No_Hw_Coa_80",
-  "Invoicing_Date_Hw_Coa_80",
-  "Cancelled_Invoice_Hw_Coa_80",
+  "Billing_100",
+  "Atp_Coa_Received_Date_80",
+  "Billing_Upon_Atp_Coa_80",
+  "Invoicing_No_Atp_Coa_80",
+  "Invoicing_Date_Atp_Coa_80",
+  "Cancelled_Atp_Coa_80",
   "Ni_Coa_Date_20",
   "Billing_Upon_Ni_20",
   "Invoicing_No_Ni_20",
   "Invoicing_Date_Ni_20",
   "Cancelled_Invoicing_Ni_20",
-  "Hw_Coa_Received_Date_40",
-  "Billing_Upon_Hw_Coa_40",
-  "Invoicing_No_Hw_Coa_40",
-  "Invoicing_Date_Hw_Coa_40",
-  "Cancelled_Hw_Coa_40",
-  "Ni_Coa_Date_40",
-  "Billing_Upon_Ni_40",
-  "Invoicing_No_Ni_40",
-  "Invoicing_Date_Ni_40",
-  "Cancelled_Ni_40",
-  "Sso_Coa_Date_20_1",
-  "Billing_Upon_Sso_20_1",
-  "Invoicing_No_Sso_20_1",
-  "Invoicing_Date_Sso_20_1",
-  "Cancelled_Sso_20",
-  "Hw_Coa_100",
-  "Billing_Upon_Hw_Coa_100",
-  "Invoicing_No_Hw_Coa_100",
-  "Invoicing_Date_Hw_Coa_100",
-  "Cancelled_Invoicing_Hw_Coa_100",
-  "Cancel_Column",
-  "Reference_Loc_Id_1",
-  "Po_1",
-  "Reff",
-  "Vlookup_For_Billing",
+  "Sso_Coa_Date_80",
+  "Billing_Upon_Sso_80",
+  "Invoicing_No_Sso_80",
+  "Invoicing_Date_Sso_80",
+  "Cancelled_Sso_Coa_Date_80",
+  "Coa_Psp_Received_Date_20",
+  "Billing_Upon_Coa_Psp_20",
+  "Invoicing_No_Coa_Psp_20",
+  "Invoicing_Date_Coa_Psp_20",
+  "Cancelled_Coa_Psp_Received_Date_20",
+  "Coa_Ni_Received_Date_40",
+  "Billing_Upon_Coa_Ni_40",
+  "Invoicing_No_Coa_Ni_40",
+  "Invoicing_Date_Coa_Ni_40",
+  "Cancelled_Coa_Ni_Received_Date_40",
+  "Cosso_Received_Date_60",
+  "Billing_Upon_Cosso_60",
+  "Invoicing_No_Cosso_60",
+  "Invoicing_Date_Cosso_60",
+  "Cancelled_Cosso_Received_Date_60",
+  "Coa_Sso_Received_Date_100",
+  "Billing_Upon_Sso_Coa_100",
+  "Invoicing_No_Sso_Coa_100",
+  "Invoicing_Date_Sso_Coa_100",
+  "Coa_Ni_Date_100",
+  "Billing_Upon_Coa_Ni_100",
+  "Invoicing_No_Coa_Ni_100",
+  "Invoicing_Date_Coa_Ni_100",
+  "Cancelled_Coa_Ni_Date_100",
+  "Ses_No",
+  "Ses_Status",
+  "Link",
+  "Ni_Coa_Submission_Status",
   "Deal_Name",
   "Hammer",
   "Hammer_1_Hd_Total",
   "Project_Description",
+  "Commodity",
   "Gr_No",
   "Line_Item_Sap",
   "Material_Code",
   "Net_Unit_Price",
   "Invoice_Total",
 ];
-
-const Checkbox1 = ({
+const Checkbox11 = ({
   type = "checkbox",
   name,
   checked = false,
@@ -183,8 +191,8 @@ const Checkbox2 = ({
     matId={matId}
   />
 );
-const modul_name = "HW Mapping";
-class MappingHW extends React.Component {
+const modul_name = "SVC Mapping";
+class MappingSVC extends React.Component {
   // csvLink = React.createRef();
   constructor(props) {
     super(props);
@@ -192,7 +200,7 @@ class MappingHW extends React.Component {
       tokenUser: this.props.dataLogin.token,
       roleUser: this.props.dataLogin.role,
       dropdownOpen: new Array(3).fill(false),
-      all_data: [],
+      all_data_svc: [],
       createModal: false,
       rowsXLS: [],
       rowsXLS_batch: [],
@@ -244,7 +252,7 @@ class MappingHW extends React.Component {
     }
     let whereAnd2 = "{" + filter_array2.join(",") + "}";
     getDatafromAPINODE(
-      "/cpoMapping/getCpo/required/count/hw?q=" + whereAnd2 + "&noPg=1",
+      "/cpoMapping/getCpo/required/count/svc?q=" + whereAnd2 + "&noPg=1",
       this.state.tokenUser
     ).then((res) => {
       if (res.data !== undefined) {
@@ -297,7 +305,7 @@ class MappingHW extends React.Component {
     }
     let whereAnd = "{" + filter_array.join(",") + "}";
     getDatafromAPINODE(
-      "/cpoMapping/getCpo/required/hw?q=" +
+      "/cpoMapping/getCpo/required/svc?q=" +
         whereAnd +
         "&lmt=" +
         this.state.perPage +
@@ -308,7 +316,7 @@ class MappingHW extends React.Component {
       if (res.data !== undefined) {
         const items = res.data.data;
         const totalData = res.data.totalResults;
-        this.setState({ all_data: items, totalData: totalData }, () =>
+        this.setState({ all_data_svc: items, totalData: totalData }, () =>
           this.getHeader()
         );
       }
@@ -321,7 +329,7 @@ class MappingHW extends React.Component {
     } else {
       let data_list = [];
       const getWPID = await getDatafromAPINODE(
-        '/cpoMapping/getCpo/required/hw?q={"Reference_Loc_Id":{"$regex":"' +
+        '/cpoMapping/getCpo/required/svc?q={"Reference_Loc_Id":{"$regex":"' +
           inputValue +
           '", "$options":"i"}}',
         this.state.tokenUser
@@ -344,7 +352,7 @@ class MappingHW extends React.Component {
     } else {
       let data_list2 = [];
       const getWPID = await getDatafromAPINODE(
-        '/cpoMapping/getCpo/required/hw?q={"Project_Description":{"$regex":"' +
+        '/cpoMapping/getCpo/required/svc?q={"Project_Description":{"$regex":"' +
           inputValue +
           '", "$options":"i"}}',
         this.state.tokenUser
@@ -373,7 +381,7 @@ class MappingHW extends React.Component {
     let callof_container = [];
 
     const getCallof_data = await getDatafromAPINODE(
-      '/cpoMapping/getCpo/required/hw?q={"Project_Description":{"$regex" : "' +
+      '/cpoMapping/getCpo/required/svc?q={"Project_Description":{"$regex" : "' +
         datalist.value +
         '", "$options" : "i"},"Reference_Loc_Id":{"$regex" : "' +
         this.state.callof_filter.Reference_Loc_Id +
@@ -439,7 +447,7 @@ class MappingHW extends React.Component {
     // filter_array.push('"Not_Required":' + true);
     let whereAnd = "{" + filter_array.join(",") + "}";
     getDatafromAPINODE(
-      "/cpoMapping/getCpo/hw?q=" +
+      "/cpoMapping/getCpo/svc?q=" +
         whereAnd +
         "&lmt=" +
         this.state.perPage +
@@ -507,7 +515,7 @@ class MappingHW extends React.Component {
     const res = await postDatatoAPINODE(
       "/cpoMapping/createCpo",
       {
-        cpo_type: "hw",
+        cpo_type: "svc",
         required_check: true,
         roles: roles,
         cpo_data: header_update_Mapping_Date.concat(req_body),
@@ -560,7 +568,7 @@ class MappingHW extends React.Component {
     const modalEdit = this.state.modalEdit;
     if (modalEdit === false) {
       const value = e.currentTarget.value;
-      const aEdit = this.state.all_data.find((e) => e._id === value);
+      const aEdit = this.state.all_data_svc.find((e) => e._id === value);
       this.setState({ CPOForm: aEdit, selected_id: value });
     } else {
       this.setState({ CPOForm: {} });
@@ -583,7 +591,7 @@ class MappingHW extends React.Component {
     const body_create_not_req = this.state.dataChecked_container.map((data) =>
       Object.keys(data)
         .filter((key) =>
-          global.config.cpo_mapping.hw.header_model.includes(key)
+          global.config.cpo_mapping.svc.header_model.includes(key)
         )
         .reduce((obj, key) => {
           obj[key] = data[key];
@@ -591,6 +599,7 @@ class MappingHW extends React.Component {
         }, {})
     );
     console.log("body_create_not_req", body_create_not_req);
+
     const trimm_body_create_not_req = body_create_not_req.map((data) =>
       Object.keys(data).map((key) => data[key])
     );
@@ -598,7 +607,7 @@ class MappingHW extends React.Component {
     const res = await postDatatoAPINODE(
       "/cpoMapping/createCpo",
       {
-        cpo_type: "hw",
+        cpo_type: "svc",
         required_check: false,
         roles: roles,
         cpo_data: header_create_not_req.concat(trimm_body_create_not_req),
@@ -616,7 +625,7 @@ class MappingHW extends React.Component {
         "/cpoMapping/deleteCpo",
         this.state.tokenUser,
         {
-          cpo_type: "hw",
+          cpo_type: "svc",
           data: req_body_del,
         }
       );
@@ -691,7 +700,11 @@ class MappingHW extends React.Component {
 
   loopSearchBar = () => {
     let searchBar = [];
-    for (let i = 0; i < global.config.cpo_mapping.hw.header_model.length; i++) {
+    for (
+      let i = 0;
+      i < global.config.cpo_mapping.svc.header_model.length;
+      i++
+    ) {
       searchBar.push(
         <td>
           {/* {i !== 0 && i !== 3 && i !== 5 && i !== 7 && i !== 9 && i !== 10 ? (
@@ -711,10 +724,10 @@ class MappingHW extends React.Component {
                 onChange={this.handleFilterList}
                 value={
                   this.state.filter_list[
-                    global.config.cpo_mapping.hw.header_model[i]
+                    global.config.cpo_mapping.svc.header_model[i]
                   ]
                 }
-                name={global.config.cpo_mapping.hw.header_model[i]}
+                name={global.config.cpo_mapping.svc.header_model[i]}
                 size="sm"
               />
             </InputGroup>
@@ -730,11 +743,11 @@ class MappingHW extends React.Component {
     console.log(this.state.dataChecked.has(e._id));
     const item = e.target.name;
     const isChecked = e.target.checked;
-    const each_data = this.state.all_data;
-    console.log("here", item, isChecked, each_data);
+    const each_data_svc = this.state.all_data_svc;
+    console.log("here", item, isChecked, each_data_svc);
     let dataChecked_container = this.state.dataChecked_container;
     if (isChecked === true) {
-      let getCPO = each_data.find((pp) => pp._id === item);
+      let getCPO = each_data_svc.find((pp) => pp._id === item);
       dataChecked_container.push(getCPO);
     } else {
       dataChecked_container = dataChecked_container.filter(function (pp) {
@@ -828,7 +841,7 @@ class MappingHW extends React.Component {
                   &nbsp;&nbsp;&nbsp;
                   <div>
                     <div>
-                      <Link to={"/cpo-hw-import"} target="_blank">
+                      <Link to={"/cpo-svc-import"} target="_blank">
                         <Button
                           color="success"
                           style={{ float: "right", marginLeft: "8px" }}
@@ -848,7 +861,7 @@ class MappingHW extends React.Component {
                   </div>
                   &nbsp;&nbsp;&nbsp;
                   <div>
-                    <Link to={"/cpo-hw-export"} target="_blank">
+                    <Link to={"/cpo-svc-export"} target="_blank">
                       <Button
                         color="warning"
                         style={{ float: "right", marginLeft: "8px" }}
@@ -934,9 +947,11 @@ class MappingHW extends React.Component {
                             ) : (
                               ""
                             )}
-                            {global.config.cpo_mapping.hw.header.map((head) => (
-                              <th>{head}</th>
-                            ))}
+                            {global.config.cpo_mapping.svc.header.map(
+                              (head) => (
+                                <th>{head}</th>
+                              )
+                            )}
                           </tr>
                           {this.state.tabs_submenu[0] === true ? (
                             <>
@@ -958,7 +973,7 @@ class MappingHW extends React.Component {
                           ) : (
                             <>
                               <tr align="center">
-                                {global.config.cpo_mapping.hw.header_model.map(
+                                {global.config.cpo_mapping.svc.header_model.map(
                                   (head) => (
                                     <th>{this.countheaderNaN(head)}</th>
                                   )
@@ -980,12 +995,12 @@ class MappingHW extends React.Component {
                         </thead>
                         <tbody>
                           {this.state.tabs_submenu[0] === true &&
-                            this.state.all_data !== undefined &&
-                            this.state.all_data.map((e, i) => (
+                            this.state.all_data_svc !== undefined &&
+                            this.state.all_data_svc.map((e, i) => (
                               <React.Fragment key={e._id + "frag"}>
                                 <tr align="center" key={e._id}>
                                   {/* <td>
-                                    <Link to={"/hw-cpo/" + e._id}>
+                                    <Link to={"/svc-cpo/" + e._id}>
                                       <Button
                                         size="sm"
                                         color="secondary"
@@ -999,7 +1014,7 @@ class MappingHW extends React.Component {
                                     </Link>
                                   </td> */}
                                   <td>
-                                    <Checkbox1
+                                    <Checkbox11
                                       checked={this.state.dataChecked.get(
                                         e._id
                                       )}
@@ -1023,13 +1038,12 @@ class MappingHW extends React.Component {
                                   <td>{e.Config}</td>
                                   <td>{e.Po}</td>
                                   <td>{e.Line}</td>
-                                  <td>{e.Line_Item_Sap}</td>
                                   <td>{e.Material_Code}</td>
+                                  <td>{e.Line_Item_Sap}</td>
                                   <td>{e.Description}</td>
                                   <td>{e.Qty}</td>
-                                  <td>{e.NW}</td>
                                   <td>
-                                    {convertDateFormat_firefox(e.On_Air_Date)}
+                                    {convertDateFormat_firefox(e.CNI_Date)}
                                   </td>
                                   <td>
                                     {convertDateFormat_firefox(e.Mapping_Date)}
@@ -1041,6 +1055,7 @@ class MappingHW extends React.Component {
                                   <td>{e.Pcode}</td>
                                   <td>{e.Unit_Price}</td>
                                   <td>{e.Total_Price}</td>
+                                  <td>{e.Commodity}</td>
                                   <td>{e.Discounted_Unit_Price}</td>
                                   <td>{e.Discounted_Po_Price}</td>
                                   <td>{e.Net_Unit_Price}</td>
@@ -1051,24 +1066,16 @@ class MappingHW extends React.Component {
                                   <td>{e.VlookupWbs}</td>
                                   <td>{e.So_No}</td>
                                   <td>{e.Wbs_No}</td>
+                                  <td>{e.Billing_100}</td>
                                   <td>
                                     {convertDateFormat_firefox(
-                                      e.For_Checking_Purpose_Only_Rashidah
+                                      e.Atp_Coa_Received_Date_80
                                     )}
                                   </td>
-                                  <td>
-                                    {convertDateFormat_firefox(
-                                      e.Hw_Coa_Received_Date_80
-                                    )}
-                                  </td>
-                                  <td>{e.Billing_Upon_Hw_Coa_80}</td>
-                                  <td>{e.Invoicing_No_Hw_Coa_80}</td>
-                                  <td>
-                                    {convertDateFormat_firefox(
-                                      e.Invoicing_Date_Hw_Coa_80
-                                    )}
-                                  </td>
-                                  <td>{e.Cancelled_Invoice_Hw_Coa_80}</td>
+                                  <td>{e.Billing_Upon_Atp_Coa_80}</td>
+                                  <td>{e.Invoicing_No_Atp_Coa_80}</td>
+                                  <td>{e.Invoicing_Date_Atp_Coa_80}</td>
+                                  <td>{e.Cancelled_Atp_Coa_80}</td>
                                   <td>
                                     {convertDateFormat_firefox(
                                       e.Ni_Coa_Date_20
@@ -1076,67 +1083,96 @@ class MappingHW extends React.Component {
                                   </td>
                                   <td>{e.Billing_Upon_Ni_20}</td>
                                   <td>{e.Invoicing_No_Ni_20}</td>
-                                  <td>
-                                    {convertDateFormat_firefox(
-                                      e.Invoicing_Date_Ni_20
-                                    )}
-                                  </td>
+                                  <td>{e.Invoicing_Date_Ni_20}</td>
                                   <td>{e.Cancelled_Invoicing_Ni_20}</td>
                                   <td>
                                     {convertDateFormat_firefox(
-                                      e.Hw_Coa_Received_Date_40
+                                      e.Sso_Coa_Date_80
                                     )}
                                   </td>
-                                  <td>{e.Billing_Upon_Hw_Coa_40}</td>
-                                  <td>{e.Invoicing_No_Hw_Coa_40}</td>
+                                  <td>{e.Billing_Upon_Sso_80}</td>
+                                  <td>{e.Invoicing_No_Sso_80}</td>
                                   <td>
                                     {convertDateFormat_firefox(
-                                      e.Invoicing_Date_Hw_Coa_40
+                                      e.Invoicing_Date_Sso_80
                                     )}
                                   </td>
-                                  <td>{e.Cancelled_Hw_Coa_40}</td>
                                   <td>
                                     {convertDateFormat_firefox(
-                                      e.Ni_Coa_Date_40
+                                      e.Cancelled_Sso_Coa_Date_80
                                     )}
                                   </td>
-                                  <td>{e.Billing_Upon_Ni_40}</td>
-                                  <td>{e.Invoicing_No_Ni_40}</td>
                                   <td>
                                     {convertDateFormat_firefox(
-                                      e.Invoicing_Date_Ni_40
+                                      e.Coa_Psp_Received_Date_20
                                     )}
                                   </td>
-                                  <td>{e.Cancelled_Ni_40}</td>
+                                  <td>{e.Billing_Upon_Coa_Psp_20}</td>
+                                  <td>{e.Invoicing_No_Coa_Psp_20}</td>
+                                  <td>{e.Invoicing_Date_Coa_Psp_20}</td>
                                   <td>
                                     {convertDateFormat_firefox(
-                                      e.Sso_Coa_Date_20_1
+                                      e.Cancelled_Coa_Psp_Received_Date_20
                                     )}
                                   </td>
-                                  <td>{e.Billing_Upon_Sso_20_1}</td>
-                                  <td>{e.Invoicing_No_Sso_20_1}</td>
                                   <td>
                                     {convertDateFormat_firefox(
-                                      e.Invoicing_Date_Sso_20_1
+                                      e.Coa_Ni_Received_Date_40
                                     )}
                                   </td>
-                                  <td>{e.Cancelled_Sso_20}</td>
-                                  <td>
-                                    {convertDateFormat_firefox(e.Hw_Coa_100)}
-                                  </td>
-                                  <td>{e.Billing_Upon_Hw_Coa_100}</td>
-                                  <td>{e.Invoicing_No_Hw_Coa_100}</td>
+                                  <td>{e.Billing_Upon_Coa_Ni_40}</td>
+                                  <td>{e.Invoicing_No_Coa_Ni_40}</td>
+                                  <td>{e.Invoicing_Date_Coa_Ni_40}</td>
                                   <td>
                                     {convertDateFormat_firefox(
-                                      e.Invoicing_Date_Hw_Coa_100
+                                      e.Cancelled_Coa_Ni_Received_Date_40
                                     )}
                                   </td>
-                                  <td>{e.Cancelled_Invoicing_Hw_Coa_100}</td>
-                                  <td>{e.Cancel_Column}</td>
-                                  <td>{e.Reference_Loc_Id_1}</td>
-                                  <td>{e.Po_1}</td>
-                                  <td>{e.Reff}</td>
-                                  <td>{e.Vlookup_For_Billing}</td>
+                                  <td>
+                                    {convertDateFormat_firefox(
+                                      e.Cosso_Received_Date_60
+                                    )}
+                                  </td>
+                                  <td>{e.Billing_Upon_Cosso_60}</td>
+                                  <td>{e.Invoicing_No_Cosso_60}</td>
+                                  <td>{e.Invoicing_Date_Cosso_60}</td>
+                                  <td>
+                                    {convertDateFormat_firefox(
+                                      e.Cancelled_Cosso_Received_Date_60
+                                    )}
+                                  </td>
+                                  <td>
+                                    {convertDateFormat_firefox(
+                                      e.Coa_Sso_Received_Date_100
+                                    )}
+                                  </td>
+                                  <td>{e.Billing_Upon_Sso_Coa_100}</td>
+                                  <td>{e.Invoicing_No_Sso_Coa_100}</td>
+                                  <td>{e.Invoicing_Date_Sso_Coa_100}</td>
+                                  <td>
+                                    {convertDateFormat_firefox(
+                                      e.Cancelled_Coa_Sso_Received_Date_100
+                                    )}
+                                  </td>
+                                  <td>
+                                    {convertDateFormat_firefox(
+                                      e.Coa_Ni_Date_100
+                                    )}
+                                  </td>
+                                  <td>{e.Billing_Upon_Coa_Ni_100}</td>
+                                  <td>{e.Invoicing_No_Coa_Ni_100}</td>
+                                  <td>{e.Invoicing_Date_Coa_Ni_100}</td>
+                                  <td>
+                                    {convertDateFormat_firefox(
+                                      e.Cancelled_Coa_Ni_Date_100
+                                    )}
+                                  </td>
+                                  <td>{e.Ses_No}</td>
+                                  <td>
+                                    {convertDateFormat_firefox(e.Ses_Status)}
+                                  </td>
+                                  <td>{e.Link}</td>
+                                  <td>{e.Ni_Coa_Submission_Status}</td>
                                 </tr>
                               </React.Fragment>
                             ))}
@@ -1159,13 +1195,12 @@ class MappingHW extends React.Component {
                                   <td>{e.Config}</td>
                                   <td>{e.Po}</td>
                                   <td>{e.Line}</td>
-                                  <td>{e.Line_Item_Sap}</td>
                                   <td>{e.Material_Code}</td>
+                                  <td>{e.Line_Item_Sap}</td>
                                   <td>{e.Description}</td>
                                   <td>{e.Qty}</td>
-                                  <td>{e.NW}</td>
                                   <td>
-                                    {convertDateFormat_firefox(e.On_Air_Date)}
+                                    {convertDateFormat_firefox(e.CNI_Date)}
                                   </td>
                                   <td>
                                     {convertDateFormat_firefox(e.Mapping_Date)}
@@ -1177,6 +1212,7 @@ class MappingHW extends React.Component {
                                   <td>{e.Pcode}</td>
                                   <td>{e.Unit_Price}</td>
                                   <td>{e.Total_Price}</td>
+                                  <td>{e.Commodity}</td>
                                   <td>{e.Discounted_Unit_Price}</td>
                                   <td>{e.Discounted_Po_Price}</td>
                                   <td>{e.Net_Unit_Price}</td>
@@ -1187,24 +1223,16 @@ class MappingHW extends React.Component {
                                   <td>{e.VlookupWbs}</td>
                                   <td>{e.So_No}</td>
                                   <td>{e.Wbs_No}</td>
+                                  <td>{e.Billing_100}</td>
                                   <td>
                                     {convertDateFormat_firefox(
-                                      e.For_Checking_Purpose_Only_Rashidah
+                                      e.Atp_Coa_Received_Date_80
                                     )}
                                   </td>
-                                  <td>
-                                    {convertDateFormat_firefox(
-                                      e.Hw_Coa_Received_Date_80
-                                    )}
-                                  </td>
-                                  <td>{e.Billing_Upon_Hw_Coa_80}</td>
-                                  <td>{e.Invoicing_No_Hw_Coa_80}</td>
-                                  <td>
-                                    {convertDateFormat_firefox(
-                                      e.Invoicing_Date_Hw_Coa_80
-                                    )}
-                                  </td>
-                                  <td>{e.Cancelled_Invoice_Hw_Coa_80}</td>
+                                  <td>{e.Billing_Upon_Atp_Coa_80}</td>
+                                  <td>{e.Invoicing_No_Atp_Coa_80}</td>
+                                  <td>{e.Invoicing_Date_Atp_Coa_80}</td>
+                                  <td>{e.Cancelled_Atp_Coa_80}</td>
                                   <td>
                                     {convertDateFormat_firefox(
                                       e.Ni_Coa_Date_20
@@ -1212,65 +1240,96 @@ class MappingHW extends React.Component {
                                   </td>
                                   <td>{e.Billing_Upon_Ni_20}</td>
                                   <td>{e.Invoicing_No_Ni_20}</td>
-                                  <td>
-                                    {convertDateFormat_firefox(
-                                      e.Invoicing_Date_Ni_20
-                                    )}
-                                  </td>
+                                  <td>{e.Invoicing_Date_Ni_20}</td>
                                   <td>{e.Cancelled_Invoicing_Ni_20}</td>
                                   <td>
                                     {convertDateFormat_firefox(
-                                      e.Hw_Coa_Received_Date_40
+                                      e.Sso_Coa_Date_80
                                     )}
                                   </td>
-                                  <td>{e.Billing_Upon_Hw_Coa_40}</td>
-                                  <td>{e.Invoicing_No_Hw_Coa_40}</td>
+                                  <td>{e.Billing_Upon_Sso_80}</td>
+                                  <td>{e.Invoicing_No_Sso_80}</td>
                                   <td>
                                     {convertDateFormat_firefox(
-                                      e.Invoicing_Date_Hw_Coa_40
+                                      e.Invoicing_Date_Sso_80
                                     )}
                                   </td>
-                                  <td>{e.Cancelled_Hw_Coa_40}</td>
                                   <td>
                                     {convertDateFormat_firefox(
-                                      e.Ni_Coa_Date_40
+                                      e.Cancelled_Sso_Coa_Date_80
                                     )}
                                   </td>
-                                  <td>{e.Billing_Upon_Ni_40}</td>
-                                  <td>{e.Invoicing_No_Ni_40}</td>
                                   <td>
                                     {convertDateFormat_firefox(
-                                      e.Invoicing_Date_Ni_40
+                                      e.Coa_Psp_Received_Date_20
                                     )}
                                   </td>
-                                  <td>{e.Cancelled_Ni_40}</td>
+                                  <td>{e.Billing_Upon_Coa_Psp_20}</td>
+                                  <td>{e.Invoicing_No_Coa_Psp_20}</td>
+                                  <td>{e.Invoicing_Date_Coa_Psp_20}</td>
                                   <td>
                                     {convertDateFormat_firefox(
-                                      e.Sso_Coa_Date_20_1
+                                      e.Cancelled_Coa_Psp_Received_Date_20
                                     )}
                                   </td>
-                                  <td>{e.Billing_Upon_Sso_20_1}</td>
-                                  <td>{e.Invoicing_No_Sso_20_1}</td>
                                   <td>
                                     {convertDateFormat_firefox(
-                                      e.Invoicing_Date_Sso_20_1
+                                      e.Coa_Ni_Received_Date_40
                                     )}
                                   </td>
-                                  <td>{e.Cancelled_Sso_20}</td>
-                                  <td>{e.Hw_Coa_100}</td>
-                                  <td>{e.Billing_Upon_Hw_Coa_100}</td>
-                                  <td>{e.Invoicing_No_Hw_Coa_100}</td>
+                                  <td>{e.Billing_Upon_Coa_Ni_40}</td>
+                                  <td>{e.Invoicing_No_Coa_Ni_40}</td>
+                                  <td>{e.Invoicing_Date_Coa_Ni_40}</td>
                                   <td>
                                     {convertDateFormat_firefox(
-                                      e.Invoicing_Date_Hw_Coa_100
+                                      e.Cancelled_Coa_Ni_Received_Date_40
                                     )}
                                   </td>
-                                  <td>{e.Cancelled_Invoicing_Hw_Coa_100}</td>
-                                  <td>{e.Cancel_Column}</td>
-                                  <td>{e.Reference_Loc_Id_1}</td>
-                                  <td>{e.Po_1}</td>
-                                  <td>{e.Reff}</td>
-                                  <td>{e.Vlookup_For_Billing}</td>
+                                  <td>
+                                    {convertDateFormat_firefox(
+                                      e.Cosso_Received_Date_60
+                                    )}
+                                  </td>
+                                  <td>{e.Billing_Upon_Cosso_60}</td>
+                                  <td>{e.Invoicing_No_Cosso_60}</td>
+                                  <td>{e.Invoicing_Date_Cosso_60}</td>
+                                  <td>
+                                    {convertDateFormat_firefox(
+                                      e.Cancelled_Cosso_Received_Date_60
+                                    )}
+                                  </td>
+                                  <td>
+                                    {convertDateFormat_firefox(
+                                      e.Coa_Sso_Received_Date_100
+                                    )}
+                                  </td>
+                                  <td>{e.Billing_Upon_Sso_Coa_100}</td>
+                                  <td>{e.Invoicing_No_Sso_Coa_100}</td>
+                                  <td>{e.Invoicing_Date_Sso_Coa_100}</td>
+                                  <td>
+                                    {convertDateFormat_firefox(
+                                      e.Cancelled_Coa_Sso_Received_Date_100
+                                    )}
+                                  </td>
+                                  <td>
+                                    {convertDateFormat_firefox(
+                                      e.Coa_Ni_Date_100
+                                    )}
+                                  </td>
+                                  <td>{e.Billing_Upon_Coa_Ni_100}</td>
+                                  <td>{e.Invoicing_No_Coa_Ni_100}</td>
+                                  <td>{e.Invoicing_Date_Coa_Ni_100}</td>
+                                  <td>
+                                    {convertDateFormat_firefox(
+                                      e.Cancelled_Coa_Ni_Date_100
+                                    )}
+                                  </td>
+                                  <td>{e.Ses_No}</td>
+                                  <td>
+                                    {convertDateFormat_firefox(e.Ses_Status)}
+                                  </td>
+                                  <td>{e.Link}</td>
+                                  <td>{e.Ni_Coa_Submission_Status}</td>
                                 </tr>
                               </React.Fragment>
                             ))}
@@ -1335,4 +1394,4 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps)(MappingHW);
+export default connect(mapStateToProps)(MappingSVC);
