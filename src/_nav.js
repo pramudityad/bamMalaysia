@@ -67,8 +67,8 @@ export default {
       icon: "icon-folder-alt",
       roles: [
         "BAM-CPM",
-        // "BAM-IM",
-        // "BAM-IE Lead",
+        "BAM-IM",
+        "BAM-IE Lead",
         // "BAM-MP",
         // "BAM-PA",
         // "BAM-Sourcing",
@@ -118,8 +118,8 @@ export default {
           icon: "icon-list",
           roles: [
             "BAM-CPM",
-            // "BAM-IM",
-            // "BAM-IE Lead",
+            "BAM-IM",
+            "BAM-IE Lead",
             // "BAM-MP",
             // "BAM-PA",
             // "BAM-Sourcing",

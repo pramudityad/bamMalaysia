@@ -278,7 +278,11 @@ class ExportSVC extends React.Component {
         }
       }
 
-      if (this.state.roleUser.includes("BAM-MAT PLANNER") === true) {
+      if (
+        this.state.roleUser.includes("BAM-MAT PLANNER") === true ||
+        this.state.roleUser.includes("BAM-IM") === true ||
+        this.state.roleUser.includes("BAM-IE") === true
+      ) {
         ws2.addRow(global.config.cpo_mapping.svc.header_materialmapping);
         for (
           let i = 1;
@@ -658,8 +662,9 @@ class ExportSVC extends React.Component {
                         All Data HW Export
                       </DropdownItem>
                       <DropdownItem header>For New Entries</DropdownItem>
-                      {role.includes("BAM-IE") === true ||
-                      role.includes("BAM-MAT PLANNER") === true ? (
+                      {role.includes("BAM-IM") === true ||
+                      role.includes("BAM-MAT PLANNER") === true ||
+                      role.includes("BAM-IE") === true ? (
                         <>
                           <DropdownItem onClick={this.exportTemplate2}>
                             {" "}
