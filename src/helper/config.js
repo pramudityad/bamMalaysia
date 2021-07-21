@@ -548,7 +548,7 @@ module.exports = global.config = {
         "Commodity",
       ],
       header_materialmapping: [
-        "hw_svc",
+        "type_summary",
         "Deal_Name",
         "Hammer",
         "Project_Description",
