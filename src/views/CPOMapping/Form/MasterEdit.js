@@ -75,10 +75,22 @@ class SummaryMaster extends React.PureComponent {
 
   saveUpdate = async () => {
     this.toggleLoading();
+    const filtered = Object.keys(this.state.CPOForm)
+      .filter((key) =>
+        global.config.cpo_mapping.master.header_materialmapping.includes(key)
+      )
+      .reduce((obj, key) => {
+        obj[key] = this.state.CPOForm[key];
+        return obj;
+      }, {});
+
     const res = await postDatatoAPINODE(
       "/summaryMaster/createSummaryMaster",
       {
-        line_item_data: [this.state.CPOForm],
+        line_item_data: [
+          global.config.cpo_mapping.master.header_materialmapping,
+          Object.values(filtered),
+        ],
       },
       this.state.tokenUser
     );
@@ -253,7 +265,7 @@ class SummaryMaster extends React.PureComponent {
               </CardHeader>
               <CardBody>
                 <Row>
-                  {global.config.cpo_mapping.master.header_model.map(
+                  {global.config.cpo_mapping.master.header_materialmapping.map(
                     (head_model, j) => (
                       <Col sm="12">
                         <Form>
