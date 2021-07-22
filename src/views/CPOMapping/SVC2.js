@@ -941,7 +941,7 @@ class MappingSVC extends React.Component {
                           <tr align="center">
                             {this.state.tabs_submenu[0] === true ? (
                               <>
-                                {/* <th></th> */}
+                                <th></th>
                                 <th>Not Required</th>
                               </>
                             ) : (
@@ -956,7 +956,7 @@ class MappingSVC extends React.Component {
                           {this.state.tabs_submenu[0] === true ? (
                             <>
                               <tr align="center">
-                                {/* <th></th> */}
+                                <th></th>
                                 <th></th>
                                 {Object.keys(this.state.count_header).length !==
                                   0 &&
@@ -984,7 +984,7 @@ class MappingSVC extends React.Component {
                           <tr align="center">
                             {this.state.tabs_submenu[0] === true ? (
                               <>
-                                {/* <td></td> */}
+                                <td></td>
                                 <td></td>
                                 {this.loopSearchBar()}
                               </>
@@ -999,7 +999,7 @@ class MappingSVC extends React.Component {
                             this.state.all_data_svc.map((e, i) => (
                               <React.Fragment key={e._id + "frag"}>
                                 <tr align="center" key={e._id}>
-                                  {/* <td>
+                                  <td>
                                     <Link to={"/svc-cpo/" + e._id}>
                                       <Button
                                         size="sm"
@@ -1012,7 +1012,7 @@ class MappingSVC extends React.Component {
                                         ></i>
                                       </Button>
                                     </Link>
-                                  </td> */}
+                                  </td>
                                   <td>
                                     <Checkbox11
                                       checked={this.state.dataChecked.get(
