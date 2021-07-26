@@ -406,85 +406,29 @@ class ExportHW extends React.Component {
 
     const wb = new Excel.Workbook();
     const ws = wb.addWorksheet();
-    let filter_array2 = [];
-    for (const [key, value] of Object.entries(this.state.filter_list)) {
-      if (value !== null && value !== undefined) {
-        filter_array2.push(
-          '"' + key + '":{"$regex" : "' + value + '", "$options" : "i"}'
-        );
-      }
+    const ws2 = wb.addWorksheet();
+
+    ws2.addRow(global.config.cpo_mapping.hw.header_materialmapping);
+    for (
+      let i = 1;
+      i < global.config.cpo_mapping.hw.header_materialmapping.length + 1;
+      i++
+    ) {
+      ws2.getCell(numToSSColumn(i) + "1").fill = {
+        type: "pattern",
+        pattern: "solid",
+        fgColor: { argb: "FFFFFF00" },
+        bgColor: { argb: "A9A9A9" },
+      };
     }
-    let whereAnd2 = "{" + filter_array2.join(",") + "}";
-    const getdata = await getDatafromAPINODE(
-      "/cpoMapping/getCpo/required/hw?q=" + whereAnd2 + "&noPg=1",
-      this.state.tokenUser
+    this.toggleLoading();
+
+    const PPFormat = await wb.xlsx.writeBuffer();
+
+    saveAs(
+      new Blob([PPFormat]),
+      this.state.roleUser[1] + " " + modul_name + " All Data.xlsx"
     );
-
-    if (getdata.data !== undefined) {
-      const download_all_template = await getdata.data.data;
-      // console.log("download_all_template ", download_all_template);
-      ws.addRow(global.config.cpo_mapping.hw.header_materialmapping);
-      for (
-        let i = 1;
-        i < global.config.cpo_mapping.hw.header_materialmapping.length + 1;
-        i++
-      ) {
-        ws.getCell(numToSSColumn(i) + "1").fill = {
-          type: "pattern",
-          pattern: "solid",
-          fgColor: { argb: "FFFFFF00" },
-          bgColor: { argb: "A9A9A9" },
-        };
-      }
-
-      if (download_all_template !== undefined) {
-        // console.log(download_all_template.data.data.map((u) => u._id));
-
-        for (let i = 0; i < download_all_template.length; i++) {
-          let e = download_all_template[i];
-          ws.addRow([
-            e.Deal_Name,
-            e.Hammer,
-            e.Project_Description,
-            e.Po_Number,
-            e.Data_1,
-            e.Lookup_Reference,
-            e.Region,
-            e.Reference_Loc_Id,
-            e.New_Loc_Id,
-            e.Site_Name,
-            e.New_Site_Name,
-            e.Config,
-            e.Po,
-            e.Line,
-            e.Line_Item_Sap,
-            e.Material_Code,
-            e.Description,
-            e.Qty,
-            e.NW,
-            convertDateFormat_firefox(e.On_Air_Date),
-            convertDateFormat_firefox(e.Mapping_Date),
-            e.Remarks,
-            e.Premr_No,
-            e.Proceed_Billing_100,
-            e.Celcom_User,
-            e.Pcode,
-            e.Unit_Price,
-            e.Total_Price,
-            e.Discounted_Unit_Price,
-            e.Discounted_Po_Price,
-          ]);
-        }
-      }
-      this.toggleLoading();
-
-      const PPFormat = await wb.xlsx.writeBuffer();
-
-      saveAs(
-        new Blob([PPFormat]),
-        this.state.roleUser[1] + " " + modul_name + " All Data.xlsx"
-      );
-    }
   };
 
   exportTemplate_new = async () => {
@@ -514,10 +458,10 @@ class ExportHW extends React.Component {
     if (getdata.data !== undefined) {
       const download_all_template = await getdata.data.data;
       // console.log("download_all_template ", download_all_template);
-      ws.addRow(global.config.cpo_mapping.hw.header_materialmapping);
+      ws.addRow(global.config.cpo_mapping.hw.header_model);
       for (
         let i = 1;
-        i < global.config.cpo_mapping.hw.header_materialmapping.length + 1;
+        i < global.config.cpo_mapping.hw.header_model.length + 1;
         i++
       ) {
         ws.getCell(numToSSColumn(i) + "1").fill = {
@@ -556,7 +500,7 @@ class ExportHW extends React.Component {
             convertDateFormat_firefox(e.On_Air_Date),
             convertDateFormat_firefox(e.Mapping_Date),
             e.Remarks,
-            e.Premr_No,
+            e.Gr_No,
             e.Proceed_Billing_100,
             e.Celcom_User,
             e.Pcode,
@@ -564,6 +508,50 @@ class ExportHW extends React.Component {
             e.Total_Price,
             e.Discounted_Unit_Price,
             e.Discounted_Po_Price,
+            e.Net_Unit_Price,
+            e.Invoice_Total,
+            e.Hammer_1_Hd_Total,
+            e.So_Line_Item_Description,
+            e.Sitepcode,
+            e.VlookupWbs,
+            e.So_No,
+            e.Wbs_No,
+            convertDateFormat_firefox(e.For_Checking_Purpose_Only_Rashidah),
+            convertDateFormat_firefox(e.Hw_Coa_Received_Date_80),
+            e.Billing_Upon_Hw_Coa_80,
+            e.Invoicing_No_Hw_Coa_80,
+            convertDateFormat_firefox(e.Invoicing_Date_Hw_Coa_80),
+            e.Cancelled_Invoice_Hw_Coa_80,
+            convertDateFormat_firefox(e.Ni_Coa_Date_20),
+            e.Billing_Upon_Ni_20,
+            e.Invoicing_No_Ni_20,
+            convertDateFormat_firefox(e.Invoicing_Date_Ni_20),
+            e.Cancelled_Invoicing_Ni_20,
+            convertDateFormat_firefox(e.Hw_Coa_Received_Date_40),
+            e.Billing_Upon_Hw_Coa_40,
+            e.Invoicing_No_Hw_Coa_40,
+            convertDateFormat_firefox(e.Invoicing_Date_Hw_Coa_40),
+            e.Cancelled_Hw_Coa_40,
+            convertDateFormat_firefox(e.Ni_Coa_Date_40),
+            e.Billing_Upon_Ni_40,
+            e.Invoicing_No_Ni_40,
+            convertDateFormat_firefox(e.Invoicing_Date_Ni_40),
+            e.Cancelled_Ni_40,
+            convertDateFormat_firefox(e.Sso_Coa_Date_20_1),
+            e.Billing_Upon_Sso_20_1,
+            e.Invoicing_No_Sso_20_1,
+            convertDateFormat_firefox(e.Invoicing_Date_Sso_20_1),
+            e.Cancelled_Sso_20,
+            convertDateFormat_firefox(e.Hw_Coa_100),
+            e.Billing_Upon_Hw_Coa_100,
+            e.Invoicing_No_Hw_Coa_100,
+            convertDateFormat_firefox(e.Invoicing_Date_Hw_Coa_100),
+            e.Cancelled_Invoicing_Hw_Coa_100,
+            e.Cancel_Column,
+            e.Reference_Loc_Id_1,
+            e.Po_1,
+            e.Reff,
+            e.Vlookup_For_Billing,
           ]);
         }
       }
@@ -1091,37 +1079,18 @@ class ExportHW extends React.Component {
                         {" "}
                         All Data HW Export
                       </DropdownItem>
-                      {/* <DropdownItem header>Uploader Template</DropdownItem>
+                      <DropdownItem header>For New Entries</DropdownItem>
                       {role.includes("BAM-MAT PLANNER") === true ? (
                         <>
                           <DropdownItem onClick={this.exportTemplate2}>
                             {" "}
-                            Mapping Template{" " + this.state.roleUser[1]}{" "}
+                            Mapping Template Hw{" " +
+                              this.state.roleUser[1]}{" "}
                           </DropdownItem>
                         </>
                       ) : (
                         ""
                       )}
-                      {role.includes("BAM-PFM") === true ? (
-                        <>
-                          <DropdownItem onClick={this.download_PFM}>
-                            {" "}
-                            Mapping Template{" " + this.state.roleUser[1]}{" "}
-                          </DropdownItem>
-                        </>
-                      ) : (
-                        ""
-                      )}
-                      {role.includes("BAM-ADMIN") === true ? (
-                        <>
-                          <DropdownItem onClick={this.download_Admin}>
-                            {" "}
-                            Mapping Template{" " + this.state.roleUser[1]}{" "}
-                          </DropdownItem>
-                        </>
-                      ) : (
-                        ""
-                      )} */}
                     </DropdownMenu>
                   </Dropdown>
                 </Col>

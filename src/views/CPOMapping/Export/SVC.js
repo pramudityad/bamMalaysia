@@ -114,6 +114,38 @@ class ExportSVC extends React.Component {
     this.setState({ filter_list: filter_list });
   };
 
+  exportTemplate2 = async () => {
+    this.toggleLoading();
+    // this.getListAll();
+
+    const wb = new Excel.Workbook();
+    const ws = wb.addWorksheet();
+
+    const ws2 = wb.addWorksheet();
+
+    ws2.addRow(global.config.cpo_mapping.svc.header_materialmapping);
+    for (
+      let i = 1;
+      i < global.config.cpo_mapping.svc.header_materialmapping.length + 1;
+      i++
+    ) {
+      ws2.getCell(numToSSColumn(i) + "1").fill = {
+        type: "pattern",
+        pattern: "solid",
+        fgColor: { argb: "FFFFFF00" },
+        bgColor: { argb: "A9A9A9" },
+      };
+    }
+    this.toggleLoading();
+
+    const PPFormat = await wb.xlsx.writeBuffer();
+
+    saveAs(
+      new Blob([PPFormat]),
+      this.state.roleUser[1] + " " + modul_name + " All Data.xlsx"
+    );
+  };
+
   exportTemplate_new = async () => {
     this.toggleLoading();
 
@@ -246,7 +278,11 @@ class ExportSVC extends React.Component {
         }
       }
 
-      if (this.state.roleUser.includes("BAM-MAT PLANNER") === true) {
+      if (
+        this.state.roleUser.includes("BAM-MAT PLANNER") === true ||
+        this.state.roleUser.includes("BAM-IM") === true ||
+        this.state.roleUser.includes("BAM-IE") === true
+      ) {
         ws2.addRow(global.config.cpo_mapping.svc.header_materialmapping);
         for (
           let i = 1;
@@ -623,8 +659,22 @@ class ExportSVC extends React.Component {
                       <DropdownItem header>Export Data</DropdownItem>
                       <DropdownItem onClick={this.exportTemplate_new}>
                         {" "}
-                        All Data SVC Export
+                        All Data HW Export
                       </DropdownItem>
+                      <DropdownItem header>For New Entries</DropdownItem>
+                      {role.includes("BAM-IM") === true ||
+                      role.includes("BAM-MAT PLANNER") === true ||
+                      role.includes("BAM-IE") === true ? (
+                        <>
+                          <DropdownItem onClick={this.exportTemplate2}>
+                            {" "}
+                            Mapping Template SVC{" " +
+                              this.state.roleUser[1]}{" "}
+                          </DropdownItem>
+                        </>
+                      ) : (
+                        ""
+                      )}
                     </DropdownMenu>
                   </Dropdown>
                 </Col>

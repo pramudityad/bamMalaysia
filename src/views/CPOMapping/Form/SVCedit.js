@@ -15,6 +15,7 @@ import {
   CardHeader,
   CardFooter,
   Button,
+  Form,
   Dropdown,
   DropdownItem,
   DropdownMenu,
@@ -24,23 +25,24 @@ import {
   InputGroupAddon,
   InputGroupText,
 } from "reactstrap";
-import Loading from "../Component/Loading";
+import Loading from "../../Component/Loading";
 import {
   getDatafromAPIMY,
   postDatatoAPINODE,
   patchDatatoAPINODE,
   deleteDataFromAPINODE2,
   getDatafromAPINODE,
-} from "../../helper/asyncFunction";
-
+  apiSendEmail,
+} from "../../../helper/asyncFunction";
+import "../../../helper/config";
 import { connect } from "react-redux";
-import "./cpomapping.css";
+import "../cpomapping.css";
 const DefaultNotif = React.lazy(() =>
-  import("../../views/DefaultView/DefaultNotif")
+  import("../../../views/DefaultView/DefaultNotif")
 );
 const modul_name = "SVC";
 
-class SVCEdit extends React.Component {
+class SVCEdit extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {
@@ -59,7 +61,7 @@ class SVCEdit extends React.Component {
 
   getListID(_id) {
     getDatafromAPINODE(
-      "/cpoMapping/getCpo/svc/" + _id,
+      "/cpoMapping/getCpo/required/svc/" + _id,
       this.state.tokenUser
     ).then((res) => {
       if (res.data !== undefined) {
@@ -84,21 +86,199 @@ class SVCEdit extends React.Component {
   };
 
   saveUpdate = async () => {
+    let error_containers = [];
+    let warn_containers = [];
     this.toggleLoading();
-    const res = await patchDatatoAPINODE(
-      "/cpoMapping/updateCpo",
+    let uniq_value = Object.keys(this.state.CPOForm)
+      .filter((key) => ["Po", "Line", "Reference_Loc_Id", "Qty"].includes(key))
+      .reduce((obj, key) => {
+        obj[key] = this.state.CPOForm[key];
+        return obj;
+      }, {});
+    const allowed_header =
+      this.state.roleUser.includes("BAM-MAT PLANNER") === true ||
+      this.state.roleUser.includes("BAM-IM") === true ||
+      this.state.roleUser.includes("BAM-IE") === true
+        ? global.config.cpo_mapping.svc.header_materialmapping
+        : this.state.roleUser.includes("BAM-PFM") === true
+        ? global.config.cpo_mapping.svc.header_pfm
+        : global.config.cpo_mapping.svc.header_admin;
+    const header_post =
+      this.state.roleUser.includes("BAM-MAT PLANNER") === true ||
+      this.state.roleUser.includes("BAM-IM") === true ||
+      this.state.roleUser.includes("BAM-IE") === true
+        ? global.config.cpo_mapping.svc.header_materialmapping
+        : this.state.roleUser.includes("BAM-PFM") === true
+        ? global.config.cpo_mapping.svc.header_pfm.concat(
+            "Reference_Loc_Id",
+            "Po",
+            "Line",
+            "Qty"
+          )
+        : global.config.cpo_mapping.svc.header_admin.concat(
+            "Reference_Loc_Id",
+            "Po",
+            "Line",
+            "Qty"
+          );
+    const roles =
+      this.state.roleUser.includes("BAM-MAT PLANNER") === true ||
+      this.state.roleUser.includes("BAM-IM") === true ||
+      this.state.roleUser.includes("BAM-IE") === true
+        ? 1
+        : this.state.roleUser.includes("BAM-PFM") === true
+        ? 2
+        : 3;
+    const filtered = Object.keys(this.state.CPOForm)
+      .filter((key) => allowed_header.includes(key))
+      .reduce((obj, key) => {
+        obj[key] = this.state.CPOForm[key];
+        return obj;
+      }, {});
+    const reqBody_post =
+      this.state.roleUser.includes("BAM-MAT PLANNER") === true ||
+      this.state.roleUser.includes("BAM-IM") === true ||
+      this.state.roleUser.includes("BAM-IE") === true
+        ? Object.values(filtered)
+        : Object.values(filtered).concat(Object.values(uniq_value));
+
+    console.log(reqBody_post);
+    const res = await postDatatoAPINODE(
+      "/cpoMapping/createCpo2",
       {
         cpo_type: "svc",
-        data: [this.state.CPOForm],
+        roles: roles,
+        cpo_data: [header_post, reqBody_post],
       },
       this.state.tokenUser
     );
+    if (
+      res.response !== undefined &&
+      res.response.data !== undefined &&
+      res.response.data.error !== undefined
+    ) {
+      let err_data = res.response.data.error.message;
+      // if (err_data !== undefined) {
+      error_containers.push(err_data.message);
+      // }
+    }
     if (res.data !== undefined) {
-      this.setState({ action_status: "success" });
-      this.toggleLoading();
-      setTimeout(function () {
-        window.location.reload();
-      }, 1500);
+      if (roles === 2) {
+        this.toggleLoading();
+      } else {
+        if (res.data.updateData.length !== 0) {
+          const table_header = Object.keys(res.data.updateData[0]);
+          const update_Data = res.data.updateData;
+          const new_table_header = table_header.slice(0, -2);
+          let value = "row.";
+          const bodyEmail =
+            "<h2>DPM - BAM Notification</h2><br/><span>Please be notified that the following " +
+            modul_name +
+            " data has been updated <br/><br/><table><tr>" +
+            new_table_header.map((tab, i) => "<th>" + tab + "</th>").join(" ") +
+            "</tr>" +
+            update_Data
+              .map(
+                (row, j) =>
+                  "<tr key={" +
+                  j +
+                  "}>" +
+                  new_table_header
+                    .map((td) => "<td>" + eval(value + td) + "</td>")
+                    .join(" ") +
+                  "</tr>"
+              )
+              .join(" ") +
+            "</table>";
+          // if (res.data.warnNotif.length !== 0) {
+          //   let dataEmail = {
+          //     // "to": creatorEmail,
+          //     // to: "damar.pramuditya@ericsson.com",
+          //     to: global.config.role.cpm,
+          //     subject: "[NOTIFY to CPM] " + modul_name,
+          //     body: bodyEmail,
+          //   };
+          //   const sendEmail = await apiSendEmail(dataEmail);
+
+          //   // console.log(sendEmail);
+          //   // this.setState({
+          //   //   action_status: "warning",
+          //   //   action_message:
+          //   //     "Success with warn " +
+          //   //     res.data.warnNotif.map((warn) => warn) +
+          //   //     " batch ",
+          //   // });
+          //   // this.toggleLoading();
+          //   // return;
+          //   // setTimeout(function () {
+          //   //   window.location.reload();
+          //   // }, 1500);
+          // }
+          let dataEmail = {
+            // "to": creatorEmail,
+            // to: "damar.pramuditya@ericsson.com",
+            to: global.config.role.cpm,
+            subject: "[NOTIFY to CPM] " + modul_name,
+            body: bodyEmail,
+          };
+          const sendEmail = await apiSendEmail(dataEmail);
+
+          // console.log(sendEmail);
+          this.toggleLoading();
+          /**
+           *  push errors to array
+           */
+          if (res.data.errNotif.length !== 0) {
+            for (let in_err = 0; in_err < res.data.errNotif.length; in_err++) {
+              let acc_line = this.state.batch_count;
+              let err_data = res.data.errNotif[in_err];
+              // console.log("before ", err_data);
+              err_data.row = acc_line + err_data.line + 1;
+              err_data.message = err_data.message.message;
+              // console.log("after ", err_data);
+              error_containers.push(err_data);
+            }
+          }
+          if (res.data.warnNotif.length !== 0) {
+            for (
+              let in_warn = 0;
+              in_warn < res.data.warnNotif.length;
+              in_warn++
+            ) {
+              let warn_data = res.data.warnNotif[in_warn];
+
+              warn_containers.push(warn_data);
+            }
+          }
+        } else {
+          this.toggleLoading();
+          /**
+           *  push errors to array
+           */
+          if (res.data.errNotif.length !== 0) {
+            for (let in_err = 0; in_err < res.data.errNotif.length; in_err++) {
+              let acc_line = this.state.batch_count;
+              let err_data = res.data.errNotif[in_err];
+              // console.log("before ", err_data);
+              err_data.row = acc_line + err_data.line + 1;
+              err_data.message = err_data.message.message;
+              // console.log("after ", err_data);
+              error_containers.push(err_data);
+            }
+          }
+          if (res.data.warnNotif.length !== 0) {
+            for (
+              let in_warn = 0;
+              in_warn < res.data.warnNotif.length;
+              in_warn++
+            ) {
+              let warn_data = res.data.warnNotif[in_warn];
+
+              warn_containers.push(warn_data);
+            }
+          }
+        }
+      }
     } else {
       if (
         res.response !== undefined &&
@@ -117,9 +297,27 @@ class SVCEdit extends React.Component {
           });
         }
       } else {
-        this.setState({ action_status: "failed" });
+        this.setState({
+          action_status: "failed",
+          action_message: res.response.data.error,
+        });
       }
       this.toggleLoading();
+    }
+    if (error_containers.length !== 0 || warn_containers.length !== 0) {
+      this.setState({
+        error_log: error_containers,
+        warn_log: warn_containers,
+        upload_finish: true,
+        action_message:
+          "There are error(s) and/or warning(s) please toogle the button",
+        action_status: "failed",
+      });
+    } else {
+      this.setState({
+        action_message: "Success update",
+        action_status: "success",
+      });
     }
   };
 
@@ -130,8 +328,25 @@ class SVCEdit extends React.Component {
   };
 
   render() {
-    const role = this.state.roleUser;
     const CPOForm = this.state.CPOForm;
+    const render_field =
+      this.state.roleUser.includes("BAM-MAT PLANNER") === true ||
+      this.state.roleUser.includes("BAM-IM") === true ||
+      this.state.roleUser.includes("BAM-IE") === true
+        ? global.config.cpo_mapping.svc.header_materialmapping
+        : this.state.roleUser.includes("BAM-PFM") === true
+        ? global.config.cpo_mapping.svc.header_pfm.concat(
+            "Po",
+            "Line",
+            "Reference_Loc_Id",
+            "Qty"
+          )
+        : global.config.cpo_mapping.svc.header_admin.concat(
+            "Po",
+            "Line",
+            "Reference_Loc_Id",
+            "Qty"
+          );
     return (
       <div>
         <DefaultNotif
@@ -146,1159 +361,40 @@ class SVCEdit extends React.Component {
                 Edit {modul_name + " " + CPOForm.unique_code}
               </CardHeader>
               <CardBody>
-                {role.includes("BAM-MAT PLANNER") === true ? (
-                  <>
-                    <Row>
-                      <Col sm="12">
+                <Row>
+                  {render_field.map((head_model, j) => (
+                    <Col sm="12">
+                      <Form>
                         <FormGroup row>
-                          <Col>
-                            <FormGroup>
-                              <Label>Internal_Po</Label>
+                          <Label sm={4}>{head_model}</Label>
+                          <Col sm={8}>
+                            {head_model === "Po" ||
+                            head_model === "Line" ||
+                            head_model === "Reference_Loc_Id" ||
+                            head_model === "Qty" ? (
                               <Input
+                                readOnly
                                 type="text"
-                                name="Internal_Po"
-                                placeholder=""
-                                value={CPOForm.Internal_Po}
+                                name={head_model}
+                                placeholder={head_model}
+                                value={eval("CPOForm." + head_model)}
                                 onChange={this.handleChangeForm}
                               />
-                            </FormGroup>
-                          </Col>
-                          <Col>
-                            <FormGroup>
-                              <Label>Link</Label>
+                            ) : (
                               <Input
                                 type="text"
-                                name="Link"
-                                placeholder=""
-                                value={CPOForm.Link}
+                                name={head_model}
+                                placeholder={head_model}
+                                value={eval("CPOForm." + head_model)}
                                 onChange={this.handleChangeForm}
                               />
-                            </FormGroup>
-                          </Col>
-                          <Col>
-                            <FormGroup>
-                              <Label>Lookup_Reference</Label>
-
-                              <Input
-                                type="text"
-                                name="Lookup_Reference"
-                                placeholder=""
-                                value={CPOForm.Lookup_Reference}
-                                onChange={this.handleChangeForm}
-                              />
-                            </FormGroup>
-                          </Col>
-                          <Col>
-                            <FormGroup>
-                              <Label>REGION</Label>
-
-                              <Input
-                                type="text"
-                                name="Region"
-                                placeholder=""
-                                value={CPOForm.Region}
-                                onChange={this.handleChangeForm}
-                              />
-                            </FormGroup>
-                          </Col>
-                          <Col>
-                            <FormGroup>
-                              <Label>REFERENCE LOC ID</Label>
-
-                              <Input
-                                type="text"
-                                name="Reference_Loc_Id"
-                                placeholder=""
-                                value={CPOForm.Reference_Loc_Id}
-                                onChange={this.handleChangeForm}
-                              />
-                            </FormGroup>
-                          </Col>
-                          {/* <Col>
-                        <FormGroup>
-                          <Label>NEW LOC ID</Label>
-                          {role.includes("BAM-IM") === true ? (
-                            <Input
-                              readOnly
-                              type="text"
-                              name="New_Loc_Id"
-                              placeholder=""
-                              value={CPOForm.New_Loc_Id}
-                              onChange={this.handleChangeForm}
-                            />
-                          ) : (
-                            <Input
-                              type="text"
-                              name="New_Loc_Id"
-                              placeholder=""
-                              value={CPOForm.New_Loc_Id}
-                              onChange={this.handleChangeForm}
-                            />
-                          )}
-                        </FormGroup>
-                      </Col> */}
-                        </FormGroup>
-                      </Col>
-                    </Row>
-
-                    <Row>
-                      <Col sm="12">
-                        <FormGroup row>
-                          <Col>
-                            <FormGroup>
-                              <Label>SITE NAME</Label>
-                              <Input
-                                type="text"
-                                name="Site_Name"
-                                placeholder=""
-                                value={CPOForm.Site_Name}
-                                onChange={this.handleChangeForm}
-                              />
-                            </FormGroup>
-                          </Col>
-                          {/* <Col>
-                        <FormGroup>
-                          <Label>REGION</Label>
-                          {role.includes("BAM-IM") === true ? (
-                            <Input
-                              readOnly
-                              type="number"
-                              name="Qty"
-                              placeholder=""
-                              value={CPOForm.Qty}
-                              onChange={this.handleChangeForm}
-                            />
-                          ) : (
-                            <Input
-                              type="number"
-                              name="Qty"
-                              placeholder=""
-                              value={CPOForm.Qty}
-                              onChange={this.handleChangeForm}
-                            />
-                          )}
-                        </FormGroup>
-                      </Col> */}
-                          <Col>
-                            <FormGroup>
-                              <Label>New_Site_Name</Label>
-
-                              <Input
-                                type="text"
-                                name="New_Site_Name"
-                                placeholder=""
-                                value={CPOForm.New_Site_Name}
-                                onChange={this.handleChangeForm}
-                              />
-                            </FormGroup>
-                          </Col>
-                          <Col>
-                            <FormGroup>
-                              <Label>Config</Label>
-
-                              <Input
-                                type="text"
-                                name="Config"
-                                placeholder=""
-                                value={CPOForm.Config}
-                                onChange={this.handleChangeForm}
-                              />
-                            </FormGroup>
-                          </Col>
-                          <Col>
-                            <FormGroup>
-                              <Label>Po</Label>
-                              <Input
-                                type="text"
-                                name="Po"
-                                placeholder=""
-                                value={CPOForm.Po}
-                                onChange={this.handleChangeForm}
-                              />
-                            </FormGroup>
-                          </Col>
-                          <Col>
-                            <FormGroup>
-                              <Label>Line</Label>
-                              <Input
-                                type="text"
-                                name="Line"
-                                placeholder=""
-                                value={CPOForm.Line}
-                                onChange={this.handleChangeForm}
-                              />
-                            </FormGroup>
-                          </Col>
-                          <Col>
-                            <FormGroup>
-                              <Label>Description</Label>
-
-                              <Input
-                                type="text"
-                                name="Description"
-                                placeholder=""
-                                value={CPOForm.Description}
-                                onChange={this.handleChangeForm}
-                              />
-                            </FormGroup>
+                            )}
                           </Col>
                         </FormGroup>
-                      </Col>
-                    </Row>
-
-                    <Row>
-                      <Col sm="12">
-                        <FormGroup row>
-                          <Col>
-                            <FormGroup>
-                              <Label>Qty</Label>
-
-                              <Input
-                                readOnly
-                                type="number"
-                                name="Qty"
-                                placeholder=""
-                                value={CPOForm.Qty}
-                                onChange={this.handleChangeForm}
-                              />
-                            </FormGroup>
-                          </Col>
-                          <Col>
-                            <FormGroup>
-                              <Label>NW</Label>
-
-                              <Input
-                                type="text"
-                                name="NW"
-                                placeholder=""
-                                value={CPOForm.NW}
-                                onChange={this.handleChangeForm}
-                              />
-                            </FormGroup>
-                          </Col>
-                          <Col>
-                            <FormGroup>
-                              <Label>CNI_Date</Label>
-
-                              <Input
-                                type="date"
-                                name="CNI_Date"
-                                placeholder=""
-                                defaultValue={CPOForm.CNI_Date}
-                                onChange={this.handleChangeForm}
-                              />
-                            </FormGroup>
-                          </Col>
-                          <Col>
-                            <FormGroup>
-                              <Label>Mapping_Date</Label>
-
-                              <Input
-                                type="date"
-                                name="Mapping_Date"
-                                placeholder=""
-                                value={CPOForm.Mapping_Date}
-                                onChange={this.handleChangeForm}
-                              />
-                            </FormGroup>
-                          </Col>
-                          <Col>
-                            <FormGroup>
-                              <Label>Remarks</Label>
-
-                              <Input
-                                type="text"
-                                name="Remarks"
-                                placeholder=""
-                                value={CPOForm.Remarks}
-                                onChange={this.handleChangeForm}
-                              />
-                            </FormGroup>
-                          </Col>
-                        </FormGroup>
-                      </Col>
-                    </Row>
-
-                    <Row>
-                      <Col sm="12">
-                        <FormGroup row>
-                          <Col>
-                            <FormGroup>
-                              <Label>Premr_No</Label>
-
-                              <Input
-                                readOnly
-                                type="text"
-                                name="Premr_No"
-                                placeholder=""
-                                value={CPOForm.Premr_No}
-                                onChange={this.handleChangeForm}
-                              />
-                            </FormGroup>
-                          </Col>
-                          <Col>
-                            <FormGroup>
-                              <Label>Proceed_Billing_100</Label>
-
-                              <Input
-                                type="text"
-                                name="Proceed_Billing_100"
-                                placeholder=""
-                                value={CPOForm.Proceed_Billing_100}
-                                onChange={this.handleChangeForm}
-                              />
-                            </FormGroup>
-                          </Col>
-                          <Col>
-                            <FormGroup>
-                              <Label>Celcom_User</Label>
-
-                              <Input
-                                type="text"
-                                name="Celcom_User"
-                                placeholder=""
-                                value={CPOForm.Celcom_User}
-                                onChange={this.handleChangeForm}
-                              />
-                            </FormGroup>
-                          </Col>
-                          <Col>
-                            <FormGroup>
-                              <Label>Pcode</Label>
-                              <Input
-                                readOnly
-                                type="text"
-                                name="Pcode"
-                                placeholder=""
-                                value={CPOForm.Pcode}
-                                onChange={this.handleChangeForm}
-                              />
-                            </FormGroup>
-                          </Col>
-                          <Col>
-                            <FormGroup>
-                              <Label>Unit_Price</Label>
-                              <Input
-                                readOnly
-                                type="number"
-                                name="Unit_Price"
-                                placeholder=""
-                                value={CPOForm.Unit_Price}
-                                onChange={this.handleChangeForm}
-                              />
-                            </FormGroup>
-                          </Col>
-                        </FormGroup>
-                      </Col>
-                    </Row>
-
-                    <Row>
-                      <Col sm="12">
-                        <FormGroup row>
-                          <Col>
-                            <FormGroup>
-                              <Label>So_Line_Item_Description</Label>
-
-                              <Input
-                                readOnly
-                                type="text"
-                                name="So_Line_Item_Description"
-                                placeholder=""
-                                value={CPOForm.So_Line_Item_Description}
-                                onChange={this.handleChangeForm}
-                              />
-                            </FormGroup>
-                          </Col>
-                          <Col>
-                            <FormGroup>
-                              <Label>Sitepcode</Label>
-
-                              <Input
-                                readOnly
-                                type="text"
-                                name="Sitepcode"
-                                placeholder=""
-                                value={CPOForm.Sitepcode}
-                                onChange={this.handleChangeForm}
-                              />
-                            </FormGroup>
-                          </Col>
-                          <Col>
-                            <FormGroup>
-                              <Label>VlookupWbs</Label>
-
-                              <Input
-                                readOnly
-                                type="text"
-                                name="VlookupWbs"
-                                placeholder=""
-                                value={CPOForm.VlookupWbs}
-                                onChange={this.handleChangeForm}
-                              />
-                            </FormGroup>
-                          </Col>
-                          <Col>
-                            <FormGroup>
-                              <Label>So_No</Label>
-
-                              <Input
-                                readOnly
-                                type="text"
-                                name="So_No"
-                                placeholder=""
-                                value={CPOForm.So_No}
-                                onChange={this.handleChangeForm}
-                              />
-                            </FormGroup>
-                          </Col>
-                          <Col>
-                            <FormGroup>
-                              <Label>Wbs_No</Label>
-
-                              <Input
-                                readOnly
-                                type="text"
-                                name="Wbs_No"
-                                placeholder=""
-                                value={CPOForm.Wbs_No}
-                                onChange={this.handleChangeForm}
-                              />
-                            </FormGroup>
-                          </Col>
-                          <Col>
-                            <FormGroup>
-                              <Label>Billing_100</Label>
-
-                              <Input
-                                readOnly
-                                type="text"
-                                name="Billing_100"
-                                placeholder=""
-                                value={CPOForm.Billing_100}
-                                onChange={this.handleChangeForm}
-                              />
-                            </FormGroup>
-                          </Col>
-                          <Col>
-                            <FormGroup>
-                              <Label>Atp_Coa_Received_Date_80</Label>
-
-                              <Input
-                                readOnly
-                                type="text"
-                                name="Atp_Coa_Received_Date_80"
-                                placeholder=""
-                                value={CPOForm.Atp_Coa_Received_Date_80}
-                                onChange={this.handleChangeForm}
-                              />
-                            </FormGroup>
-                          </Col>
-                          <Col>
-                            <FormGroup>
-                              <Label>Billing_Upon_Atp_Coa_80</Label>
-
-                              <Input
-                                readOnly
-                                type="text"
-                                name="Billing_Upon_Atp_Coa_80"
-                                placeholder=""
-                                value={CPOForm.Billing_Upon_Atp_Coa_80}
-                                onChange={this.handleChangeForm}
-                              />
-                            </FormGroup>
-                          </Col>
-                        </FormGroup>
-                      </Col>
-                    </Row>
-                  </>
-                ) : (
-                  <>
-                    <Row>
-                      <Col sm="12">
-                        <FormGroup row>
-                          <Col>
-                            <FormGroup>
-                              <Label>Link</Label>
-                              {role.includes("BAM-IM") === true ? (
-                                <Input
-                                  type="text"
-                                  name="Link"
-                                  placeholder=""
-                                  value={CPOForm.Link}
-                                  onChange={this.handleChangeForm}
-                                />
-                              ) : (
-                                <Input
-                                  readOnly
-                                  type="text"
-                                  name="Link"
-                                  placeholder=""
-                                  value={CPOForm.Link}
-                                  onChange={this.handleChangeForm}
-                                />
-                              )}
-                            </FormGroup>
-                          </Col>
-                          <Col>
-                            <FormGroup>
-                              <Label>Lookup_Reference</Label>
-                              {role.includes("BAM-IM") === true ? (
-                                <Input
-                                  readOnly
-                                  type="text"
-                                  name="Lookup_Reference"
-                                  placeholder=""
-                                  value={CPOForm.Lookup_Reference}
-                                  onChange={this.handleChangeForm}
-                                />
-                              ) : (
-                                <Input
-                                  type="text"
-                                  name="Lookup_Reference"
-                                  placeholder=""
-                                  value={CPOForm.Lookup_Reference}
-                                  onChange={this.handleChangeForm}
-                                />
-                              )}
-                            </FormGroup>
-                          </Col>
-                          <Col>
-                            <FormGroup>
-                              <Label>REGION</Label>
-                              {role.includes("BAM-IM") === true ? (
-                                <Input
-                                  readOnly
-                                  type="text"
-                                  name="Region"
-                                  placeholder=""
-                                  value={CPOForm.Region}
-                                  onChange={this.handleChangeForm}
-                                />
-                              ) : (
-                                <Input
-                                  type="text"
-                                  name="Region"
-                                  placeholder=""
-                                  value={CPOForm.Region}
-                                  onChange={this.handleChangeForm}
-                                />
-                              )}
-                            </FormGroup>
-                          </Col>
-                          <Col>
-                            <FormGroup>
-                              <Label>REFERENCE LOC ID</Label>
-                              {role.includes("BAM-IM") === true ? (
-                                <Input
-                                  readOnly
-                                  type="text"
-                                  name="Reference_Loc_Id"
-                                  placeholder=""
-                                  value={CPOForm.Reference_Loc_Id}
-                                  onChange={this.handleChangeForm}
-                                />
-                              ) : (
-                                <Input
-                                  type="text"
-                                  name="Reference_Loc_Id"
-                                  placeholder=""
-                                  value={CPOForm.Reference_Loc_Id}
-                                  onChange={this.handleChangeForm}
-                                />
-                              )}
-                            </FormGroup>
-                          </Col>
-                          {/* <Col>
-                        <FormGroup>
-                          <Label>NEW LOC ID</Label>
-                          {role.includes("BAM-IM") === true ? (
-                            <Input
-                              readOnly
-                              type="text"
-                              name="New_Loc_Id"
-                              placeholder=""
-                              value={CPOForm.New_Loc_Id}
-                              onChange={this.handleChangeForm}
-                            />
-                          ) : (
-                            <Input
-                              type="text"
-                              name="New_Loc_Id"
-                              placeholder=""
-                              value={CPOForm.New_Loc_Id}
-                              onChange={this.handleChangeForm}
-                            />
-                          )}
-                        </FormGroup>
-                      </Col> */}
-                        </FormGroup>
-                      </Col>
-                    </Row>
-
-                    <Row>
-                      <Col sm="12">
-                        <FormGroup row>
-                          <Col>
-                            <FormGroup>
-                              <Label>SITE NAME</Label>
-                              {role.includes("BAM-IM") === true ? (
-                                <Input
-                                  type="text"
-                                  name="Site_Name"
-                                  placeholder=""
-                                  value={CPOForm.Site_Name}
-                                  onChange={this.handleChangeForm}
-                                />
-                              ) : (
-                                <Input
-                                  readOnly
-                                  type="text"
-                                  name="Site_Name"
-                                  placeholder=""
-                                  value={CPOForm.Site_Name}
-                                  onChange={this.handleChangeForm}
-                                />
-                              )}
-                            </FormGroup>
-                          </Col>
-                          {/* <Col>
-                        <FormGroup>
-                          <Label>REGION</Label>
-                          {role.includes("BAM-IM") === true ? (
-                            <Input
-                              readOnly
-                              type="number"
-                              name="Qty"
-                              placeholder=""
-                              value={CPOForm.Qty}
-                              onChange={this.handleChangeForm}
-                            />
-                          ) : (
-                            <Input
-                              type="number"
-                              name="Qty"
-                              placeholder=""
-                              value={CPOForm.Qty}
-                              onChange={this.handleChangeForm}
-                            />
-                          )}
-                        </FormGroup>
-                      </Col> */}
-                          <Col>
-                            <FormGroup>
-                              <Label>New_Site_Name</Label>
-                              {role.includes("BAM-IM") === true ? (
-                                <Input
-                                  readOnly
-                                  type="text"
-                                  name="New_Site_Name"
-                                  placeholder=""
-                                  value={CPOForm.New_Site_Name}
-                                  onChange={this.handleChangeForm}
-                                />
-                              ) : (
-                                <Input
-                                  type="text"
-                                  name="New_Site_Name"
-                                  placeholder=""
-                                  value={CPOForm.New_Site_Name}
-                                  onChange={this.handleChangeForm}
-                                />
-                              )}
-                            </FormGroup>
-                          </Col>
-                          <Col>
-                            <FormGroup>
-                              <Label>Config</Label>
-                              {role.includes("BAM-IM") === true ? (
-                                <Input
-                                  readOnly
-                                  type="text"
-                                  name="Config"
-                                  placeholder=""
-                                  value={CPOForm.Config}
-                                  onChange={this.handleChangeForm}
-                                />
-                              ) : (
-                                <Input
-                                  type="text"
-                                  name="Config"
-                                  placeholder=""
-                                  value={CPOForm.Config}
-                                  onChange={this.handleChangeForm}
-                                />
-                              )}
-                            </FormGroup>
-                          </Col>
-                          <Col>
-                            <FormGroup>
-                              <Label>Po</Label>
-                              <Input
-                                readOnly
-                                type="text"
-                                name="Po"
-                                placeholder=""
-                                value={CPOForm.Po}
-                                onChange={this.handleChangeForm}
-                              />
-                            </FormGroup>
-                          </Col>
-                          <Col>
-                            <FormGroup>
-                              <Label>Line</Label>
-                              <Input
-                                readOnly
-                                type="text"
-                                name="Line"
-                                placeholder=""
-                                value={CPOForm.Line}
-                                onChange={this.handleChangeForm}
-                              />
-                            </FormGroup>
-                          </Col>
-                          <Col>
-                            <FormGroup>
-                              <Label>Description</Label>
-                              {role.includes("BAM-IM") === true ? (
-                                <Input
-                                  readOnly
-                                  type="text"
-                                  name="Description"
-                                  placeholder=""
-                                  value={CPOForm.Description}
-                                  onChange={this.handleChangeForm}
-                                />
-                              ) : (
-                                <Input
-                                  type="text"
-                                  name="Description"
-                                  placeholder=""
-                                  value={CPOForm.Description}
-                                  onChange={this.handleChangeForm}
-                                />
-                              )}
-                            </FormGroup>
-                          </Col>
-                        </FormGroup>
-                      </Col>
-                    </Row>
-
-                    <Row>
-                      <Col sm="12">
-                        <FormGroup row>
-                          <Col>
-                            <FormGroup>
-                              <Label>Qty</Label>
-                              {role.includes("BAM-IM") === true ? (
-                                <Input
-                                  type="number"
-                                  name="Qty"
-                                  placeholder=""
-                                  value={CPOForm.Qty}
-                                  onChange={this.handleChangeForm}
-                                />
-                              ) : (
-                                <Input
-                                  readOnly
-                                  type="number"
-                                  name="Qty"
-                                  placeholder=""
-                                  value={CPOForm.Qty}
-                                  onChange={this.handleChangeForm}
-                                />
-                              )}
-                            </FormGroup>
-                          </Col>
-                          <Col>
-                            <FormGroup>
-                              <Label>NW</Label>
-                              {role.includes("BAM-IM") === true ? (
-                                <Input
-                                  readOnly
-                                  type="text"
-                                  name="NW"
-                                  placeholder=""
-                                  value={CPOForm.NW}
-                                  onChange={this.handleChangeForm}
-                                />
-                              ) : (
-                                <Input
-                                  type="text"
-                                  name="NW"
-                                  placeholder=""
-                                  value={CPOForm.NW}
-                                  onChange={this.handleChangeForm}
-                                />
-                              )}
-                            </FormGroup>
-                          </Col>
-                          <Col>
-                            <FormGroup>
-                              <Label>CNI_Date</Label>
-                              {role.includes("BAM-IM") === true ? (
-                                <Input
-                                  readOnly
-                                  type="date"
-                                  name="CNI_Date"
-                                  placeholder=""
-                                  defaultValue={CPOForm.CNI_Date}
-                                  onChange={this.handleChangeForm}
-                                />
-                              ) : (
-                                <Input
-                                  type="date"
-                                  name="CNI_Date"
-                                  placeholder=""
-                                  defaultValue={CPOForm.CNI_Date}
-                                  onChange={this.handleChangeForm}
-                                />
-                              )}
-                            </FormGroup>
-                          </Col>
-                          <Col>
-                            <FormGroup>
-                              <Label>Mapping_Date</Label>
-                              {role.includes("BAM-IM") === true ? (
-                                <Input
-                                  readOnly
-                                  type="date"
-                                  name="Mapping_Date"
-                                  placeholder=""
-                                  value={CPOForm.Mapping_Date}
-                                  onChange={this.handleChangeForm}
-                                />
-                              ) : (
-                                <Input
-                                  type="date"
-                                  name="Mapping_Date"
-                                  placeholder=""
-                                  value={CPOForm.Mapping_Date}
-                                  onChange={this.handleChangeForm}
-                                />
-                              )}
-                            </FormGroup>
-                          </Col>
-                          <Col>
-                            <FormGroup>
-                              <Label>Remarks</Label>
-                              {role.includes("BAM-IM") === true ? (
-                                <Input
-                                  readOnly
-                                  type="text"
-                                  name="Remarks"
-                                  placeholder=""
-                                  value={CPOForm.Remarks}
-                                  onChange={this.handleChangeForm}
-                                />
-                              ) : (
-                                <Input
-                                  type="text"
-                                  name="Remarks"
-                                  placeholder=""
-                                  value={CPOForm.Remarks}
-                                  onChange={this.handleChangeForm}
-                                />
-                              )}
-                            </FormGroup>
-                          </Col>
-                        </FormGroup>
-                      </Col>
-                    </Row>
-
-                    <Row>
-                      <Col sm="12">
-                        <FormGroup row>
-                          {/* <Col>
-                            <FormGroup>
-                              <Label>Premr_No</Label>
-                              {role.includes("BAM-IM") === true ? (
-                                <Input
-                                  type="text"
-                                  name="Premr_No"
-                                  placeholder=""
-                                  value={CPOForm.Premr_No}
-                                  onChange={this.handleChangeForm}
-                                />
-                              ) : (
-                                <Input
-                                  readOnly
-                                  type="text"
-                                  name="Premr_No"
-                                  placeholder=""
-                                  value={CPOForm.Premr_No}
-                                  onChange={this.handleChangeForm}
-                                />
-                              )}
-                            </FormGroup>
-                          </Col> */}
-                          <Col>
-                            <FormGroup>
-                              <Label>Proceed_Billing_100</Label>
-                              {role.includes("BAM-IM") === true ? (
-                                <Input
-                                  readOnly
-                                  type="text"
-                                  name="Proceed_Billing_100"
-                                  placeholder=""
-                                  value={CPOForm.Proceed_Billing_100}
-                                  onChange={this.handleChangeForm}
-                                />
-                              ) : (
-                                <Input
-                                  type="text"
-                                  name="Proceed_Billing_100"
-                                  placeholder=""
-                                  value={CPOForm.Proceed_Billing_100}
-                                  onChange={this.handleChangeForm}
-                                />
-                              )}
-                            </FormGroup>
-                          </Col>
-                          <Col>
-                            <FormGroup>
-                              <Label>Celcom_User</Label>
-                              {role.includes("BAM-IM") === true ? (
-                                <Input
-                                  readOnly
-                                  type="text"
-                                  name="Celcom_User"
-                                  placeholder=""
-                                  value={CPOForm.Celcom_User}
-                                  onChange={this.handleChangeForm}
-                                />
-                              ) : (
-                                <Input
-                                  type="text"
-                                  name="Celcom_User"
-                                  placeholder=""
-                                  value={CPOForm.Celcom_User}
-                                  onChange={this.handleChangeForm}
-                                />
-                              )}
-                            </FormGroup>
-                          </Col>
-                          <Col>
-                            <FormGroup>
-                              <Label>Pcode</Label>
-                              <Input
-                                readOnly
-                                type="text"
-                                name="Pcode"
-                                placeholder=""
-                                value={CPOForm.Pcode}
-                                onChange={this.handleChangeForm}
-                              />
-                            </FormGroup>
-                          </Col>
-                          <Col>
-                            <FormGroup>
-                              <Label>Unit_Price</Label>
-                              <Input
-                                readOnly
-                                type="number"
-                                name="Unit_Price"
-                                placeholder=""
-                                value={CPOForm.Unit_Price}
-                                onChange={this.handleChangeForm}
-                              />
-                            </FormGroup>
-                          </Col>
-                        </FormGroup>
-                      </Col>
-                    </Row>
-
-                    <Row>
-                      <Col sm="12">
-                        <FormGroup row>
-                          <Col>
-                            <FormGroup>
-                              <Label>So_Line_Item_Description</Label>
-                              {role.includes("BAM-IM") === true ? (
-                                <Input
-                                  type="text"
-                                  name="So_Line_Item_Description"
-                                  placeholder=""
-                                  value={CPOForm.So_Line_Item_Description}
-                                  onChange={this.handleChangeForm}
-                                />
-                              ) : (
-                                <Input
-                                  readOnly
-                                  type="text"
-                                  name="So_Line_Item_Description"
-                                  placeholder=""
-                                  value={CPOForm.So_Line_Item_Description}
-                                  onChange={this.handleChangeForm}
-                                />
-                              )}
-                            </FormGroup>
-                          </Col>
-                          <Col>
-                            <FormGroup>
-                              <Label>Sitepcode</Label>
-                              {role.includes("BAM-IM") === true ? (
-                                <Input
-                                  readOnly
-                                  type="text"
-                                  name="Sitepcode"
-                                  placeholder=""
-                                  value={CPOForm.Sitepcode}
-                                  onChange={this.handleChangeForm}
-                                />
-                              ) : (
-                                <Input
-                                  type="text"
-                                  name="Sitepcode"
-                                  placeholder=""
-                                  value={CPOForm.Sitepcode}
-                                  onChange={this.handleChangeForm}
-                                />
-                              )}
-                            </FormGroup>
-                          </Col>
-                          <Col>
-                            <FormGroup>
-                              <Label>VlookupWbs</Label>
-                              {role.includes("BAM-IM") === true ? (
-                                <Input
-                                  readOnly
-                                  type="text"
-                                  name="VlookupWbs"
-                                  placeholder=""
-                                  value={CPOForm.VlookupWbs}
-                                  onChange={this.handleChangeForm}
-                                />
-                              ) : (
-                                <Input
-                                  type="text"
-                                  name="VlookupWbs"
-                                  placeholder=""
-                                  value={CPOForm.VlookupWbs}
-                                  onChange={this.handleChangeForm}
-                                />
-                              )}
-                            </FormGroup>
-                          </Col>
-                          <Col>
-                            <FormGroup>
-                              <Label>So_No</Label>
-                              {role.includes("BAM-IM") === true ? (
-                                <Input
-                                  readOnly
-                                  type="text"
-                                  name="So_No"
-                                  placeholder=""
-                                  value={CPOForm.So_No}
-                                  onChange={this.handleChangeForm}
-                                />
-                              ) : (
-                                <Input
-                                  type="text"
-                                  name="So_No"
-                                  placeholder=""
-                                  value={CPOForm.So_No}
-                                  onChange={this.handleChangeForm}
-                                />
-                              )}
-                            </FormGroup>
-                          </Col>
-                          <Col>
-                            <FormGroup>
-                              <Label>Wbs_No</Label>
-                              {role.includes("BAM-IM") === true ? (
-                                <Input
-                                  readOnly
-                                  type="text"
-                                  name="Wbs_No"
-                                  placeholder=""
-                                  value={CPOForm.Wbs_No}
-                                  onChange={this.handleChangeForm}
-                                />
-                              ) : (
-                                <Input
-                                  type="text"
-                                  name="Wbs_No"
-                                  placeholder=""
-                                  value={CPOForm.Wbs_No}
-                                  onChange={this.handleChangeForm}
-                                />
-                              )}
-                            </FormGroup>
-                          </Col>
-                          <Col>
-                            <FormGroup>
-                              <Label>Billing_100</Label>
-                              {role.includes("BAM-IM") === true ? (
-                                <Input
-                                  readOnly
-                                  type="text"
-                                  name="Billing_100"
-                                  placeholder=""
-                                  value={CPOForm.Billing_100}
-                                  onChange={this.handleChangeForm}
-                                />
-                              ) : (
-                                <Input
-                                  type="text"
-                                  name="Billing_100"
-                                  placeholder=""
-                                  value={CPOForm.Billing_100}
-                                  onChange={this.handleChangeForm}
-                                />
-                              )}
-                            </FormGroup>
-                          </Col>
-                          <Col>
-                            <FormGroup>
-                              <Label>Atp_Coa_Received_Date_80</Label>
-                              {role.includes("BAM-IM") === true ? (
-                                <Input
-                                  readOnly
-                                  type="text"
-                                  name="Atp_Coa_Received_Date_80"
-                                  placeholder=""
-                                  value={CPOForm.Atp_Coa_Received_Date_80}
-                                  onChange={this.handleChangeForm}
-                                />
-                              ) : (
-                                <Input
-                                  type="text"
-                                  name="Atp_Coa_Received_Date_80"
-                                  placeholder=""
-                                  value={CPOForm.Atp_Coa_Received_Date_80}
-                                  onChange={this.handleChangeForm}
-                                />
-                              )}
-                            </FormGroup>
-                          </Col>
-                          <Col>
-                            <FormGroup>
-                              <Label>Billing_Upon_Atp_Coa_80</Label>
-                              {role.includes("BAM-IM") === true ? (
-                                <Input
-                                  readOnly
-                                  type="text"
-                                  name="Billing_Upon_Atp_Coa_80"
-                                  placeholder=""
-                                  value={CPOForm.Billing_Upon_Atp_Coa_80}
-                                  onChange={this.handleChangeForm}
-                                />
-                              ) : (
-                                <Input
-                                  type="text"
-                                  name="Billing_Upon_Atp_Coa_80"
-                                  placeholder=""
-                                  value={CPOForm.Billing_Upon_Atp_Coa_80}
-                                  onChange={this.handleChangeForm}
-                                />
-                              )}
-                            </FormGroup>
-                          </Col>
-                        </FormGroup>
-                      </Col>
-                    </Row>
-                  </>
-                )}
+                      </Form>
+                    </Col>
+                  ))}
+                </Row>
               </CardBody>
               <CardFooter>
                 <Button color="success" onClick={this.saveUpdate}>
