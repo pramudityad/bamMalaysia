@@ -37,7 +37,7 @@ class DefaultLayout extends Component {
       name: "",
       email: "",
       id: "",
-      navMenu: this.props.dataLogin.account_id === "1" ? navigation : this.props.dataLogin.account_id === "2" ? navigation : navigationDigiSPDH,
+      navMenu: this.props.dataLogin.account_id === "1" ? navigation : this.props.dataLogin.account_id === "2" ? navigationDigi : navigationDigiSPDH,
       routes: this.props.dataLogin.account_id === "1" ? routes : this.props.dataLogin.account_id === "2" ? routesDigi : routesDigiSPDH,
       userRole: this.props.dataLogin.role,
       minimize: this.props.SidebarMinimize,
