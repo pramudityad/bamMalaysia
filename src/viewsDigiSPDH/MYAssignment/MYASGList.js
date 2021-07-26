@@ -389,7 +389,7 @@ class MYASGList extends Component {
 
   loopSearchBar = () => {
     let searchBar = [];
-    for (let i = 0; i < 6; i++) {
+    for (let i = 0; i < 8; i++) {
       searchBar.push(
         <td>
           <div className="controls" style={{ minWidth: "150px" }}>
@@ -444,6 +444,7 @@ class MYASGList extends Component {
                     color="success"
                     style={{ float: "right", marginLeft: "8px" }}
                     size="sm"
+                    hidden={!this.state.roleUser.find(e => e === 'BAM-ASP')}
                   >
                     <i
                       className="fa fa-plus-square"
@@ -473,6 +474,8 @@ class MYASGList extends Component {
                       <th style={{ minWidth: "150px" }}>Requisitioner</th>
                       <th style={{ minWidth: "150px" }}>Project Name</th>
                       <th style={{ minWidth: "150px" }}>Vendor Name</th>
+                      <th style={{ minWidth: "150px" }}>IM To Approve</th>
+                      <th style={{ minWidth: "150px" }}>LMR Status</th>
                     </tr>
                     <tr>
                       {this.loopSearchBar()}
@@ -488,6 +491,11 @@ class MYASGList extends Component {
                                 <i className="fa fa-info-circle" style={{ marginRight: "8px" }}></i>Detail
                               </Button>
                             </Link>
+                            <Link to={"/lmr-edit/" + e._id}>
+                              <Button color="success" size="sm" hidden={!this.state.roleUser.find(e => e === 'BAM-IM') || e.lmr_approval_status !== 'Waiting for IM Approval'} style={{ marginTop: 8 }}>
+                                <i className="fa fa-check" style={{ marginRight: "8px" }}></i>Approve
+                              </Button>
+                            </Link>
                           </td>
                           <td>{e.lmr_id}</td>
                           <td>{e.header_text}</td>
@@ -495,6 +503,8 @@ class MYASGList extends Component {
                           <td>{e.lmr_issued_by}</td>
                           <td>{e.project_name}</td>
                           <td>{e.vendor_name}</td>
+                          <td>{e.im_to_approve}</td>
+                          <td>{e.lmr_approval_status}</td>
                         </tr>
                       ))}
                   </tbody>

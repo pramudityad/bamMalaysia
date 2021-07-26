@@ -10,6 +10,7 @@ export default {
         "BAM-GR PA",
         "BAM-Sourcing",
         "BAM-EPC",
+        "BAM-ASP",
       ],
       children: [
         {
@@ -23,6 +24,7 @@ export default {
             "BAM-GR PA",
             "BAM-Sourcing",
             "BAM-EPC",
+            "BAM-ASP",
           ],
         },
       ],

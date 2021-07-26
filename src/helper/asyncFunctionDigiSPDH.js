@@ -199,3 +199,21 @@ export const generateTokenACT = async () => {
     return respond;
   }
 }
+
+export const sendEmailNotification = async (data) => {
+  try {
+    let respond = await axios.post("https://prod-119.westeurope.logic.azure.com:443/workflows/7493ed70a5b64240bc57c4d0eb57a713/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=EWLnoF6dHnnXcLi5n_hwd1b530oMV_gAONUcK955T-w", data, {
+      headers: {
+        "Content-Type": "application/json"
+      },
+    });
+    if (respond.status >= 200 && respond.status < 300) {
+      console.log("respond email", respond);
+    }
+    return respond;
+  } catch (err) {
+    let respond = err;
+    console.log("respond email err", err);
+    return respond;
+  }
+}
