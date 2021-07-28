@@ -115,6 +115,7 @@ class MYASGCreation extends Component {
       formvalidate: {},
       count_form_validate: [],
       list_wp_id: [],
+      im_list: [],
       region_package: null,
       redirectSign: false,
       key_child: 0,
@@ -391,6 +392,7 @@ class MYASGCreation extends Component {
   async componentDidMount() {
     this.toggleLoading();
     this.getVendorList();
+    this.getIMList();
     this.CheckDraft();
     this.setState({ access_token: await generateTokenACT() }, () => { this.getDataCDACT_Fas(); this.toggleLoading(); });
     document.title = "LMR Creation | BAM";
@@ -456,7 +458,16 @@ class MYASGCreation extends Component {
     this.decideFilter(type_material);
   }
 
-  getVendorList() {
+  getIMList() {
+    getDatafromAPIMY('/user_all?where={""}').then((res) => {
+      if (res.data !== undefined) {
+        const items = res.data._items;
+        this.setState({ im_list: items }, () => console.log('im list', this.state.im_list));
+      }
+    });
+  }
+
+  getVendorList = () => {
     getDatafromAPIMY("/vendor_data").then((res) => {
       if (res.data !== undefined) {
         const items = res.data._items;
@@ -679,6 +690,7 @@ class MYASGCreation extends Component {
         cdid: dataChildForm[i].cdid,
         // per_site_material_type: dataChildForm[i].Per_Site_Material_Type,
         wp_id: dataChildForm[i].wp_id,
+        m_id_wp: dataChildForm[i].m_id_wp,
         lmr_type: this.state.lmr_form.LMR_Type,
         gl_type: this.state.lmr_form.gl_type,
         item_status: "Submit",
@@ -883,6 +895,12 @@ class MYASGCreation extends Component {
           let date = new Date();
           if (this.state.lmr_form.gl_account_actual !== 'Transport - 402603') {
             let updateLMRtoACT = await this.updateLMRtoACT("https://dev-corsanywhere.e-dpm.com/", "https://api.act.e-dpm.com/api/update_site_data", dataChildForm[i].m_id_wp, respondSaveLMR.data.parent.lmr_id, convertDateFormat(date));
+            let data_log = {
+              lmr_id: respondSaveLMR.data.parent.lmr_id,
+              wp_id: dataChildForm[i].wp_id,
+              response_act: JSON.stringify(updateLMRtoACT)
+            }
+            await postDatatoAPINODE("/aspassignment/submitLogErisite", { data: data_log }, this.state.tokenUser);
             if (updateLMRtoACT !== undefined && updateLMRtoACT.data !== undefined && updateLMRtoACT.data.result.status >= 200 && updateLMRtoACT.data.result.status <= 300) {
               console.log('success update WP', dataChildForm[i].wp_id);
             } else {
@@ -893,7 +911,7 @@ class MYASGCreation extends Component {
         }
 
         if (failed_update_wp.length === 0) {
-          this.setState({ action_status: "success", action_message: "LMR has been created!", redirect: "lmr-detail/" + respondSaveLMR.data.parent._id });
+          this.setState({ action_status: "success", action_message: "LMR has been submitted to IM!", redirect: "lmr-detail/" + respondSaveLMR.data.parent._id });
         } else {
           const getAlert = () => (
             <SweetAlert

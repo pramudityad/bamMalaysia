@@ -1601,6 +1601,12 @@ class MYASGCreation extends Component {
           let date = new Date();
           if (this.state.lmr_form.gl_account_actual !== 'Transport - 402603') {
             let updateLMRtoACT = await this.updateLMRtoACT("https://dev-corsanywhere.e-dpm.com/", "https://api.act.e-dpm.com/api/update_site_data", dataChildForm[i].m_id_wp, respondSaveLMR.data.parent.lmr_id, convertDateFormat(date));
+            let data_log = {
+              lmr_id: respondSaveLMR.data.parent.lmr_id,
+              wp_id: dataChildForm[i].wp_id,
+              response_act: JSON.stringify(updateLMRtoACT)
+            }
+            await postDatatoAPINODE("/aspassignment/submitLogErisite", { data: data_log }, this.state.tokenUser);
             if (updateLMRtoACT !== undefined && updateLMRtoACT.data !== undefined && updateLMRtoACT.data.result.status >= 200 && updateLMRtoACT.data.result.status <= 300) {
               console.log('success update WP', dataChildForm[i].wp_id);
             } else {
