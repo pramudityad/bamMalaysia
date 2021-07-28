@@ -245,7 +245,7 @@ class SSOLogin extends Component {
                 <h3>Please Select Account :</h3>
               </Row>
               <Row className="justify-content-center">
-                <Col md="6" lg="6" xl="6">
+                <Col md="4" lg="4" xl="4">
                   <div className="flex--card-account">
                     <div
                       className="card-account--celcom"
@@ -257,11 +257,12 @@ class SSOLogin extends Component {
                           alt="celcom logo"
                           style={{ width: "30%", marginTop: "5%" }}
                         />
+                        <h4 style={{ marginTop: "80px" }}>Celcom</h4>
                       </div>
                     </div>
                   </div>
                 </Col>
-                <Col md="6" lg="6" xl="6">
+                <Col md="4" lg="4" xl="4">
                   <div className="flex--card-account">
                     <div
                       className="card-account--digi"
@@ -273,6 +274,24 @@ class SSOLogin extends Component {
                           alt="digi logo"
                           style={{ width: "30%", marginTop: "5%" }}
                         />
+                        <h4 style={{ marginTop: "40px" }}>Digi RAN</h4>
+                      </div>
+                    </div>
+                  </div>
+                </Col>
+                <Col md="4" lg="4" xl="4">
+                  <div className="flex--card-account">
+                    <div
+                      className="card-account--digi"
+                      onClick={() => this.handleChangeAccount("3")}
+                    >
+                      <div>
+                        <img
+                          src={digi}
+                          alt="digi logo"
+                          style={{ width: "30%", marginTop: "5%" }}
+                        />
+                        <h4 style={{ marginTop: "40px" }}>Digi SPDH</h4>
                       </div>
                     </div>
                   </div>

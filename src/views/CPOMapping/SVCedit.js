@@ -59,7 +59,7 @@ class SVCEdit extends React.Component {
 
   getListID(_id) {
     getDatafromAPINODE(
-      "/cpoMapping/getCpo/svc/" + _id,
+      "/cpoMapping/getCpo/required/svc/" + _id,
       this.state.tokenUser
     ).then((res) => {
       if (res.data !== undefined) {
@@ -143,7 +143,9 @@ class SVCEdit extends React.Component {
             <Card>
               <CardHeader>
                 {" "}
-                Edit {modul_name + " " + CPOForm.unique_code}
+                Edit{" "}
+                {modul_name + " " + CPOForm !== undefined &&
+                  CPOForm.unique_code}
               </CardHeader>
               <CardBody>
                 {role.includes("BAM-MAT PLANNER") === true ? (

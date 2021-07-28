@@ -135,7 +135,9 @@ class ImportSVC extends React.Component {
     let error_containers = [];
     let warn_containers = [];
     const roles =
-      this.state.roleUser.includes("BAM-MAT PLANNER") === true
+      this.state.roleUser.includes("BAM-MAT PLANNER") === true ||
+      this.state.roleUser.includes("BAM-IM") === true ||
+      this.state.roleUser.includes("BAM-IE") === true
         ? 1
         : this.state.roleUser.includes("BAM-PFM") === true
         ? 2

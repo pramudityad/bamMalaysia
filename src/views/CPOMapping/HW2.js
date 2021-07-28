@@ -928,7 +928,7 @@ class MappingHW extends React.Component {
                           <tr align="center">
                             {this.state.tabs_submenu[0] === true ? (
                               <>
-                                {/* <th></th> */}
+                                <th></th>
                                 <th>Not Required</th>
                               </>
                             ) : (
@@ -941,7 +941,7 @@ class MappingHW extends React.Component {
                           {this.state.tabs_submenu[0] === true ? (
                             <>
                               <tr align="center">
-                                {/* <th></th> */}
+                                <th></th>
                                 <th></th>
                                 {Object.keys(this.state.count_header).length !==
                                   0 &&
@@ -969,7 +969,7 @@ class MappingHW extends React.Component {
                           <tr align="center">
                             {this.state.tabs_submenu[0] === true ? (
                               <>
-                                {/* <td></td> */}
+                                <td></td>
                                 <td></td>
                                 {this.loopSearchBar()}
                               </>
@@ -984,7 +984,7 @@ class MappingHW extends React.Component {
                             this.state.all_data.map((e, i) => (
                               <React.Fragment key={e._id + "frag"}>
                                 <tr align="center" key={e._id}>
-                                  {/* <td>
+                                  <td>
                                     <Link to={"/hw-cpo/" + e._id}>
                                       <Button
                                         size="sm"
@@ -997,7 +997,7 @@ class MappingHW extends React.Component {
                                         ></i>
                                       </Button>
                                     </Link>
-                                  </td> */}
+                                  </td>
                                   <td>
                                     <Checkbox1
                                       checked={this.state.dataChecked.get(
