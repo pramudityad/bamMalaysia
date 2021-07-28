@@ -701,6 +701,7 @@ class MYASGEdit extends Component {
         cdid: dataChildForm[i].cdid,
         // per_site_material_type: dataChildForm[i].Per_Site_Material_Type,
         wp_id: dataChildForm[i].wp_id,
+        m_id_wp: dataChildForm[i].m_id_wp,
         lmr_type: this.state.lmr_form.LMR_Type,
         gl_type: this.state.lmr_form.gl_type,
         item_status: "Submit",
@@ -897,6 +898,12 @@ class MYASGEdit extends Component {
           let date = new Date();
           if (this.state.lmr_form.gl_account_actual !== 'Transport - 402603') {
             let updateLMRtoACT = await this.updateLMRtoACT("https://dev-corsanywhere.e-dpm.com/", "https://api.act.e-dpm.com/api/update_site_data", dataChildForm[i].m_id_wp, respondSaveLMR.data.parent.lmr_id, convertDateFormat(date));
+            let data_log = {
+              lmr_id: dataLMR.lmr_id,
+              wp_id: dataChildForm[i].wp_id,
+              response_act: JSON.stringify(updateLMRtoACT)
+            }
+            await postDatatoAPINODE("/aspassignment/submitLogErisite", { data: data_log }, this.state.tokenUser);
             if (updateLMRtoACT !== undefined && updateLMRtoACT.data !== undefined && updateLMRtoACT.data.result.status >= 200 && updateLMRtoACT.data.result.status <= 300) {
               console.log('success update WP', dataChildForm[i].wp_id);
             } else {
@@ -1736,6 +1743,7 @@ class MYASGEdit extends Component {
                           value={this.state.lmr_form.im_to_approve}
                           onChange={this.handleChangeFormLMR}
                           style={this.state.formvalidate.im_to_approve === false ? { borderColor: "red" } : {}}
+                          disabled
                         >
                           <option disabled selected hidden>Select IM To Approve</option>
                           <option value="bamdigispdh_im">bamdigispdh_im</option>
