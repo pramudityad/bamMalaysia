@@ -1,0 +1,178 @@
+.search-box-material {
+  border-top: 0;
+  border-right : 0;
+  border-left: 0;
+  border-bottom-color: rgba(165,214,167 ,1);
+  float : right;
+  width: 200px;
+  margin-bottom: 10px;
+}
+
+.search-box-material:focus {
+  outline: none !important;
+  border-top: 0;
+  border-right : 0;
+  border-left: 0;
+}
+
+.table-bordered th, .table-bordered td {
+    vertical-align: middle !important;
+    text-align: center;
+}
+
+.modal--form .modal-content {
+  width: 500px;
+}
+
+.modal--loading .modal-content {
+  width: 250px;
+  top : 100px;
+}
+
+.modal.show .modal-dialog .loading {
+  margin-top: 200px;
+}
+
+.table-Material td{
+  text-align: left;
+}
+
+.divtable {
+  overflow-y: scroll;
+  /* overflow-y: scroll; */
+  width:100%;
+  height:auto;
+  max-height: 600px;
+  margin-bottom: 10px;
+}
+
+/* Use position: sticky to have it stick to the edge
+ * and top, right, or left to choose which edge to stick to: */
+
+.fixed th {
+  position: -webkit-sticky; /* for Safari */
+  position: sticky;
+  background: #f5f5f5;
+  padding : 10px;
+  top: 0;
+}
+
+.fixed-matlib th {
+  position: -webkit-sticky; /* for Safari */
+  position: sticky;
+  background: #f5f5f5;
+  padding : 10px;
+  top: 0;
+}
+
+.fixed-whman th {
+  position: -webkit-sticky; /* for Safari */
+  position: sticky;
+  background: #f5f5f5;
+  padding : 10px;
+  top: 0;
+}
+
+.fixbody {
+  padding:10px;
+  border-top: 2px solid #ebebeb;
+}
+
+Table tbody th {
+  position: -webkit-sticky; /* for Safari */
+  position: sticky;
+  left: 0;
+}
+
+.fixbodymat {
+  background: #FFFFFF;
+  border: 2px solid #ebebeb;
+}
+
+.fixbodymat td {
+  padding:5px;
+}
+
+.fixbodymat ~:hover {
+  background: #ebebeb;
+}
+
+/* To have the header in the first column stick to the left: */
+
+Table thead th:first-child {
+  left: 0;
+  z-index: 1;
+}
+
+.mr-detail__body--flex-long {
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 14px;
+}
+
+.mr-detail__body--flex-long > div{
+  width: 100%;
+  margin: 0px 10px 25px 10px;
+}
+
+.mr-detail__body--flex-long .mr-detail__body--header-detail{
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 3px;
+}
+
+.mr-detail__body--flex-long .mr-detail__body--header-detail > span{
+  padding-bottom: 1.5px;
+  border-bottom: 1px solid;
+  border-bottom-color: rgba(100,181,246 ,1);
+}
+
+.mr-detail__body--flex {
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 14px;
+}
+
+.mr-detail__body--flex > div{
+  width: 23%;
+  margin: 0px 10px 25px 10px;
+}
+
+.mr-detail__body--flex .mr-detail__body--header-detail{
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 3px;
+}
+
+.mr-detail__body--flex > .mr-detail__flex-body--25{
+  width: 23%;
+  margin: 0px 10px 25px 10px;
+}
+
+.mr-detail__body--flex .mr-detail__body--header-detail > span{
+  padding-bottom: 1.5px;
+  border-bottom: 1px solid;
+  border-bottom-color: rgba(100,181,246 ,1);
+}
+
+.mr-detail__line {
+  margin: 0 0 20px 0;
+  border-top: 1px solid rgb(59, 134, 134);
+}
+
+ul.mr-detail__ul--cd-id li {
+  display: inline;
+  padding-left: 0px;
+  margin-right: 10px;
+}
+
+ul.mr-detail__ul--cd-id {
+  padding-left: 0px !important;
+  margin-bottom: 0px !important;
+}
+
+.row-alert-fixed .alert {
+  z-index: 1;
+  position: fixed;
+  top: 75px;
+}

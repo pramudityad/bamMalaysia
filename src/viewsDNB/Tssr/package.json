@@ -1,0 +1,6 @@
+{
+    "name": "TssrBOM",
+    "version": "0.0.0",
+    "private": true,
+    "main": "./TssrBOM.js"
+}

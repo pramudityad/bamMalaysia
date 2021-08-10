@@ -1,0 +1,93 @@
+.upload-line-BOQ-Comm {
+    border: 1px solid rgba(0,0,0,0.1);
+    margin-top: 0px;
+    margin-bottom: 15px;
+  }
+
+  .table-bordered th, .table-bordered td {
+    vertical-align: middle;
+    text-align: center;
+}
+
+.table-bordered th, .table-bordered td {
+    vertical-align: middle;
+    text-align: center;
+}
+.upload-line {
+    border: 2px solid rgba(129,199,132 ,1);
+  }
+
+.boq-tech-status-PA {
+  padding-left : 10px;
+  padding-right: 10px;
+  background-color: rgba(229,115,115 ,1);
+  font-size: 12px;
+  font-weight: 500;
+  color:rgba(238,238,238 ,1);
+  border-radius: 7px;
+  margin:1px;
+}
+
+.boq-tech-status-WA {
+  padding-left : 10px;
+  padding-right: 10px;
+  background-color: rgba(255,160,0 ,1);
+  font-size: 12px;
+  font-weight: 500;
+  color:rgba(238,238,238 ,1);
+  border-radius: 7px;
+  margin:1px;
+}
+
+.boq-tech-status-A {
+  padding-left : 10px;
+  padding-right: 10px;
+  background-color: rgba(129,199,132 ,1);
+  font-size: 12px;
+  font-weight: 500;
+  color:rgba(238,238,238 ,1);
+  border-radius: 7px;
+  margin:1px;
+}
+
+.table-header td {
+  text-align: left;
+}
+
+.table-footer td {
+  text-align: left;
+}
+
+.select-per-page {
+  height: 30px;
+  width: 70px !important;
+  padding-top: 3px;
+  border-top: 0;
+  border-right : 0;
+  border-left: 0;
+  border-bottom-width : 2px;
+  border-bottom-color: rgba(165,214,167 ,1);
+  width: 150px;
+  margin-bottom: 2px;
+}
+
+.select-per-page:focus {
+  outline: none !important;
+  border-top: 0 !important;
+  border-right : 0 !important;
+  border-left: 0 !important;
+}
+
+.pagination {
+  align-items: center;
+  justify-content: center;
+}
+
+.page-choose {
+  margin-top: 10px;
+}
+
+.table-tssr__header--fixed th{
+  display: table-cell;
+  vertical-align: middle !important;
+}

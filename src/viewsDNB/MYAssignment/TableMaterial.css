@@ -1,0 +1,9 @@
+.table-container {
+    overflow: auto;
+    max-height: 160px;
+  }
+  
+  th {
+    position: sticky;
+    top: 0;
+  }

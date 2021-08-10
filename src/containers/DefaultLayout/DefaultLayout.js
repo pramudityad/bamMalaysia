@@ -20,11 +20,13 @@ import {
 import navigation from "../../_nav";
 import navigationDigi from "../../_navDigi";
 import navigationDigiSPDH from "../../_navDigiSPDH";
+import navigationDNB from "../../_navDNB";
 
 // routes config
 import routes from "../../routes";
 import routesDigi from "../../routesDigi";
 import routesDigiSPDH from "../../routesDigiSPDH";
+import routesDNB from "../../routesDNB";
 
 const DefaultAside = React.lazy(() => import("./DefaultAside"));
 const DefaultFooter = React.lazy(() => import("./DefaultFooter"));
@@ -37,8 +39,22 @@ class DefaultLayout extends Component {
       name: "",
       email: "",
       id: "",
-      navMenu: this.props.dataLogin.account_id === "1" ? navigation : this.props.dataLogin.account_id === "2" ? navigationDigi : navigationDigiSPDH,
-      routes: this.props.dataLogin.account_id === "1" ? routes : this.props.dataLogin.account_id === "2" ? routesDigi : routesDigiSPDH,
+      navMenu:
+        this.props.dataLogin.account_id === "1"
+          ? navigation
+          : this.props.dataLogin.account_id === "2"
+          ? navigationDigi
+          : this.props.dataLogin.account_id === "3"
+          ? navigationDigiSPDH
+          : navigationDNB,
+      routes:
+        this.props.dataLogin.account_id === "1"
+          ? routes
+          : this.props.dataLogin.account_id === "2"
+          ? routesDigi
+          : this.props.dataLogin.account_id === "3"
+          ? routesDigiSPDH
+          : routesDNB,
       userRole: this.props.dataLogin.role,
       minimize: this.props.SidebarMinimize,
       vendor_name: this.props.dataLogin.vendor_name,
@@ -167,8 +183,8 @@ class DefaultLayout extends Component {
                     ) : null;
                   })}
                   {role.includes("BAM-MAT PLANNER") === true ||
-                    role.includes("BAM-PFM") === true ||
-                    role.includes("BAM-ADMIN") === true ? (
+                  role.includes("BAM-PFM") === true ||
+                  role.includes("BAM-ADMIN") === true ? (
                     <Redirect from="/" to="/summary-master" />
                   ) : (
                     <Redirect from="/" to="/lmr-list" />
