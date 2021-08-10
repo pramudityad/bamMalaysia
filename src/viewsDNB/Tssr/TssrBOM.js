@@ -126,7 +126,7 @@ class TssrBOM extends Component {
     try {
       let respond = await axios({
         method: "get",
-        url: API_URL_NODE + url,
+        url: process.env.REACT_APP_API_URL_NODE + url,
         headers: {
           "Content-Type": "application/json",
           Authorization: "Bearer " + this.state.tokenUser,
@@ -206,12 +206,16 @@ class TssrBOM extends Component {
 
   async postDatatoAPINODE(url, data) {
     try {
-      let respond = await axios.post(process.env.REACT_APP_API_URL_NODE + url, data, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + this.state.tokenUser,
-        },
-      });
+      let respond = await axios.post(
+        process.env.REACT_APP_API_URL_NODE + url,
+        data,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + this.state.tokenUser,
+          },
+        }
+      );
       if (respond.status >= 200 && respond.status < 300) {
         console.log("respond Patch data Node", respond);
       }
