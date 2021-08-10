@@ -29,7 +29,7 @@ import {
 } from "reactstrap";
 import celcom from "../../assets/img/customer/celcom.png";
 import digi from "../../assets/img/customer/digi.png";
-import dnb from "../../assets/img/customer/digi.png";
+import dnb from "../../assets/img/customer/dnb_icon.png";
 
 import ericssonLogoBlack from "../../assets/img/brand/ERI_horizontal_RGB_BLACK.svg";
 import { postDatatoAPILogin } from "../../helper/asyncFunction";
