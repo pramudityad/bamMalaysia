@@ -30,7 +30,7 @@ const API_URL_MAS = "https://api-dev.mas.pdb.e-dpm.com/masapi";
 const usernameMAS = "mybotprpo";
 const passwordMAS = "mybotprpo2020";
 
-// const API_URL_NODE = 'https://api2-dev.bam-id.e-dpm.com/bamidapi';
+//
 
 // const API_URL_NODE = 'http://localhost:5012/bammyapi';
 const API_URL_NODE = "https://api-dev.bam-my.e-dpm.com/bammyapi";
@@ -163,7 +163,6 @@ class MYASGEdit extends Component {
       list_pr_po: [],
       filter_list: new Array(7).fill(""),
       new_child: false,
-
     };
     this.handleChangeCD = this.handleChangeCD.bind(this);
     this.loadOptionsCDID = this.loadOptionsCDID.bind(this);
@@ -178,7 +177,6 @@ class MYASGEdit extends Component {
     this.toggleMaterial = this.toggleMaterial.bind(this);
     this.handleChangeMaterial = this.handleChangeMaterial.bind(this);
     this.deleteLMR = this.deleteLMR.bind(this);
-
   }
 
   toggleLoading() {
@@ -200,12 +198,16 @@ class MYASGEdit extends Component {
 
   async postDatatoAPINODE(url, data) {
     try {
-      let respond = await axios.post(API_URL_NODE + url, data, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + this.state.tokenUser,
-        },
-      });
+      let respond = await axios.post(
+        process.env.REACT_APP_API_URL_NODE + url,
+        data,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + this.state.tokenUser,
+          },
+        }
+      );
       if (respond.status >= 200 && respond.status < 300) {
         console.log("respond Post Data", respond);
       }
@@ -244,7 +246,7 @@ class MYASGEdit extends Component {
 
   async getDataFromAPINODE(url) {
     try {
-      let respond = await axios.get(API_URL_NODE + url, {
+      let respond = await axios.get(process.env.REACT_APP_API_URL_NODE + url, {
         headers: {
           "Content-Type": "application/json",
           Authorization: "Bearer " + this.state.tokenUser,
@@ -280,7 +282,7 @@ class MYASGEdit extends Component {
       this.getLMRDetailData(this.props.match.params.id);
     }
     // this.getMaterialList();
-    console.log('id ',this.props.match.params.id)
+    console.log("id ", this.props.match.params.id);
     document.title = "LMR Creation | BAM";
   }
 
@@ -289,25 +291,25 @@ class MYASGEdit extends Component {
       (res) => {
         if (res.data !== undefined) {
           const dataLMRDetail = res.data.data;
-          this.setState({ lmr_detail: dataLMRDetail}, () => {
-            console.log('lmr_detail detail ', this.state.lmr_detail.detail)
-            this.getDataPRPO(dataLMRDetail.lmr_id)
+          this.setState({ lmr_detail: dataLMRDetail }, () => {
+            console.log("lmr_detail detail ", this.state.lmr_detail.detail);
+            this.getDataPRPO(dataLMRDetail.lmr_id);
           });
         }
       }
     );
   }
 
-  getDataPRPO(LMR_ID){
-    this.getDatafromAPIMY('/prpo_data?where={"LMR_No" : "'+LMR_ID+'"}').then(
-      (res) => {
-        if (res.data !== undefined) {
-          const dataLMRDetailPRPO = res.data._items;
-          this.setState({ list_pr_po: dataLMRDetailPRPO});
-          console.log('list_pr_po ', this.state.list_pr_po)
-        }
+  getDataPRPO(LMR_ID) {
+    this.getDatafromAPIMY(
+      '/prpo_data?where={"LMR_No" : "' + LMR_ID + '"}'
+    ).then((res) => {
+      if (res.data !== undefined) {
+        const dataLMRDetailPRPO = res.data._items;
+        this.setState({ list_pr_po: dataLMRDetailPRPO });
+        console.log("list_pr_po ", this.state.list_pr_po);
       }
-    );
+    });
   }
 
   handlePageChange(pageNumber) {
@@ -326,7 +328,7 @@ class MYASGEdit extends Component {
     dataFilter[parseInt(index)] = value;
     this.setState({ filter_list: dataFilter, activePage: 1 }, () => {
       this.onChangeDebounced(e);
-    })
+    });
   }
 
   onChangeDebounced(e) {
@@ -354,17 +356,54 @@ class MYASGEdit extends Component {
 
   getMaterialList() {
     let filter_array = [];
-    this.state.filter_list[0] !== "" && (filter_array.push('"MM_Code":{"$regex" : "' + this.state.filter_list[0] + '", "$options" : "i"}'));
-    this.state.filter_list[1] !== "" && (filter_array.push('"Material_type":{"$regex" : "' + this.state.filter_list[1] + '", "$options" : "i"}'));
-    this.state.filter_list[2] !== "" && (filter_array.push('"SoW_Description":{"$regex" : "' + this.state.filter_list[2] + '", "$options" : "i"}'));
-    this.state.filter_list[3] !== "" && (filter_array.push('"UoM":{"$regex" : "' + this.state.filter_list[3] + '", "$options" : "i"}'));
-    this.state.filter_list[4] !== "" && (filter_array.push('"Region":{"$regex" : "' + this.state.filter_list[4] + '", "$options" : "i"}'));
-    this.state.filter_list[5] !== "" && (filter_array.push('"Unit_Price":{"$regex" : "' + this.state.filter_list[5] + '", "$options" : "i"}'));
-    this.state.filter_list[6] !== "" && (filter_array.push('"MM_Description":{"$regex" : "' + this.state.filter_list[6] + '", "$options" : "i"}'));
-    let whereAnd = '{' + filter_array.join(',') + '}';
+    this.state.filter_list[0] !== "" &&
+      filter_array.push(
+        '"MM_Code":{"$regex" : "' +
+          this.state.filter_list[0] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list[1] !== "" &&
+      filter_array.push(
+        '"Material_type":{"$regex" : "' +
+          this.state.filter_list[1] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list[2] !== "" &&
+      filter_array.push(
+        '"SoW_Description":{"$regex" : "' +
+          this.state.filter_list[2] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list[3] !== "" &&
+      filter_array.push(
+        '"UoM":{"$regex" : "' +
+          this.state.filter_list[3] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list[4] !== "" &&
+      filter_array.push(
+        '"Region":{"$regex" : "' +
+          this.state.filter_list[4] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list[5] !== "" &&
+      filter_array.push(
+        '"Unit_Price":{"$regex" : "' +
+          this.state.filter_list[5] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list[6] !== "" &&
+      filter_array.push(
+        '"MM_Description":{"$regex" : "' +
+          this.state.filter_list[6] +
+          '", "$options" : "i"}'
+      );
+    let whereAnd = "{" + filter_array.join(",") + "}";
     // let filter = '"mm_code":{"$regex" : "' + this.state.filter_list + '", "$options" : "i"}';
     this.getDatafromAPIMY(
-      "/mm_code_data?where="+whereAnd+"&max_results=" +
+      "/mm_code_data?where=" +
+        whereAnd +
+        "&max_results=" +
         this.state.perPage +
         "&page=" +
         this.state.activePage
@@ -433,7 +472,7 @@ class MYASGEdit extends Component {
     if (value !== (null && undefined)) {
       value = value.toString();
     }
-    if (value === "Per Site"){
+    if (value === "Per Site") {
       this.setState({ lmr_edit: !this.state.lmr_edit });
     } else {
       if (name === "project_name") {
@@ -445,9 +484,10 @@ class MYASGEdit extends Component {
         }
       }
       lmr_form[name.toString()] = value;
-      this.setState({ lmr_form: lmr_form },() => console.log(this.state.lmr_form));
+      this.setState({ lmr_form: lmr_form }, () =>
+        console.log(this.state.lmr_form)
+      );
     }
-    
   }
 
   async createLMR() {
@@ -480,7 +520,7 @@ class MYASGEdit extends Component {
     };
     let dataLMRCHild = [];
     for (let i = 0; i < this.state.lmr_detail.detail.length; i++) {
-      // const dataChild = this.state.lmr_detail.detail.map((e, i) => detail){      
+      // const dataChild = this.state.lmr_detail.detail.map((e, i) => detail){
       const dataChild = {
         _id: dataChildForm[i]._id,
         project_name: this.state.lmr_detail.project_name,
@@ -515,14 +555,14 @@ class MYASGEdit extends Component {
       //   dataChildForm[i].site_id === undefined ||
       //   dataChildForm[i].site_id === null
       // ) {
-        dataLMRCHild.push(dataChild);
+      dataLMRCHild.push(dataChild);
       // }
     }
     console.log("dataLMR", dataLMR);
     console.log("dataLMRChild", dataLMRCHild);
     const respondSaveLMR = await this.postDatatoAPINODE(
-      "/aspassignment/UpdateAll", {data: [{ header: dataLMR, child: dataLMRCHild }]}
-      
+      "/aspassignment/UpdateAll",
+      { data: [{ header: dataLMR, child: dataLMRCHild }] }
     );
     if (
       respondSaveLMR.data !== undefined &&
@@ -564,16 +604,19 @@ class MYASGEdit extends Component {
       so_or_nw: "",
       activity: "",
     });
-    this.setState({ creation_lmr_child_form: dataLMR, new_child: !this.state.new_child });
+    this.setState({
+      creation_lmr_child_form: dataLMR,
+      new_child: !this.state.new_child,
+    });
   }
 
-  deleteLMR(e){
+  deleteLMR(e) {
     let index = e.currentTarget.value;
     let dataChild = this.state.creation_lmr_child_form;
-    if(index !== undefined){
+    if (index !== undefined) {
       dataChild.splice(parseInt(index), 1);
-      this.setState({creation_lmr_child_form : []}, () => {
-        this.setState({creation_lmr_child_form : dataChild});
+      this.setState({ creation_lmr_child_form: [] }, () => {
+        this.setState({ creation_lmr_child_form: dataChild });
       });
     }
   }
@@ -586,7 +629,7 @@ class MYASGEdit extends Component {
     let value = e.target.value;
     let idx = idxField[0];
     let field = idxField[1];
-    console.log('3 field ',value, idx, field)
+    console.log("3 field ", value, idx, field);
 
     dataLMR[parseInt(idx)][field] = value;
     if (field === "quantity" && isNaN(dataLMR[parseInt(idx)].price) === false) {
@@ -594,7 +637,7 @@ class MYASGEdit extends Component {
         value * dataLMR[parseInt(idx)].price;
     }
     this.setState({ creation_lmr_child_form: dataLMR });
-    console.log('creation_lmr_child_form ', this.state.creation_lmr_child_form)
+    console.log("creation_lmr_child_form ", this.state.creation_lmr_child_form);
   }
 
   // handleChangeFormLMRChild = (idx) => (e) => {
@@ -637,19 +680,28 @@ class MYASGEdit extends Component {
     for (let i = 0; i < 7; i++) {
       searchBar.push(
         <td>
-          <div className="controls" style={{ width: '150px' }}>
+          <div className="controls" style={{ width: "150px" }}>
             <InputGroup className="input-prepend">
               <InputGroupAddon addonType="prepend">
-                <InputGroupText><i className="fa fa-search"></i></InputGroupText>
+                <InputGroupText>
+                  <i className="fa fa-search"></i>
+                </InputGroupText>
               </InputGroupAddon>
-              <Input type="text" placeholder="Search" onChange={this.handleFilterList} value={this.state.filter_list[i]} name={i} size="sm" />
+              <Input
+                type="text"
+                placeholder="Search"
+                onChange={this.handleFilterList}
+                value={this.state.filter_list[i]}
+                name={i}
+                size="sm"
+              />
             </InputGroup>
           </div>
         </td>
-      )
+      );
     }
     return searchBar;
-  }
+  };
 
   render() {
     // console.log("this.props.dataUser", this.props.dataUser);
@@ -668,7 +720,7 @@ class MYASGEdit extends Component {
               <CardHeader>
                 <span style={{ lineHeight: "2", fontSize: "17px" }}>
                   <i className="fa fa-edit" style={{ marginRight: "8px" }}></i>
-                  Assignment LMR{" "}{this.state.lmr_detail.lmr_id}
+                  Assignment LMR {this.state.lmr_detail.lmr_id}
                 </span>
               </CardHeader>
               <CardBody>
@@ -711,7 +763,7 @@ class MYASGEdit extends Component {
                           onChange={this.handleChangeFormLMR}
                           readOnly
                         />
-                          {/* <option value={null} selected></option>
+                        {/* <option value={null} selected></option>
                           <option value="Add LMR">Add LMR</option>
                           <option value="Change LMR">Change LMR</option>
                           <option value="Delete LMR">Delete LMR</option>                           */}
@@ -725,7 +777,9 @@ class MYASGEdit extends Component {
                           type="select"
                           name="Item_Category"
                           id="Item_Category"
-                          value={this.state.list_pr_po.map(e => e.Item_Category)}
+                          value={this.state.list_pr_po.map(
+                            (e) => e.Item_Category
+                          )}
                           onChange={this.handleChangeFormLMR}
                         >
                           <option value={null} selected></option>
@@ -741,7 +795,7 @@ class MYASGEdit extends Component {
                           type="select"
                           name="LMR_Type"
                           id="LMR_Type"
-                          value={this.state.list_pr_po.map(e => e.LMR_Type)}
+                          value={this.state.list_pr_po.map((e) => e.LMR_Type)}
                           onChange={this.handleChangeFormLMR}
                         >
                           <option value={null} selected></option>
@@ -757,7 +811,9 @@ class MYASGEdit extends Component {
                           type="select"
                           name="plan_cost_reduction"
                           id="Plan_Cost_Reduction"
-                          value={this.state.list_pr_po.map(e => e.Plan_Cost_Reduction)}
+                          value={this.state.list_pr_po.map(
+                            (e) => e.Plan_Cost_Reduction
+                          )}
                           onChange={this.handleChangeFormLMR}
                         >
                           <option value={null} selected></option>
@@ -775,7 +831,9 @@ class MYASGEdit extends Component {
                           type="text"
                           name="lmr_issued_by"
                           id="lmr_issued_by"
-                          value={this.state.list_pr_po.map(e => e.Requisitioner)}
+                          value={this.state.list_pr_po.map(
+                            (e) => e.Requisitioner
+                          )}
                           onChange={this.handleChangeFormLMR}
                           disabled
                         />
@@ -972,248 +1030,253 @@ class MYASGEdit extends Component {
                 <hr className="upload-line--lmr"></hr>
                 <h5 style={{ marginTop: "16px" }}>LMR Child</h5>
                 <hr className="upload-line--lmr"></hr>
-                {this.state.lmr_detail.detail!== undefined && this.state.lmr_detail.detail.map((lmr, i) => (
-                  <Form>
-                    <Row form key={lmr._id}>
-                      <Col md={2}>
-                        <FormGroup>
-                          <Label>CD ID</Label>
-                          <Input
-                          //key={lmr._id}
-                            type="select"
-                            name={i + " /// cdid"}
-                            // id={i + " /// cd_id"}
-                            value={lmr.cdid}
-                            // onChange={this.handleChangeFormLMRChild}
-                            onChange={this.handleChangeFormLMRChild}
-                            disabled={
-                              this.state.lmr_form.LMR_Type === "Cost Collector"
-                            }
-                          >
-                            <option value="" disabled selected hidden>
-                              Select CD ID
-                            </option>
-                            {this.state.list_cd_id.map((e) => (
-                              <option value={e.CD_ID}>{e.CD_ID}</option>
-                            ))}
-                          </Input>
-                        </FormGroup>
-                      </Col>
-                      <Col md={2}>
-                      <FormGroup>
-                        <Label>Project Name</Label>
-                        {this.state.lmr_edit === true ? 
-                        (<Input
-                          //key={lmr._id}
-                          type="select"
-                          name={i + " /// project_name"}
-                          // id="project_name"
-                          value={lmr.project_name}
-                          onChange={this.handleChangeFormLMR}
-                        >
-                          <option value="" disabled selected hidden>
-                            Select Project Name
-                          </option>
-                          {this.state.list_project.map((e) => (
-                            <option value={e.Project}>{e.Project}</option>
-                          ))}  
-                        </Input>) : (<Input
-                        //key={lmr._id}
-                          type="text"
-                          name={i + " /// project_name"}
-                          // id={i + " /// project_name"}
-                          defaultValue={lmr.project_name}
-                          // onChange={this.handleChangeFormLMR}
-                          onChange={this.handleChangeFormLMRChild}
-
-                          readOnly
-                        />)}
-                      </FormGroup>
-                    </Col>
-                      <Col md={2}>
-                        <FormGroup>
-                          <Label>Per Site Material Type</Label>
-                          <Input
-                          //key={lmr._id}
-                            type="select"
-                            // name={"per_site_material_type"}
-                            name={i + " /// per_site_material_type"}
-                            // id={i + " /// per_site_material_type"}
-                            defaultValue={lmr.per_site_material_type}
-                            // onChange={this.handleChangeFormLMRChild}
-                            onChange={this.handleChangeFormLMRChild}
-                            disabled={
-                              this.state.lmr_form.LMR_Type === "Cost Collector"
-                            }
-                          >
-                            <option value="" disabled selected hidden>
-                              Select Material Type
-                            </option>
-                            <option value="NRO Service">NRO Service</option>
-                            <option value="NRO LM">NRO LM</option>
-                            <option value="NDO Service">NDO Service</option>
-                            {/* {this.state.vendor_list.map((e) => (
+                {this.state.lmr_detail.detail !== undefined &&
+                  this.state.lmr_detail.detail.map((lmr, i) => (
+                    <Form>
+                      <Row form key={lmr._id}>
+                        <Col md={2}>
+                          <FormGroup>
+                            <Label>CD ID</Label>
+                            <Input
+                              //key={lmr._id}
+                              type="select"
+                              name={i + " /// cdid"}
+                              // id={i + " /// cd_id"}
+                              value={lmr.cdid}
+                              // onChange={this.handleChangeFormLMRChild}
+                              onChange={this.handleChangeFormLMRChild}
+                              disabled={
+                                this.state.lmr_form.LMR_Type ===
+                                "Cost Collector"
+                              }
+                            >
+                              <option value="" disabled selected hidden>
+                                Select CD ID
+                              </option>
+                              {this.state.list_cd_id.map((e) => (
+                                <option value={e.CD_ID}>{e.CD_ID}</option>
+                              ))}
+                            </Input>
+                          </FormGroup>
+                        </Col>
+                        <Col md={2}>
+                          <FormGroup>
+                            <Label>Project Name</Label>
+                            {this.state.lmr_edit === true ? (
+                              <Input
+                                //key={lmr._id}
+                                type="select"
+                                name={i + " /// project_name"}
+                                // id="project_name"
+                                value={lmr.project_name}
+                                onChange={this.handleChangeFormLMR}
+                              >
+                                <option value="" disabled selected hidden>
+                                  Select Project Name
+                                </option>
+                                {this.state.list_project.map((e) => (
+                                  <option value={e.Project}>{e.Project}</option>
+                                ))}
+                              </Input>
+                            ) : (
+                              <Input
+                                //key={lmr._id}
+                                type="text"
+                                name={i + " /// project_name"}
+                                // id={i + " /// project_name"}
+                                defaultValue={lmr.project_name}
+                                // onChange={this.handleChangeFormLMR}
+                                onChange={this.handleChangeFormLMRChild}
+                                readOnly
+                              />
+                            )}
+                          </FormGroup>
+                        </Col>
+                        <Col md={2}>
+                          <FormGroup>
+                            <Label>Per Site Material Type</Label>
+                            <Input
+                              //key={lmr._id}
+                              type="select"
+                              // name={"per_site_material_type"}
+                              name={i + " /// per_site_material_type"}
+                              // id={i + " /// per_site_material_type"}
+                              defaultValue={lmr.per_site_material_type}
+                              // onChange={this.handleChangeFormLMRChild}
+                              onChange={this.handleChangeFormLMRChild}
+                              disabled={
+                                this.state.lmr_form.LMR_Type ===
+                                "Cost Collector"
+                              }
+                            >
+                              <option value="" disabled selected hidden>
+                                Select Material Type
+                              </option>
+                              <option value="NRO Service">NRO Service</option>
+                              <option value="NRO LM">NRO LM</option>
+                              <option value="NDO Service">NDO Service</option>
+                              {/* {this.state.vendor_list.map((e) => (
                             <option value={e.Vendor_Code}>{e.Name}</option>
                           ))} */}
-                          </Input>
-                        </FormGroup>
-                      </Col>
-                      <Col md={2}>
-                        <FormGroup>
-                          <Label>Site ID</Label>
-                          <Input
-                          // key={lmr._id}
-                            type="text"
-                            name={i + " /// site_id"}
-                            // id={i + " /// site_id"}
-                            value={lmr.site_id}
-                            onChange={this.handleChangeFormLMRChild}
-                            // readOnly
-                          />
-                        </FormGroup>
-                      </Col>
-                      <Col md={2}>
-                        <FormGroup>
-                          <Label>NW</Label>
-                          <Input
-                          key={lmr._id}
-                            type="text"
-                            name={i + " /// so_or_nw"}
-                            // id={i + " /// so_or_nw"}
-                            value={lmr.nw}
-                            onChange={this.handleChangeFormLMRChild}
-                            // readOnly
-                          />
-                        </FormGroup>
-                      </Col>
-                      <Col md={2}>
-                        <FormGroup>
-                          <Label>NW Activity</Label>
-                          <Input
-                          //key={lmr._id}
-                            type="text"
-                            name={i + " /// activity"}
-                            // id={i + " /// activity"}
-                            value={lmr.activity}
-                            onChange={this.handleChangeFormLMRChild}
-                            // readOnly
-                          />
-                        </FormGroup>
-                      </Col>
-                      <Col md={2}>
-                        <FormGroup>
-                          <Label>Tax Code</Label>
-                          <Input
-                          //key={lmr._id}
-                            type="text"
-                            name={i + " /// tax_code"}
-                            // id={i + " /// tax_code"}
-                            value={lmr.tax_code}
-                            onChange={this.handleChangeFormLMRChild}
-                          />
-                        </FormGroup>
-                      </Col>
-                      <Col md={2}>
-                        <FormGroup>
-                          <Label>Material</Label>
-                          <Input
-                          //key={lmr._id}
-                            type="text"
-                            name={i + " /// material"}
-                            // id={i + " /// material"}
-                            value={lmr.material}
-                            onClick={() => this.toggleMaterial(i)}
-                            onChange={this.handleChangeFormLMRChild}
-                          />
-                        </FormGroup>
-                      </Col>
-                      <Col md={3}>
-                        <FormGroup>
-                          <Label>Description</Label>
-                          <Input
-                          //key={lmr._id}
-                            type="textarea"
-                            name={i + " /// description"}
-                            // id={i + " /// description"}
-                            value={lmr.description}
-                            onChange={this.handleChangeFormLMRChild}
-                            readOnly
-                          />
-                        </FormGroup>
-                      </Col>
-                      <Col md={2}>
-                        <FormGroup>
-                          <Label>Price</Label>
-                          <Input
-                          //key={lmr._id}
-                            type="number"
-                            name={i + " /// unit_price"}
-                            // id={i + " /// price"}
-                            value={lmr.unit_price}
-                            onChange={this.handleChangeFormLMRChild}
-                            readOnly
-                          />
-                        </FormGroup>
-                      </Col>
-                      <Col md={2}>
-                        <FormGroup>
-                          <Label>Quantity</Label>
-                          <Input
-                          //key={lmr._id}
-                            type="number"
-                            name={i + " /// qty"}
-                            // id={i + " /// qty"}
-                            value={lmr.qty}
-                            onChange={this.handleChangeFormLMRChild}
-                          />
-                        </FormGroup>
-                      </Col>
-                      <Col md={2}>
-                        <FormGroup>
-                          <Label>Total Amount</Label>
-                          <Input
-                          //key={lmr._id}
-                            type="number"
-                            name={i+" /// total_price"}
-                            // id={i+" /// total_price"}
-                            value={lmr.total_price}
-                            onChange={this.handleChangeFormLMRChild}
-                          />
-                        </FormGroup>
-                      </Col>
-                      <Col md={1}>
-                        <FormGroup>
-                          <Label>Currency</Label>
-                          <Input
-                          //key={lmr._id}
-                            type="select"
-                            name={i+" /// currency"}
-                            // id={i+" /// currency"}
-                            value={lmr.currency}
-                            onChange={this.handleChangeFormLMRChild}
-                          >
-                            <option value="MYR" selected>
-                              MYR
-                            </option>
-                            <option value="USD">USD</option>
-                            <option value="EUR">EUR</option>
-                          </Input>
-                        </FormGroup>
-                      </Col>
-                      <Col md={3}>
-                        <FormGroup>
-                          <Label>Delivery Date</Label>
-                          <Input
-                          //key={lmr._id}
-                            type="date"
-                            name={i+" /// delivery_date"}
-                            // id={i+" /// delivery_date"}
-                            value={lmr.delivery_date}
-                            onChange={this.handleChangeFormLMRChild}
-                          />
-                        </FormGroup>
-                      </Col>
-                      {/* <Col md={3}>
+                            </Input>
+                          </FormGroup>
+                        </Col>
+                        <Col md={2}>
+                          <FormGroup>
+                            <Label>Site ID</Label>
+                            <Input
+                              // key={lmr._id}
+                              type="text"
+                              name={i + " /// site_id"}
+                              // id={i + " /// site_id"}
+                              value={lmr.site_id}
+                              onChange={this.handleChangeFormLMRChild}
+                              // readOnly
+                            />
+                          </FormGroup>
+                        </Col>
+                        <Col md={2}>
+                          <FormGroup>
+                            <Label>NW</Label>
+                            <Input
+                              key={lmr._id}
+                              type="text"
+                              name={i + " /// so_or_nw"}
+                              // id={i + " /// so_or_nw"}
+                              value={lmr.nw}
+                              onChange={this.handleChangeFormLMRChild}
+                              // readOnly
+                            />
+                          </FormGroup>
+                        </Col>
+                        <Col md={2}>
+                          <FormGroup>
+                            <Label>NW Activity</Label>
+                            <Input
+                              //key={lmr._id}
+                              type="text"
+                              name={i + " /// activity"}
+                              // id={i + " /// activity"}
+                              value={lmr.activity}
+                              onChange={this.handleChangeFormLMRChild}
+                              // readOnly
+                            />
+                          </FormGroup>
+                        </Col>
+                        <Col md={2}>
+                          <FormGroup>
+                            <Label>Tax Code</Label>
+                            <Input
+                              //key={lmr._id}
+                              type="text"
+                              name={i + " /// tax_code"}
+                              // id={i + " /// tax_code"}
+                              value={lmr.tax_code}
+                              onChange={this.handleChangeFormLMRChild}
+                            />
+                          </FormGroup>
+                        </Col>
+                        <Col md={2}>
+                          <FormGroup>
+                            <Label>Material</Label>
+                            <Input
+                              //key={lmr._id}
+                              type="text"
+                              name={i + " /// material"}
+                              // id={i + " /// material"}
+                              value={lmr.material}
+                              onClick={() => this.toggleMaterial(i)}
+                              onChange={this.handleChangeFormLMRChild}
+                            />
+                          </FormGroup>
+                        </Col>
+                        <Col md={3}>
+                          <FormGroup>
+                            <Label>Description</Label>
+                            <Input
+                              //key={lmr._id}
+                              type="textarea"
+                              name={i + " /// description"}
+                              // id={i + " /// description"}
+                              value={lmr.description}
+                              onChange={this.handleChangeFormLMRChild}
+                              readOnly
+                            />
+                          </FormGroup>
+                        </Col>
+                        <Col md={2}>
+                          <FormGroup>
+                            <Label>Price</Label>
+                            <Input
+                              //key={lmr._id}
+                              type="number"
+                              name={i + " /// unit_price"}
+                              // id={i + " /// price"}
+                              value={lmr.unit_price}
+                              onChange={this.handleChangeFormLMRChild}
+                              readOnly
+                            />
+                          </FormGroup>
+                        </Col>
+                        <Col md={2}>
+                          <FormGroup>
+                            <Label>Quantity</Label>
+                            <Input
+                              //key={lmr._id}
+                              type="number"
+                              name={i + " /// qty"}
+                              // id={i + " /// qty"}
+                              value={lmr.qty}
+                              onChange={this.handleChangeFormLMRChild}
+                            />
+                          </FormGroup>
+                        </Col>
+                        <Col md={2}>
+                          <FormGroup>
+                            <Label>Total Amount</Label>
+                            <Input
+                              //key={lmr._id}
+                              type="number"
+                              name={i + " /// total_price"}
+                              // id={i+" /// total_price"}
+                              value={lmr.total_price}
+                              onChange={this.handleChangeFormLMRChild}
+                            />
+                          </FormGroup>
+                        </Col>
+                        <Col md={1}>
+                          <FormGroup>
+                            <Label>Currency</Label>
+                            <Input
+                              //key={lmr._id}
+                              type="select"
+                              name={i + " /// currency"}
+                              // id={i+" /// currency"}
+                              value={lmr.currency}
+                              onChange={this.handleChangeFormLMRChild}
+                            >
+                              <option value="MYR" selected>
+                                MYR
+                              </option>
+                              <option value="USD">USD</option>
+                              <option value="EUR">EUR</option>
+                            </Input>
+                          </FormGroup>
+                        </Col>
+                        <Col md={3}>
+                          <FormGroup>
+                            <Label>Delivery Date</Label>
+                            <Input
+                              //key={lmr._id}
+                              type="date"
+                              name={i + " /// delivery_date"}
+                              // id={i+" /// delivery_date"}
+                              value={lmr.delivery_date}
+                              onChange={this.handleChangeFormLMRChild}
+                            />
+                          </FormGroup>
+                        </Col>
+                        {/* <Col md={3}>
                         <FormGroup>
                           <Label>Item Status</Label>
                           <Input
@@ -1239,14 +1302,23 @@ class MYASGEdit extends Component {
                           />
                         </FormGroup>
                       </Col> */}
-                      {lmr._id === null ? (<Button value={i} onClick={this.deleteLMR} color="danger" size="sm" style={{marginLeft: "5px"}}>
-                              <i className="fa fa-trash"></i>
-                            </Button>) : ("") }                      
-                            
-                    </Row>
-                    <hr className="upload-line--lmr"></hr>
-                  </Form>
-                ))}
+                        {lmr._id === null ? (
+                          <Button
+                            value={i}
+                            onClick={this.deleteLMR}
+                            color="danger"
+                            size="sm"
+                            style={{ marginLeft: "5px" }}
+                          >
+                            <i className="fa fa-trash"></i>
+                          </Button>
+                        ) : (
+                          ""
+                        )}
+                      </Row>
+                      <hr className="upload-line--lmr"></hr>
+                    </Form>
+                  ))}
                 <div>
                   {/* <Button color="primary" size="sm" onClick={this.addLMR}>
                     <i className="fa fa-plus">&nbsp;</i> LMR
@@ -1292,7 +1364,7 @@ class MYASGEdit extends Component {
                 <tr>
                   <td></td>
                   {/* <td> */}
-                    {/* <div className="controls" style={{ width: "150px" }}>
+                  {/* <div className="controls" style={{ width: "150px" }}>
                       <InputGroup className="input-prepend">
                         <InputGroupAddon addonType="prepend">
                           <InputGroupText>
@@ -1308,7 +1380,7 @@ class MYASGEdit extends Component {
                         />
                       </InputGroup>
                     </div> */}
-                    {this.loopSearchBar()}
+                  {this.loopSearchBar()}
                   {/* </td>
                   <td></td>
                   <td></td>

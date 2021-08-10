@@ -30,7 +30,7 @@ const API_URL_MAS = "https://api-dev.mas.pdb.e-dpm.com/masapi";
 const usernameMAS = "mybotprpo";
 const passwordMAS = "mybotprpo2020";
 
-// const API_URL_NODE = 'https://api2-dev.bam-id.e-dpm.com/bamidapi';
+//
 
 // const API_URL_NODE = 'http://localhost:5012/bammyapi';
 const API_URL_NODE = "https://api-dev.bam-my.e-dpm.com/bammyapi";
@@ -141,9 +141,7 @@ class MYASGEdit extends Component {
       modal_loading: false,
       modal_material: false,
       list_project: [],
-      creation_lmr_child_form: [
-
-      ],
+      creation_lmr_child_form: [],
       prevPage: 0,
       activePage: 1,
       totalData: 0,
@@ -197,12 +195,16 @@ class MYASGEdit extends Component {
 
   async postDatatoAPINODE(url, data) {
     try {
-      let respond = await axios.post(API_URL_NODE + url, data, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + this.state.tokenUser,
-        },
-      });
+      let respond = await axios.post(
+        process.env.REACT_APP_API_URL_NODE + url,
+        data,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + this.state.tokenUser,
+          },
+        }
+      );
       if (respond.status >= 200 && respond.status < 300) {
         console.log("respond Post Data", respond);
       }
@@ -241,7 +243,7 @@ class MYASGEdit extends Component {
 
   async getDataFromAPINODE(url) {
     try {
-      let respond = await axios.get(API_URL_NODE + url, {
+      let respond = await axios.get(process.env.REACT_APP_API_URL_NODE + url, {
         headers: {
           "Content-Type": "application/json",
           Authorization: "Bearer " + this.state.tokenUser,
@@ -277,7 +279,7 @@ class MYASGEdit extends Component {
       this.getLMRDetailData(this.props.match.params.id);
     }
     this.getMaterialList();
-    console.log('id ',this.props.match.params.id)
+    console.log("id ", this.props.match.params.id);
     document.title = "LMR Creation | BAM";
   }
 
@@ -287,25 +289,25 @@ class MYASGEdit extends Component {
         if (res.data !== undefined) {
           const dataLMRDetail = res.data.data;
           this.setState({ lmr_detail: dataLMRDetail }, () => {
-            console.log('lmr_detail detail ', this.state.lmr_detail.detail)
-            this.getDataPRPO(dataLMRDetail.lmr_id)
+            console.log("lmr_detail detail ", this.state.lmr_detail.detail);
+            this.getDataPRPO(dataLMRDetail.lmr_id);
           });
         }
       }
     );
   }
 
-  getDataPRPO(LMR_ID){
-    this.getDatafromAPIMY('/prpo_data?where={"LMR_No" : "'+LMR_ID+'"}').then(
-      (res) => {
-        if (res.data !== undefined) {
-          const dataLMRDetailPRPO = res.data._items;
-          this.setState({ creation_lmr_child_form: dataLMRDetailPRPO});
-          // console.log('creation_lmr_child_form ', this.state.creation_lmr_child_form)
-          // console.log('Item_Category ',this.state.creation_lmr_child_form.map(e => e.Item_Category))
-        }
+  getDataPRPO(LMR_ID) {
+    this.getDatafromAPIMY(
+      '/prpo_data?where={"LMR_No" : "' + LMR_ID + '"}'
+    ).then((res) => {
+      if (res.data !== undefined) {
+        const dataLMRDetailPRPO = res.data._items;
+        this.setState({ creation_lmr_child_form: dataLMRDetailPRPO });
+        // console.log('creation_lmr_child_form ', this.state.creation_lmr_child_form)
+        // console.log('Item_Category ',this.state.creation_lmr_child_form.map(e => e.Item_Category))
       }
-    );
+    });
   }
 
   handlePageChange(pageNumber) {
@@ -324,7 +326,7 @@ class MYASGEdit extends Component {
     dataFilter[parseInt(index)] = value;
     this.setState({ filter_list: dataFilter, activePage: 1 }, () => {
       this.onChangeDebounced(e);
-    })
+    });
   }
 
   onChangeDebounced(e) {
@@ -351,10 +353,15 @@ class MYASGEdit extends Component {
   }
 
   getMaterialList() {
-    let filter = '"mm_code":{"$regex" : "' + this.state.filter_list + '", "$options" : "i"}';
-    let whereAnd = '{'+filter+'}';
+    let filter =
+      '"mm_code":{"$regex" : "' +
+      this.state.filter_list +
+      '", "$options" : "i"}';
+    let whereAnd = "{" + filter + "}";
     this.getDatafromAPIMY(
-      "/mm_code_data?q="+whereAnd+"&lmt=" +
+      "/mm_code_data?q=" +
+        whereAnd +
+        "&lmt=" +
         this.state.perPage +
         "&pg=" +
         this.state.activePage
@@ -423,7 +430,7 @@ class MYASGEdit extends Component {
     if (value !== (null && undefined)) {
       value = value.toString();
     }
-    if (value === "Per Site"){
+    if (value === "Per Site") {
       this.setState({ lmr_edit: !this.state.lmr_edit });
     } else {
       if (name === "project_name") {
@@ -437,7 +444,6 @@ class MYASGEdit extends Component {
       lmr_form[name.toString()] = value;
       this.setState({ lmr_form: lmr_form });
     }
-    
   }
 
   async createLMR() {
@@ -555,7 +561,7 @@ class MYASGEdit extends Component {
     let value = e.target.value;
     let idx = idxField[0];
     let field = idxField[1];
-    console.log('3 field ',value, idx, field)
+    console.log("3 field ", value, idx, field);
 
     dataLMR[parseInt(idx)][field] = value;
     if (field === "quantity" && isNaN(dataLMR[parseInt(idx)].price) === false) {
@@ -563,7 +569,7 @@ class MYASGEdit extends Component {
         value * dataLMR[parseInt(idx)].price;
     }
     this.setState({ creation_lmr_child_form: dataLMR });
-    console.log('creation_lmr_child_form ', this.state.creation_lmr_child_form)
+    console.log("creation_lmr_child_form ", this.state.creation_lmr_child_form);
   }
 
   // handleChangeFormLMRChild = (idx) => (e) => {
@@ -618,7 +624,7 @@ class MYASGEdit extends Component {
               <CardHeader>
                 <span style={{ lineHeight: "2", fontSize: "17px" }}>
                   <i className="fa fa-edit" style={{ marginRight: "8px" }}></i>
-                  Assignment LMR{" "}{this.state.lmr_detail.lmr_id}
+                  Assignment LMR {this.state.lmr_detail.lmr_id}
                 </span>
               </CardHeader>
               <CardBody>
@@ -661,7 +667,7 @@ class MYASGEdit extends Component {
                           onChange={this.handleChangeFormLMR}
                           readOnly
                         />
-                          {/* <option value={null} selected></option>
+                        {/* <option value={null} selected></option>
                           <option value="Add LMR">Add LMR</option>
                           <option value="Change LMR">Change LMR</option>
                           <option value="Delete LMR">Delete LMR</option>                           */}
@@ -675,7 +681,9 @@ class MYASGEdit extends Component {
                           type="select"
                           name="Item_Category"
                           id="Item_Category"
-                          defaultValue={this.state.creation_lmr_child_form.map(e => e.Item_Category)}
+                          defaultValue={this.state.creation_lmr_child_form.map(
+                            (e) => e.Item_Category
+                          )}
                           onChange={this.handleChangeFormLMR}
                         >
                           <option value={null} selected></option>
@@ -691,7 +699,9 @@ class MYASGEdit extends Component {
                           type="select"
                           name="LMR_Type"
                           id="LMR_Type"
-                          defaultValue={this.state.creation_lmr_child_form.map(e => e.LMR_Type)}
+                          defaultValue={this.state.creation_lmr_child_form.map(
+                            (e) => e.LMR_Type
+                          )}
                           onChange={this.handleChangeFormLMR}
                         >
                           <option value={null} selected></option>
@@ -707,7 +717,9 @@ class MYASGEdit extends Component {
                           type="select"
                           name="plan_cost_reduction"
                           id="Plan_Cost_Reduction"
-                          defaultValue={this.state.creation_lmr_child_form.map(e => e.Plan_Cost_Reduction)}
+                          defaultValue={this.state.creation_lmr_child_form.map(
+                            (e) => e.Plan_Cost_Reduction
+                          )}
                           onChange={this.handleChangeFormLMR}
                         >
                           <option value={null} selected></option>
@@ -725,7 +737,9 @@ class MYASGEdit extends Component {
                           type="text"
                           name="lmr_issued_by"
                           id="lmr_issued_by"
-                          value={this.state.creation_lmr_child_form.map(e => e.Requisitioner)}
+                          value={this.state.creation_lmr_child_form.map(
+                            (e) => e.Requisitioner
+                          )}
                           onChange={this.handleChangeFormLMR}
                           disabled
                         />
@@ -929,7 +943,7 @@ class MYASGEdit extends Component {
                         <FormGroup>
                           <Label>CD ID</Label>
                           <Input
-                          //key={lmr._id}
+                            //key={lmr._id}
                             type="select"
                             name={"cd_id"}
                             id={i + " /// cd_id"}
@@ -950,41 +964,43 @@ class MYASGEdit extends Component {
                         </FormGroup>
                       </Col>
                       <Col md={2}>
-                      <FormGroup>
-                        <Label>Project Name</Label>
-                        {this.state.lmr_edit === true ? 
-                        (<Input
-                          //key={lmr._id}
-                          type="select"
-                          name={"project_name"}
-                          id="project_name"
-                          defaultValue={lmr.Project}
-                          onChange={this.handleChangeFormLMR}
-                        >
-                          <option value="" disabled selected hidden>
-                            Select Project Name
-                          </option>
-                          {this.state.list_project.map((e) => (
-                            <option value={e.Project}>{e.Project}</option>
-                          ))}  
-                        </Input>) : (<Input
-                        //key={lmr._id}
-                          type="text"
-                          name={i + " /// project_name"}
-                          id={i + " /// project_name"}
-                          defaultValue={lmr.Project}
-                          // onChange={this.handleChangeFormLMR}
-                          onChange={this.handleChangeFormLMRChild}
-
-                          readOnly
-                        />)}
-                      </FormGroup>
-                    </Col>
+                        <FormGroup>
+                          <Label>Project Name</Label>
+                          {this.state.lmr_edit === true ? (
+                            <Input
+                              //key={lmr._id}
+                              type="select"
+                              name={"project_name"}
+                              id="project_name"
+                              defaultValue={lmr.Project}
+                              onChange={this.handleChangeFormLMR}
+                            >
+                              <option value="" disabled selected hidden>
+                                Select Project Name
+                              </option>
+                              {this.state.list_project.map((e) => (
+                                <option value={e.Project}>{e.Project}</option>
+                              ))}
+                            </Input>
+                          ) : (
+                            <Input
+                              //key={lmr._id}
+                              type="text"
+                              name={i + " /// project_name"}
+                              id={i + " /// project_name"}
+                              defaultValue={lmr.Project}
+                              // onChange={this.handleChangeFormLMR}
+                              onChange={this.handleChangeFormLMRChild}
+                              readOnly
+                            />
+                          )}
+                        </FormGroup>
+                      </Col>
                       <Col md={2}>
                         <FormGroup>
                           <Label>Per Site Material Type</Label>
                           <Input
-                          //key={lmr._id}
+                            //key={lmr._id}
                             type="select"
                             // name={"Per_Site_Material_Type"}
                             name={i + " /// Per_Site_Material_Type"}
@@ -1012,7 +1028,7 @@ class MYASGEdit extends Component {
                         <FormGroup>
                           <Label>Site ID</Label>
                           <Input
-                          // key={lmr._id}
+                            // key={lmr._id}
                             type="text"
                             name={i + " /// site_id"}
                             id={i + " /// site_id"}
@@ -1026,7 +1042,7 @@ class MYASGEdit extends Component {
                         <FormGroup>
                           <Label>SO / NW</Label>
                           <Input
-                          key={lmr._id}
+                            key={lmr._id}
                             type="text"
                             name={i + " /// so_or_nw"}
                             id={i + " /// so_or_nw"}
@@ -1040,7 +1056,7 @@ class MYASGEdit extends Component {
                         <FormGroup>
                           <Label>NW Activity</Label>
                           <Input
-                          //key={lmr._id}
+                            //key={lmr._id}
                             type="text"
                             name={i + " /// activity"}
                             id={i + " /// activity"}
@@ -1054,7 +1070,7 @@ class MYASGEdit extends Component {
                         <FormGroup>
                           <Label>Tax Code</Label>
                           <Input
-                          //key={lmr._id}
+                            //key={lmr._id}
                             type="text"
                             name={i + " /// tax_code"}
                             id={i + " /// tax_code"}
@@ -1067,7 +1083,7 @@ class MYASGEdit extends Component {
                         <FormGroup>
                           <Label>Material</Label>
                           <Input
-                          //key={lmr._id}
+                            //key={lmr._id}
                             type="text"
                             name={i + " /// material"}
                             id={i + " /// material"}
@@ -1081,7 +1097,7 @@ class MYASGEdit extends Component {
                         <FormGroup>
                           <Label>Description</Label>
                           <Input
-                          //key={lmr._id}
+                            //key={lmr._id}
                             type="textarea"
                             name={i + " /// description"}
                             id={i + " /// description"}
@@ -1095,7 +1111,7 @@ class MYASGEdit extends Component {
                         <FormGroup>
                           <Label>Price</Label>
                           <Input
-                          //key={lmr._id}
+                            //key={lmr._id}
                             type="number"
                             name={i + " /// price"}
                             id={i + " /// price"}
@@ -1109,7 +1125,7 @@ class MYASGEdit extends Component {
                         <FormGroup>
                           <Label>Quantity</Label>
                           <Input
-                          //key={lmr._id}
+                            //key={lmr._id}
                             type="number"
                             name={i + " /// quantity"}
                             id={i + " /// quantity"}
@@ -1122,10 +1138,10 @@ class MYASGEdit extends Component {
                         <FormGroup>
                           <Label>Total Amount</Label>
                           <Input
-                          //key={lmr._id}
+                            //key={lmr._id}
                             type="number"
-                            name={i+" /// total_amount"}
-                            id={i+" /// total_amount"}
+                            name={i + " /// total_amount"}
+                            id={i + " /// total_amount"}
                             value={lmr.Total_Amount}
                             onChange={this.handleChangeFormLMRChild}
                           />
@@ -1135,10 +1151,10 @@ class MYASGEdit extends Component {
                         <FormGroup>
                           <Label>Currency</Label>
                           <Input
-                          //key={lmr._id}
+                            //key={lmr._id}
                             type="select"
-                            name={i+" /// currency"}
-                            id={i+" /// currency"}
+                            name={i + " /// currency"}
+                            id={i + " /// currency"}
                             value={lmr.Currency}
                             onChange={this.handleChangeFormLMRChild}
                           >
@@ -1154,10 +1170,10 @@ class MYASGEdit extends Component {
                         <FormGroup>
                           <Label>Delivery Date</Label>
                           <Input
-                          //key={lmr._id}
+                            //key={lmr._id}
                             type="date"
-                            name={i+" /// delivery_date"}
-                            id={i+" /// delivery_date"}
+                            name={i + " /// delivery_date"}
+                            id={i + " /// delivery_date"}
                             value={lmr.Request_Delivery_Date}
                             onChange={this.handleChangeFormLMRChild}
                           />

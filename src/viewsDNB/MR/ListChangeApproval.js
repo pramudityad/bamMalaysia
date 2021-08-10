@@ -1,25 +1,54 @@
-import React, { Component } from 'react';
-import { Button, Card, CardBody, CardHeader, CardFooter, Col, InputGroup, InputGroupAddon, InputGroupText, Input, Row, Table } from 'reactstrap';
-import { Link } from 'react-router-dom';
-import axios from 'axios';
-import Pagination from 'react-js-pagination';
-import debounce from 'lodash.debounce';
-import Excel from 'exceljs';
-import { saveAs } from 'file-saver';
-import { connect } from 'react-redux';
-import ActionType from '../../redux/reducer/globalActionType';
-import {convertDateFormatfull, convertDateFormat} from '../../helper/basicFunction'
+import React, { Component } from "react";
+import {
+  Button,
+  Card,
+  CardBody,
+  CardHeader,
+  CardFooter,
+  Col,
+  InputGroup,
+  InputGroupAddon,
+  InputGroupText,
+  Input,
+  Row,
+  Table,
+} from "reactstrap";
+import { Link } from "react-router-dom";
+import axios from "axios";
+import Pagination from "react-js-pagination";
+import debounce from "lodash.debounce";
+import Excel from "exceljs";
+import { saveAs } from "file-saver";
+import { connect } from "react-redux";
+import ActionType from "../../redux/reducer/globalActionType";
+import {
+  convertDateFormatfull,
+  convertDateFormat,
+} from "../../helper/basicFunction";
 
-const DefaultNotif = React.lazy(() => import('../../views/DefaultView/DefaultNotif'));
+const DefaultNotif = React.lazy(() =>
+  import("../../views/DefaultView/DefaultNotif")
+);
 
-const API_URL_BAM = 'https://api-dev.bam-id.e-dpm.com/bamidapi';
-const usernameBAM = 'bamidadmin@e-dpm.com';
-const passwordBAM = 'F760qbAg2sml';
+const API_URL_BAM = "https://api-dev.bam-id.e-dpm.com/bamidapi";
+const usernameBAM = "bamidadmin@e-dpm.com";
+const passwordBAM = "F760qbAg2sml";
 
-const API_URL_NODE = 'https://api2-dev.bam-id.e-dpm.com/bamidapi';
-
-const Checkbox = ({ type = 'checkbox', name, checked = false, onChange, value }) => (
-  <input type={type} name={name} checked={checked} onChange={onChange} value={value} className="checkmark-dash" />
+const Checkbox = ({
+  type = "checkbox",
+  name,
+  checked = false,
+  onChange,
+  value,
+}) => (
+  <input
+    type={type}
+    name={name}
+    checked={checked}
+    onChange={onChange}
+    value={value}
+    className="checkmark-dash"
+  />
 );
 
 class ListChangeApproval extends Component {
@@ -43,8 +72,8 @@ class ListChangeApproval extends Component {
       mr_checked_all: false,
       data_mr_checked: [],
       filter_list: new Array(14).fill(""),
-      mr_all: []
-    }
+      mr_all: [],
+    };
     this.handlePageChange = this.handlePageChange.bind(this);
     this.handleFilterList = this.handleFilterList.bind(this);
     this.onChangeDebounced = debounce(this.onChangeDebounced, 500);
@@ -59,11 +88,11 @@ class ListChangeApproval extends Component {
   async getDataFromAPI(url) {
     try {
       let respond = await axios.get(API_URL_BAM + url, {
-        headers: { 'Content-Type': 'application/json' },
+        headers: { "Content-Type": "application/json" },
         auth: {
           username: usernameBAM,
-          password: passwordBAM
-        }
+          password: passwordBAM,
+        },
       });
       if (respond.status >= 200 && respond.status < 300) {
         console.log("respond data", respond);
@@ -78,10 +107,10 @@ class ListChangeApproval extends Component {
 
   async getDataFromAPINODE(url) {
     try {
-      let respond = await axios.get(API_URL_NODE + url, {
+      let respond = await axios.get(process.env.REACT_APP_API_URL_NODE + url, {
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + this.state.tokenUser
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + this.state.tokenUser,
         },
       });
       if (respond.status >= 200 && respond.status < 300) {
@@ -98,12 +127,12 @@ class ListChangeApproval extends Component {
   async patchDatatoAPIBAM(url, data, _etag) {
     try {
       let respond = await axios.patch(API_URL_BAM + url, data, {
-        headers: { 'Content-Type': 'application/json', "If-Match": _etag },
+        headers: { "Content-Type": "application/json", "If-Match": _etag },
         auth: {
           username: usernameBAM,
-          password: passwordBAM
+          password: passwordBAM,
         },
-      })
+      });
       if (respond.status >= 200 && respond.status < 300) {
         console.log("respond Patch data", respond);
       }
@@ -119,62 +148,171 @@ class ListChangeApproval extends Component {
     const page = this.state.activePage;
     const maxPage = this.state.perPage;
     let filter_array = [];
-    this.state.filter_list[0] !== "" && (filter_array.push('"mr_id":{"$regex" : "' + this.state.filter_list[0] + '", "$options" : "i"}'));
-    this.state.filter_list[1] !== "" && (filter_array.push('"project_name":{"$regex" : "' + this.state.filter_list[1] + '", "$options" : "i"}'));
-    this.state.filter_list[2] !== "" && (filter_array.push('"cust_del.cd_id":{"$regex" : "' + this.state.filter_list[2] + '", "$options" : "i"}'));
-    this.state.filter_list[3] !== "" && (filter_array.push('"site_info.site_id":{"$regex" : "' + this.state.filter_list[3] + '", "$options" : "i"}'));
-    this.state.filter_list[4] !== "" && (filter_array.push('"site_info.site_name":{"$regex" : "' + this.state.filter_list[4] + '", "$options" : "i"}'));
+    this.state.filter_list[0] !== "" &&
+      filter_array.push(
+        '"mr_id":{"$regex" : "' +
+          this.state.filter_list[0] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list[1] !== "" &&
+      filter_array.push(
+        '"project_name":{"$regex" : "' +
+          this.state.filter_list[1] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list[2] !== "" &&
+      filter_array.push(
+        '"cust_del.cd_id":{"$regex" : "' +
+          this.state.filter_list[2] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list[3] !== "" &&
+      filter_array.push(
+        '"site_info.site_id":{"$regex" : "' +
+          this.state.filter_list[3] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list[4] !== "" &&
+      filter_array.push(
+        '"site_info.site_name":{"$regex" : "' +
+          this.state.filter_list[4] +
+          '", "$options" : "i"}'
+      );
     filter_array.push('"current_mr_status":"MR UPDATED"');
-    this.state.filter_list[6] !== "" && (filter_array.push('"current_milestones":{"$regex" : "' + this.state.filter_list[6] + '", "$options" : "i"}'));
-    this.state.filter_list[7] !== "" && (filter_array.push('"dsp_company":{"$regex" : "' + this.state.filter_list[7] + '", "$options" : "i"}'));
-    this.state.filter_list[8] !== "" && (filter_array.push('"eta":{"$regex" : "' + this.state.filter_list[8] + '", "$options" : "i"}'));
+    this.state.filter_list[6] !== "" &&
+      filter_array.push(
+        '"current_milestones":{"$regex" : "' +
+          this.state.filter_list[6] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list[7] !== "" &&
+      filter_array.push(
+        '"dsp_company":{"$regex" : "' +
+          this.state.filter_list[7] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list[8] !== "" &&
+      filter_array.push(
+        '"eta":{"$regex" : "' +
+          this.state.filter_list[8] +
+          '", "$options" : "i"}'
+      );
     // this.state.filter_list[9] !== "" && (filter_array.push('"created_by":{"$regex" : "' + this.state.filter_list[9] + '", "$options" : "i"}'));
-    this.state.filter_list[10] !== "" && (filter_array.push('"updated_on":{"$regex" : "' + this.state.filter_list[10] + '", "$options" : "i"}'));
-    this.state.filter_list[11] !== "" && (filter_array.push('"created_on":{"$regex" : "' + this.state.filter_list[11] + '", "$options" : "i"}'));
-    this.props.match.params.whid !== undefined && (filter_array.push('"origin.value" : "' + this.props.match.params.whid + '"'));
-    let whereAnd = '{' + filter_array.join(',') + '}';
-    this.getDataFromAPINODE('/matreq?srt=_id:-1&q=' + whereAnd + '&lmt=' + maxPage + '&pg=' + page).then(res => {
+    this.state.filter_list[10] !== "" &&
+      filter_array.push(
+        '"updated_on":{"$regex" : "' +
+          this.state.filter_list[10] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list[11] !== "" &&
+      filter_array.push(
+        '"created_on":{"$regex" : "' +
+          this.state.filter_list[11] +
+          '", "$options" : "i"}'
+      );
+    this.props.match.params.whid !== undefined &&
+      filter_array.push(
+        '"origin.value" : "' + this.props.match.params.whid + '"'
+      );
+    let whereAnd = "{" + filter_array.join(",") + "}";
+    this.getDataFromAPINODE(
+      "/matreq?srt=_id:-1&q=" + whereAnd + "&lmt=" + maxPage + "&pg=" + page
+    ).then((res) => {
       console.log("MR List Sorted", res);
       if (res.data !== undefined) {
         const items = res.data.data;
         const totalData = res.data.totalResults;
         this.setState({ mr_list: items, totalData: totalData });
       }
-    })
+    });
   }
 
   getAllMR() {
     let filter_array = [];
-    this.state.filter_list[0] !== "" && (filter_array.push('"mr_id":{"$regex" : "' + this.state.filter_list[0] + '", "$options" : "i"}'));
-    this.state.filter_list[1] !== "" && (filter_array.push('"project_name":{"$regex" : "' + this.state.filter_list[1] + '", "$options" : "i"}'));
-    this.state.filter_list[2] !== "" && (filter_array.push('"cust_del.cd_id":{"$regex" : "' + this.state.filter_list[2] + '", "$options" : "i"}'));
-    this.state.filter_list[3] !== "" && (filter_array.push('"site_info.site_id":{"$regex" : "' + this.state.filter_list[3] + '", "$options" : "i"}'));
-    this.state.filter_list[4] !== "" && (filter_array.push('"site_info.site_name":{"$regex" : "' + this.state.filter_list[4] + '", "$options" : "i"}'));
+    this.state.filter_list[0] !== "" &&
+      filter_array.push(
+        '"mr_id":{"$regex" : "' +
+          this.state.filter_list[0] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list[1] !== "" &&
+      filter_array.push(
+        '"project_name":{"$regex" : "' +
+          this.state.filter_list[1] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list[2] !== "" &&
+      filter_array.push(
+        '"cust_del.cd_id":{"$regex" : "' +
+          this.state.filter_list[2] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list[3] !== "" &&
+      filter_array.push(
+        '"site_info.site_id":{"$regex" : "' +
+          this.state.filter_list[3] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list[4] !== "" &&
+      filter_array.push(
+        '"site_info.site_name":{"$regex" : "' +
+          this.state.filter_list[4] +
+          '", "$options" : "i"}'
+      );
     filter_array.push('"current_mr_status":"MR UPDATED"');
-    this.state.filter_list[6] !== "" && (filter_array.push('"current_milestones":{"$regex" : "' + this.state.filter_list[6] + '", "$options" : "i"}'));
-    this.state.filter_list[7] !== "" && (filter_array.push('"dsp_company":{"$regex" : "' + this.state.filter_list[7] + '", "$options" : "i"}'));
-    this.state.filter_list[8] !== "" && (filter_array.push('"eta":{"$regex" : "' + this.state.filter_list[8] + '", "$options" : "i"}'));
+    this.state.filter_list[6] !== "" &&
+      filter_array.push(
+        '"current_milestones":{"$regex" : "' +
+          this.state.filter_list[6] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list[7] !== "" &&
+      filter_array.push(
+        '"dsp_company":{"$regex" : "' +
+          this.state.filter_list[7] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list[8] !== "" &&
+      filter_array.push(
+        '"eta":{"$regex" : "' +
+          this.state.filter_list[8] +
+          '", "$options" : "i"}'
+      );
     // this.state.filter_list[9] !== "" && (filter_array.push('"created_by":{"$regex" : "' + this.state.filter_list[9] + '", "$options" : "i"}'));
-    this.state.filter_list[10] !== "" && (filter_array.push('"updated_on":{"$regex" : "' + this.state.filter_list[10] + '", "$options" : "i"}'));
-    this.state.filter_list[11] !== "" && (filter_array.push('"created_on":{"$regex" : "' + this.state.filter_list[11] + '", "$options" : "i"}'));
-    this.props.match.params.whid !== undefined && (filter_array.push('"origin.value" : "' + this.props.match.params.whid + '"'));
-    let whereAnd = '{' + filter_array.join(',') + '}';
-    this.getDataFromAPINODE('/matreq?noPg=1&q=' + whereAnd).then(res => {
+    this.state.filter_list[10] !== "" &&
+      filter_array.push(
+        '"updated_on":{"$regex" : "' +
+          this.state.filter_list[10] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list[11] !== "" &&
+      filter_array.push(
+        '"created_on":{"$regex" : "' +
+          this.state.filter_list[11] +
+          '", "$options" : "i"}'
+      );
+    this.props.match.params.whid !== undefined &&
+      filter_array.push(
+        '"origin.value" : "' + this.props.match.params.whid + '"'
+      );
+    let whereAnd = "{" + filter_array.join(",") + "}";
+    this.getDataFromAPINODE("/matreq?noPg=1&q=" + whereAnd).then((res) => {
       console.log("MR List All", res);
       if (res.data !== undefined) {
         const items = res.data.data;
         this.setState({ mr_all: items });
       }
-    })
+    });
   }
 
   numToSSColumn(num) {
-    var s = '', t;
+    var s = "",
+      t;
 
     while (num > 0) {
       t = (num - 1) % 26;
       s = String.fromCharCode(65 + t) + s;
-      num = (num - t) / 26 | 0;
+      num = ((num - t) / 26) | 0;
     }
     return s || undefined;
   }
@@ -185,26 +323,52 @@ class ListChangeApproval extends Component {
 
     const allMR = this.state.mr_all;
 
-    let headerRow = ["MR ID", "Project Name", "CD ID", "Site ID", "Site Name", "Current Status", "Current Milestone", "DSP", "ETA", "Created By", "Updated On", "Created On"];
+    let headerRow = [
+      "MR ID",
+      "Project Name",
+      "CD ID",
+      "Site ID",
+      "Site Name",
+      "Current Status",
+      "Current Milestone",
+      "DSP",
+      "ETA",
+      "Created By",
+      "Updated On",
+      "Created On",
+    ];
     ws.addRow(headerRow);
 
     for (let i = 1; i < headerRow.length + 1; i++) {
-      ws.getCell(this.numToSSColumn(i) + '1').font = { size: 11, bold: true };
+      ws.getCell(this.numToSSColumn(i) + "1").font = { size: 11, bold: true };
     }
 
     for (let i = 0; i < allMR.length; i++) {
-      ws.addRow([allMR[i].mr_id, allMR[i].project_name, allMR[i].cd_id, allMR[i].site_info[0].site_id, allMR[i].site_info[0].site_name, allMR[i].current_mr_status, allMR[i].current_milestones, allMR[i].dsp_company, allMR[i].eta, "", allMR[i].updated_on, allMR[i].created_on])
+      ws.addRow([
+        allMR[i].mr_id,
+        allMR[i].project_name,
+        allMR[i].cd_id,
+        allMR[i].site_info[0].site_id,
+        allMR[i].site_info[0].site_name,
+        allMR[i].current_mr_status,
+        allMR[i].current_milestones,
+        allMR[i].dsp_company,
+        allMR[i].eta,
+        "",
+        allMR[i].updated_on,
+        allMR[i].created_on,
+      ]);
     }
 
     const allocexport = await wb.xlsx.writeBuffer();
-    saveAs(new Blob([allocexport]), 'MR List.xlsx');
+    saveAs(new Blob([allocexport]), "MR List.xlsx");
   }
 
   componentDidMount() {
     this.props.SidebarMinimizer(true);
     this.getMRList();
     // this.getAllMR();
-    document.title = 'MR PS Not Assigned | BAM';
+    document.title = "MR PS Not Assigned | BAM";
   }
 
   componentWillUnmount() {
@@ -227,7 +391,7 @@ class ListChangeApproval extends Component {
     dataFilter[parseInt(index)] = value;
     this.setState({ filter_list: dataFilter, activePage: 1 }, () => {
       this.onChangeDebounced(e);
-    })
+    });
   }
 
   handleChangeChecklist(e) {
@@ -236,7 +400,7 @@ class ListChangeApproval extends Component {
     const mrList = this.state.mr_all;
     let dataMRChecked = this.state.data_mr_checked;
     if (isChecked === true) {
-      const getMR = mrList.find(e => e._id === item);
+      const getMR = mrList.find((e) => e._id === item);
       dataMRChecked.push(getMR);
     } else {
       dataMRChecked = dataMRChecked.filter(function (e) {
@@ -244,7 +408,9 @@ class ListChangeApproval extends Component {
       });
     }
     this.setState({ data_mr_checked: dataMRChecked });
-    this.setState(prevState => ({ mr_checked: prevState.mr_checked.set(item, isChecked) }));
+    this.setState((prevState) => ({
+      mr_checked: prevState.mr_checked.set(item, isChecked),
+    }));
   }
 
   handleChangeChecklistAll(e) {
@@ -256,9 +422,14 @@ class ListChangeApproval extends Component {
         if (this.state.mr_checked.get(mrList[i]._id) !== true) {
           dataMRChecked.push(mrList[i]);
         }
-        this.setState(prevState => ({ mr_checked: prevState.mr_checked.set(mrList[i]._id, true) }));
+        this.setState((prevState) => ({
+          mr_checked: prevState.mr_checked.set(mrList[i]._id, true),
+        }));
       }
-      this.setState({ data_mr_checked: dataMRChecked, mr_checked_all: isChecked });
+      this.setState({
+        data_mr_checked: dataMRChecked,
+        mr_checked_all: isChecked,
+      });
     } else {
       this.setState({ mr_checked: new Map(), data_mr_checked: [] });
       this.setState({ mr_checked_all: isChecked });
@@ -267,19 +438,39 @@ class ListChangeApproval extends Component {
 
   async ApprovalBulk() {
     const newDate = new Date();
-    const dateNow = newDate.getFullYear() + "-" + (newDate.getMonth() + 1) + "-" + newDate.getDate() + " " + newDate.getHours() + ":" + newDate.getMinutes() + ":" + newDate.getSeconds();
+    const dateNow =
+      newDate.getFullYear() +
+      "-" +
+      (newDate.getMonth() + 1) +
+      "-" +
+      newDate.getDate() +
+      " " +
+      newDate.getHours() +
+      ":" +
+      newDate.getMinutes() +
+      ":" +
+      newDate.getSeconds();
     let dataMRChecked = this.state.data_mr_checked;
     let sucPatch = [];
     for (let i = 0; i < dataMRChecked.length; i++) {
       let dataMR = dataMRChecked[i];
-      const statusAprv = [{
-        "mr_status_name": "MATERIAL_REQUEST",
-        "mr_status_value": "APPROVED",
-        "mr_status_date": dateNow,
-        "mr_status_updater": this.state.userEmail,
-        "mr_status_updater_id": this.state.userId,
-      }];
-      const statusRecent = dataMR.mr_status[dataMR.mr_status.findIndex(e => e.mr_status_value === "UPDATED" && e.mr_status_name === "MATERIAL_REQUEST") - 1];
+      const statusAprv = [
+        {
+          mr_status_name: "MATERIAL_REQUEST",
+          mr_status_value: "APPROVED",
+          mr_status_date: dateNow,
+          mr_status_updater: this.state.userEmail,
+          mr_status_updater_id: this.state.userId,
+        },
+      ];
+      const statusRecent =
+        dataMR.mr_status[
+          dataMR.mr_status.findIndex(
+            (e) =>
+              e.mr_status_value === "UPDATED" &&
+              e.mr_status_name === "MATERIAL_REQUEST"
+          ) - 1
+        ];
       let aprvMR = {};
       let firstStat = "";
       let lastStat = "";
@@ -309,23 +500,30 @@ class ListChangeApproval extends Component {
         default:
           lastStat = " " + statusRecent.mr_status_value;
       }
-      const statusNow = lastStat.length !== 0 ? firstStat + lastStat : firstStat;
-      aprvMR['current_mr_status'] = statusNow;
-      aprvMR['mr_status'] = dataMR.mr_status.concat(statusAprv);
-      aprvMR['mr_status'] = dataMR.mr_status.concat(statusRecent);
+      const statusNow =
+        lastStat.length !== 0 ? firstStat + lastStat : firstStat;
+      aprvMR["current_mr_status"] = statusNow;
+      aprvMR["mr_status"] = dataMR.mr_status.concat(statusAprv);
+      aprvMR["mr_status"] = dataMR.mr_status.concat(statusRecent);
       console.log("dataMR", dataMR);
       console.log("aprvMR", aprvMR);
-      const patchData = await this.patchDatatoAPIBAM('/mr_op/' + dataMR._id, aprvMR, dataMR._etag)
+      const patchData = await this.patchDatatoAPIBAM(
+        "/mr_op/" + dataMR._id,
+        aprvMR,
+        dataMR._etag
+      );
       if (patchData.data !== undefined) {
         sucPatch.push(patchData.data._id);
       }
     }
     if (sucPatch.length === dataMRChecked.length) {
-      this.setState({ action_status: 'success' }, () => {
-        setTimeout(function () { window.location.reload(); }, 3000);
+      this.setState({ action_status: "success" }, () => {
+        setTimeout(function () {
+          window.location.reload();
+        }, 3000);
       });
     } else {
-      this.setState({ action_status: 'failed' });
+      this.setState({ action_status: "failed" });
     }
   }
 
@@ -339,42 +537,83 @@ class ListChangeApproval extends Component {
     for (let i = 0; i < 12; i++) {
       searchBar.push(
         <td>
-          <div className="controls" style={{ width: '150px' }}>
+          <div className="controls" style={{ width: "150px" }}>
             <InputGroup className="input-prepend">
               <InputGroupAddon addonType="prepend">
-                <InputGroupText><i className="fa fa-search"></i></InputGroupText>
+                <InputGroupText>
+                  <i className="fa fa-search"></i>
+                </InputGroupText>
               </InputGroupAddon>
-              <Input type="text" placeholder="Search" onChange={this.handleFilterList} value={this.state.filter_list[i]} name={i} size="sm" />
+              <Input
+                type="text"
+                placeholder="Search"
+                onChange={this.handleFilterList}
+                value={this.state.filter_list[i]}
+                name={i}
+                size="sm"
+              />
             </InputGroup>
           </div>
         </td>
-      )
+      );
     }
     return searchBar;
-  }
+  };
 
-  loading = () => <div className="animated fadeIn pt-1 text-center">Loading...</div>
+  loading = () => (
+    <div className="animated fadeIn pt-1 text-center">Loading...</div>
+  );
 
   render() {
     const downloadMR = {
-      float: 'right',
-      marginRight: '10px'
-    }
+      float: "right",
+      marginRight: "10px",
+    };
 
     return (
       <div className="animated fadeIn">
-        <DefaultNotif actionMessage={this.state.action_message} actionStatus={this.state.action_status} />
+        <DefaultNotif
+          actionMessage={this.state.action_message}
+          actionStatus={this.state.action_status}
+        />
         <Row>
           <Col xs="12" lg="12">
             <Card>
               <CardHeader>
-                <span style={{ lineHeight: '2' }}>
-                  <i className="fa fa-align-justify" style={{ marginRight: "8px" }}></i> MR List
+                <span style={{ lineHeight: "2" }}>
+                  <i
+                    className="fa fa-align-justify"
+                    style={{ marginRight: "8px" }}
+                  ></i>{" "}
+                  MR List
                 </span>
-                <Button style={downloadMR} outline color="success" onClick={this.downloadMRlist} size="sm"><i className="fa fa-download" style={{ marginRight: "8px" }}></i>Download MR List</Button>
-                <div style={{ float: 'right', marginRight: '20px', display: 'inline-flex', marginTop: '5px' }}>
-                  <Checkbox checked={this.state.mr_checked_all} onChange={this.handleChangeChecklistAll} style={{ float: 'right', marginRight: "8px" }} />
-                  <span style={{ marginTop: '1px' }}>Select All</span>
+                <Button
+                  style={downloadMR}
+                  outline
+                  color="success"
+                  onClick={this.downloadMRlist}
+                  size="sm"
+                >
+                  <i
+                    className="fa fa-download"
+                    style={{ marginRight: "8px" }}
+                  ></i>
+                  Download MR List
+                </Button>
+                <div
+                  style={{
+                    float: "right",
+                    marginRight: "20px",
+                    display: "inline-flex",
+                    marginTop: "5px",
+                  }}
+                >
+                  <Checkbox
+                    checked={this.state.mr_checked_all}
+                    onChange={this.handleChangeChecklistAll}
+                    style={{ float: "right", marginRight: "8px" }}
+                  />
+                  <span style={{ marginTop: "1px" }}>Select All</span>
                 </div>
               </CardHeader>
               <CardBody>
@@ -395,9 +634,7 @@ class ListChangeApproval extends Component {
                       <th>Updated On</th>
                       <th>Created On</th>
                     </tr>
-                    <tr>
-                      {this.loopSearchBar()}
-                    </tr>
+                    <tr>{this.loopSearchBar()}</tr>
                   </thead>
                   <tbody>
                     {this.state.mr_list.length === 0 && (
@@ -405,27 +642,44 @@ class ListChangeApproval extends Component {
                         <td colSpan="15">No Data Available</td>
                       </tr>
                     )}
-                    {this.state.mr_list.map((list, i) =>
+                    {this.state.mr_list.map((list, i) => (
                       <tr key={list._id}>
                         <td>
-                          <Checkbox name={list._id} checked={this.state.mr_checked.get(list._id)} onChange={this.handleChangeChecklist} />
+                          <Checkbox
+                            name={list._id}
+                            checked={this.state.mr_checked.get(list._id)}
+                            onChange={this.handleChangeChecklist}
+                          />
                         </td>
-                        <td><Link to={'/mr-detail/' + list._id}>{list.mr_id}</Link></td>
+                        <td>
+                          <Link to={"/mr-detail/" + list._id}>
+                            {list.mr_id}
+                          </Link>
+                        </td>
                         <td>{list.project_name}</td>
                         <td>
-                          {list.cust_del !== undefined && (list.cust_del.map((custdel, j) =>
-                            j === list.cust_del.length - 1 ? custdel.cd_id : custdel.cd_id + ', '
-                          ))}
+                          {list.cust_del !== undefined &&
+                            list.cust_del.map((custdel, j) =>
+                              j === list.cust_del.length - 1
+                                ? custdel.cd_id
+                                : custdel.cd_id + ", "
+                            )}
                         </td>
                         <td>
-                          {list.site_info !== undefined && (list.site_info.map((site_info, j) =>
-                            j === list.site_info.length - 1 ? site_info.site_id : site_info.site_id + ', '
-                          ))}
+                          {list.site_info !== undefined &&
+                            list.site_info.map((site_info, j) =>
+                              j === list.site_info.length - 1
+                                ? site_info.site_id
+                                : site_info.site_id + ", "
+                            )}
                         </td>
                         <td>
-                          {list.site_info !== undefined && (list.site_info.map((site_info, j) =>
-                            j === list.site_info.length - 1 ? site_info.site_id : site_info.site_name + ', '
-                          ))}
+                          {list.site_info !== undefined &&
+                            list.site_info.map((site_info, j) =>
+                              j === list.site_info.length - 1
+                                ? site_info.site_id
+                                : site_info.site_name + ", "
+                            )}
                         </td>
                         <td>{list.current_mr_status}</td>
                         <td>{list.current_milestones}</td>
@@ -435,7 +689,7 @@ class ListChangeApproval extends Component {
                         <td>{convertDateFormatfull(list.updated_on)}</td>
                         <td>{convertDateFormatfull(list.created_on)}</td>
                       </tr>
-                    )}
+                    ))}
                   </tbody>
                 </Table>
                 <div style={{ margin: "8px 0px" }}>
@@ -454,7 +708,13 @@ class ListChangeApproval extends Component {
               <CardFooter>
                 {this.state.data_mr_checked.length !== 0 && (
                   <div>
-                    <Button color='success' style={{ float: 'right' }} onClick={this.ApprovalBulk}>Approve Changes</Button>
+                    <Button
+                      color="success"
+                      style={{ float: "right" }}
+                      onClick={this.ApprovalBulk}
+                    >
+                      Approve Changes
+                    </Button>
                   </div>
                 )}
               </CardFooter>
@@ -469,14 +729,18 @@ class ListChangeApproval extends Component {
 const mapStateToProps = (state) => {
   return {
     dataLogin: state.loginData,
-    SidebarMinimize: state.minimizeSidebar
-  }
-}
+    SidebarMinimize: state.minimizeSidebar,
+  };
+};
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    SidebarMinimizer: (minimize) => dispatch({ type: ActionType.MINIMIZE_SIDEBAR, minimize_sidebar: minimize }),
-  }
-}
+    SidebarMinimizer: (minimize) =>
+      dispatch({
+        type: ActionType.MINIMIZE_SIDEBAR,
+        minimize_sidebar: minimize,
+      }),
+  };
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(ListChangeApproval);

@@ -112,7 +112,6 @@ class MaterialStock2 extends React.Component {
     this.togglecreateModal = this.togglecreateModal.bind(this);
     this.resettogglecreateModal = this.resettogglecreateModal.bind(this);
     this.requestSort = this.requestSort.bind(this);
-
   }
 
   toggle(i) {
@@ -193,7 +192,7 @@ class MaterialStock2 extends React.Component {
 
   async getDatafromAPINODE(url) {
     try {
-      let respond = await axios.get(API_URL_NODE + url, {
+      let respond = await axios.get(process.env.REACT_APP_API_URL_NODE + url, {
         headers: {
           "Content-Type": "application/json",
           Authorization: "Bearer " + this.state.tokenUser,
@@ -212,12 +211,16 @@ class MaterialStock2 extends React.Component {
 
   async postDatatoAPINODE(url, data) {
     try {
-      let respond = await axios.post(API_URL_NODE + url, data, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + this.state.tokenUser,
-        },
-      });
+      let respond = await axios.post(
+        process.env.REACT_APP_API_URL_NODE + url,
+        data,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + this.state.tokenUser,
+          },
+        }
+      );
       if (respond.status >= 200 && respond.status < 300) {
         // console.log("respond Post Data", respond);
       }
@@ -231,12 +234,16 @@ class MaterialStock2 extends React.Component {
 
   async patchDatatoAPINODE(url, data) {
     try {
-      let respond = await axios.patch(API_URL_NODE + url, data, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + this.state.tokenUser,
-        },
-      });
+      let respond = await axios.patch(
+        process.env.REACT_APP_API_URL_NODE + url,
+        data,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + this.state.tokenUser,
+          },
+        }
+      );
       if (respond.status >= 200 && respond.status < 300) {
         console.log("respond patch Data", respond);
       }
@@ -250,12 +257,15 @@ class MaterialStock2 extends React.Component {
 
   async deleteDataFromAPINODE(url) {
     try {
-      let respond = await axios.delete(API_URL_NODE + url, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + this.state.tokenUser,
-        },
-      });
+      let respond = await axios.delete(
+        process.env.REACT_APP_API_URL_NODE + url,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + this.state.tokenUser,
+          },
+        }
+      );
       if (respond.status >= 200 && respond.status < 300) {
         console.log("respond delete Data", respond);
       }

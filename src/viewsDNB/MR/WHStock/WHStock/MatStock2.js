@@ -25,8 +25,8 @@ import { Redirect, Route, Switch, Link, useLocation } from "react-router-dom";
 import * as XLSX from "xlsx";
 import queryString from "query-string";
 
-import ModalCreateNew from '../../components/ModalCreateNew'
-import ModalDelete from '../../components/ModalDelete';
+import ModalCreateNew from "../../components/ModalCreateNew";
+import ModalDelete from "../../components/ModalDelete";
 
 import "../MatStyle.css";
 
@@ -152,7 +152,7 @@ class MaterialStock2 extends React.Component {
       });
     }
     this.setState((prevState) => ({
-      modalDelete:!prevState.modalDelete,
+      modalDelete: !prevState.modalDelete,
     }));
   }
 
@@ -191,7 +191,7 @@ class MaterialStock2 extends React.Component {
 
   async getDatafromAPINODE(url) {
     try {
-      let respond = await axios.get(API_URL_NODE + url, {
+      let respond = await axios.get(process.env.REACT_APP_API_URL_NODE + url, {
         headers: {
           "Content-Type": "application/json",
           Authorization: "Bearer " + this.state.tokenUser,
@@ -210,12 +210,16 @@ class MaterialStock2 extends React.Component {
 
   async postDatatoAPINODE(url, data) {
     try {
-      let respond = await axios.post(API_URL_NODE + url, data, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + this.state.tokenUser,
-        },
-      });
+      let respond = await axios.post(
+        process.env.REACT_APP_API_URL_NODE + url,
+        data,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + this.state.tokenUser,
+          },
+        }
+      );
       if (respond.status >= 200 && respond.status < 300) {
         // console.log("respond Post Data", respond);
       }
@@ -229,12 +233,16 @@ class MaterialStock2 extends React.Component {
 
   async patchDatatoAPINODE(url, data) {
     try {
-      let respond = await axios.patch(API_URL_NODE + url, data, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + this.state.tokenUser,
-        },
-      });
+      let respond = await axios.patch(
+        process.env.REACT_APP_API_URL_NODE + url,
+        data,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + this.state.tokenUser,
+          },
+        }
+      );
       if (respond.status >= 200 && respond.status < 300) {
         console.log("respond patch Data", respond);
       }
@@ -248,12 +256,15 @@ class MaterialStock2 extends React.Component {
 
   async deleteDataFromAPINODE(url) {
     try {
-      let respond = await axios.delete(API_URL_NODE + url, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + this.state.tokenUser,
-        },
-      });
+      let respond = await axios.delete(
+        process.env.REACT_APP_API_URL_NODE + url,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + this.state.tokenUser,
+          },
+        }
+      );
       if (respond.status >= 200 && respond.status < 300) {
         console.log("respond delete Data", respond);
       }
@@ -284,7 +295,13 @@ class MaterialStock2 extends React.Component {
     // let get_wh_id = new URLSearchParams(window.location.search).get("wh_id");
     // console.log("wh id ", get_wh_id);
     let getbyWH = '{"wh_id":"' + this.props.match.params.slug + '"}';
-    this.getDatafromAPINODE("/whStock/getWhStock?q=" +getbyWH +"&lmt=" +this.state.perPage +"&pg=" +this.state.activePage
+    this.getDatafromAPINODE(
+      "/whStock/getWhStock?q=" +
+        getbyWH +
+        "&lmt=" +
+        this.state.perPage +
+        "&pg=" +
+        this.state.activePage
     ).then((res) => {
       // console.log("all data ", res.data);
       if (res.data !== undefined) {
@@ -309,10 +326,14 @@ class MaterialStock2 extends React.Component {
   getWHManagementID() {
     // let _id = new URLSearchParams(window.location.search).get("_id");
     // let getbyWH = '{"wh_id":"' + this.props.match.params.slug + '"}';
-    this.getDatafromAPINODE('/whManagement/warehouse?q={"wh_id":"' + this.props.match.params.slug + '"}').then((res) => {
+    this.getDatafromAPINODE(
+      '/whManagement/warehouse?q={"wh_id":"' +
+        this.props.match.params.slug +
+        '"}'
+    ).then((res) => {
       // console.log("all data ", res.data);
       if (res.data !== undefined) {
-        if(res.data.data !== undefined){
+        if (res.data.data !== undefined) {
           this.setState({ wh_data: res.data.data[0] });
         }
       } else {
@@ -432,19 +453,19 @@ class MaterialStock2 extends React.Component {
     }));
   }
 
-  convertDateFormat(jsondate){
+  convertDateFormat(jsondate) {
     let date = new Date(jsondate);
     let year = date.getFullYear();
-    let month = date.getMonth()+1;
+    let month = date.getMonth() + 1;
     let dt = date.getDate();
 
     if (dt < 10) {
-      dt = '0' + dt;
+      dt = "0" + dt;
     }
     if (month < 10) {
-      month = '0' + month;
+      month = "0" + month;
     }
-    return year+'-' + month + '-'+dt;
+    return year + "-" + month + "-" + dt;
   }
 
   handleChangeChecklistAll(e) {
@@ -725,7 +746,7 @@ class MaterialStock2 extends React.Component {
   }
 
   DeleteData = async () => {
-    const objData = this.state.selected_id
+    const objData = this.state.selected_id;
     this.toggleLoading();
     this.toggleDelete();
     const DelData = this.deleteDataFromAPINODE(
@@ -734,7 +755,7 @@ class MaterialStock2 extends React.Component {
       if (res.data !== undefined) {
         this.setState({ action_status: "success" });
         this.getWHStockListNext();
-        this.toggleLoading();        
+        this.toggleLoading();
       } else {
         this.setState({ action_status: "failed" }, () => {
           this.toggleLoading();
@@ -1141,31 +1162,31 @@ class MaterialStock2 extends React.Component {
 
         {/* Modal create New */}
         <ModalCreateNew
-        isOpen={this.state.createModal}
-        toggle={this.togglecreateModal}
-        className={this.props.className}
-        onClosed={this.resettogglecreateModal}
-        title='Create Material Stock'
+          isOpen={this.state.createModal}
+          toggle={this.togglecreateModal}
+          className={this.props.className}
+          onClosed={this.resettogglecreateModal}
+          title="Create Material Stock"
         >
-              <div>
-                <table>
-                  <tbody>
-                    <tr>
-                      <td>Upload File</td>
-                      <td>:</td>
-                      <td>
-                        <input
-                          type="file"
-                          onChange={this.fileHandlerMaterial.bind(this)}
-                          style={{ padding: "10px", visiblity: "hidden" }}
-                        />
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-              <ModalFooter>
-              <Button
+          <div>
+            <table>
+              <tbody>
+                <tr>
+                  <td>Upload File</td>
+                  <td>:</td>
+                  <td>
+                    <input
+                      type="file"
+                      onChange={this.fileHandlerMaterial.bind(this)}
+                      style={{ padding: "10px", visiblity: "hidden" }}
+                    />
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <ModalFooter>
+            <Button
               block
               color="link"
               className="btn-pill"
@@ -1261,16 +1282,19 @@ class MaterialStock2 extends React.Component {
         </Modal> */}
 
         {/* Modal confirmation delete */}
-        <ModalDelete  isOpen={this.state.danger}
+        <ModalDelete
+          isOpen={this.state.danger}
           toggle={this.toggleDelete}
-          className={"modal-danger " + this.props.className} title="Delete Stock"
-          body={"Are you sure ?"}>
-        <Button color="danger" onClick={this.DeleteData}>
-              Delete
-            </Button>
-            <Button color="secondary" onClick={this.toggleDelete}>
-              Cancel
-            </Button>
+          className={"modal-danger " + this.props.className}
+          title="Delete Stock"
+          body={"Are you sure ?"}
+        >
+          <Button color="danger" onClick={this.DeleteData}>
+            Delete
+          </Button>
+          <Button color="secondary" onClick={this.toggleDelete}>
+            Cancel
+          </Button>
         </ModalDelete>
 
         {/* Modal Loading */}

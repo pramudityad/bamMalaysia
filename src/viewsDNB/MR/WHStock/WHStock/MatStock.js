@@ -33,15 +33,15 @@ const Checkbox = ({
   onChange,
   value,
 }) => (
-    <input
-      type={type}
-      name={name}
-      checked={checked}
-      onChange={onChange}
-      value={value}
-      className="checkmark-dash"
-    />
-  );
+  <input
+    type={type}
+    name={name}
+    checked={checked}
+    onChange={onChange}
+    value={value}
+    className="checkmark-dash"
+  />
+);
 
 const DefaultNotif = React.lazy(() => import("../../DefaultView/DefaultNotif"));
 
@@ -165,7 +165,7 @@ class MaterialStock extends React.Component {
 
   async getDatafromAPINODE(url) {
     try {
-      let respond = await axios.get(API_URL_NODE + url, {
+      let respond = await axios.get(process.env.REACT_APP_API_URL_NODE + url, {
         headers: {
           "Content-Type": "application/json",
           Authorization: "Bearer " + this.state.tokenUser,
@@ -184,12 +184,16 @@ class MaterialStock extends React.Component {
 
   async postDatatoAPINODE(url, data) {
     try {
-      let respond = await axios.post(API_URL_NODE + url, data, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + this.state.tokenUser,
-        },
-      });
+      let respond = await axios.post(
+        process.env.REACT_APP_API_URL_NODE + url,
+        data,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + this.state.tokenUser,
+          },
+        }
+      );
       if (respond.status >= 200 && respond.status < 300) {
         // console.log("respond Post Data", respond);
       }
@@ -203,12 +207,16 @@ class MaterialStock extends React.Component {
 
   async patchDatatoAPINODE(url, data) {
     try {
-      let respond = await axios.patch(API_URL_NODE + url, data, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + this.state.tokenUser,
-        },
-      });
+      let respond = await axios.patch(
+        process.env.REACT_APP_API_URL_NODE + url,
+        data,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + this.state.tokenUser,
+          },
+        }
+      );
       if (respond.status >= 200 && respond.status < 300) {
         console.log("respond patch Data", respond);
       }
@@ -222,12 +230,15 @@ class MaterialStock extends React.Component {
 
   async deleteDataFromAPINODE(url) {
     try {
-      let respond = await axios.delete(API_URL_NODE + url, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + this.state.tokenUser,
-        },
-      });
+      let respond = await axios.delete(
+        process.env.REACT_APP_API_URL_NODE + url,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + this.state.tokenUser,
+          },
+        }
+      );
       if (respond.status >= 200 && respond.status < 300) {
         console.log("respond delete Data", respond);
       }
@@ -257,14 +268,14 @@ class MaterialStock extends React.Component {
     this.toggleLoading();
     let get_wh_id = e.target.value;
     // console.log("wh_id", get_wh_id);
-    let getbyWH = '{"wh_id":"' + get_wh_id + '"}'; 
+    let getbyWH = '{"wh_id":"' + get_wh_id + '"}';
     this.getDatafromAPINODE(
       "/whStock/getWhStock?q=" +
-      getbyWH +
-      "&lmt=" +
-      this.state.perPage +
-      "&pg=" +
-      this.state.activePage
+        getbyWH +
+        "&lmt=" +
+        this.state.perPage +
+        "&pg=" +
+        this.state.activePage
     ).then((res) => {
       // console.log("all data ", res.data);
       if (res.data !== undefined) {
@@ -272,7 +283,7 @@ class MaterialStock extends React.Component {
           all_data: res.data.data,
           prevPage: this.state.activePage,
           total_dataParent: res.data.totalResults,
-          selected_wh : get_wh_id
+          selected_wh: get_wh_id,
         });
         this.toggleLoading();
       } else {
@@ -289,14 +300,14 @@ class MaterialStock extends React.Component {
   getWHStockListNext() {
     this.toggleLoading();
     let get_wh_id = this.state.selected_wh;
-    let getbyWH = '{"wh_id":"' + get_wh_id + '"}'; 
+    let getbyWH = '{"wh_id":"' + get_wh_id + '"}';
     this.getDatafromAPINODE(
       "/whStock/getWhStock?q=" +
-      getbyWH +
-      "&lmt=" +
-      this.state.perPage +
-      "&pg=" +
-      this.state.activePage
+        getbyWH +
+        "&lmt=" +
+        this.state.perPage +
+        "&pg=" +
+        this.state.activePage
     ).then((res) => {
       // console.log("all data ", res.data);
       if (res.data !== undefined) {
@@ -304,7 +315,7 @@ class MaterialStock extends React.Component {
           all_data: res.data.data,
           prevPage: this.state.activePage,
           total_dataParent: res.data.totalResults,
-          selected_wh : get_wh_id
+          selected_wh: get_wh_id,
         });
         this.toggleLoading();
       } else {
@@ -733,7 +744,7 @@ class MaterialStock extends React.Component {
         });
       }
     });
-  }
+  };
 
   exportMatStatus = async () => {
     const wb = new Excel.Workbook();
@@ -815,31 +826,38 @@ class MaterialStock extends React.Component {
                   <div>
                     {/* Open modal for create new */}
                     {this.state.userRole.includes("Flow-PublicInternal") !==
-                      true ? (
-                        <div>
-                          <Button
-                            block
-                            color="success"
-                            onClick={this.togglecreateModal}
+                    true ? (
+                      <div>
+                        <Button
+                          block
+                          color="success"
+                          onClick={this.togglecreateModal}
                           // id="toggleCollapse1"
-                          >
-                            <i className="fa fa-plus-square" aria-hidden="true">
-                              {" "}
+                        >
+                          <i className="fa fa-plus-square" aria-hidden="true">
+                            {" "}
                             &nbsp;{" "}
-                            </i>{" "}
+                          </i>{" "}
                           New
                         </Button>
-                        </div>
-                      ) : (
-                        ""
-                      )}
+                      </div>
+                    ) : (
+                      ""
+                    )}
                   </div>
-                   &nbsp;&nbsp;&nbsp;
+                  &nbsp;&nbsp;&nbsp;
                   <div>
-                    <Button onClick={this.downloadAll} block color="ghost-warning"><i className="fa fa-download" aria-hidden="true">
-                      {" "}
-                            &nbsp;{" "}
-                    </i>{" "}Export</Button>
+                    <Button
+                      onClick={this.downloadAll}
+                      block
+                      color="ghost-warning"
+                    >
+                      <i className="fa fa-download" aria-hidden="true">
+                        {" "}
+                        &nbsp;{" "}
+                      </i>{" "}
+                      Export
+                    </Button>
                   </div>
                 </div>
                 {/* <div>
@@ -925,9 +943,7 @@ class MaterialStock extends React.Component {
                       >
                         <FormGroup row>
                           <Col xs="6" md="3">
-                            <Label for="exampleSelect">
-                              Select Warehouse
-                          </Label>
+                            <Label for="exampleSelect">Select Warehouse</Label>
                           </Col>
                           <Col xs="12" md="9">
                             <Input
@@ -935,7 +951,7 @@ class MaterialStock extends React.Component {
                               type="select"
                               name="select"
                               onChange={this.getWHStockList}
-                            // placeholder="Select Warehouse"
+                              // placeholder="Select Warehouse"
                             >
                               {this.state.wh_data.map((opt) => (
                                 <option value={opt.wh_id}>
@@ -959,7 +975,7 @@ class MaterialStock extends React.Component {
                 <Row>
                   <Col>
                     <div className="divtable">
-                      <Table responsive size="sm" >
+                      <Table responsive size="sm">
                         <thead
                           style={{ backgroundColor: "#73818f" }}
                           className="fixed"
@@ -1093,7 +1109,6 @@ class MaterialStock extends React.Component {
           </Col>
         </Row>
 
-
         {/* Modal Edit PP */}
         <Modal
           isOpen={this.state.modalMatStockEdit}
@@ -1177,8 +1192,14 @@ class MaterialStock extends React.Component {
         {/*  Modal Edit PP*/}
 
         {/* Modal create New */}
-        <Modal isOpen={this.state.createModal} toggle={this.togglecreateModal} className={this.props.className}>
-          <ModalHeader toggle={this.togglecreateModal}>Create New Stock</ModalHeader>
+        <Modal
+          isOpen={this.state.createModal}
+          toggle={this.togglecreateModal}
+          className={this.props.className}
+        >
+          <ModalHeader toggle={this.togglecreateModal}>
+            Create New Stock
+          </ModalHeader>
           <ModalBody>
             <CardBody>
               <div>
@@ -1201,9 +1222,32 @@ class MaterialStock extends React.Component {
             </CardBody>
           </ModalBody>
           <ModalFooter>
-            <Button block color="link" className="btn-pill" onClick={this.exportMatStatus}>Download Template</Button>{' '}
-            <Button block color="success" className="btn-pill" disabled={this.state.rowsXLS.length === 0} onClick={this.saveMatStockWHBulk}>Save</Button>{' '}
-            <Button block color="secondary" className="btn-pill" disabled={this.state.rowsXLS.length === 0} onClick={this.saveTruncateBulk}>Truncate</Button>
+            <Button
+              block
+              color="link"
+              className="btn-pill"
+              onClick={this.exportMatStatus}
+            >
+              Download Template
+            </Button>{" "}
+            <Button
+              block
+              color="success"
+              className="btn-pill"
+              disabled={this.state.rowsXLS.length === 0}
+              onClick={this.saveMatStockWHBulk}
+            >
+              Save
+            </Button>{" "}
+            <Button
+              block
+              color="secondary"
+              className="btn-pill"
+              disabled={this.state.rowsXLS.length === 0}
+              onClick={this.saveTruncateBulk}
+            >
+              Truncate
+            </Button>
           </ModalFooter>
         </Modal>
 
@@ -1218,10 +1262,7 @@ class MaterialStock extends React.Component {
           </ModalHeader>
           <ModalBody>Are you sure want to delete ?</ModalBody>
           <ModalFooter>
-            <Button
-              color="danger"
-              onClick={this.DeleteData}
-            >
+            <Button color="danger" onClick={this.DeleteData}>
               Delete
             </Button>
             <Button color="secondary" onClick={this.toggleDelete}>

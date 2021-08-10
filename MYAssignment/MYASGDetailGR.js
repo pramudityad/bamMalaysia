@@ -30,7 +30,7 @@ const DefaultNotif = React.lazy(() =>
   import("../../views/DefaultView/DefaultNotif")
 );
 
-// const API_URL_NODE = 'https://api2-dev.bam-id.e-dpm.com/bamidapi';
+//
 
 // const API_URL_NODE = 'http://localhost:5012/bammyapi';
 const API_URL_NODE = "https://api-dev.bam-my.e-dpm.com/bammyapi";
@@ -92,9 +92,8 @@ class MYASGDetail extends Component {
     this.addLMR = this.addLMR.bind(this);
     this.toggleaddGR = this.toggleaddGR.bind(this);
     this.createLMRChild = this.createLMRChild.bind(this);
-    this.handleChangeFormLMRChildMultiple = this.handleChangeFormLMRChildMultiple.bind(
-      this
-    );
+    this.handleChangeFormLMRChildMultiple =
+      this.handleChangeFormLMRChildMultiple.bind(this);
     this.addGR = this.addGR.bind(this);
   }
 
@@ -168,7 +167,7 @@ class MYASGDetail extends Component {
 
   async getDatafromAPINODE(url) {
     try {
-      let respond = await axios.get(API_URL_NODE + url, {
+      let respond = await axios.get(process.env.REACT_APP_API_URL_NODE + url, {
         headers: {
           "Content-Type": "application/json",
           Authorization: "Bearer " + this.state.tokenUser,
@@ -187,12 +186,16 @@ class MYASGDetail extends Component {
 
   async postDatatoAPINODE(url, data) {
     try {
-      let respond = await axios.post(API_URL_NODE + url, data, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + this.state.tokenUser,
-        },
-      });
+      let respond = await axios.post(
+        process.env.REACT_APP_API_URL_NODE + url,
+        data,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + this.state.tokenUser,
+          },
+        }
+      );
       if (respond.status >= 200 && respond.status < 300) {
         // console.log("respond Post Data", respond);
       }
@@ -206,12 +209,16 @@ class MYASGDetail extends Component {
 
   async patchDatatoAPINODE(url, data) {
     try {
-      let respond = await axios.patch(API_URL_NODE + url, data, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + this.state.tokenUser,
-        },
-      });
+      let respond = await axios.patch(
+        process.env.REACT_APP_API_URL_NODE + url,
+        data,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + this.state.tokenUser,
+          },
+        }
+      );
       if (respond.status >= 200 && respond.status < 300) {
         console.log("respond Post Data", respond);
       }
@@ -225,12 +232,15 @@ class MYASGDetail extends Component {
 
   async deleteDatafromAPINODE(url) {
     try {
-      let respond = await axios.delete(API_URL_NODE + url, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + this.state.tokenUser,
-        },
-      });
+      let respond = await axios.delete(
+        process.env.REACT_APP_API_URL_NODE + url,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + this.state.tokenUser,
+          },
+        }
+      );
       if (respond.status >= 200 && respond.status < 300) {
         console.log("respond Post Data", respond);
       }
@@ -328,8 +338,8 @@ class MYASGDetail extends Component {
     ).then((res) => {
       if (res.data !== undefined) {
         let dataLMRDetailPRPO = res.data._items[0];
-        if(dataLMRDetailPRPO === undefined){
-          dataLMRDetailPRPO = {}
+        if (dataLMRDetailPRPO === undefined) {
+          dataLMRDetailPRPO = {};
         }
         this.setState({ list_pr_po: dataLMRDetailPRPO });
       }
@@ -658,7 +668,7 @@ class MYASGDetail extends Component {
       DN_No: Data.DN_No,
       WCN_Link: Data.WCN_Link,
       Item_Status: "Stand By",
-      Work_Status: "Stand By",      
+      Work_Status: "Stand By",
     };
     const respondDelLMRChild = await this.patchDatatoAPINODE(
       "/aspassignment/UpdateGr",

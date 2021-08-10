@@ -89,7 +89,7 @@ class MatInboundPlan extends React.Component {
       createModal: false,
       sortType: 0,
       sortField: "",
-      filter_search : {},
+      filter_search: {},
     };
     this.togglePOForm = this.togglePOForm.bind(this);
     this.toggleLoading = this.toggleLoading.bind(this);
@@ -136,7 +136,7 @@ class MatInboundPlan extends React.Component {
 
   async getDatafromAPINODE(url) {
     try {
-      let respond = await axios.get(API_URL_NODE + url, {
+      let respond = await axios.get(process.env.REACT_APP_API_URL_NODE + url, {
         headers: {
           "Content-Type": "application/json",
           Authorization: "Bearer " + this.state.tokenUser,
@@ -155,12 +155,16 @@ class MatInboundPlan extends React.Component {
 
   async postDatatoAPINODE(url, data) {
     try {
-      let respond = await axios.post(API_URL_NODE + url, data, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + this.state.tokenUser,
-        },
-      });
+      let respond = await axios.post(
+        process.env.REACT_APP_API_URL_NODE + url,
+        data,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + this.state.tokenUser,
+          },
+        }
+      );
       if (respond.status >= 200 && respond.status < 300) {
         // console.log("respond Post Data", respond);
       }
@@ -174,12 +178,15 @@ class MatInboundPlan extends React.Component {
 
   async deleteDataFromAPINODE(url) {
     try {
-      let respond = await axios.delete(API_URL_NODE + url, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + this.state.tokenUser,
-        },
-      });
+      let respond = await axios.delete(
+        process.env.REACT_APP_API_URL_NODE + url,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + this.state.tokenUser,
+          },
+        }
+      );
       if (respond.status >= 200 && respond.status < 300) {
         console.log("respond delete Data", respond);
       }
@@ -193,12 +200,16 @@ class MatInboundPlan extends React.Component {
 
   async patchDatatoAPINODE(url, data) {
     try {
-      let respond = await axios.patch(API_URL_NODE + url, data, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + this.state.tokenUser,
-        },
-      });
+      let respond = await axios.patch(
+        process.env.REACT_APP_API_URL_NODE + url,
+        data,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + this.state.tokenUser,
+          },
+        }
+      );
       if (respond.status >= 200 && respond.status < 300) {
         console.log("respond Post Data", respond);
       }
@@ -255,20 +266,36 @@ class MatInboundPlan extends React.Component {
     this.toggleLoading();
     // let get_wh_id = new URLSearchParams(window.location.search).get("wh_id");
     let filter_sku =
-      this.state.filter_search.sku !== null && this.state.filter_search.sku !== undefined
-        ? '{"$regex" : "' + this.state.filter_search.sku + '", "$options" : "i"}'
+      this.state.filter_search.sku !== null &&
+      this.state.filter_search.sku !== undefined
+        ? '{"$regex" : "' +
+          this.state.filter_search.sku +
+          '", "$options" : "i"}'
         : '{"$exists" : 1}';
     let filter_project =
-      this.state.filter_search.project !== null && this.state.filter_search.project !== undefined
-        ? '{"$regex" : "' + this.state.filter_search.project + '", "$options" : "i"}'
+      this.state.filter_search.project !== null &&
+      this.state.filter_search.project !== undefined
+        ? '{"$regex" : "' +
+          this.state.filter_search.project +
+          '", "$options" : "i"}'
         : '{"$exists" : 1}';
     let filter_owner =
-      this.state.filter_search.owner !== null && this.state.filter_search.owner !== undefined
-        ? '{"$regex" : "' + this.state.filter_search.owner + '", "$options" : "i"}'
+      this.state.filter_search.owner !== null &&
+      this.state.filter_search.owner !== undefined
+        ? '{"$regex" : "' +
+          this.state.filter_search.owner +
+          '", "$options" : "i"}'
         : '{"$exists" : 1}';
     let getbyWH =
       '{"wh_id":"' +
-      this.props.match.params.slug +'","project_name":' +filter_project+',"owner_id":'+filter_owner+',"sku":'+filter_sku+'}';
+      this.props.match.params.slug +
+      '","project_name":' +
+      filter_project +
+      ',"owner_id":' +
+      filter_owner +
+      ',"sku":' +
+      filter_sku +
+      "}";
     this.getDatafromAPINODE(
       "/whInboundPlan/getWhInboundPlan?q=" +
         getbyWH +
@@ -432,7 +459,6 @@ class MatInboundPlan extends React.Component {
     }
   }
 
-
   handlePageChange(pageNumber) {
     let sortType = this.state.sortType;
     // console.log("page handle sort ", sortType);
@@ -497,14 +523,24 @@ class MatInboundPlan extends React.Component {
       this.setState({ action_status: "success" });
       this.toggleLoading();
     } else {
-      if (res.response !== undefined && res.response.data !== undefined && res.response.data.error !== undefined) {
+      if (
+        res.response !== undefined &&
+        res.response.data !== undefined &&
+        res.response.data.error !== undefined
+      ) {
         if (res.response.data.error.message !== undefined) {
-          this.setState({ action_status: 'failed', action_message: res.response.data.error.message.message });
+          this.setState({
+            action_status: "failed",
+            action_message: res.response.data.error.message.message,
+          });
         } else {
-          this.setState({ action_status: 'failed', action_message: res.response.data.error });
+          this.setState({
+            action_status: "failed",
+            action_message: res.response.data.error,
+          });
         }
       } else {
-        this.setState({ action_status: 'failed' });
+        this.setState({ action_status: "failed" });
       }
       this.toggleLoading();
     }
@@ -527,14 +563,24 @@ class MatInboundPlan extends React.Component {
       this.setState({ action_status: "success" });
       this.toggleLoading();
     } else {
-      if (res.response !== undefined && res.response.data !== undefined && res.response.data.error !== undefined) {
+      if (
+        res.response !== undefined &&
+        res.response.data !== undefined &&
+        res.response.data.error !== undefined
+      ) {
         if (res.response.data.error.message !== undefined) {
-          this.setState({ action_status: 'failed', action_message: res.response.data.error.message.message });
+          this.setState({
+            action_status: "failed",
+            action_message: res.response.data.error.message.message,
+          });
         } else {
-          this.setState({ action_status: 'failed', action_message: res.response.data.error });
+          this.setState({
+            action_status: "failed",
+            action_message: res.response.data.error,
+          });
         }
       } else {
-        this.setState({ action_status: 'failed' });
+        this.setState({ action_status: "failed" });
       }
       this.toggleLoading();
     }
@@ -698,7 +744,10 @@ class MatInboundPlan extends React.Component {
     }
 
     const allocexport = await wb.xlsx.writeBuffer();
-    saveAs(new Blob([allocexport]), "All Material Inbound "+this.state.selected_wh+".xlsx");
+    saveAs(
+      new Blob([allocexport]),
+      "All Material Inbound " + this.state.selected_wh + ".xlsx"
+    );
   }
 
   DeleteData = async () => {
@@ -819,7 +868,6 @@ class MatInboundPlan extends React.Component {
         this.getListSort();
       });
     }
-
   }
 
   render() {
@@ -919,38 +967,52 @@ class MatInboundPlan extends React.Component {
                     <div>
                       <table>
                         <tbody>
-                        <tr>
-                            <td><b>Warehouse Name</b></td>
+                          <tr>
+                            <td>
+                              <b>Warehouse Name</b>
+                            </td>
                             <td>:</td>
                             <td>{this.state.wh_data.wh_name}</td>
                           </tr>
                           <tr>
-                            <td><b>Warehouse ID</b></td>
+                            <td>
+                              <b>Warehouse ID</b>
+                            </td>
                             <td>:</td>
                             <td>{this.state.wh_data.wh_id}</td>
                           </tr>
                           <tr>
-                            <td><b>Warehouse Manager</b></td>
+                            <td>
+                              <b>Warehouse Manager</b>
+                            </td>
                             <td>:</td>
                             <td>{this.state.wh_data.wh_manager}</td>
                           </tr>
                           <tr>
-                            <td><b>Warehouse Address</b></td>
+                            <td>
+                              <b>Warehouse Address</b>
+                            </td>
                             <td>:</td>
                             <td>{this.state.wh_data.address}</td>
                           </tr>
                           <tr>
-                            <td><b>Latitude</b></td>
+                            <td>
+                              <b>Latitude</b>
+                            </td>
                             <td>:</td>
                             <td>{this.state.wh_data.latitude}</td>
                           </tr>
                           <tr>
-                            <td><b>Longitude</b></td>
+                            <td>
+                              <b>Longitude</b>
+                            </td>
                             <td>:</td>
                             <td>{this.state.wh_data.longitude}</td>
                           </tr>
                           <tr>
-                            <td><b>Warehouse Owner</b></td>
+                            <td>
+                              <b>Warehouse Owner</b>
+                            </td>
                             <td>:</td>
                             <td>{this.state.wh_data.owner}</td>
                           </tr>
@@ -963,34 +1025,35 @@ class MatInboundPlan extends React.Component {
               <CardBody>
                 <Row>
                   <Col>
-                  <div
-                        style={{
-                          float: "left",
-                          margin: "5px",
-                          display: "inline-flex",
-                        }}
+                    <div
+                      style={{
+                        float: "left",
+                        margin: "5px",
+                        display: "inline-flex",
+                      }}
+                    >
+                      <Input
+                        type="select"
+                        name="select"
+                        id="selectLimit"
+                        onChange={this.handleChangeLimit}
                       >
-                        <Input
-                          type="select"
-                          name="select"
-                          id="selectLimit"
-                          onChange={this.handleChangeLimit}
-                        >
-                          <option value={"10"}>10</option>
-                          <option value={"25"}>25</option>
-                          <option value={"50"}>50</option>
-                          <option value={"100"}>100</option>
-                          <option value={"noPg=1"}>All</option>
-                        </Input>
-                      </div>
-                    <div style={{
-                          float: "right",
-                          margin: "5px",
-                          display: "inline-flex",
-                        }}
-                      >
+                        <option value={"10"}>10</option>
+                        <option value={"25"}>25</option>
+                        <option value={"50"}>50</option>
+                        <option value={"100"}>100</option>
+                        <option value={"noPg=1"}>All</option>
+                      </Input>
+                    </div>
+                    <div
+                      style={{
+                        float: "right",
+                        margin: "5px",
+                        display: "inline-flex",
+                      }}
+                    >
                       <input
-                        style={{marginLeft : '10px', marginRight : '10px'}}
+                        style={{ marginLeft: "10px", marginRight: "10px" }}
                         className="search-box-material"
                         type="text"
                         name="owner"
@@ -1000,7 +1063,7 @@ class MatInboundPlan extends React.Component {
                         value={this.state.filter_search.owner}
                       />
                       <input
-                        style={{marginLeft : '10px',marginRight : '10px'}}
+                        style={{ marginLeft: "10px", marginRight: "10px" }}
                         className="search-box-material"
                         type="text"
                         name="project"
@@ -1010,7 +1073,7 @@ class MatInboundPlan extends React.Component {
                         value={this.state.filter_search.project}
                       />
                       <input
-                        style={{marginLeft : '10px',marginRight : '10px'}}
+                        style={{ marginLeft: "10px", marginRight: "10px" }}
                         className="search-box-material"
                         type="text"
                         name="sku"

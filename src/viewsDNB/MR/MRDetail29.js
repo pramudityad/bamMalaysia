@@ -31,7 +31,7 @@ import { ExcelRenderer } from "react-excel-renderer";
 import "./MatStyle.css";
 import ModalForm from "../components/ModalForm";
 
-import {convertDateFormatfull} from '../../helper/basicFunction'
+import { convertDateFormatfull } from "../../helper/basicFunction";
 
 const DefaultNotif = React.lazy(() =>
   import("../../views/DefaultView/DefaultNotif")
@@ -70,7 +70,18 @@ const Checkbox = ({
 
 const API_URL_NODE = "https://api2-dev.bam-id.e-dpm.com/bamidapi";
 
-const status_can_edit_material = [ "PLANTSPEC ASSIGNED", "PLANTSPEC UPDATED", "MR REQUESTED", "MR CANCELED", "MR APPROVED", "MR REJECTED", "MR UPDATED", "ORDER PROCESSING START", "MR NEED REVISION", "PS NEED REVISION"];
+const status_can_edit_material = [
+  "PLANTSPEC ASSIGNED",
+  "PLANTSPEC UPDATED",
+  "MR REQUESTED",
+  "MR CANCELED",
+  "MR APPROVED",
+  "MR REJECTED",
+  "MR UPDATED",
+  "ORDER PROCESSING START",
+  "MR NEED REVISION",
+  "PS NEED REVISION",
+];
 
 class MRDetail extends Component {
   constructor(props) {
@@ -104,8 +115,8 @@ class MRDetail extends Component {
       asp_data: [],
       modal_revision: false,
       revision_note: "",
-      wbs_cd_id_data : [],
-      location_mr : {},
+      wbs_cd_id_data: [],
+      location_mr: {},
     };
     this.getQtyMRPPNE = this.getQtyMRPPNE.bind(this);
     this.getQtyMRPPFE = this.getQtyMRPPFE.bind(this);
@@ -137,13 +148,13 @@ class MRDetail extends Component {
 
   toggleModalRevision(e) {
     this.setState((prevState) => ({
-      modal_revision: !prevState.modal_revision
+      modal_revision: !prevState.modal_revision,
     }));
   }
 
   handleRevisionNote(e) {
     let value = e.target.value;
-    this.setState({ revision_note: value })
+    this.setState({ revision_note: value });
   }
 
   async getDatafromAPIEXEL(url) {
@@ -169,14 +180,16 @@ class MRDetail extends Component {
   getASPList() {
     // switch (this.props.dataLogin.account_id) {
     //   case "xl":
-    this.getDatafromAPIEXEL('/vendor_data_non_page?where={"Type":"DSP"}').then((res) => {
-      // console.log("asp data ", res.data);
-      if (res.data !== undefined) {
-        this.setState({ asp_data: res.data._items });
-      } else {
-        this.setState({ asp_data: [] });
+    this.getDatafromAPIEXEL('/vendor_data_non_page?where={"Type":"DSP"}').then(
+      (res) => {
+        // console.log("asp data ", res.data);
+        if (res.data !== undefined) {
+          this.setState({ asp_data: res.data._items });
+        } else {
+          this.setState({ asp_data: [] });
+        }
       }
-    });
+    );
     //     break;
     //   default:
     //     break;
@@ -288,7 +301,7 @@ class MRDetail extends Component {
 
   async getDataFromAPINODE(url) {
     try {
-      let respond = await axios.get(API_URL_NODE + url, {
+      let respond = await axios.get(process.env.REACT_APP_API_URL_NODE + url, {
         headers: {
           "Content-Type": "application/json",
           Authorization: "Bearer " + this.state.tokenUser,
@@ -307,12 +320,16 @@ class MRDetail extends Component {
 
   async postDatatoAPINODE(url, data) {
     try {
-      let respond = await axios.post(API_URL_NODE + url, data, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + this.state.tokenUser,
-        },
-      });
+      let respond = await axios.post(
+        process.env.REACT_APP_API_URL_NODE + url,
+        data,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + this.state.tokenUser,
+          },
+        }
+      );
       if (respond.status >= 200 && respond.status < 300) {
         console.log("respond post data", respond);
       }
@@ -326,12 +343,16 @@ class MRDetail extends Component {
 
   async patchDatatoAPINODE(url, data) {
     try {
-      let respond = await axios.patch(API_URL_NODE + url, data, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + this.state.tokenUser,
-        },
-      });
+      let respond = await axios.patch(
+        process.env.REACT_APP_API_URL_NODE + url,
+        data,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + this.state.tokenUser,
+          },
+        }
+      );
       if (respond.status >= 200 && respond.status < 300) {
         console.log("respond Post Data", respond);
       }
@@ -348,20 +369,20 @@ class MRDetail extends Component {
     }
   }
 
-  async getDatafromAPIXL(url){
+  async getDatafromAPIXL(url) {
     try {
-      let respond = await axios.get(API_URL_XL +url, {
-        headers : {'Content-Type':'application/json'},
+      let respond = await axios.get(API_URL_XL + url, {
+        headers: { "Content-Type": "application/json" },
         auth: {
           username: usernameXL,
-          password: passwordXL
+          password: passwordXL,
         },
-      })
-      if(respond.status >= 200 && respond.status < 300){
+      });
+      if (respond.status >= 200 && respond.status < 300) {
         console.log("respond Get Data", respond);
       }
       return respond;
-    }catch (err) {
+    } catch (err) {
       let respond = err;
       console.log("respond Get Data", err);
       return respond;
@@ -410,44 +431,47 @@ class MRDetail extends Component {
     this.getDataFromAPINODE("/matreq/" + _id_MR).then((resMR) => {
       if (resMR.data !== undefined) {
         this.getMRLocation(_id_MR);
-        if(resMR.data.dsp_company === null){
+        if (resMR.data.dsp_company === null) {
           this.getASPList();
         }
         this.setState({ data_mr: resMR.data }, () => {
-          if(this.state.data_mr.cust_del !== undefined){
-            this.getDataCDID(this.state.data_mr.cust_del.map(e => e.cd_id));
+          if (this.state.data_mr.cust_del !== undefined) {
+            this.getDataCDID(this.state.data_mr.cust_del.map((e) => e.cd_id));
           }
-          this.setState(
-            { mr_pp: resMR.data.packages },
-            () => {
-              if (
-                status_can_edit_material.includes(resMR.data.current_mr_status)
-              ) {
-                this.getDataWarehouse(resMR.data.packages);
-                this.getDataInbound(resMR.data.packages);
-              }
-              this.prepareView();
+          this.setState({ mr_pp: resMR.data.packages }, () => {
+            if (
+              status_can_edit_material.includes(resMR.data.current_mr_status)
+            ) {
+              this.getDataWarehouse(resMR.data.packages);
+              this.getDataInbound(resMR.data.packages);
             }
-          );
+            this.prepareView();
+          });
         });
       }
     });
   }
 
-  getMRLocation(_id_MR){
-    this.getDataFromAPINODE('/getMRLocationById/' + _id_MR).then((resLocMR) => {
+  getMRLocation(_id_MR) {
+    this.getDataFromAPINODE("/getMRLocationById/" + _id_MR).then((resLocMR) => {
       if (resLocMR.data !== undefined) {
-        this.setState({location_mr : resLocMR.data});
+        this.setState({ location_mr: resLocMR.data });
       }
     });
   }
 
-  async getDataCDID(array_cd_id){
-    let array_in_cdid = '"'+array_cd_id.join('", "')+'"';
-    let projection = '&projection={"WP_ID" : 1, "C1003_WBS_HW" : 1, "C1008_WBS_HWAC" : 1, "C1013_WBS_LCM" : 1, "C1018_WBS_PNRO" : 1, "C1024_WBS_PNDO" : 1, "C1032_WBS_HW_Bulk" : 1, "C1033_WBS_LCM_Bulk" : 1, "C1034_WBS_PowHW_Site_Basis" : 1, "C1035_WBS_PowLCM_Site_Basis" : 1, "C1036_WBS_Kathrein" : 1}'
-    const getWPID = await this.getDatafromAPIXL('/custdel_sorted?where={"WP_ID":{"$in" : ['+array_in_cdid+']}}'+projection);
-    if(getWPID !== undefined && getWPID.data !== undefined) {
-      this.setState({ wbs_cd_id_data : getWPID.data._items});
+  async getDataCDID(array_cd_id) {
+    let array_in_cdid = '"' + array_cd_id.join('", "') + '"';
+    let projection =
+      '&projection={"WP_ID" : 1, "C1003_WBS_HW" : 1, "C1008_WBS_HWAC" : 1, "C1013_WBS_LCM" : 1, "C1018_WBS_PNRO" : 1, "C1024_WBS_PNDO" : 1, "C1032_WBS_HW_Bulk" : 1, "C1033_WBS_LCM_Bulk" : 1, "C1034_WBS_PowHW_Site_Basis" : 1, "C1035_WBS_PowLCM_Site_Basis" : 1, "C1036_WBS_Kathrein" : 1}';
+    const getWPID = await this.getDatafromAPIXL(
+      '/custdel_sorted?where={"WP_ID":{"$in" : [' +
+        array_in_cdid +
+        "]}}" +
+        projection
+    );
+    if (getWPID !== undefined && getWPID.data !== undefined) {
+      this.setState({ wbs_cd_id_data: getWPID.data._items });
     }
   }
 
@@ -660,14 +684,16 @@ class MRDetail extends Component {
   //   }
   // }
 
-  submitTSSR(_id_ps){
-    this.patchDatatoAPINODE('/plantspec/submitPlantspec/'+_id_ps).then(res => {
-      if(res.data !== undefined){
-        // this.setState({ action_status : "success" });
-      }else{
-        // this.setState({ action_status : "failed" });
+  submitTSSR(_id_ps) {
+    this.patchDatatoAPINODE("/plantspec/submitPlantspec/" + _id_ps).then(
+      (res) => {
+        if (res.data !== undefined) {
+          // this.setState({ action_status : "success" });
+        } else {
+          // this.setState({ action_status : "failed" });
+        }
       }
-    })
+    );
   }
 
   requestForApproval() {
@@ -686,25 +712,41 @@ class MRDetail extends Component {
   ApproveMR(e) {
     const _id = this.props.match.params.id;
     let body = this.state.selected_dsp;
-    if(this.state.data_mr.dsp_company !== null && this.state.data_mr.dsp_company !== undefined){
-      body = {"dsp_company_code" : this.state.data_mr.dsp_company_code, "dsp_company": this.state.data_mr.dsp_company}
+    if (
+      this.state.data_mr.dsp_company !== null &&
+      this.state.data_mr.dsp_company !== undefined
+    ) {
+      body = {
+        dsp_company_code: this.state.data_mr.dsp_company_code,
+        dsp_company: this.state.data_mr.dsp_company,
+      };
     }
     // console.log('_id ',_id);
     // console.log('body ',body);
-    this.patchDatatoAPINODE("/matreq/approveMatreq/" + _id,  body ).then(
+    this.patchDatatoAPINODE("/matreq/approveMatreq/" + _id, body).then(
       (res) => {
         if (res.data !== undefined) {
           this.setState({ action_status: "success" });
           this.toggleModalapprove();
         } else {
-          if (res.response !== undefined && res.response.data !== undefined && res.response.data.error !== undefined) {
+          if (
+            res.response !== undefined &&
+            res.response.data !== undefined &&
+            res.response.data.error !== undefined
+          ) {
             if (res.response.data.error.message !== undefined) {
-              this.setState({ action_status: 'failed', action_message: res.response.data.error.message });
+              this.setState({
+                action_status: "failed",
+                action_message: res.response.data.error.message,
+              });
             } else {
-              this.setState({ action_status: 'failed', action_message: res.response.data.error });
+              this.setState({
+                action_status: "failed",
+                action_message: res.response.data.error,
+              });
             }
           } else {
-            this.setState({ action_status: 'failed' });
+            this.setState({ action_status: "failed" });
           }
           this.toggleModalapprove();
         }
@@ -834,8 +876,8 @@ class MRDetail extends Component {
 
     let listMatId = [...new Set(list_material_id)];
     let matIdData = {
-      "list_material_id" : listMatId
-    }
+      list_material_id: listMatId,
+    };
 
     const getMaterialVariant = await this.postDatatoAPINODE(
       "/variants/materialId",
@@ -860,8 +902,11 @@ class MRDetail extends Component {
       sku_list.push(dataMaterialVariant[j].material_id);
     }
     const list_qtySKU = [];
-    const getQtyfromWHbySKU = await this.postDatatoAPINODE('/whStock/getWhStockbySku', {"sku": sku_list }).then((res) => {
-      if(res.data !== undefined && res.status >= 200 && res.status < 400){
+    const getQtyfromWHbySKU = await this.postDatatoAPINODE(
+      "/whStock/getWhStockbySku",
+      { sku: sku_list }
+    ).then((res) => {
+      if (res.data !== undefined && res.status >= 200 && res.status < 400) {
         const dataSKU = res.data.data;
         // console.log('dataSKU ', dataSKU);
         for (let i = 0; i < dataSKU.length; i++) {
@@ -927,32 +972,93 @@ class MRDetail extends Component {
       "Material Source",
       "CPO Number",
       "PS No.",
-      "Program"
+      "Program",
     ];
     ws.addRow(headerRow);
-    ws.getCell('A5').border = {top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'} };
-    ws.getCell('B5').border = {top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'} };
-    ws.getCell('C5').border = {top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'} };
-    ws.getCell('D5').border = {top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'} };
-    ws.getCell('E5').border = {top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'} };
-    ws.getCell('F5').border = {top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'} };
-    ws.getCell('G5').border = {top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'} };
-    ws.getCell('H5').border = {top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'} };
-    ws.getCell('I5').border = {top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'} };
-    ws.getCell('J5').border = {top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'} };
-    ws.getCell('A5').font  = {bold : true };
-    ws.getCell('B5').font  = {bold : true };
-    ws.getCell('C5').font  = {bold : true };
-    ws.getCell('D5').font  = {bold : true };
-    ws.getCell('E5').font  = {bold : true };
-    ws.getCell('F5').font  = {bold : true };
-    ws.getCell('G5').font  = {bold : true };
-    ws.getCell('H5').font  = {bold : true };
-    ws.getCell('I5').font  = {bold : true };
-    ws.getCell('J5').font  = {bold : true };
+    ws.getCell("A5").border = {
+      top: { style: "thin" },
+      left: { style: "thin" },
+      bottom: { style: "thin" },
+      right: { style: "thin" },
+    };
+    ws.getCell("B5").border = {
+      top: { style: "thin" },
+      left: { style: "thin" },
+      bottom: { style: "thin" },
+      right: { style: "thin" },
+    };
+    ws.getCell("C5").border = {
+      top: { style: "thin" },
+      left: { style: "thin" },
+      bottom: { style: "thin" },
+      right: { style: "thin" },
+    };
+    ws.getCell("D5").border = {
+      top: { style: "thin" },
+      left: { style: "thin" },
+      bottom: { style: "thin" },
+      right: { style: "thin" },
+    };
+    ws.getCell("E5").border = {
+      top: { style: "thin" },
+      left: { style: "thin" },
+      bottom: { style: "thin" },
+      right: { style: "thin" },
+    };
+    ws.getCell("F5").border = {
+      top: { style: "thin" },
+      left: { style: "thin" },
+      bottom: { style: "thin" },
+      right: { style: "thin" },
+    };
+    ws.getCell("G5").border = {
+      top: { style: "thin" },
+      left: { style: "thin" },
+      bottom: { style: "thin" },
+      right: { style: "thin" },
+    };
+    ws.getCell("H5").border = {
+      top: { style: "thin" },
+      left: { style: "thin" },
+      bottom: { style: "thin" },
+      right: { style: "thin" },
+    };
+    ws.getCell("I5").border = {
+      top: { style: "thin" },
+      left: { style: "thin" },
+      bottom: { style: "thin" },
+      right: { style: "thin" },
+    };
+    ws.getCell("J5").border = {
+      top: { style: "thin" },
+      left: { style: "thin" },
+      bottom: { style: "thin" },
+      right: { style: "thin" },
+    };
+    ws.getCell("A5").font = { bold: true };
+    ws.getCell("B5").font = { bold: true };
+    ws.getCell("C5").font = { bold: true };
+    ws.getCell("D5").font = { bold: true };
+    ws.getCell("E5").font = { bold: true };
+    ws.getCell("F5").font = { bold: true };
+    ws.getCell("G5").font = { bold: true };
+    ws.getCell("H5").font = { bold: true };
+    ws.getCell("I5").font = { bold: true };
+    ws.getCell("J5").font = { bold: true };
     ws.addRow([]);
     for (let i = 0; i < dataItemMR.length; i++) {
-      ws.addRow([dataItemMR[i].pp_id, dataItemMR[i].product_name, null, null, dataItemMR[i].uom, null, null, null, dataItemMR[i].no_tssr_boq_site, dataItemMR[i].program]);
+      ws.addRow([
+        dataItemMR[i].pp_id,
+        dataItemMR[i].product_name,
+        null,
+        null,
+        dataItemMR[i].uom,
+        null,
+        null,
+        null,
+        dataItemMR[i].no_tssr_boq_site,
+        dataItemMR[i].program,
+      ]);
       for (let j = 0; j < dataItemMR[i].materials.length; j++) {
         let dataMatIdx = dataItemMR[i].materials[j];
         ws.addRow([
@@ -986,14 +1092,70 @@ class MRDetail extends Component {
     const inboundWH = this.state.material_inbound;
     let dataMaterialVariant = [];
 
-    let headerRow = ["REC_TYPE", "FILLER", "COMP_CD", "CUST_DELIV_NO", "CUST_ID", "CUST_CNTRY_CD", "ETA_SHP_DT", "SHP_DT", "SITE_LOC_ID", "SITE_CNTRY_CD", "SEND_SYSTEM", "SEND_UNIT", "SALES_GRP", "PRNO ", "SHP_NO", "END_CUST_NM", "END_CUST_ID", "CUST_NM", "SALES_ORD_NO", "PACK_ID", "PURCH_ORD_NO", "SER_NO", "CIN", "GI_Type", "Shp_Pnt", "Plant_ID"];
+    let headerRow = [
+      "REC_TYPE",
+      "FILLER",
+      "COMP_CD",
+      "CUST_DELIV_NO",
+      "CUST_ID",
+      "CUST_CNTRY_CD",
+      "ETA_SHP_DT",
+      "SHP_DT",
+      "SITE_LOC_ID",
+      "SITE_CNTRY_CD",
+      "SEND_SYSTEM",
+      "SEND_UNIT",
+      "SALES_GRP",
+      "PRNO ",
+      "SHP_NO",
+      "END_CUST_NM",
+      "END_CUST_ID",
+      "CUST_NM",
+      "SALES_ORD_NO",
+      "PACK_ID",
+      "PURCH_ORD_NO",
+      "SER_NO",
+      "CIN",
+      "GI_Type",
+      "Shp_Pnt",
+      "Plant_ID",
+    ];
     ws.addRow(headerRow);
-    const dispatchData = dataMR.mr_status.find(e => e.mr_status_value === "DISPATCH");
-    const dataSite = dataMR.site_info[0].site_id
+    const dispatchData = dataMR.mr_status.find(
+      (e) => e.mr_status_value === "DISPATCH"
+    );
+    const dataSite = dataMR.site_info[0].site_id;
     for (let i = 0; i < dataItemMR.length; i++) {
       for (let j = 0; j < dataItemMR[i].materials.length; j++) {
         let dataMatIdx = dataItemMR[i].materials[j];
-        ws.addRow(["K", null, 2089, dataMR.mr_id, "XL", "ID", null, dispatchData.mr_status_date, dataMR.site_info[0].site_id,"ID", "DPM", 1105, null, dataMatIdx.material_id, dataMR.no_shipment, "XL Axiata", "XL", "XL Axiata", null, null, dataMatIdx.cpo_number, null, null, null, null, null]);
+        ws.addRow([
+          "K",
+          null,
+          2089,
+          dataMR.mr_id,
+          "XL",
+          "ID",
+          null,
+          dispatchData.mr_status_date,
+          dataMR.site_info[0].site_id,
+          "ID",
+          "DPM",
+          1105,
+          null,
+          dataMatIdx.material_id,
+          dataMR.no_shipment,
+          "XL Axiata",
+          "XL",
+          "XL Axiata",
+          null,
+          null,
+          dataMatIdx.cpo_number,
+          null,
+          null,
+          null,
+          null,
+          null,
+        ]);
       }
     }
 
@@ -1011,7 +1173,7 @@ class MRDetail extends Component {
       "/matreq/updatePlantSpecWithVariant/" + dataMR._id,
       { identifier: "MR", data: dataXLS }
     );
-    if(dataMR.id_plantspec_doc !== undefined){
+    if (dataMR.id_plantspec_doc !== undefined) {
       let submitPS = this.submitTSSR(dataMR.id_plantspec_doc);
     }
     if (
@@ -1046,14 +1208,15 @@ class MRDetail extends Component {
   async needReviseMR() {
     const dataMR = this.state.data_mr;
     let patchDataMR = await this.patchDatatoAPINODE(
-      "/matreq/needReviseMRFromWH/" + dataMR._id, {"note_value" : this.state.revision_note}
+      "/matreq/needReviseMRFromWH/" + dataMR._id,
+      { note_value: this.state.revision_note }
     );
     if (
       patchDataMR.data !== undefined &&
       patchDataMR.status >= 200 &&
       patchDataMR.status <= 300
     ) {
-      this.setState({ action_status: "success", modal_revision : false });
+      this.setState({ action_status: "success", modal_revision: false });
     } else {
       if (
         patchDataMR.response !== undefined &&
@@ -1069,7 +1232,7 @@ class MRDetail extends Component {
           this.setState({
             action_status: "failed",
             action_message: patchDataMR.response.data.error,
-            modal_revision : false
+            modal_revision: false,
           });
         }
       } else {
@@ -1078,10 +1241,10 @@ class MRDetail extends Component {
     }
   }
 
-  tableViewWBSCDID(cd_id){
+  tableViewWBSCDID(cd_id) {
     const dataCDWBS = this.state.wbs_cd_id_data;
-    let dataCDWBSbyCDID = dataCDWBS.find(e => e.WP_ID === cd_id);
-    if(dataCDWBSbyCDID !== undefined){
+    let dataCDWBSbyCDID = dataCDWBS.find((e) => e.WP_ID === cd_id);
+    if (dataCDWBSbyCDID !== undefined) {
       return (
         <Fragment>
           <td>{dataCDWBSbyCDID.C1003_WBS_HW}</td>
@@ -1095,9 +1258,9 @@ class MRDetail extends Component {
           <td>{dataCDWBSbyCDID.C1035_WBS_PowLCM_Site_Basis}</td>
           <td>{dataCDWBSbyCDID.C1036_WBS_Kathrein}</td>
         </Fragment>
-      )
-    }else{
-      return(
+      );
+    } else {
+      return (
         <Fragment>
           <td></td>
           <td></td>
@@ -1110,7 +1273,7 @@ class MRDetail extends Component {
           <td></td>
           <td></td>
         </Fragment>
-      )
+      );
     }
   }
 
@@ -1119,13 +1282,14 @@ class MRDetail extends Component {
       backgroundColor: "#e3e3e3",
     };
 
-    function MapsTrekking(props){
-      return (<GMap/>)
+    function MapsTrekking(props) {
+      return <GMap />;
     }
 
     // const MapLoader = withScriptjs(MapsTrekking);
 
-    let qty_wh = undefined,qty_inbound = undefined;
+    let qty_wh = undefined,
+      qty_inbound = undefined;
     return (
       <div>
         <DefaultNotif
@@ -1349,9 +1513,7 @@ class MRDetail extends Component {
                             <div className="mr-detail__body--header-detail">
                               <span>Shipment ID</span>
                             </div>
-                            <div>
-                              {this.state.data_mr.no_shipment}
-                            </div>
+                            <div>{this.state.data_mr.no_shipment}</div>
                           </div>
                         </div>
 
@@ -1395,47 +1557,54 @@ class MRDetail extends Component {
                         <hr className="mr-detail__line" />
 
                         <div className="mr-detail__body--flex-long">
-                            <Fragment>
-                              {this.state.data_mr.cust_del !== undefined ? (
-                                this.state.data_mr.cust_del.map((e) => (
-                                  <div className="mr-detail__flex-body--25">
-                                    <div className="mr-detail__body--header-detail">
-                                      <span>WBS of CD ID {e.cd_id}</span>
-                                    </div>
-                                    <div>
-                                      <Table responsive striped bordered size="sm">
-                                        <thead>
-                                          <tr style={{fontSize : '10.5px'}}>
-                                            <th>WBS HW</th>
-                                            <th>WBS HWAC</th>
-                                            <th>WBS LCM</th>
-                                            <th>WBS PNRO</th>
-                                            <th>WBS PNDO</th>
-                                            <th>WBS HW Bulk</th>
-                                            <th>WBS LCM Bulk</th>
-                                            <th>WBS PowHW Site Basis</th>
-                                            <th>WBS PowLCM Site Basis</th>
-                                            <th>WBS Kathrein</th>
-                                          </tr>
-                                        </thead>
-                                        <tbody>
-                                          <tr style={{fontSize : '10.5px'}}>
-                                            {this.tableViewWBSCDID(e.cd_id)}
-                                          </tr>
-                                        </tbody>
-                                      </Table>
-                                    </div>
-                                  </div>
-                                ))
-                              ) : (
+                          <Fragment>
+                            {this.state.data_mr.cust_del !== undefined ? (
+                              this.state.data_mr.cust_del.map((e) => (
                                 <div className="mr-detail__flex-body--25">
                                   <div className="mr-detail__body--header-detail">
-                                    <span>WBS of CD ID {this.state.data_mr.cd_id}</span>
+                                    <span>WBS of CD ID {e.cd_id}</span>
                                   </div>
-                                  <div>{this.state.mr_site_NE.site_id}</div>
+                                  <div>
+                                    <Table
+                                      responsive
+                                      striped
+                                      bordered
+                                      size="sm"
+                                    >
+                                      <thead>
+                                        <tr style={{ fontSize: "10.5px" }}>
+                                          <th>WBS HW</th>
+                                          <th>WBS HWAC</th>
+                                          <th>WBS LCM</th>
+                                          <th>WBS PNRO</th>
+                                          <th>WBS PNDO</th>
+                                          <th>WBS HW Bulk</th>
+                                          <th>WBS LCM Bulk</th>
+                                          <th>WBS PowHW Site Basis</th>
+                                          <th>WBS PowLCM Site Basis</th>
+                                          <th>WBS Kathrein</th>
+                                        </tr>
+                                      </thead>
+                                      <tbody>
+                                        <tr style={{ fontSize: "10.5px" }}>
+                                          {this.tableViewWBSCDID(e.cd_id)}
+                                        </tr>
+                                      </tbody>
+                                    </Table>
+                                  </div>
                                 </div>
-                              )}
-                            </Fragment>
+                              ))
+                            ) : (
+                              <div className="mr-detail__flex-body--25">
+                                <div className="mr-detail__body--header-detail">
+                                  <span>
+                                    WBS of CD ID {this.state.data_mr.cd_id}
+                                  </span>
+                                </div>
+                                <div>{this.state.mr_site_NE.site_id}</div>
+                              </div>
+                            )}
+                          </Fragment>
                         </div>
 
                         <hr className="mr-detail__line" />
@@ -1548,19 +1717,23 @@ class MRDetail extends Component {
                                     >
                                       Download MR PS
                                     </Button>
-                                    {(this.state.data_mr.mr_status !== undefined && this.state.data_mr.mr_status.find(e => e.mr_status_value === "DISPATCH") !== undefined ) && (
-                                      <Button
-                                        size="sm"
-                                        color="secondary"
-                                        style={{
-                                          float: "right",
-                                          marginRight: "10px",
-                                        }}
-                                        onClick={this.downloadMaterialMRTRACY}
-                                      >
-                                        TRACY Format
-                                      </Button>
-                                    )}
+                                    {this.state.data_mr.mr_status !==
+                                      undefined &&
+                                      this.state.data_mr.mr_status.find(
+                                        (e) => e.mr_status_value === "DISPATCH"
+                                      ) !== undefined && (
+                                        <Button
+                                          size="sm"
+                                          color="secondary"
+                                          style={{
+                                            float: "right",
+                                            marginRight: "10px",
+                                          }}
+                                          onClick={this.downloadMaterialMRTRACY}
+                                        >
+                                          TRACY Format
+                                        </Button>
+                                      )}
                                   </td>
                                 </tr>
                                 {this.state.mr_site_FE !== null &&
@@ -1633,7 +1806,12 @@ class MRDetail extends Component {
                       </Col>
                     </Row>
                     <hr className="upload-line-ordering"></hr>
-                    <div>PlantSpec Group No : {this.state.data_mr !== null ? this.state.data_mr.no_plantspec : ""}</div>
+                    <div>
+                      PlantSpec Group No :{" "}
+                      {this.state.data_mr !== null
+                        ? this.state.data_mr.no_plantspec
+                        : ""}
+                    </div>
                     <div className="divtable2">
                       <Table hover bordered striped responsive size="sm">
                         <thead
@@ -1728,7 +1906,11 @@ class MRDetail extends Component {
                             >
                               CPO Number
                             </th>
-                            <th rowSpan="2" className="fixedhead" style={{verticalAlign: "middle" }}>
+                            <th
+                              rowSpan="2"
+                              className="fixedhead"
+                              style={{ verticalAlign: "middle" }}
+                            >
                               PS No. / Material Source
                             </th>
                           </tr>
@@ -1765,10 +1947,144 @@ class MRDetail extends Component {
                           )}
                         </thead>
                         {this.state.data_mr !== null &&
-                        status_can_edit_material.includes(this.state.data_mr.current_mr_status) ? (
+                        status_can_edit_material.includes(
+                          this.state.data_mr.current_mr_status
+                        ) ? (
                           <tbody>
                             {this.state.mr_site_NE !== null &&
-                              this.state.list_mr_item.filter(e => e.product_type.toLowerCase() !== "svc").map((pp) => (
+                              this.state.list_mr_item
+                                .filter(
+                                  (e) => e.product_type.toLowerCase() !== "svc"
+                                )
+                                .map((pp) => (
+                                  <Fragment>
+                                    <tr
+                                      style={{ backgroundColor: "#E5FCC2" }}
+                                      className="fixbody"
+                                    >
+                                      <td style={{ textAlign: "left" }}>
+                                        {pp.pp_id}
+                                      </td>
+                                      <td>{pp.product_name}</td>
+                                      <td>{pp.program}</td>
+                                      <td>{pp.uom}</td>
+                                      <td
+                                        align="center"
+                                        colSpan={
+                                          this.state.mr_site_FE !== null ? 1 : 2
+                                        }
+                                      >
+                                        {pp.qty}
+                                      </td>
+                                      {this.state.mr_site_FE !== null ? (
+                                        <td align="center">
+                                          {this.getQtyMRPPFE(pp.pp_id)}
+                                        </td>
+                                      ) : (
+                                        <Fragment></Fragment>
+                                      )}
+                                      <td></td>
+                                      <td></td>
+                                      <td></td>
+                                      <td>{pp.cpo_number}</td>
+                                      <td>{pp.no_tssr_boq_site}</td>
+                                    </tr>
+                                    {pp.materials.map((material) => (
+                                      <tr
+                                        style={{
+                                          backgroundColor:
+                                            "rgba(248,246,223, 0.5)",
+                                        }}
+                                        className="fixbody"
+                                      >
+                                        <td style={{ textAlign: "right" }}>
+                                          {material.material_id}
+                                        </td>
+                                        <td style={{ textAlign: "left" }}>
+                                          {material.material_name}
+                                        </td>
+                                        <td></td>
+                                        <td>{material.uom}</td>
+                                        <td
+                                          align="center"
+                                          colSpan={
+                                            this.state.mr_site_FE !== null
+                                              ? 1
+                                              : 2
+                                          }
+                                        >
+                                          {material.qty}
+                                        </td>
+                                        {this.state.mr_site_FE !== null ? (
+                                          <td align="center">
+                                            {this.getQtyMRMDFE(
+                                              pp.pp_id,
+                                              material.material_id
+                                            )}
+                                          </td>
+                                        ) : (
+                                          <Fragment></Fragment>
+                                        )}
+                                        <td align="center">
+                                          {
+                                            (qty_wh =
+                                              this.state.material_wh.find(
+                                                (e) =>
+                                                  e.sku === material.material_id
+                                              ) !== undefined
+                                                ? this.state.material_wh
+                                                    .find(
+                                                      (e) =>
+                                                        e.sku ===
+                                                        material.material_id
+                                                    )
+                                                    .qty_sku.toFixed(2)
+                                                : 0)
+                                          }
+                                        </td>
+                                        <td align="center">
+                                          {
+                                            (qty_inbound =
+                                              this.state.material_inbound.find(
+                                                (e) =>
+                                                  e.sku === material.material_id
+                                              ) !== undefined
+                                                ? this.state.material_inbound
+                                                    .find(
+                                                      (e) =>
+                                                        e.sku ===
+                                                        material.material_id
+                                                    )
+                                                    .qty_sku.toFixed(2)
+                                                : 0)
+                                          }
+                                        </td>
+                                        <td align="center">
+                                          {material.qty < qty_wh ? "OK" : "NOK"}
+                                        </td>
+                                        <td>{material.cpo_number}</td>
+                                        <td>{material.source_material}</td>
+                                      </tr>
+                                    ))}
+                                  </Fragment>
+                                ))}
+                            {this.state.data_mr === null ? (
+                              <tr>
+                                <td colSpan="5">Loading...</td>
+                              </tr>
+                            ) : (
+                              this.state.data_mr.current_mr_status ===
+                                "NOT ASSIGNED" && (
+                                <tr>
+                                  <td colSpan="5">PS not Assigned</td>
+                                </tr>
+                              )
+                            )}
+                          </tbody>
+                        ) : (
+                          <tbody>
+                            {this.state.mr_site_NE !== null &&
+                              this.state.list_mr_item.map((pp) => (
                                 <Fragment>
                                   <tr
                                     style={{ backgroundColor: "#E5FCC2" }}
@@ -1795,9 +2111,6 @@ class MRDetail extends Component {
                                     ) : (
                                       <Fragment></Fragment>
                                     )}
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
                                     <td>{pp.cpo_number}</td>
                                     <td>{pp.no_tssr_boq_site}</td>
                                   </tr>
@@ -1825,114 +2138,6 @@ class MRDetail extends Component {
                                       >
                                         {material.qty}
                                       </td>
-                                      {this.state.mr_site_FE !== null ? (
-                                        <td align="center">
-                                          {this.getQtyMRMDFE(
-                                            pp.pp_id,
-                                            material.material_id
-                                          )}
-                                        </td>
-                                      ) : (
-                                        <Fragment></Fragment>
-                                      )}
-                                      <td align="center">
-                                        {
-                                          (qty_wh =
-                                            this.state.material_wh.find(
-                                              (e) =>
-                                                e.sku === material.material_id
-                                            ) !== undefined
-                                              ? this.state.material_wh
-                                                  .find(
-                                                    (e) =>
-                                                      e.sku ===
-                                                      material.material_id
-                                                  )
-                                                  .qty_sku.toFixed(2)
-                                              : 0)
-                                        }
-                                      </td>
-                                      <td align="center">
-                                        {
-                                          (qty_inbound =
-                                            this.state.material_inbound.find(
-                                              (e) =>
-                                                e.sku === material.material_id
-                                            ) !== undefined
-                                              ? this.state.material_inbound
-                                                  .find(
-                                                    (e) =>
-                                                      e.sku ===
-                                                      material.material_id
-                                                  )
-                                                  .qty_sku.toFixed(2)
-                                              : 0)
-                                        }
-                                      </td>
-                                      <td align="center">
-                                        {material.qty < qty_wh ? "OK" : "NOK"}
-                                      </td>
-                                      <td>{material.cpo_number}</td>
-                                      <td>{material.source_material}</td>
-                                    </tr>
-                                  ))}
-                                </Fragment>
-                              ))}
-                            {this.state.data_mr === null ? (
-                              <tr>
-                                <td colSpan="5">Loading...</td>
-                              </tr>
-                            ) : (
-                              this.state.data_mr.current_mr_status === "NOT ASSIGNED" && (
-                                <tr>
-                                  <td colSpan="5">PS not Assigned</td>
-                                </tr>
-                              )
-                            )}
-                          </tbody>
-                        ) : (
-                          <tbody>
-                            {this.state.mr_site_NE !== null &&
-                              this.state.list_mr_item.map((pp) => (
-                                <Fragment>
-                                  <tr
-                                    style={{ backgroundColor: "#E5FCC2" }}
-                                    className="fixbody"
-                                  >
-                                    <td style={{ textAlign: "left" }}>
-                                      {pp.pp_id}
-                                    </td>
-                                    <td>{pp.product_name}</td>
-                                    <td>{pp.program}</td>
-                                    <td>{pp.uom}</td>
-                                    <td align="center" colSpan={this.state.mr_site_FE !== null ? 1 : 2}>{pp.qty}</td>
-                                    {this.state.mr_site_FE !== null ? (
-                                      <td align="center">
-                                        {this.getQtyMRPPFE(pp.pp_id)}
-                                      </td>
-                                    ) : (
-                                      <Fragment></Fragment>
-                                    )}
-                                    <td>{pp.cpo_number}</td>
-                                    <td>{pp.no_tssr_boq_site}</td>
-                                  </tr>
-                                  {pp.materials.map((material) => (
-                                    <tr
-                                      style={{
-                                        backgroundColor:
-                                          "rgba(248,246,223, 0.5)",
-                                      }}
-                                      className="fixbody"
-                                    >
-                                      <td style={{ textAlign: "right" }}>
-                                        {material.material_id}
-                                      </td>
-                                      <td style={{ textAlign: "left" }}>
-                                        {material.material_name}
-                                      </td>
-                                      <td></td>
-                                      <td>{material.uom}</td>
-                                      <td align="center" colSpan={this.state.mr_site_FE !== null ? 1 : 2}>{material.qty}</td>
                                       {this.state.mr_site_FE !== null ? (
                                         <td align="center">
                                           {this.getQtyMRMDFE(
@@ -2045,11 +2250,15 @@ class MRDetail extends Component {
                     /> */}
                     {this.state.location_mr.latest_location !== undefined ? (
                       <GMap
-                        dsp_lat={this.state.location_mr.latest_location.latitude}
-                        dsp_lng={this.state.location_mr.latest_location.longitude}
+                        dsp_lat={
+                          this.state.location_mr.latest_location.latitude
+                        }
+                        dsp_lng={
+                          this.state.location_mr.latest_location.longitude
+                        }
                       />
-                    ): (
-                      <GMap/>
+                    ) : (
+                      <GMap />
                     )}
                   </Fragment>
                 )}
@@ -2125,14 +2334,33 @@ class MRDetail extends Component {
         </Modal>
         {/* end Modal Loading */}
 
-        <Modal isOpen={this.state.modal_revision} toggle={this.toggleModalRevision} className={"modal-sm"}>
+        <Modal
+          isOpen={this.state.modal_revision}
+          toggle={this.toggleModalRevision}
+          className={"modal-sm"}
+        >
           <ModalHeader>Note for Revision</ModalHeader>
           <ModalBody>
-            <Input type="textarea" rows="9" placeholder="Note..." onChange={this.handleRevisionNote} value={this.state.revision_note} />
+            <Input
+              type="textarea"
+              rows="9"
+              placeholder="Note..."
+              onChange={this.handleRevisionNote}
+              value={this.state.revision_note}
+            />
           </ModalBody>
           <ModalFooter>
-            <Button color="warning" style={{ float: "right", marginRight: "8px" }} onClick={this.needReviseMR}><i className="fa fa-edit" style={{ marginRight: "8px" }}></i> Need Revision</Button>
-            <Button color="secondary" onClick={this.toggleModalRevision}>Cancel</Button>
+            <Button
+              color="warning"
+              style={{ float: "right", marginRight: "8px" }}
+              onClick={this.needReviseMR}
+            >
+              <i className="fa fa-edit" style={{ marginRight: "8px" }}></i> Need
+              Revision
+            </Button>
+            <Button color="secondary" onClick={this.toggleModalRevision}>
+              Cancel
+            </Button>
           </ModalFooter>
         </Modal>
 
@@ -2140,35 +2368,37 @@ class MRDetail extends Component {
         <ModalForm
           isOpen={this.state.modal_approve_ldm}
           toggle={this.toggleModalapprove}
-          className={'modal-sm modal--box-input'}
+          className={"modal-sm modal--box-input"}
         >
           <Col>
-          {this.state.data_mr !== null && this.state.data_mr !== undefined && this.state.data_mr.dsp_company !== null ? (
-            <FormGroup>
-              <Label htmlFor="total_box">Delivery Company</Label>
-              <Input
-                type="text"
-                className=""
-                placeholder=""
-                value={this.state.data_mr.dsp_company}
-                readOnly
-              />
-            </FormGroup>
-          ) : (
-            <FormGroup>
-              <Label htmlFor="total_box">DSP Company</Label>
-              <Input
-                type="select"
-                className=""
-                placeholder=""
-                onChange={this.handleLDMapprove}
-              >
-                {this.state.asp_data.map((asp) => (
-                  <option value={asp.Vendor_Code}>{asp.Name}</option>
-                ))}
-              </Input>
-            </FormGroup>
-          )}
+            {this.state.data_mr !== null &&
+            this.state.data_mr !== undefined &&
+            this.state.data_mr.dsp_company !== null ? (
+              <FormGroup>
+                <Label htmlFor="total_box">Delivery Company</Label>
+                <Input
+                  type="text"
+                  className=""
+                  placeholder=""
+                  value={this.state.data_mr.dsp_company}
+                  readOnly
+                />
+              </FormGroup>
+            ) : (
+              <FormGroup>
+                <Label htmlFor="total_box">DSP Company</Label>
+                <Input
+                  type="select"
+                  className=""
+                  placeholder=""
+                  onChange={this.handleLDMapprove}
+                >
+                  {this.state.asp_data.map((asp) => (
+                    <option value={asp.Vendor_Code}>{asp.Name}</option>
+                  ))}
+                </Input>
+              </FormGroup>
+            )}
           </Col>
           <div style={{ justifyContent: "center", alignSelf: "center" }}>
             <Button
