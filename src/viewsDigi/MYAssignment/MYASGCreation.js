@@ -548,6 +548,12 @@ class MYASGCreation extends Component {
       dataLMR[parseInt(idx)]["m_id_wp"] = findWPID.data.result.m_id;
     } else {
       dataLMR[parseInt(idx)]["m_id_wp"] = "";
+      let data_log = {
+        lmr_id: "LMR has not been created, cannot get WP ID",
+        wp_id: value,
+        response_act: JSON.stringify(findWPID)
+      }
+      await postDatatoAPINODE("/aspassignment/submitLogErisite", { data: data_log }, this.state.tokenUser);
     }
 
     this.setState({ creation_lmr_child_form: dataLMR }, () =>
@@ -587,6 +593,12 @@ class MYASGCreation extends Component {
       dataLMR["m_id_wp"] = findWPID.data.result.m_id;
     } else {
       dataLMR["m_id_wp"] = "";
+      let data_log = {
+        lmr_id: "LMR has not been created, cannot get WP ID",
+        wp_id: value,
+        response_act: JSON.stringify(findWPID)
+      }
+      await postDatatoAPINODE("/aspassignment/submitLogErisite", { data: data_log }, this.state.tokenUser);
     }
 
     this.setState({ lmr_child_package: dataLMR }, () =>
@@ -1474,6 +1486,22 @@ class MYASGCreation extends Component {
         // dataChildForm[i].duplicate = 'no';
         dataChildForm[i].blank_material = 'no';
       }
+      this.toggleLoading();
+    } else if (dataChildForm.some(e => e.m_id_wp === '')) {
+      const getAlert = () => (
+        <SweetAlert
+          danger
+          title="Error!"
+          onConfirm={() => this.hideAlert()}
+        >
+          There's a problem when fetching the WP ID data, please reselect the WP ID!
+        </SweetAlert>
+      );
+
+      this.setState({
+        sweet_alert: getAlert()
+      });
+
       this.toggleLoading();
     } else {
       console.log("dataLMR", dataLMR);

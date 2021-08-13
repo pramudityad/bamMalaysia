@@ -29,6 +29,8 @@ import {
 } from "reactstrap";
 import celcom from "../../assets/img/customer/celcom.png";
 import digi from "../../assets/img/customer/digi.png";
+import dnb from "../../assets/img/customer/dnb_icon.png";
+
 import ericssonLogoBlack from "../../assets/img/brand/ERI_horizontal_RGB_BLACK.svg";
 import { postDatatoAPILogin } from "../../helper/asyncFunction";
 const loading = () => (
@@ -245,7 +247,7 @@ class SSOLogin extends Component {
                 <h3>Please Select Account :</h3>
               </Row>
               <Row className="justify-content-center">
-                <Col md="4" lg="4" xl="4">
+                <Col md="3" lg="3" xl="3">
                   <div className="flex--card-account">
                     <div
                       className="card-account--celcom"
@@ -262,7 +264,7 @@ class SSOLogin extends Component {
                     </div>
                   </div>
                 </Col>
-                <Col md="4" lg="4" xl="4">
+                <Col md="3" lg="3" xl="3">
                   <div className="flex--card-account">
                     <div
                       className="card-account--digi"
@@ -279,7 +281,7 @@ class SSOLogin extends Component {
                     </div>
                   </div>
                 </Col>
-                <Col md="4" lg="4" xl="4">
+                <Col md="3" lg="3" xl="3">
                   <div className="flex--card-account">
                     <div
                       className="card-account--digi"
@@ -292,6 +294,23 @@ class SSOLogin extends Component {
                           style={{ width: "30%", marginTop: "5%" }}
                         />
                         <h4 style={{ marginTop: "40px" }}>Digi SPDH</h4>
+                      </div>
+                    </div>
+                  </div>
+                </Col>
+                <Col md="3" lg="3" xl="3">
+                  <div className="flex--card-account">
+                    <div
+                      className="card-account--dnb"
+                      onClick={() => this.handleChangeAccount("4")}
+                    >
+                      <div>
+                        <img
+                          src={dnb}
+                          alt="dnb logo"
+                          style={{ width: "30%", marginTop: "5%" }}
+                        />
+                        <h4 style={{ marginTop: "40px" }}>DNB</h4>
                       </div>
                     </div>
                   </div>

@@ -1,0 +1,6 @@
+{
+    "name": "PackageUpload",
+    "version": "0.0.0",
+    "private": true,
+    "main": "./PackageUpload.js"
+}

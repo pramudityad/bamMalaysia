@@ -1,0 +1,105 @@
+.search-box-material {
+  border-top: 0;
+  border-right : 0;
+  border-left: 0;
+  border-bottom-color: rgba(165,214,167 ,1);
+  float : right;
+  width: 200px;
+  margin-bottom: 10px;
+}
+
+.search-box-project {
+  border-top: 0;
+  border-right : 0;
+  border-left: 0;
+  border-bottom-color: rgba(165,214,167 ,1);
+  width: 150px;
+  margin-bottom: 10px;
+}
+
+.search-box-material:focus {
+  outline: none !important;
+  border-top: 0;
+  border-right : 0;
+  border-left: 0;
+}
+
+.search-box-project:focus {
+  outline: none !important;
+  border-top: 0;
+  border-right : 0;
+  border-left: 0;
+}
+
+.table-bordered th, .table-bordered td {
+    vertical-align: middle !important;
+    text-align: center;
+}
+
+.modal-content .formmaterial {
+  width: 700px;
+  right: 150px;
+}
+
+.modal-content .loading {
+  width: 200px;
+}
+
+.modal.show .modal-dialog .loading {
+  margin-top: 200px;
+}
+
+.table-Material td{
+  text-align: left;
+}
+
+.divtable {
+  overflow-y: scroll;
+  /* overflow-y: scroll; */
+  width:100%;
+  height:auto;
+  max-height: 600px;
+  margin-bottom: 10px;
+}
+
+/* Use position: sticky to have it stick to the edge
+ * and top, right, or left to choose which edge to stick to: */
+
+.fixed-conf th {
+  position: -webkit-sticky; /* for Safari */
+  position: sticky;
+  background: rgb(69, 140, 173);
+  padding : 10px;
+  top: 0;
+}
+
+.fixbody {
+  padding:10px;
+  border-top: 2px solid #ebebeb;
+}
+
+Table tbody th {
+  position: -webkit-sticky; /* for Safari */
+  position: sticky;
+  left: 0;
+}
+
+.fixbodymat {
+  background: #FFFFFF;
+  border: 2px solid #ebebeb;
+}
+
+.fixbodymat td {
+  padding:5px;
+}
+
+.fixbodymat ~:hover {
+  background: #ebebeb;
+}
+
+/* To have the header in the first column stick to the left: */
+
+Table thead th:first-child {
+  left: 0;
+  z-index: 1;
+}
