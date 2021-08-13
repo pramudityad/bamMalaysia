@@ -1,0 +1,174 @@
+{
+    "data": [
+        {
+            "_id": "5e67008e823f88f13b5b2e84",
+            "sap_number": "SAP_TEST01",
+            "config_id": "CONFIG_TEST05",
+            "account_id": "1",
+            "id_project_doc": null,
+            "project_name": null,
+            "total_price": 10000,
+            "deleted": 0,
+            "package_list": [
+                {
+                    "id_pp_doc": null,
+                    "qty": 2,
+                    "qty_commercial": 2,
+                    "currency": "USD",
+                    "price": 2400,
+                    "description": null,
+                    "_id": "5e67008e823f88f13b5b2e86",
+                    "pp_id": "PPID01",
+                    "pp_group": "Radio Kit 2019 A"
+                },
+                {
+                    "id_pp_doc": null,
+                    "qty": 4,
+                    "qty_commercial": 4,
+                    "currency": "USD",
+                    "price": 1300,
+                    "description": null,
+                    "_id": "5e67008e823f88f13b5b2e85",
+                    "pp_id": "PPID02",
+                    "pp_group": "Radio Kit 2019 A"
+                }
+            ],
+            "created_by": "5dedc5c1280eb4f3d96e0717",
+            "updated_by": "5dedc5c1280eb4f3d96e0717",
+            "__v": 0,
+            "created_on": "2020-03-10T02:50:54.017Z",
+            "updated_on": "2020-03-10T02:50:54.017Z"
+        },
+        {
+            "_id": "5e67008e823f88f13b5b2e87",
+            "sap_number": "SAP_TEST02",
+            "config_id": "CONFIG_TEST06",
+            "account_id": "1",
+            "id_project_doc": null,
+            "project_name": null,
+            "total_price": 7620,
+            "deleted": 0,
+            "package_list": [
+                {
+                    "id_pp_doc": null,
+                    "qty": 1,
+                    "qty_commercial": 1,
+                    "currency": "USD",
+                    "price": 2300,
+                    "description": null,
+                    "_id": "5e67008e823f88f13b5b2e89",
+                    "pp_id": "PPID02",
+                    "pp_group": "Radio Kit 2019 A"
+                },
+                {
+                    "id_pp_doc": null,
+                    "qty": 1,
+                    "qty_commercial": 1,
+                    "currency": "USD",
+                    "price": 5320,
+                    "description": null,
+                    "_id": "5e67008e823f88f13b5b2e88",
+                    "pp_id": "PPID03",
+                    "pp_group": "Radio Kit 2019 B"
+                }
+            ],
+            "created_by": "5dedc5c1280eb4f3d96e0717",
+            "updated_by": "5dedc5c1280eb4f3d96e0717",
+            "__v": 0,
+            "created_on": "2020-03-10T02:50:54.018Z",
+            "updated_on": "2020-03-10T02:50:54.018Z"
+        },
+        {
+            "_id": "5e67008e823f88f13b5b2e8a",
+            "sap_number": "SAP_TEST03",
+            "config_id": "CONFIG_TEST07",
+            "account_id": "1",
+            "id_project_doc": null,
+            "project_name": null,
+            "total_price": 46640,
+            "deleted": 0,
+            "package_list": [
+                {
+                    "id_pp_doc": null,
+                    "qty": 1,
+                    "qty_commercial": 1,
+                    "currency": "USD",
+                    "price": 2300,
+                    "description": null,
+                    "_id": "5e67008e823f88f13b5b2e8d",
+                    "pp_id": "PPID01",
+                    "pp_group": "Radio Kit 2019 A"
+                },
+                {
+                    "id_pp_doc": null,
+                    "qty": 3,
+                    "qty_commercial": 3,
+                    "currency": "USD",
+                    "price": 6300,
+                    "description": null,
+                    "_id": "5e67008e823f88f13b5b2e8c",
+                    "pp_id": "PPID02",
+                    "pp_group": "Radio Kit 2019 A"
+                },
+                {
+                    "id_pp_doc": null,
+                    "qty": 4,
+                    "qty_commercial": 4,
+                    "currency": "USD",
+                    "price": 6360,
+                    "description": null,
+                    "_id": "5e67008e823f88f13b5b2e8b",
+                    "pp_id": "PPID03",
+                    "pp_group": "Radio Kit 2019 B"
+                }
+            ],
+            "created_by": "5dedc5c1280eb4f3d96e0717",
+            "updated_by": "5dedc5c1280eb4f3d96e0717",
+            "__v": 0,
+            "created_on": "2020-03-10T02:50:54.018Z",
+            "updated_on": "2020-03-10T02:50:54.018Z"
+        },
+        {
+            "_id": "5e67008e823f88f13b5b2e8e",
+            "sap_number": "SAP_TEST04",
+            "config_id": "CONFIG_TEST08",
+            "account_id": "1",
+            "id_project_doc": null,
+            "project_name": null,
+            "total_price": 35000,
+            "deleted": 0,
+            "package_list": [
+                {
+                    "id_pp_doc": null,
+                    "qty": 4,
+                    "qty_commercial": 4,
+                    "currency": "USD",
+                    "price": 5300,
+                    "description": null,
+                    "_id": "5e67008e823f88f13b5b2e90",
+                    "pp_id": "PPID02",
+                    "pp_group": "Radio Kit 2019 A"
+                },
+                {
+                    "id_pp_doc": null,
+                    "qty": 6,
+                    "qty_commercial": 6,
+                    "currency": "USD",
+                    "price": 2300,
+                    "description": null,
+                    "_id": "5e67008e823f88f13b5b2e8f",
+                    "pp_id": "PPID03",
+                    "pp_group": "Radio Kit 2019 B"
+                }
+            ],
+            "created_by": "5dedc5c1280eb4f3d96e0717",
+            "updated_by": "5dedc5c1280eb4f3d96e0717",
+            "__v": 0,
+            "created_on": "2020-03-10T02:50:54.018Z",
+            "updated_on": "2020-03-10T02:50:54.018Z"
+        }
+    ],
+    "maxResults": 25,
+    "page": 1,
+    "totalResults": 4
+}

@@ -30,7 +30,7 @@ const API_URL_MAS = "https://api-dev.mas.pdb.e-dpm.com/masapi";
 const usernameMAS = "mybotprpo";
 const passwordMAS = "mybotprpo2020";
 
-// const API_URL_NODE = 'https://api2-dev.bam-id.e-dpm.com/bamidapi';
+//
 
 // const API_URL_NODE = 'http://localhost:5012/bammyapi';
 const API_URL_NODE = "https://api-dev.bam-my.e-dpm.com/bammyapi";
@@ -38,8 +38,6 @@ const API_URL_NODE = "https://api-dev.bam-my.e-dpm.com/bammyapi";
 // const BearerToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjYXNfaWQiOiI1MmVhNTZhMS0zNDMxLTRlMmQtYWExZS1hNTc3ODQzMTMxYzEiLCJyb2xlcyI6WyJCQU0tU3VwZXJBZG1pbiJdLCJhY2NvdW50IjoiMSIsImlhdCI6MTU5MTY5MTE4MH0.FpbzlssSQyaAbJOzNf3KLqHPnYo_ccBtBWu6n87h1RQ';
 const BearerToken =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjYXNfaWQiOiIxOTM2YmE0Yy0wMjlkLTQ1MzktYWRkOC1mZjc2OTNiMDlmZmUiLCJyb2xlcyI6WyJCQU0tU3VwZXJBZG1pbiJdLCJhY2NvdW50IjoiMSIsImlhdCI6MTU5MjQ3MDI4Mn0.tIJSzHa-ewhqz0Ail7J0maIZx4R9P1aXE2E_49pe4KY";
-
-
 
 class MYASGCreation extends Component {
   constructor(props) {
@@ -116,12 +114,16 @@ class MYASGCreation extends Component {
 
   async postDatatoAPINODE(url, data) {
     try {
-      let respond = await axios.post(API_URL_NODE + url, data, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + this.state.tokenUser,
-        },
-      });
+      let respond = await axios.post(
+        process.env.REACT_APP_API_URL_NODE + url,
+        data,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + this.state.tokenUser,
+          },
+        }
+      );
       if (respond.status >= 200 && respond.status < 300) {
         console.log("respond Post Data", respond);
       }
@@ -160,7 +162,7 @@ class MYASGCreation extends Component {
 
   async getDataFromAPINODE(url) {
     try {
-      let respond = await axios.get(API_URL_NODE + url, {
+      let respond = await axios.get(process.env.REACT_APP_API_URL_NODE + url, {
         headers: {
           "Content-Type": "application/json",
           Authorization: "Bearer " + this.state.tokenUser,
@@ -209,7 +211,7 @@ class MYASGCreation extends Component {
     dataFilter[parseInt(index)] = value;
     this.setState({ filter_list: dataFilter, activePage: 1 }, () => {
       this.onChangeDebounced(e);
-    })
+    });
   }
 
   onChangeDebounced(e) {
@@ -237,17 +239,54 @@ class MYASGCreation extends Component {
 
   getMaterialList() {
     let filter_array = [];
-    this.state.filter_list[0] !== "" && (filter_array.push('"MM_Code":{"$regex" : "' + this.state.filter_list[0] + '", "$options" : "i"}'));
-    this.state.filter_list[1] !== "" && (filter_array.push('"Material_Type":{"$regex" : "' + this.state.filter_list[1] + '", "$options" : "i"}'));
-    this.state.filter_list[2] !== "" && (filter_array.push('"SoW_Description":{"$regex" : "' + this.state.filter_list[2] + '", "$options" : "i"}'));
-    this.state.filter_list[3] !== "" && (filter_array.push('"UoM":{"$regex" : "' + this.state.filter_list[3] + '", "$options" : "i"}'));
-    this.state.filter_list[4] !== "" && (filter_array.push('"Region":{"$regex" : "' + this.state.filter_list[4] + '", "$options" : "i"}'));
-    this.state.filter_list[5] !== "" && (filter_array.push('"Unit_Price":{"$regex" : "' + this.state.filter_list[5] + '", "$options" : "i"}'));
-    this.state.filter_list[6] !== "" && (filter_array.push('"MM_Description":{"$regex" : "' + this.state.filter_list[6] + '", "$options" : "i"}'));
-    let whereAnd = '{' + filter_array.join(',') + '}';
+    this.state.filter_list[0] !== "" &&
+      filter_array.push(
+        '"MM_Code":{"$regex" : "' +
+          this.state.filter_list[0] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list[1] !== "" &&
+      filter_array.push(
+        '"Material_Type":{"$regex" : "' +
+          this.state.filter_list[1] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list[2] !== "" &&
+      filter_array.push(
+        '"SoW_Description":{"$regex" : "' +
+          this.state.filter_list[2] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list[3] !== "" &&
+      filter_array.push(
+        '"UoM":{"$regex" : "' +
+          this.state.filter_list[3] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list[4] !== "" &&
+      filter_array.push(
+        '"Region":{"$regex" : "' +
+          this.state.filter_list[4] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list[5] !== "" &&
+      filter_array.push(
+        '"Unit_Price":{"$regex" : "' +
+          this.state.filter_list[5] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list[6] !== "" &&
+      filter_array.push(
+        '"MM_Description":{"$regex" : "' +
+          this.state.filter_list[6] +
+          '", "$options" : "i"}'
+      );
+    let whereAnd = "{" + filter_array.join(",") + "}";
     // let filter = '"mm_code":{"$regex" : "' + this.state.filter_list + '", "$options" : "i"}';
     this.getDatafromAPIMY(
-      "/mm_code_data?where="+whereAnd+"&max_results=" +
+      "/mm_code_data?where=" +
+        whereAnd +
+        "&max_results=" +
         this.state.perPage +
         "&page=" +
         this.state.activePage
@@ -308,7 +347,6 @@ class MYASGCreation extends Component {
       return wp_id_list;
     }
   }
-
 
   async createLMR() {
     const dataForm = this.state.lmr_form;
@@ -371,7 +409,7 @@ class MYASGCreation extends Component {
       //   dataChildForm[i].site_id === undefined ||
       //   dataChildForm[i].site_id === null
       // ) {
-        dataLMRCHild.push(dataChild);
+      dataLMRCHild.push(dataChild);
       // }
     }
     console.log("dataLMR", dataLMR);
@@ -423,13 +461,13 @@ class MYASGCreation extends Component {
     this.setState({ creation_lmr_child_form: dataLMR });
   }
 
-  deleteLMR(e){
+  deleteLMR(e) {
     let index = e.currentTarget.value;
     let dataChild = this.state.creation_lmr_child_form;
-    if(index !== undefined){
+    if (index !== undefined) {
       dataChild.splice(parseInt(index), 1);
-      this.setState({creation_lmr_child_form : []}, () => {
-        this.setState({creation_lmr_child_form : dataChild});
+      this.setState({ creation_lmr_child_form: [] }, () => {
+        this.setState({ creation_lmr_child_form: dataChild });
       });
     }
   }
@@ -441,7 +479,7 @@ class MYASGCreation extends Component {
     if (value !== (null && undefined)) {
       value = value.toString();
     }
-    if (name === "LMR_Type" && value !== "Per Site"){
+    if (name === "LMR_Type" && value !== "Per Site") {
       this.setState({ lmr_edit: false });
     } else {
       if (name === "project_name") {
@@ -452,9 +490,11 @@ class MYASGCreation extends Component {
           lmr_form["id_project_doc"] = dataProject._id;
         }
       }
-    } 
+    }
     lmr_form[name.toString()] = value;
-    this.setState({ lmr_form: lmr_form }, ()=> console.log(this.state.lmr_form));   
+    this.setState({ lmr_form: lmr_form }, () =>
+      console.log(this.state.lmr_form)
+    );
   }
 
   handleChangeFormLMRChild(e) {
@@ -463,32 +503,34 @@ class MYASGCreation extends Component {
     let value = e.target.value;
     let idx = idxField[0];
     let field = idxField[1];
-    console.log('field ', field);
+    console.log("field ", field);
     dataLMR[parseInt(idx)][field] = value;
     if (field === "quantity" && isNaN(dataLMR[parseInt(idx)].price) === false) {
       dataLMR[parseInt(idx)]["total_amount"] =
         value * dataLMR[parseInt(idx)].price;
-    } 
-    if (field === "cd_id"){
-      let cdData = this.state.list_cd_id.find((e) => e.CD_ID === value)
+    }
+    if (field === "cd_id") {
+      let cdData = this.state.list_cd_id.find((e) => e.CD_ID === value);
       dataLMR[parseInt(idx)]["site_id"] = cdData.Site_Name;
       dataLMR[parseInt(idx)]["so_or_nw"] = cdData.Network_Element_Name;
       dataLMR[parseInt(idx)]["activity"] = cdData.Network_Element_Name;
       dataLMR[parseInt(idx)]["project_name"] = cdData.Project;
       this.setState({ cd_id_project: dataLMR[parseInt(idx)]["project_name"] });
     }
-    if (field === "cd_id" && this.state.lmr_edit === false){
-      let cdData = this.state.list_cd_id.find((e) => e.CD_ID === value)
+    if (field === "cd_id" && this.state.lmr_edit === false) {
+      let cdData = this.state.list_cd_id.find((e) => e.CD_ID === value);
       dataLMR[parseInt(idx)]["site_id"] = cdData.Site_Name;
       dataLMR[parseInt(idx)]["so_or_nw"] = cdData.Network_Element_Name;
       dataLMR[parseInt(idx)]["activity"] = cdData.Network_Element_Name;
       dataLMR[parseInt(idx)]["project_name"] = cdData.Project;
       this.setState({ cd_id_project: dataLMR[parseInt(idx)]["project_name"] });
     }
-    console.log(dataLMR)
-    this.setState({ creation_lmr_child_form: dataLMR }, () => console.log(this.state.creation_lmr_child_form));
+    console.log(dataLMR);
+    this.setState({ creation_lmr_child_form: dataLMR }, () =>
+      console.log(this.state.creation_lmr_child_form)
+    );
   }
-  
+
   handleChangeMaterial(e) {
     const value = e.target.value;
     const data_material = this.state.material_list.find(
@@ -513,24 +555,33 @@ class MYASGCreation extends Component {
     for (let i = 0; i < 7; i++) {
       searchBar.push(
         <td>
-          <div className="controls" style={{ width: '150px' }}>
+          <div className="controls" style={{ width: "150px" }}>
             <InputGroup className="input-prepend">
               <InputGroupAddon addonType="prepend">
-                <InputGroupText><i className="fa fa-search"></i></InputGroupText>
+                <InputGroupText>
+                  <i className="fa fa-search"></i>
+                </InputGroupText>
               </InputGroupAddon>
-              <Input type="text" placeholder="Search" onChange={this.handleFilterList} value={this.state.filter_list[i]} name={i} size="sm" />
+              <Input
+                type="text"
+                placeholder="Search"
+                onChange={this.handleFilterList}
+                value={this.state.filter_list[i]}
+                name={i}
+                size="sm"
+              />
             </InputGroup>
           </div>
         </td>
-      )
+      );
     }
     return searchBar;
-  }
+  };
 
-  handleDeleteLMRChild(index){
+  handleDeleteLMRChild(index) {
     let LMRChild = this.state.creation_lmr_child_form;
-    LMRChild.splice(index,1);
-    this.setState({creation_lmr_child_form : LMRChild });
+    LMRChild.splice(index, 1);
+    this.setState({ creation_lmr_child_form: LMRChild });
   }
 
   render() {
@@ -593,7 +644,7 @@ class MYASGCreation extends Component {
                           onChange={this.handleChangeFormLMR}
                           readOnly
                         />
-                          {/* <option value={null} selected></option>
+                        {/* <option value={null} selected></option>
                           <option value="Add LMR">Add LMR</option>
                           <option value="Change LMR">Change LMR</option>
                           <option value="Delete LMR">Delete LMR</option>                           */}
@@ -880,24 +931,24 @@ class MYASGCreation extends Component {
                         </FormGroup>
                       </Col>
                       <Col md={2}>
-                      <FormGroup>
-                        <Label>Project Name</Label>
-                        <Input
-                          type="select"
-                          name={i + " /// project_name"}
-                          id={i + " /// project_name"}
-                          value={lmr.project_name}
-                          onChange={this.handleChangeFormLMRChild}
-                        >
-                          <option value="" disabled selected hidden>
-                            Select Project Name
-                          </option>
-                          {this.state.list_project.map((e) => (
-                            <option value={e.Project}>{e.Project}</option>
-                          ))}  
-                        </Input>
-                      </FormGroup>
-                    </Col>
+                        <FormGroup>
+                          <Label>Project Name</Label>
+                          <Input
+                            type="select"
+                            name={i + " /// project_name"}
+                            id={i + " /// project_name"}
+                            value={lmr.project_name}
+                            onChange={this.handleChangeFormLMRChild}
+                          >
+                            <option value="" disabled selected hidden>
+                              Select Project Name
+                            </option>
+                            {this.state.list_project.map((e) => (
+                              <option value={e.Project}>{e.Project}</option>
+                            ))}
+                          </Input>
+                        </FormGroup>
+                      </Col>
                       <Col md={2}>
                         <FormGroup>
                           <Label>Per Site Material Type</Label>
@@ -1068,7 +1119,14 @@ class MYASGCreation extends Component {
                         </FormGroup>
                       </Col>
                       <Col md={1}>
-                        <Button color="danger" size="sm" onClick={e => this.handleDeleteLMRChild(i)} style={{float : 'right', marginTop : '30px'}}><span className="fa fa-times"></span></Button>
+                        <Button
+                          color="danger"
+                          size="sm"
+                          onClick={(e) => this.handleDeleteLMRChild(i)}
+                          style={{ float: "right", marginTop: "30px" }}
+                        >
+                          <span className="fa fa-times"></span>
+                        </Button>
                       </Col>
                       {/* <Col md={3}>
                         <FormGroup>
@@ -1148,7 +1206,7 @@ class MYASGCreation extends Component {
                 <tr>
                   <td></td>
                   {/* <td> */}
-                    {/* <div className="controls" style={{ width: "150px" }}>
+                  {/* <div className="controls" style={{ width: "150px" }}>
                       <InputGroup className="input-prepend">
                         <InputGroupAddon addonType="prepend">
                           <InputGroupText>
@@ -1164,7 +1222,7 @@ class MYASGCreation extends Component {
                         />
                       </InputGroup>
                     </div> */}
-                    {this.loopSearchBar()}
+                  {this.loopSearchBar()}
                   {/* </td>
                   <td></td>
                   <td></td>

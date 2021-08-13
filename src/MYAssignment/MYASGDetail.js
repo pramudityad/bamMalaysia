@@ -48,7 +48,7 @@ const API_URL_XL = "https://api-dev.xl.pdb.e-dpm.com/xlpdbapi";
 const usernameBAM = "adminbamidsuper";
 const passwordBAM = "F760qbAg2sml";
 
-// const API_URL_NODE = 'https://api2-dev.bam-id.e-dpm.com/bamidapi';
+//
 
 // const API_URL_NODE = 'http://localhost:5012/bammyapi';
 const API_URL_NODE = "https://api-dev.bam-my.e-dpm.com/bammyapi";
@@ -125,7 +125,7 @@ class MYASGDetail extends Component {
       },
       check_prpo: {},
       list_project: [],
-      cd_id_project: ""
+      cd_id_project: "",
     };
     this.toggleAddNew = this.toggleAddNew.bind(this);
     this.handleFilterList = this.handleFilterList.bind(this);
@@ -141,9 +141,8 @@ class MYASGDetail extends Component {
     this.addLMR = this.addLMR.bind(this);
     this.createLMRChild = this.createLMRChild.bind(this);
     this.handleChangeMaterial = this.handleChangeMaterial.bind(this);
-    this.handleChangeFormLMRChildMultiple = this.handleChangeFormLMRChildMultiple.bind(
-      this
-    );
+    this.handleChangeFormLMRChildMultiple =
+      this.handleChangeFormLMRChildMultiple.bind(this);
     this.deleteLMR = this.deleteLMR.bind(this);
   }
 
@@ -325,7 +324,7 @@ class MYASGDetail extends Component {
 
   async getDatafromAPINODE(url) {
     try {
-      let respond = await axios.get(API_URL_NODE + url, {
+      let respond = await axios.get(process.env.REACT_APP_API_URL_NODE + url, {
         headers: {
           "Content-Type": "application/json",
           Authorization: "Bearer " + this.state.tokenUser,
@@ -344,12 +343,16 @@ class MYASGDetail extends Component {
 
   async postDatatoAPINODE(url, data) {
     try {
-      let respond = await axios.post(API_URL_NODE + url, data, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + this.state.tokenUser,
-        },
-      });
+      let respond = await axios.post(
+        process.env.REACT_APP_API_URL_NODE + url,
+        data,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + this.state.tokenUser,
+          },
+        }
+      );
       if (respond.status >= 200 && respond.status < 300) {
         // console.log("respond Post Data", respond);
       }
@@ -363,12 +366,16 @@ class MYASGDetail extends Component {
 
   async patchDatatoAPINODE(url, data) {
     try {
-      let respond = await axios.patch(API_URL_NODE + url, data, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + this.state.tokenUser,
-        },
-      });
+      let respond = await axios.patch(
+        process.env.REACT_APP_API_URL_NODE + url,
+        data,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + this.state.tokenUser,
+          },
+        }
+      );
       if (respond.status >= 200 && respond.status < 300) {
         console.log("respond Post Data", respond);
       }
@@ -382,12 +389,15 @@ class MYASGDetail extends Component {
 
   async deleteDatafromAPINODE(url) {
     try {
-      let respond = await axios.delete(API_URL_NODE + url, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + this.state.tokenUser,
-        },
-      });
+      let respond = await axios.delete(
+        process.env.REACT_APP_API_URL_NODE + url,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + this.state.tokenUser,
+          },
+        }
+      );
       if (respond.status >= 200 && respond.status < 300) {
         console.log("respond Post Data", respond);
       }
@@ -477,7 +487,6 @@ class MYASGDetail extends Component {
       }
     });
   }
-
 
   getMaterialList() {
     let filter_array = [];
@@ -581,7 +590,8 @@ class MYASGDetail extends Component {
         const dataLMRDetailPRPO = res.data._items;
         this.setState({
           list_pr_po: dataLMRDetailPRPO,
-          check_prpo: dataLMRDetailPRPO[0] !== undefined ? dataLMRDetailPRPO[0] : {},
+          check_prpo:
+            dataLMRDetailPRPO[0] !== undefined ? dataLMRDetailPRPO[0] : {},
         });
         // console.log('0 ', this.state.list_pr_po[0])
       }
@@ -1006,7 +1016,7 @@ class MYASGDetail extends Component {
       currency: "MYR",
       item_status: "Submit",
       work_status: "Waiting for PR-PO creation",
-      request_type: "Add LMR"
+      request_type: "Add LMR",
     });
     this.setState({ creation_lmr_child_form: dataLMR });
     if (this.state.material_list.length === 0) {
@@ -1052,15 +1062,17 @@ class MYASGDetail extends Component {
     let idx = idxField[0];
     let field = idxField[1];
     dataLMR[parseInt(idx)][field] = value;
-    if (field === "cd_id"){
-      let cdData = this.state.list_cd_id.find((e) => e.CD_ID === value)
+    if (field === "cd_id") {
+      let cdData = this.state.list_cd_id.find((e) => e.CD_ID === value);
       dataLMR[parseInt(idx)]["site_id"] = cdData.Site_Name;
       dataLMR[parseInt(idx)]["so_or_nw"] = cdData.Network_Element_Name;
       dataLMR[parseInt(idx)]["activity"] = cdData.Network_Element_Name;
       dataLMR[parseInt(idx)]["project_name"] = cdData.Project;
       this.setState({ cd_id_project: dataLMR[parseInt(idx)]["project_name"] });
     }
-    this.setState({ creation_lmr_child_form: dataLMR },() => console.log(this.state.creation_lmr_child_form));
+    this.setState({ creation_lmr_child_form: dataLMR }, () =>
+      console.log(this.state.creation_lmr_child_form)
+    );
   }
 
   async createLMRChild() {
@@ -1614,7 +1626,8 @@ class MYASGDetail extends Component {
                       )}
                       <tr>
                         <td colSpan="22" style={{ textAlign: "left" }}>
-                          {this.state.check_prpo.PO_Number === null || this.state.check_prpo.PO_Number === undefined ? (
+                          {this.state.check_prpo.PO_Number === null ||
+                          this.state.check_prpo.PO_Number === undefined ? (
                             <Button
                               color="primary"
                               size="sm"
@@ -1651,7 +1664,7 @@ class MYASGDetail extends Component {
                               readOnly
                               // style={{ width: "100%" }}
                             />
-                              {/* <option value="" disabled selected hidden>
+                            {/* <option value="" disabled selected hidden>
                                 Select CD ID
                               </option>
                               {this.state.list_cd_id.map((e) => (
