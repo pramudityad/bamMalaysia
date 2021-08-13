@@ -131,6 +131,7 @@ class MYASGCreation extends Component {
       action_message: null,
       vendor_list: [],
       material_list: [],
+      material_list_no_region: [],
       project_list: [],
       validation_form: {},
       current_material_select: null,
@@ -781,10 +782,31 @@ class MYASGCreation extends Component {
     ).then((res) => {
       if (res.data !== undefined) {
         const items = res.data.data;
-        const totalData = res.data.totalResults;
-        this.setState({ material_list: items, totalData: totalData }, () =>
-          console.log(this.state.material_list)
-        );
+        if (
+          this.state.matfilter.region !== "All" &&
+          this.state.material_list_no_region.length !== 0
+        ) {
+          let new_items = items.concat(...this.state.material_list_no_region);
+          console.log("add", new_items);
+          const totalData2 =
+            res.data.totalResults + this.state.material_list_no_region.length;
+          this.setState({
+            material_list: new_items,
+            totalData: totalData2,
+          });
+        } else {
+          const totalData = res.data.totalResults;
+          this.setState(
+            {
+              material_list: items,
+              totalData: totalData,
+              material_list_no_region: items.filter(
+                (mat) => mat.Region === null
+              ),
+            },
+            () => console.log("no region", this.state.material_list_no_region)
+          );
+        }
       }
     });
   }
@@ -857,10 +879,31 @@ class MYASGCreation extends Component {
     ).then((res) => {
       if (res.data !== undefined) {
         const items = res.data.data;
-        const totalData = res.data.totalResults;
-        this.setState({ material_list: items, totalData: totalData }, () =>
-          console.log(this.state.material_list)
-        );
+        if (
+          this.state.matfilter.region !== "All" &&
+          this.state.material_list_no_region.length !== 0
+        ) {
+          let new_items = items.concat(...this.state.material_list_no_region);
+          console.log("add", new_items);
+          const totalData2 =
+            res.data.totalResults + this.state.material_list_no_region.length;
+          this.setState({
+            material_list: new_items,
+            totalData: totalData2,
+          });
+        } else {
+          const totalData = res.data.totalResults;
+          this.setState(
+            {
+              material_list: items,
+              totalData: totalData,
+              material_list_no_region: items.filter(
+                (mat) => mat.Region === null
+              ),
+            },
+            () => console.log("no region", this.state.material_list_no_region)
+          );
+        }
       }
     });
   }
@@ -927,10 +970,31 @@ class MYASGCreation extends Component {
     ).then((res) => {
       if (res.data !== undefined) {
         const items = res.data.data;
-        const totalData = res.data.totalResults;
-        this.setState({ material_list: items, totalData: totalData }, () =>
-          console.log(this.state.material_list)
-        );
+        if (
+          this.state.matfilter.region !== "All" &&
+          this.state.material_list_no_region.length !== 0
+        ) {
+          let new_items = items.concat(...this.state.material_list_no_region);
+          console.log("add", new_items);
+          const totalData2 =
+            res.data.totalResults + this.state.material_list_no_region.length;
+          this.setState({
+            material_list: new_items,
+            totalData: totalData2,
+          });
+        } else {
+          const totalData = res.data.totalResults;
+          this.setState(
+            {
+              material_list: items,
+              totalData: totalData,
+              material_list_no_region: items.filter(
+                (mat) => mat.Region === null
+              ),
+            },
+            () => console.log("no region", this.state.material_list_no_region)
+          );
+        }
       }
     });
   }
@@ -1013,8 +1077,31 @@ class MYASGCreation extends Component {
     ).then((res) => {
       if (res.data !== undefined) {
         const items = res.data.data;
-        const totalData = res.data.totalResults;
-        this.setState({ material_list: items, totalData: totalData });
+        if (
+          this.state.matfilter.region !== "All" &&
+          this.state.material_list_no_region.length !== 0
+        ) {
+          let new_items = items.concat(...this.state.material_list_no_region);
+          console.log("add", new_items);
+          const totalData2 =
+            res.data.totalResults + this.state.material_list_no_region.length;
+          this.setState({
+            material_list: new_items,
+            totalData: totalData2,
+          });
+        } else {
+          const totalData = res.data.totalResults;
+          this.setState(
+            {
+              material_list: items,
+              totalData: totalData,
+              material_list_no_region: items.filter(
+                (mat) => mat.Region === null
+              ),
+            },
+            () => console.log("no region", this.state.material_list_no_region)
+          );
+        }
       }
     });
   }
