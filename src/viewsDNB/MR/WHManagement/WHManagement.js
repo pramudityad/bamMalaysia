@@ -21,9 +21,15 @@ import { connect } from "react-redux";
 import * as XLSX from "xlsx";
 
 import ModalDelete from "../../components/ModalDelete";
-import Loading from '../../components/Loading'
-import {getDatafromAPIEXEL ,getDatafromAPINODE, postDatatoAPINODE, patchDatatoAPINODE, deleteDataFromAPINODE} from '../../../helper/asyncFunction'
-import {convertDMSToDD} from '../../../helper/basicFunction'
+import Loading from "../../components/Loading";
+import {
+  getDatafromAPIMY,
+  getDatafromAPINODE,
+  postDatatoAPINODE,
+  patchDatatoAPINODE,
+  deleteDataFromAPINODE,
+} from "../../../helper/asyncFunction";
+import { convertDMSToDD } from "../../../helper/basicFunction";
 import "../MatStyle.css";
 
 const Checkbox = ({
@@ -107,7 +113,6 @@ class WHManagement extends React.Component {
     this.resettogglecreateModal = this.resettogglecreateModal.bind(this);
     this.requestSort = this.requestSort.bind(this);
     this.handleChangeLimit = this.handleChangeLimit.bind(this);
-
   }
 
   toggle(i) {
@@ -214,17 +219,20 @@ class WHManagement extends React.Component {
     this.toggleLoading();
     let filter = '{"$regex" : "", "$options" : "i"}';
     if (this.state.filter_name !== "") {
-      filter = '{"$regex" : "' + this.state.filter_name + '", "$options" : "i"}';
+      filter =
+        '{"$regex" : "' + this.state.filter_name + '", "$options" : "i"}';
     }
     // let filter = this.state.filter_name === ""  ? '{"$exists" : 1}' : '{"$regex" : "' + this.state.filter_name + '", "$options" : "i"}';
-    let whereOr = '{"$or" : [{"wh_name": ' + filter + '}, {"owner_name": ' + filter + '}]}';
+    let whereOr =
+      '{"$or" : [{"wh_name": ' + filter + '}, {"owner_name": ' + filter + "}]}";
     getDatafromAPINODE(
       "/whManagement/warehouse?q=" +
         whereOr +
         "&lmt=" +
         this.state.perPage +
         "&pg=" +
-        this.state.activePage, this.props.dataLogin.token
+        this.state.activePage,
+      this.props.dataLogin.token
     ).then((res) => {
       if (res.data !== undefined) {
         this.setState({
@@ -247,7 +255,7 @@ class WHManagement extends React.Component {
   getASPList() {
     // switch (this.props.dataLogin.account_id) {
     //   case "xl":
-    getDatafromAPIEXEL("/vendor_data_non_page").then((res) => {
+    getDatafromAPIMY("/vendor_data_non_page").then((res) => {
       if (res.data !== undefined) {
         this.setState({ asp_data: res.data._items });
       } else {
@@ -447,27 +455,39 @@ class WHManagement extends React.Component {
     this.togglecreateModal();
     const BulkXLSX = this.state.rowsXLS;
     // const BulkData = await this.getMatStockFormat(BulkXLSX);
-    const res = await postDatatoAPINODE("/whManagement/createWarehouse", {
-      managementData: BulkXLSX,
-    }, this.props.dataLogin.token);
+    const res = await postDatatoAPINODE(
+      "/whManagement/createWarehouse",
+      {
+        managementData: BulkXLSX,
+      },
+      this.props.dataLogin.token
+    );
     if (res.data !== undefined) {
       this.setState({ action_status: "success" });
       this.toggleLoading();
     } else {
-      if (res.response !== undefined && res.response.data !== undefined && res.response.data.error !== undefined) {
+      if (
+        res.response !== undefined &&
+        res.response.data !== undefined &&
+        res.response.data.error !== undefined
+      ) {
         if (res.response.data.error.message !== undefined) {
-
-          this.setState({ action_status: 'failed', action_message: res.response.data.error.message });
+          this.setState({
+            action_status: "failed",
+            action_message: res.response.data.error.message,
+          });
         } else {
-          this.setState({ action_status: 'failed', action_message: res.response.data.error });
+          this.setState({
+            action_status: "failed",
+            action_message: res.response.data.error,
+          });
         }
       } else {
-        this.setState({ action_status: 'failed' });
+        this.setState({ action_status: "failed" });
       }
       this.toggleLoading();
     }
   };
-
 
   saveTruncateBulk = async () => {
     this.toggleLoading();
@@ -478,7 +498,8 @@ class WHManagement extends React.Component {
       "/whManagement/createWhManagementTruncate",
       {
         managementData: BulkXLSX,
-      }, this.props.dataLogin.token
+      },
+      this.props.dataLogin.token
     );
     if (res.data !== undefined) {
       this.setState({ action_status: "success" });
@@ -513,16 +534,17 @@ class WHManagement extends React.Component {
       longitude: dataWHEdit[7],
       factory_code: dataWHEdit[8],
       wh_type: dataWHEdit[9],
-      city : dataWHEdit[10],
+      city: dataWHEdit[10],
       region: dataWHEdit[11],
-      post_code : dataWHEdit[12],
+      post_code: dataWHEdit[12],
     };
     this.toggleLoading();
     this.toggleEdit();
     console.log("WH Management Edit", JSON.stringify(WH));
     let patchData = await patchDatatoAPINODE(
       "/whManagement/UpdateOneWarehouse/" + objData,
-      { data: WH }, this.props.dataLogin.token
+      { data: WH },
+      this.props.dataLogin.token
     );
     if (patchData === undefined) {
       patchData = {};
@@ -537,14 +559,24 @@ class WHManagement extends React.Component {
       });
     } else {
       this.toggleLoading();
-      if (patchData.response !== undefined && patchData.response.data !== undefined && patchData.response.data.error !== undefined) {
+      if (
+        patchData.response !== undefined &&
+        patchData.response.data !== undefined &&
+        patchData.response.data.error !== undefined
+      ) {
         if (patchData.response.data.error.message !== undefined) {
-          this.setState({ action_status: 'failed', action_message: patchData.response.data.error.message });
+          this.setState({
+            action_status: "failed",
+            action_message: patchData.response.data.error.message,
+          });
         } else {
-          this.setState({ action_status: 'failed', action_message: patchData.response.data.error });
+          this.setState({
+            action_status: "failed",
+            action_message: patchData.response.data.error,
+          });
         }
       } else {
-        this.setState({ action_status: 'failed' });
+        this.setState({ action_status: "failed" });
       }
     }
   }
@@ -565,30 +597,41 @@ class WHManagement extends React.Component {
       latitude: dataWHEdit[6],
       longitude: dataWHEdit[7],
       factory_code: dataWHEdit[8],
-      city : dataWHEdit[10],
+      city: dataWHEdit[10],
       region: dataWHEdit[11],
-      post_code : dataWHEdit[12],
+      post_code: dataWHEdit[12],
     };
     poData.push(WH);
     let postData = await postDatatoAPINODE(
       "/whManagement/createOneWarehouse",
       {
         managementData: WH,
-      }, this.props.dataLogin.token
+      },
+      this.props.dataLogin.token
     ).then((res) => {
       if (res.data !== undefined) {
         this.setState({ action_status: "success" }, () => {
           this.toggleLoading();
         });
       } else {
-        if (res.response !== undefined && res.response.data !== undefined && res.response.data.error !== undefined) {
+        if (
+          res.response !== undefined &&
+          res.response.data !== undefined &&
+          res.response.data.error !== undefined
+        ) {
           if (res.response.data.error.message !== undefined) {
-            this.setState({ action_status: 'failed', action_message: res.response.data.error.message });
+            this.setState({
+              action_status: "failed",
+              action_message: res.response.data.error.message,
+            });
           } else {
-            this.setState({ action_status: 'failed', action_message: res.response.data.error });
+            this.setState({
+              action_status: "failed",
+              action_message: res.response.data.error,
+            });
           }
         } else {
-          this.setState({ action_status: 'failed' });
+          this.setState({ action_status: "failed" });
         }
         this.toggleLoading();
       }
@@ -610,7 +653,8 @@ class WHManagement extends React.Component {
   async downloadAll() {
     let download_all = [];
     let getAll_nonpage = await getDatafromAPINODE(
-      "/whManagement/warehouse?noPg=1", this.props.dataLogin.token
+      "/whManagement/warehouse?noPg=1",
+      this.props.dataLogin.token
     );
     if (getAll_nonpage.data !== undefined) {
       download_all = getAll_nonpage.data.data;
@@ -666,7 +710,8 @@ class WHManagement extends React.Component {
     this.toggleLoading();
     this.toggleDelete();
     const DelData = deleteDataFromAPINODE(
-      "/whManagement/deleteWarehouse/" + objData, this.props.dataLogin.token
+      "/whManagement/deleteWarehouse/" + objData,
+      this.props.dataLogin.token
     ).then((res) => {
       if (res.data !== undefined) {
         this.setState({ action_status: "success" });
@@ -681,7 +726,6 @@ class WHManagement extends React.Component {
   };
 
   exportMatStatus = async () => {
-
     const wb = new Excel.Workbook();
     const ws = wb.addWorksheet();
     const ws2 = wb.addWorksheet();
@@ -701,9 +745,48 @@ class WHManagement extends React.Component {
       "wh_type",
       "factory_code",
     ]);
-    ws.addRow(["Jakarta", "JKT1", "Asep", "Priuk","JKT","Jabo","12351", 0, 0, "EID", "Internal","EF6"]);
-    ws.addRow(["Jakarta2", "JKT1", "Asep", "Priuk","JKT","Jabo","12351", 0, 0, "2000175941", "dsp","EF6"]);
-    ws.addRow(["Jakarta3", "JKT1", "Asep", "Priuk","JKT","Jabo","12351", 0, 0, "2000175941", "asp","EF6"]);
+    ws.addRow([
+      "Jakarta",
+      "JKT1",
+      "Asep",
+      "Priuk",
+      "JKT",
+      "Jabo",
+      "12351",
+      0,
+      0,
+      "EID",
+      "Internal",
+      "EF6",
+    ]);
+    ws.addRow([
+      "Jakarta2",
+      "JKT1",
+      "Asep",
+      "Priuk",
+      "JKT",
+      "Jabo",
+      "12351",
+      0,
+      0,
+      "2000175941",
+      "dsp",
+      "EF6",
+    ]);
+    ws.addRow([
+      "Jakarta3",
+      "JKT1",
+      "Asep",
+      "Priuk",
+      "JKT",
+      "Jabo",
+      "12351",
+      0,
+      0,
+      "2000175941",
+      "asp",
+      "EF6",
+    ]);
 
     ws2.addRow(["Vendor Name", "Vendor Code"]);
     ws2.addRow(["EID", "Internal"]);
@@ -711,7 +794,6 @@ class WHManagement extends React.Component {
       // const element = aspData[i];
       ws2.addRow([aspData[i].Name, aspData[i].Vendor_Code]);
     }
-
 
     const PPFormat = await wb.xlsx.writeBuffer();
     saveAs(new Blob([PPFormat]), "WH Management Template.xlsx");
@@ -727,7 +809,8 @@ class WHManagement extends React.Component {
         "&lmt=" +
         this.state.perPage +
         "&pg=" +
-        this.state.activePage, this.props.dataLogin.token
+        this.state.activePage,
+      this.props.dataLogin.token
     ).then((res) => {
       if (res.data !== undefined) {
         this.setState({
@@ -768,7 +851,7 @@ class WHManagement extends React.Component {
   }
 
   render() {
-    const {all_data} = this.state;
+    const { all_data } = this.state;
     return (
       <div className="animated fadeIn">
         <DefaultNotif
@@ -858,7 +941,7 @@ class WHManagement extends React.Component {
                 <Row>
                   <Col>
                     <div style={{ marginBottom: "10px" }}>
-                    <div
+                      <div
                         style={{
                           float: "left",
                           margin: "5px",
@@ -898,24 +981,30 @@ class WHManagement extends React.Component {
                 </Row>
                 <Row>
                   <Col>
-                    <div >
+                    <div>
                       <Table size="sm">
                         <thead
                           // style={{ backgroundColor: "#73818f" }}
                           className="fixed-whman"
                         >
                           <tr align="center">
-                          <th><Button color="ghost-dark"
-                                onClick={() => this.requestSort('wh_name')}
+                            <th>
+                              <Button
+                                color="ghost-dark"
+                                onClick={() => this.requestSort("wh_name")}
                               >
                                 <b>Warehouse Name</b>
-                              </Button></th>
-                              <th><Button color="ghost-dark"
-                                onClick={() => this.requestSort('wh_id')}
+                              </Button>
+                            </th>
+                            <th>
+                              <Button
+                                color="ghost-dark"
+                                onClick={() => this.requestSort("wh_id")}
                               >
                                 <b>Warehouse ID</b>
-                              </Button></th>
-                            <th style={{ width: '100px'}}>WH Manager</th>
+                              </Button>
+                            </th>
+                            <th style={{ width: "100px" }}>WH Manager</th>
                             <th>Address</th>
                             <th>Latitude</th>
                             <th>Longitude</th>
@@ -927,70 +1016,65 @@ class WHManagement extends React.Component {
                           </tr>
                         </thead>
                         <tbody>
-                          {all_data
-                            .map((e) => (
-                              <React.Fragment key={e._id + "frag"}>
-                                <tr
-                                  style={{ backgroundColor: "#d3d9e7" }}
-                                  className="fixbody"
-                                  key={e._id}
-                                >
-                                  <td style={{ textAlign: "center" }}>
-                                    {e.wh_name}
-                                  </td>
-                                  <td style={{ textAlign: "center" }}>
-                                    {e.wh_id}
-                                  </td>
-                                  <td >
-                                    {e.wh_manager}
-                                  </td>
-                                  <td >
-                                    {e.address}
-                                  </td>
-                                  <td style={{ textAlign: "center" }}>
-                                    {e.latitude}
-                                  </td>
-                                  <td style={{ textAlign: "center" }}>
-                                    {e.longitude}
-                                  </td>
-                                  <td style={{ textAlign: "center" }}>
-                                    {e.owner_name}
-                                  </td>
-                                  <td style={{ textAlign: "center" }}>
-                                    {e.wh_type}
-                                  </td>
-                                  <td style={{ textAlign: "center" }}>
-                                    {e.factory_code}
-                                  </td>
-                                  <td>
-                                    <Button
-                                      size="sm"
-                                      color="secondary"
-                                      value={e._id}
-                                      onClick={this.toggleEdit}
-                                      title="Edit"
-                                    >
-                                      <i className="fas fa-edit"></i>
-                                    </Button>
-                                  </td>
-                                  <td>
-                                    <Button
-                                      size="sm"
-                                      color="danger"
-                                      value={e._id}
-                                      name={e.wh_id}
-                                      onClick={this.toggleDelete}
-                                      title="Delete"
-                                    >
-                                      <i
-                                        className="fa fa-trash"
-                                        aria-hidden="true"
-                                      ></i>
-                                    </Button>
-                                  </td>
-                                </tr>
-                              </React.Fragment>
-                            ))}
+                          {all_data.map((e) => (
+                            <React.Fragment key={e._id + "frag"}>
+                              <tr
+                                style={{ backgroundColor: "#d3d9e7" }}
+                                className="fixbody"
+                                key={e._id}
+                              >
+                                <td style={{ textAlign: "center" }}>
+                                  {e.wh_name}
+                                </td>
+                                <td style={{ textAlign: "center" }}>
+                                  {e.wh_id}
+                                </td>
+                                <td>{e.wh_manager}</td>
+                                <td>{e.address}</td>
+                                <td style={{ textAlign: "center" }}>
+                                  {e.latitude}
+                                </td>
+                                <td style={{ textAlign: "center" }}>
+                                  {e.longitude}
+                                </td>
+                                <td style={{ textAlign: "center" }}>
+                                  {e.owner_name}
+                                </td>
+                                <td style={{ textAlign: "center" }}>
+                                  {e.wh_type}
+                                </td>
+                                <td style={{ textAlign: "center" }}>
+                                  {e.factory_code}
+                                </td>
+                                <td>
+                                  <Button
+                                    size="sm"
+                                    color="secondary"
+                                    value={e._id}
+                                    onClick={this.toggleEdit}
+                                    title="Edit"
+                                  >
+                                    <i className="fas fa-edit"></i>
+                                  </Button>
+                                </td>
+                                <td>
+                                  <Button
+                                    size="sm"
+                                    color="danger"
+                                    value={e._id}
+                                    name={e.wh_id}
+                                    onClick={this.toggleDelete}
+                                    title="Delete"
+                                  >
+                                    <i
+                                      className="fa fa-trash"
+                                      aria-hidden="true"
+                                    ></i>
+                                  </Button>
+                                </td>
+                              </tr>
+                            </React.Fragment>
+                          ))}
                         </tbody>
                       </Table>
                     </div>
@@ -1036,30 +1120,30 @@ class WHManagement extends React.Component {
                   />
                 </FormGroup>
                 <Row>
-                <Col sm="8">
-                  <FormGroup>
-                    <Label htmlFor="wh_id">Warehouse ID </Label>
-                    <Input
-                      type="text"
-                      name="1"
-                      placeholder="Warehouse ID"
-                      value={this.state.DataForm[1]}
-                      onChange={this.handleChangeForm}
-                    />
-                  </FormGroup>
-                </Col>
-                <Col sm="4">
-                  <FormGroup>
-                    <Label htmlFor="wh_id">FF Code</Label>
-                    <Input
-                      type="text"
-                      name="8"
-                      placeholder="Factory Code"
-                      value={this.state.DataForm[8]}
-                      onChange={this.handleChangeForm}
-                    />
-                  </FormGroup>
-                </Col>
+                  <Col sm="8">
+                    <FormGroup>
+                      <Label htmlFor="wh_id">Warehouse ID </Label>
+                      <Input
+                        type="text"
+                        name="1"
+                        placeholder="Warehouse ID"
+                        value={this.state.DataForm[1]}
+                        onChange={this.handleChangeForm}
+                      />
+                    </FormGroup>
+                  </Col>
+                  <Col sm="4">
+                    <FormGroup>
+                      <Label htmlFor="wh_id">FF Code</Label>
+                      <Input
+                        type="text"
+                        name="8"
+                        placeholder="Factory Code"
+                        value={this.state.DataForm[8]}
+                        onChange={this.handleChangeForm}
+                      />
+                    </FormGroup>
+                  </Col>
                 </Row>
                 <FormGroup>
                   <Label htmlFor="wh_manager">WH Manager</Label>
@@ -1092,30 +1176,30 @@ class WHManagement extends React.Component {
                   />
                 </FormGroup>
                 <Row>
-                <Col sm="8">
-                  <FormGroup>
-                    <Label htmlFor="wh_id">Region</Label>
-                    <Input
-                      type="text"
-                      name="11"
-                      placeholder="Region"
-                      value={this.state.DataForm[11]}
-                      onChange={this.handleChangeForm}
-                    />
-                  </FormGroup>
-                </Col>
-                <Col sm="4">
-                  <FormGroup>
-                    <Label htmlFor="wh_id">Post Code</Label>
-                    <Input
-                      type="text"
-                      name="12"
-                      placeholder="Post Code"
-                      value={this.state.DataForm[12]}
-                      onChange={this.handleChangeForm}
-                    />
-                  </FormGroup>
-                </Col>
+                  <Col sm="8">
+                    <FormGroup>
+                      <Label htmlFor="wh_id">Region</Label>
+                      <Input
+                        type="text"
+                        name="11"
+                        placeholder="Region"
+                        value={this.state.DataForm[11]}
+                        onChange={this.handleChangeForm}
+                      />
+                    </FormGroup>
+                  </Col>
+                  <Col sm="4">
+                    <FormGroup>
+                      <Label htmlFor="wh_id">Post Code</Label>
+                      <Input
+                        type="text"
+                        name="12"
+                        placeholder="Post Code"
+                        value={this.state.DataForm[12]}
+                        onChange={this.handleChangeForm}
+                      />
+                    </FormGroup>
+                  </Col>
                 </Row>
                 <FormGroup>
                   <Label htmlFor="latitude">Latitude</Label>
@@ -1148,7 +1232,9 @@ class WHManagement extends React.Component {
                     value={this.state.DataForm[5]}
                     onChange={this.handleChangeForm}
                   >
-                    <option selected="true" disabled="disabled">Select Owner Type</option>
+                    <option selected="true" disabled="disabled">
+                      Select Owner Type
+                    </option>
                     <option value="ASP">ASP</option>
                     <option value="DSP">DSP</option>
                     <option value="Internal">Internal</option>
@@ -1163,7 +1249,9 @@ class WHManagement extends React.Component {
                     value={this.state.DataForm[4]}
                     onChange={this.handleChangeForm}
                   >
-                    <option selected="true" disabled="disabled">Select Owner</option>
+                    <option selected="true" disabled="disabled">
+                      Select Owner
+                    </option>
                     {this.state.asp_data.map((asp) => (
                       <option value={asp.Vendor_Code}>{asp.Name}</option>
                     ))}
@@ -1174,7 +1262,11 @@ class WHManagement extends React.Component {
             </Row>
           </ModalBody>
           <ModalFooter>
-            <Button color="success" onClick={this.saveNew} disabled={!this.state.DataForm}>
+            <Button
+              color="success"
+              onClick={this.saveNew}
+              disabled={!this.state.DataForm}
+            >
               Create
             </Button>
           </ModalFooter>
@@ -1203,16 +1295,16 @@ class WHManagement extends React.Component {
                 </FormGroup>
                 <Row>
                   <Col sm="8">
-                  <FormGroup>
-                    <Label htmlFor="wh_id">Warehouse ID </Label>
-                    <Input
-                      type="text"
-                      name="1"
-                      placeholder=""
-                      value={this.state.DataForm[1]}
-                      onChange={this.handleChangeForm}
-                    />
-                  </FormGroup>
+                    <FormGroup>
+                      <Label htmlFor="wh_id">Warehouse ID </Label>
+                      <Input
+                        type="text"
+                        name="1"
+                        placeholder=""
+                        value={this.state.DataForm[1]}
+                        onChange={this.handleChangeForm}
+                      />
+                    </FormGroup>
                   </Col>
                   <Col sm="4">
                     <FormGroup>
@@ -1258,30 +1350,30 @@ class WHManagement extends React.Component {
                   />
                 </FormGroup>
                 <Row>
-                <Col sm="8">
-                  <FormGroup>
-                    <Label htmlFor="wh_id">Region</Label>
-                    <Input
-                      type="text"
-                      name="11"
-                      placeholder="Region"
-                      value={this.state.DataForm[11]}
-                      onChange={this.handleChangeForm}
-                    />
-                  </FormGroup>
-                </Col>
-                <Col sm="4">
-                  <FormGroup>
-                    <Label htmlFor="wh_id">Post Code</Label>
-                    <Input
-                      type="text"
-                      name="12"
-                      placeholder="Post Code"
-                      value={this.state.DataForm[12]}
-                      onChange={this.handleChangeForm}
-                    />
-                  </FormGroup>
-                </Col>
+                  <Col sm="8">
+                    <FormGroup>
+                      <Label htmlFor="wh_id">Region</Label>
+                      <Input
+                        type="text"
+                        name="11"
+                        placeholder="Region"
+                        value={this.state.DataForm[11]}
+                        onChange={this.handleChangeForm}
+                      />
+                    </FormGroup>
+                  </Col>
+                  <Col sm="4">
+                    <FormGroup>
+                      <Label htmlFor="wh_id">Post Code</Label>
+                      <Input
+                        type="text"
+                        name="12"
+                        placeholder="Post Code"
+                        value={this.state.DataForm[12]}
+                        onChange={this.handleChangeForm}
+                      />
+                    </FormGroup>
+                  </Col>
                 </Row>
                 <FormGroup>
                   <Label htmlFor="owner">Owner</Label>
@@ -1375,7 +1467,7 @@ class WHManagement extends React.Component {
           isOpen={this.state.danger}
           toggle={this.toggleDelete}
           className={"modal-danger " + this.props.className}
-          title={"Delete WH "+ this.state.selected_wh_id}
+          title={"Delete WH " + this.state.selected_wh_id}
           body={"Are you sure ?"}
         >
           <Button color="danger" onClick={this.DeleteData}>
@@ -1387,10 +1479,11 @@ class WHManagement extends React.Component {
         </ModalDelete>
 
         {/* Modal Loading */}
-        <Loading isOpen={this.state.modal_loading}
+        <Loading
+          isOpen={this.state.modal_loading}
           toggle={this.toggleLoading}
-          className={"modal-sm modal--loading "}>
-        </Loading>
+          className={"modal-sm modal--loading "}
+        ></Loading>
         {/* end Modal Loading */}
       </div>
     );

@@ -98,28 +98,6 @@ class PSUpload extends Component {
     this.toggleAssign = this.toggleAssign.bind(this);
   }
 
-  async getDataFromAPINODEWithParams(url) {
-    try {
-      let respond = await axios({
-        method: "get",
-        url: API_URL_NODE + url,
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + this.state.tokenUser,
-        },
-        params: {},
-      });
-      if (respond.status >= 200 && respond.status < 300) {
-        console.log("respond data", respond);
-      }
-      return respond;
-    } catch (err) {
-      let respond = err;
-      console.log("respond data", err);
-      return respond;
-    }
-  }
-
   async getDatafromAPIBMS(url) {
     try {
       let respond = await axios.get(API_URL_BMS_Phil + url, {

@@ -521,7 +521,7 @@ class ListTechnical extends Component {
                           {boq.project_name}
                         </td>
                         <td style={{ verticalAlign: "middle" }}>
-                          {boq.creator[0].email}
+                          {boq.creator[0] !== undefined && boq.creator[0].email}
                         </td>
                         <td style={{ verticalAlign: "middle" }}>
                           {boq.version}

@@ -15,7 +15,7 @@ import {
   Label,
   ModalFooter,
   Modal,
- ModalBody
+  ModalBody,
 } from "reactstrap";
 import { Link } from "react-router-dom";
 import axios from "axios";
@@ -24,12 +24,15 @@ import debounce from "lodash.debounce";
 import Excel from "exceljs";
 import { saveAs } from "file-saver";
 import { connect } from "react-redux";
-import './project_css.css';
-import { getDatafromAPIEXEL } from "../../helper/asyncFunction";
-import Loading from '../components/Loading';
+import "./project_css.css";
+import { getDatafromAPINODE } from "../../helper/asyncFunction";
+import Loading from "../components/Loading";
 
 import ModalForm from "../components/ModalForm";
-import {convertDateFormatfull, convertDateFormat} from '../../helper/basicFunction'
+import {
+  convertDateFormatfull,
+  convertDateFormat,
+} from "../../helper/basicFunction";
 
 const API_URL = "https://api-dev.bam-id.e-dpm.com/bamidapi";
 const username = "bamidadmin@e-dpm.com";
@@ -71,8 +74,8 @@ class OrderCreated extends Component {
       data_mr_selected: null,
       modal_box_input: false,
       rejectNote: "",
-      mot_type : null,
-      modal_loading : false,
+      mot_type: null,
+      modal_loading: false,
     };
     this.handlePageChange = this.handlePageChange.bind(this);
     this.handleFilterList = this.handleFilterList.bind(this);
@@ -91,12 +94,12 @@ class OrderCreated extends Component {
   }
 
   toggleBoxInput(e) {
-    if(e !== undefined){
+    if (e !== undefined) {
       const id_doc = e.currentTarget.id;
       this.setState({ id_mr_selected: id_doc });
     }
-    this.setState(prevState => ({
-      modal_box_input: !prevState.modal_box_input
+    this.setState((prevState) => ({
+      modal_box_input: !prevState.modal_box_input,
     }));
   }
 
@@ -112,7 +115,7 @@ class OrderCreated extends Component {
     if (value !== null && value.length !== 0 && value !== 0) {
       this.setState({ rejectNote: value });
     }
-  }
+  };
 
   async getDataFromAPI(url) {
     try {
@@ -177,7 +180,7 @@ class OrderCreated extends Component {
     }
   }
 
-  async getDatafromAPIEXEL(url) {
+  async getDatafromAPINODE(url) {
     try {
       let respond = await axios.get(API_URL_XL + url, {
         headers: { "Content-Type": "application/json" },
@@ -226,7 +229,7 @@ class OrderCreated extends Component {
   getASPList() {
     // switch (this.props.dataLogin.account_id) {
     //   case "xl":
-    this.getDatafromAPIEXEL('/vendor_data_non_page?where={"Type":"DSP"}').then(
+    this.getDatafromAPINODE('/vendor_data_non_page?where={"Type":"DSP"}').then(
       (res) => {
         console.log("asp data ", res.data);
         if (res.data !== undefined) {
@@ -308,7 +311,12 @@ class OrderCreated extends Component {
           this.state.filter_list[8] +
           '", "$options" : "i"}'
       );
-    this.state.filter_list[9] !== "" && (filter_array.push('"creator":{"$regex" : "' + this.state.filter_list[9] + '", "$options" : "i"}'));
+    this.state.filter_list[9] !== "" &&
+      filter_array.push(
+        '"creator":{"$regex" : "' +
+          this.state.filter_list[9] +
+          '", "$options" : "i"}'
+      );
     this.state.filter_list[10] !== "" &&
       filter_array.push(
         '"updated_on":{"$regex" : "' +
@@ -390,7 +398,12 @@ class OrderCreated extends Component {
           this.state.filter_list[8] +
           '", "$options" : "i"}'
       );
-    this.state.filter_list[9] !== "" && (filter_array.push('"creator":{"$regex" : "' + this.state.filter_list[9] + '", "$options" : "i"}'));
+    this.state.filter_list[9] !== "" &&
+      filter_array.push(
+        '"creator":{"$regex" : "' +
+          this.state.filter_list[9] +
+          '", "$options" : "i"}'
+      );
     this.state.filter_list[10] !== "" &&
       filter_array.push(
         '"updated_on":{"$regex" : "' +
@@ -408,13 +421,15 @@ class OrderCreated extends Component {
         '"origin.value" : "' + this.props.match.params.whid + '"'
       );
     let whereAnd = "{" + filter_array.join(",") + "}";
-    let res = await this.getDataFromAPINODE('/matreq?srt=_id:-1&noPg=1&q=' + whereAnd)
+    let res = await this.getDataFromAPINODE(
+      "/matreq?srt=_id:-1&noPg=1&q=" + whereAnd
+    );
     if (res.data !== undefined) {
       const items = res.data.data;
       mrList = res.data.data;
       return mrList;
       // this.setState({ mr_all: items });
-    }else{
+    } else {
       return [];
     }
   }
@@ -431,18 +446,28 @@ class OrderCreated extends Component {
     return s || undefined;
   }
 
-  async getDataCDID(data_mr){
+  async getDataCDID(data_mr) {
     let arrayCD = [];
-    arrayCD = data_mr.filter(e => e.cust_del !== undefined).map( e => e.cust_del).reduce((l, n) => l.concat(n), []);
+    arrayCD = data_mr
+      .filter((e) => e.cust_del !== undefined)
+      .map((e) => e.cust_del)
+      .reduce((l, n) => l.concat(n), []);
     let array_cd_id = [...new Set(arrayCD.map(({ cd_id }) => cd_id))];
-    let dataCDID =[];
+    let dataCDID = [];
     let getNumberPage = Math.ceil(array_cd_id.length / 20);
-    for(let i = 0 ; i < getNumberPage; i++){
-      let DataPaginationWPID = array_cd_id.slice(i * 20, (i+1)*20);
-      let array_in_cdid = '"'+DataPaginationWPID.join('", "')+'"';
-      let projection = '&projection={"WP_ID" : 1, "C1003_WBS_HW" : 1, "C1008_WBS_HWAC" : 1, "C1013_WBS_LCM" : 1, "C1018_WBS_PNRO" : 1, "C1024_WBS_PNDO" : 1, "C1032_WBS_HW_Bulk" : 1, "C1033_WBS_LCM_Bulk" : 1, "C1034_WBS_PowHW_Site_Basis" : 1, "C1035_WBS_PowLCM_Site_Basis" : 1, "C1036_WBS_Kathrein" : 1}';
-      const getWPID = await getDatafromAPIEXEL('/custdel_sorted?where={"WP_ID":{"$in" : ['+array_in_cdid+']}}'+projection, this.state.tokenUser);
-      if(getWPID !== undefined && getWPID.data !== undefined) {
+    for (let i = 0; i < getNumberPage; i++) {
+      let DataPaginationWPID = array_cd_id.slice(i * 20, (i + 1) * 20);
+      let array_in_cdid = '"' + DataPaginationWPID.join('", "') + '"';
+      let projection =
+        '&projection={"WP_ID" : 1, "C1003_WBS_HW" : 1, "C1008_WBS_HWAC" : 1, "C1013_WBS_LCM" : 1, "C1018_WBS_PNRO" : 1, "C1024_WBS_PNDO" : 1, "C1032_WBS_HW_Bulk" : 1, "C1033_WBS_LCM_Bulk" : 1, "C1034_WBS_PowHW_Site_Basis" : 1, "C1035_WBS_PowLCM_Site_Basis" : 1, "C1036_WBS_Kathrein" : 1}';
+      const getWPID = await getDatafromAPINODE(
+        '/custdel_sorted?where={"WP_ID":{"$in" : [' +
+          array_in_cdid +
+          "]}}" +
+          projection,
+        this.state.tokenUser
+      );
+      if (getWPID !== undefined && getWPID.data !== undefined) {
         dataCDID = dataCDID.concat(getWPID.data._items);
       }
     }
@@ -458,42 +483,117 @@ class OrderCreated extends Component {
 
     const dataCDID = await this.getDataCDID(allMR);
 
-    let headerRow = ["MR ID", "MR MITT ID","MR Type","MR Delivery Type", "Project Name", "CD ID", "Site ID", "Site Name", "Current Status", "Current Milestone", "DSP", "ETA", "MR MITT Created On", "MR MITT Created By","Updated On", "Created On", "WP ID for WBS", "WBS HW for GI", "WBS HWAC (License)", "WBS LCM", "WBS PNRO", "WBS PNDO", "WBS HW Bulk", "WBS LCM Bulk for GI", "WBS PowHW Site Basis", "WBS PowLCM Site Basis", "WBS Kathrein"];
+    let headerRow = [
+      "MR ID",
+      "MR MITT ID",
+      "MR Type",
+      "MR Delivery Type",
+      "Project Name",
+      "CD ID",
+      "Site ID",
+      "Site Name",
+      "Current Status",
+      "Current Milestone",
+      "DSP",
+      "ETA",
+      "MR MITT Created On",
+      "MR MITT Created By",
+      "Updated On",
+      "Created On",
+      "WP ID for WBS",
+      "WBS HW for GI",
+      "WBS HWAC (License)",
+      "WBS LCM",
+      "WBS PNRO",
+      "WBS PNDO",
+      "WBS HW Bulk",
+      "WBS LCM Bulk for GI",
+      "WBS PowHW Site Basis",
+      "WBS PowLCM Site Basis",
+      "WBS Kathrein",
+    ];
     ws.addRow(headerRow);
 
     for (let i = 1; i < headerRow.length + 1; i++) {
-      ws.getCell(this.numToSSColumn(i) + '1').font = { size: 11, bold: true };
+      ws.getCell(this.numToSSColumn(i) + "1").font = { size: 11, bold: true };
     }
 
     for (let i = 0; i < allMR.length; i++) {
       let dataCDIDIdx = {};
-      if(allMR[i].cust_del !== undefined && allMR[i].cust_del[0] !== undefined){
-        dataCDIDIdx = dataCDID.filter(dc => allMR[i].cust_del.map(cdm => cdm.cd_id).includes(dc.WP_ID));
-        if(dataCDIDIdx.length !== 0){
-          let dataCDID_5 = dataCDIDIdx.find(dci => /_5$/.test(dci.WP_ID));
-          if(dataCDID_5 === undefined){
+      if (
+        allMR[i].cust_del !== undefined &&
+        allMR[i].cust_del[0] !== undefined
+      ) {
+        dataCDIDIdx = dataCDID.filter((dc) =>
+          allMR[i].cust_del.map((cdm) => cdm.cd_id).includes(dc.WP_ID)
+        );
+        if (dataCDIDIdx.length !== 0) {
+          let dataCDID_5 = dataCDIDIdx.find((dci) => /_5$/.test(dci.WP_ID));
+          if (dataCDID_5 === undefined) {
             dataCDIDIdx = dataCDIDIdx[0];
-          }else{
+          } else {
             dataCDIDIdx = dataCDID_5;
           }
-        }else{
+        } else {
           dataCDIDIdx = {};
         }
       }
 
-      const creator_mr_mitt = allMR[i].mr_status.find(e => e.mr_status_name === "PLANTSPEC" && e.mr_status_value === "NOT ASSIGNED");
-      ws.addRow([allMR[i].mr_id, allMR[i].mr_mitt_no, allMR[i].mr_type, allMR[i].mr_delivery_type, allMR[i].project_name, allMR[i].cust_del !== undefined ? allMR[i].cust_del.map(cd => cd.cd_id).join(', ') : allMR[i].cd_id, allMR[i].site_info[0] !== undefined ? allMR[i].site_info[0].site_id : null, allMR[i].site_info[0] !== undefined ? allMR[i].site_info[0].site_name : null, allMR[i].current_mr_status, allMR[i].current_milestones, allMR[i].dsp_company, new Date(allMR[i].eta), creator_mr_mitt !== undefined ? new Date(creator_mr_mitt.mr_status_date) : null, creator_mr_mitt !== undefined ? creator_mr_mitt.mr_status_updater : null, new Date(allMR[i].updated_on), new Date(allMR[i].created_on),  dataCDIDIdx.WP_ID, dataCDIDIdx.C1003_WBS_HW, dataCDIDIdx.C1008_WBS_HWAC, dataCDIDIdx.C1013_WBS_LCM, dataCDIDIdx.C1018_WBS_PNRO, dataCDIDIdx.C1024_WBS_PNDO, dataCDIDIdx.C1032_WBS_HW_Bulk, dataCDIDIdx.C1033_WBS_LCM_Bulk, dataCDIDIdx.C1034_WBS_PowHW_Site_Basis, dataCDIDIdx.C1035_WBS_PowLCM_Site_Basis, dataCDIDIdx.C1036_WBS_Kathrein]);
+      const creator_mr_mitt = allMR[i].mr_status.find(
+        (e) =>
+          e.mr_status_name === "PLANTSPEC" &&
+          e.mr_status_value === "NOT ASSIGNED"
+      );
+      ws.addRow([
+        allMR[i].mr_id,
+        allMR[i].mr_mitt_no,
+        allMR[i].mr_type,
+        allMR[i].mr_delivery_type,
+        allMR[i].project_name,
+        allMR[i].cust_del !== undefined
+          ? allMR[i].cust_del.map((cd) => cd.cd_id).join(", ")
+          : allMR[i].cd_id,
+        allMR[i].site_info[0] !== undefined
+          ? allMR[i].site_info[0].site_id
+          : null,
+        allMR[i].site_info[0] !== undefined
+          ? allMR[i].site_info[0].site_name
+          : null,
+        allMR[i].current_mr_status,
+        allMR[i].current_milestones,
+        allMR[i].dsp_company,
+        new Date(allMR[i].eta),
+        creator_mr_mitt !== undefined
+          ? new Date(creator_mr_mitt.mr_status_date)
+          : null,
+        creator_mr_mitt !== undefined
+          ? creator_mr_mitt.mr_status_updater
+          : null,
+        new Date(allMR[i].updated_on),
+        new Date(allMR[i].created_on),
+        dataCDIDIdx.WP_ID,
+        dataCDIDIdx.C1003_WBS_HW,
+        dataCDIDIdx.C1008_WBS_HWAC,
+        dataCDIDIdx.C1013_WBS_LCM,
+        dataCDIDIdx.C1018_WBS_PNRO,
+        dataCDIDIdx.C1024_WBS_PNDO,
+        dataCDIDIdx.C1032_WBS_HW_Bulk,
+        dataCDIDIdx.C1033_WBS_LCM_Bulk,
+        dataCDIDIdx.C1034_WBS_PowHW_Site_Basis,
+        dataCDIDIdx.C1035_WBS_PowLCM_Site_Basis,
+        dataCDIDIdx.C1036_WBS_Kathrein,
+      ]);
       const getRowLast = ws.lastRow._number;
-      ws.getCell("M"+getRowLast).numFmt = "YYYY-MM-DD";
-      ws.getCell("O"+getRowLast).numFmt = "YYYY-MM-DD";
-      ws.getCell("P"+getRowLast).numFmt = "YYYY-MM-DD";
-      if(creator_mr_mitt !== undefined && creator_mr_mitt !== null){
-        ws.getCell("L"+getRowLast).numFmt = "YYYY-MM-DD";
+      ws.getCell("M" + getRowLast).numFmt = "YYYY-MM-DD";
+      ws.getCell("O" + getRowLast).numFmt = "YYYY-MM-DD";
+      ws.getCell("P" + getRowLast).numFmt = "YYYY-MM-DD";
+      if (creator_mr_mitt !== undefined && creator_mr_mitt !== null) {
+        ws.getCell("L" + getRowLast).numFmt = "YYYY-MM-DD";
       }
     }
     this.toggleLoading();
     const allocexport = await wb.xlsx.writeBuffer();
-    saveAs(new Blob([allocexport]), 'MR List Order Created.xlsx');
+    saveAs(new Blob([allocexport]), "MR List Order Created.xlsx");
   }
 
   async patchDataToAPI(url, data, _etag) {
@@ -603,7 +703,7 @@ class OrderCreated extends Component {
   ApproveMR(e) {
     const _id = this.state.id_mr_selected;
     let body = this.state.selected_dsp;
-    body = {...body, "motType" : this.state.mot_type}
+    body = { ...body, motType: this.state.mot_type };
     // console.log('_id ',_id);
     // console.log('body ',body);
     this.patchDatatoAPINODE("/matreq/approveMatreq/" + _id, body).then(
@@ -640,18 +740,30 @@ class OrderCreated extends Component {
 
   rejectMR(e) {
     const id_doc = e.currentTarget.id;
-    let reason = this.state.rejectNote
-    this.patchDatatoAPINODE("/matreq/rejectMatreq/" + id_doc, {"rejectNote": reason}).then((res) => {
+    let reason = this.state.rejectNote;
+    this.patchDatatoAPINODE("/matreq/rejectMatreq/" + id_doc, {
+      rejectNote: reason,
+    }).then((res) => {
       if (res.data !== undefined) {
         this.setState({ action_status: "success" });
         this.getMRList();
         this.toggleBoxInput();
       } else {
-        if ( res.response !== undefined && res.response.data !== undefined && res.response.data.error !== undefined ) {
+        if (
+          res.response !== undefined &&
+          res.response.data !== undefined &&
+          res.response.data.error !== undefined
+        ) {
           if (res.response.data.error.message !== undefined) {
-            this.setState({ action_status: "failed", action_message: res.response.data.error.message });
+            this.setState({
+              action_status: "failed",
+              action_message: res.response.data.error.message,
+            });
           } else {
-            this.setState({ action_status: "failed", action_message: res.response.data.error });
+            this.setState({
+              action_status: "failed",
+              action_message: res.response.data.error,
+            });
           }
         } else {
           this.setState({ action_status: "failed" });
@@ -719,8 +831,8 @@ class OrderCreated extends Component {
     return searchBar;
   };
 
-  handleMotType(e){
-    this.setState({mot_type : e.target.value});
+  handleMotType(e) {
+    this.setState({ mot_type: e.target.value });
   }
 
   loading = () => (
@@ -860,19 +972,28 @@ class OrderCreated extends Component {
                         </td>
                         <td>{list.project_name}</td>
                         <td>
-                          {list.cust_del !== undefined && (list.cust_del.map(custdel => custdel.cd_id).join(' , '))}
+                          {list.cust_del !== undefined &&
+                            list.cust_del
+                              .map((custdel) => custdel.cd_id)
+                              .join(" , ")}
                         </td>
                         <td>
-                          {list.site_info !== undefined && (list.site_info.map(site_info => site_info.site_id).join(' , '))}
+                          {list.site_info !== undefined &&
+                            list.site_info
+                              .map((site_info) => site_info.site_id)
+                              .join(" , ")}
                         </td>
                         <td>
-                          {list.site_info !== undefined && (list.site_info.map(site_info => site_info.site_name).join(' , '))}
+                          {list.site_info !== undefined &&
+                            list.site_info
+                              .map((site_info) => site_info.site_name)
+                              .join(" , ")}
                         </td>
                         <td>{list.current_mr_status}</td>
                         <td>{list.current_milestones}</td>
                         <td>{list.dsp_company}</td>
                         <td>{convertDateFormat(list.eta)}</td>
-                        <td>{list.creator.map(c => c.email)}</td>
+                        <td>{list.creator.map((c) => c.email)}</td>
                         <td>{convertDateFormatfull(list.updated_on)}</td>
                         <td>{convertDateFormatfull(list.created_on)}</td>
                       </tr>
@@ -880,7 +1001,10 @@ class OrderCreated extends Component {
                   </tbody>
                 </Table>
                 <div style={{ margin: "8px 0px" }}>
-                  <small>Showing {this.state.mr_list.length} entries from {this.state.totalData} data</small>
+                  <small>
+                    Showing {this.state.mr_list.length} entries from{" "}
+                    {this.state.totalData} data
+                  </small>
                 </div>
                 <Pagination
                   activePage={this.state.activePage}
@@ -896,8 +1020,12 @@ class OrderCreated extends Component {
           </Col>
         </Row>
 
-{/* Modal Loading */}
-<Modal isOpen={this.state.modal_box_input} toggle={this.toggleBoxInput} className={'modal-sm modal--box-input'}>
+        {/* Modal Loading */}
+        <Modal
+          isOpen={this.state.modal_box_input}
+          toggle={this.toggleBoxInput}
+          className={"modal-sm modal--box-input"}
+        >
           <ModalBody>
             <Row>
               <Col sm="12">
@@ -915,7 +1043,17 @@ class OrderCreated extends Component {
             </Row>
           </ModalBody>
           <ModalFooter>
-            <Button disabled={!this.state.rejectNote} outline color="danger" size="sm" style={{ width: "80px" }} id={this.state.id_mr_selected} onClick={this.rejectMR}>Reject MR</Button>
+            <Button
+              disabled={!this.state.rejectNote}
+              outline
+              color="danger"
+              size="sm"
+              style={{ width: "80px" }}
+              id={this.state.id_mr_selected}
+              onClick={this.rejectMR}
+            >
+              Reject MR
+            </Button>
           </ModalFooter>
         </Modal>
         {/* end Modal Loading */}
@@ -931,54 +1069,69 @@ class OrderCreated extends Component {
             this.state.data_mr_selected !== undefined &&
             this.state.data_mr_selected.dsp_company !== null ? (
               <React.Fragment>
-              <FormGroup>
-                <Label htmlFor="total_box">Delivery Company</Label>
-                <Input
-                  type="text"
-                  className=""
-                  placeholder=""
-                  value={this.state.data_mr_selected.dsp_company}
-                  readOnly
-                />
-              </FormGroup>
-              {this.state.data_mr_selected.deliver_by === "DSP" && (this.state.asp_data.find(ad => ad.Vendor_Code === this.state.data_mr_selected.dsp_company_code )) && (
+                <FormGroup>
+                  <Label htmlFor="total_box">Delivery Company</Label>
+                  <Input
+                    type="text"
+                    className=""
+                    placeholder=""
+                    value={this.state.data_mr_selected.dsp_company}
+                    readOnly
+                  />
+                </FormGroup>
+                {this.state.data_mr_selected.deliver_by === "DSP" &&
+                  this.state.asp_data.find(
+                    (ad) =>
+                      ad.Vendor_Code ===
+                      this.state.data_mr_selected.dsp_company_code
+                  ) && (
+                    <FormGroup>
+                      <Label htmlFor="total_box">MOT Type</Label>
+                      <Input
+                        type="select"
+                        name={"0 /// sub_category"}
+                        onChange={this.handleMotType}
+                        value={this.state.mot_type}
+                      >
+                        <option value="" disabled selected hidden></option>
+                        <option value="MOT-Land">MOT-Land</option>
+                        <option value="MOT-Air">MOT-Air</option>
+                        <option value="MOT-Sea">MOT-Sea</option>
+                      </Input>
+                    </FormGroup>
+                  )}
+              </React.Fragment>
+            ) : (
+              <React.Fragment>
+                <FormGroup>
+                  <Label htmlFor="total_box">DSP Company</Label>
+                  <Input
+                    type="select"
+                    className=""
+                    placeholder=""
+                    onChange={this.handleLDMapprove}
+                    name={this.state.id_mr_selected}
+                  >
+                    <option value="" disabled selected hidden></option>
+                    {this.state.asp_data.map((asp) => (
+                      <option value={asp.Vendor_Code}>{asp.Name}</option>
+                    ))}
+                  </Input>
+                </FormGroup>
                 <FormGroup>
                   <Label htmlFor="total_box">MOT Type</Label>
-                  <Input type="select" name={"0 /// sub_category"} onChange={this.handleMotType} value={this.state.mot_type}>
+                  <Input
+                    type="select"
+                    name={"0 /// sub_category"}
+                    onChange={this.handleMotType}
+                    value={this.state.mot_type}
+                  >
                     <option value="" disabled selected hidden></option>
                     <option value="MOT-Land">MOT-Land</option>
                     <option value="MOT-Air">MOT-Air</option>
                     <option value="MOT-Sea">MOT-Sea</option>
                   </Input>
                 </FormGroup>
-              )}
-              </React.Fragment>
-            ) : (
-              <React.Fragment>
-              <FormGroup>
-                <Label htmlFor="total_box">DSP Company</Label>
-                <Input
-                  type="select"
-                  className=""
-                  placeholder=""
-                  onChange={this.handleLDMapprove}
-                  name={this.state.id_mr_selected}
-                >
-                  <option value="" disabled selected hidden></option>
-                  {this.state.asp_data.map((asp) => (
-                    <option value={asp.Vendor_Code}>{asp.Name}</option>
-                  ))}
-                </Input>
-              </FormGroup>
-              <FormGroup>
-                <Label htmlFor="total_box">MOT Type</Label>
-                <Input type="select" name={"0 /// sub_category"} onChange={this.handleMotType} value={this.state.mot_type}>
-                  <option value="" disabled selected hidden></option>
-                  <option value="MOT-Land">MOT-Land</option>
-                  <option value="MOT-Air">MOT-Air</option>
-                  <option value="MOT-Sea">MOT-Sea</option>
-                </Input>
-              </FormGroup>
               </React.Fragment>
             )}
           </Col>
@@ -994,10 +1147,11 @@ class OrderCreated extends Component {
         </ModalForm>
 
         {/* Modal Loading */}
-        <Loading isOpen={this.state.modal_loading}
+        <Loading
+          isOpen={this.state.modal_loading}
           toggle={this.toggleLoading}
-          className={"modal-sm modal--loading "}>
-        </Loading>
+          className={"modal-sm modal--loading "}
+        ></Loading>
         {/* end Modal Loading */}
       </div>
     );

@@ -17,6 +17,10 @@ import { connect } from "react-redux";
 import { Link, Redirect } from "react-router-dom";
 import AsyncSelect from "react-select/async";
 import Select from "react-select";
+import {
+  getDatafromAPINODE,
+  getDatafromAPIMY,
+} from "../../helper/asyncFunction";
 
 const DefaultNotif = React.lazy(() =>
   import("../../views/DefaultView/DefaultNotif")
@@ -617,14 +621,12 @@ class MRCreation extends Component {
   }
 
   getDSPList() {
-    this.getDatafromAPIXL('/vendor_data_non_page?where={"Type":"ASP"}').then(
-      (res) => {
-        if (res.data !== undefined) {
-          const items = res.data._items;
-          this.setState({ dsp_list: items });
-        }
+    getDatafromAPIMY("/vendor_data_non_page?").then((res) => {
+      if (res.data !== undefined) {
+        const items = res.data._items;
+        this.setState({ dsp_list: items });
       }
-    );
+    });
   }
 
   getDataTower() {
