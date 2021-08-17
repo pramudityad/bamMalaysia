@@ -30,7 +30,7 @@ import {
   convertDateFormatfull,
   convertDateFormat,
 } from "../../helper/basicFunction";
-import { getDatafromAPIEXEL } from "../../helper/asyncFunction";
+import { getDatafromAPINODE } from "../../helper/asyncFunction";
 
 import Loading from "../components/Loading";
 
@@ -370,7 +370,7 @@ class MRList extends Component {
       let array_in_cdid = '"' + DataPaginationWPID.join('", "') + '"';
       let projection =
         '&projection={"WP_ID" : 1, "C1003_WBS_HW" : 1, "C1008_WBS_HWAC" : 1, "C1013_WBS_LCM" : 1, "C1018_WBS_PNRO" : 1, "C1024_WBS_PNDO" : 1, "C1032_WBS_HW_Bulk" : 1, "C1033_WBS_LCM_Bulk" : 1, "C1034_WBS_PowHW_Site_Basis" : 1, "C1035_WBS_PowLCM_Site_Basis" : 1, "C1036_WBS_Kathrein" : 1}';
-      const getWPID = await getDatafromAPIEXEL(
+      const getWPID = await getDatafromAPINODE(
         '/custdel_sorted?where={"WP_ID":{"$in" : [' +
           array_in_cdid +
           "]}}" +

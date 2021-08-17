@@ -49,6 +49,50 @@ const TssrList = React.lazy(() => import("./viewsDNB/Tssr/TssrList"));
 const TssrBOM = React.lazy(() => import("./viewsDNB/Tssr/TssrBOM"));
 const TssrBOMDetail = React.lazy(() => import("./viewsDNB/Tssr/DetailTssr"));
 
+const WHManagement = React.lazy(() =>
+  import("./viewsDNB/MR/WHManagement/WHManagement")
+);
+
+const MRList = React.lazy(() => import("./viewsDNB/MR/MRList"));
+const MRNAList = React.lazy(() => import("./viewsDNB/MR/MRNAList"));
+const MRCreation = React.lazy(() => import("./viewsDNB/MR/MRCreation"));
+const BulkMRCreation = React.lazy(() => import("./viewsDNB/MR/BulkMR"));
+const MRDetail = React.lazy(() => import("./viewsDNB/MR/MRDetail"));
+const PSUpload = React.lazy(() => import("./viewsDNB/MR/PSUpload"));
+const MRProgress = React.lazy(() => import("./viewsDNB/MR/MRProgress"));
+const MRDashboardGlob = React.lazy(() =>
+  import("./viewsDNB/MR/Dashboard/MRDashboardGlob")
+);
+
+const OrderReceived = React.lazy(() =>
+  import("./viewsDNB/Warehouse/OrderReceived")
+);
+const OrderProcessing = React.lazy(() =>
+  import("./viewsDNB/Warehouse/OrderProcessing")
+);
+const ReadyToDeliver = React.lazy(() =>
+  import("./viewsDNB/Warehouse/ReadyToDeliver")
+);
+const JointCheck = React.lazy(() => import("./viewsDNB/Warehouse/JointCheck"));
+const LoadingProcess = React.lazy(() =>
+  import("./viewsDNB/Warehouse/LoadingProcess")
+);
+const WaitingDispatch = React.lazy(() =>
+  import("./viewsDNB/Warehouse/WaitingDispatch")
+);
+const MaterialDispatch = React.lazy(() =>
+  import("./viewsDNB/Warehouse/MaterialDispatch")
+);
+const ProjectDashboard = React.lazy(() =>
+  import("./viewsDNB/Project/ProjectDashboard")
+);
+const OrderCreated = React.lazy(() =>
+  import("./viewsDNB/Project/OrderCreated")
+);
+const LOMList = React.lazy(() => import("./viewsDNB/MR/LOMList"));
+const MatLOMList = React.lazy(() => import("./viewsDNB/MR/MatLOMList"));
+const BulkRequest = React.lazy(() => import("./viewsDNB/MR/BulkRequest"));
+
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
 const routes = [
   { path: "/", exact: true, name: "Home" },
@@ -153,7 +197,115 @@ const routes = [
     name: "Plant Spec List",
     component: TssrList,
   },
+  { path: "/ps-bom", exact: true, name: "Plant Spec BOM", component: TssrBOM },
+
   { path: "/ps-list/:id", name: "Plant Spec BOM", component: TssrBOMDetail },
+  {
+    path: "/wh-management",
+    exact: true,
+    name: "Warehouse Management",
+    component: WHManagement,
+  },
+
+  { path: "/mr-list", exact: true, name: "MR List", component: MRList },
+  {
+    path: "/mr-na-list",
+    exact: true,
+    name: "MR List Not Assign",
+    component: MRNAList,
+  },
+  {
+    path: "/mr-creation",
+    exact: true,
+    name: "Create MR",
+    component: MRCreation,
+  },
+  {
+    path: "/mr-detail/:id",
+    exact: true,
+    name: "MR Detail",
+    component: MRDetail,
+    roles: ["BAM-ASP"],
+  },
+  {
+    path: "/bulk-mr-creation",
+    name: "Bulk MR Creation",
+    component: BulkMRCreation,
+  },
+  { path: "/bulk-mr-request", name: "Bulk MR Request", component: BulkRequest },
+  // { path: '/bulk-mr-change-approval', name: 'Bulk MR Change Approval', component: BulkChangeApproval },
+  // { path: '/bulk-mr-approval', name: 'Bulk MR Approval', component: BulkApproval },
+  { path: "/ps-upload/:id", exact: true, name: "MR List", component: PSUpload },
+  {
+    path: "/mr-progress/:id",
+    exact: true,
+    name: "MR Progress",
+    component: MRProgress,
+  },
+
+  {
+    path: "/order-received",
+    exact: true,
+    name: "Order Received",
+    component: OrderReceived,
+  },
+  {
+    path: "/order-processing",
+    exact: true,
+    name: "Order Processing",
+    component: OrderProcessing,
+  },
+  {
+    path: "/ready-to-deliver",
+    exact: true,
+    name: "Ready To Deliver",
+    component: ReadyToDeliver,
+  },
+  {
+    path: "/joint-check",
+    exact: true,
+    name: "Joint Check",
+    component: JointCheck,
+  },
+  {
+    path: "/loading-process",
+    exact: true,
+    name: "Loading Process",
+    component: LoadingProcess,
+  },
+  {
+    path: "/waiting-dispatch",
+    exact: true,
+    name: "Material Dispatch",
+    component: WaitingDispatch,
+    roles: ["BAM-ASP"],
+  },
+  {
+    path: "/material-dispatch",
+    exact: true,
+    name: "Material Dispatch",
+    component: MaterialDispatch,
+    roles: ["BAM-ASP"],
+  },
+  {
+    path: "/project-dashboard",
+    exact: true,
+    name: "Project Dashboard",
+    component: ProjectDashboard,
+  },
+  {
+    path: "/order-created",
+    exact: true,
+    name: "Order Created",
+    component: OrderCreated,
+  },
+  { path: "/lom-list", exact: true, name: "LOM List", component: LOMList },
+  {
+    path: "/matlom-list",
+    exact: true,
+    name: "Material LOM List",
+    component: MatLOMList,
+  },
 ];
 
 export default routes;
