@@ -2578,7 +2578,7 @@ class MYASGCreation extends Component {
                       <option value="All">All</option>
                       <option value="KV">KV</option>
                       <option value="OKV">OKV</option>
-                      <option value="ER">ER</option>
+
                       <option value="EM">EM</option>
                     </Input>
                   </FormGroup>
@@ -2680,7 +2680,7 @@ class MYASGCreation extends Component {
                       <option value="All">All</option>
                       <option value="KV">KV</option>
                       <option value="OKV">OKV</option>
-                      <option value="ER">ER</option>
+
                       <option value="EM">EM</option>
                     </Input>
                   </FormGroup>

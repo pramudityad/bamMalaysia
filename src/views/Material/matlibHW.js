@@ -282,15 +282,14 @@ class MatHW extends React.PureComponent {
     }
   };
 
-  saveBulk = async () => {
+  saveMatStockWHBulk = async () => {
     this.toggleLoading();
     this.togglecreateModal();
     const BulkXLSX = this.state.rowsXLS;
     const res = await postDatatoAPINODE(
-      "/cpoMapping/createCpo",
+      "/mmCode/createMmCode",
       {
-        cpo_type: "hw",
-        cpo_data: this.state.rowsXLS,
+        mm_data: BulkXLSX,
       },
       this.state.tokenUser
     );
@@ -1092,7 +1091,7 @@ class MatHW extends React.PureComponent {
               color="success"
               className="btn-pill"
               disabled={this.state.rowsXLS.length === 0}
-              onClick={this.saveBulk}
+              onClick={this.saveMatStockWHBulk}
               style={{ height: "30px", width: "100px" }}
             >
               Save

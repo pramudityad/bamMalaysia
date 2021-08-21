@@ -809,9 +809,6 @@ class MatNRO extends React.Component {
         e.MM_Description,
         e.FTV_or_SSO_SLA_or_SSO_Lite_SLA_or_CBO,
         e.Remarks_or_Acceptance,
-        e.ZERV_18,
-        e.ZEXT_40,
-        e.Note,
         e.Vendor_List.map((vendor) => vendor.Vendor_Name),
       ]);
     }

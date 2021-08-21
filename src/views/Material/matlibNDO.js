@@ -483,6 +483,7 @@ class MatNDO extends React.PureComponent {
         e.MM_Code,
         e.MM_Description,
         e.Vendor_ID,
+        this.findVendorName(e.Vendor_ID),
         e.Note,
       ]);
     }
