@@ -3,7 +3,7 @@
   "version": "2.5.0",
   "description": "BAM Malaysia",
   "author": "Łukasz Holeczek",
-  "homepage": "https://bam-my.e-dpm.com/",
+  "homepage": "https://digitalprojectmanagement.ericsson.net/bam-myslbd",
   "copyright": "",
   "dependencies": {
     "@coreui/coreui": "^2.1.9",
