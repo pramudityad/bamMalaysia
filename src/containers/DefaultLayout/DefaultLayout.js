@@ -144,6 +144,7 @@ class DefaultLayout extends Component {
             <DefaultHeader
               onLogout={(e) => this.signOut(e)}
               DataName={this.props.DataName}
+              dataLoginAzure={this.props.dataLoginAzure}
             />
           </Suspense>
         </AppHeader>
@@ -177,6 +178,7 @@ class DefaultLayout extends Component {
                           <route.component
                             {...props}
                             dataUser={this.props.dataUser}
+                            dataLoginAzure={this.props.dataLoginAzure}
                           />
                         )}
                       />

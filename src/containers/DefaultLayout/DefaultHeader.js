@@ -62,29 +62,20 @@ class DefaultHeader extends Component {
             alt: "Ericsson Logo",
           }}
         />
-
         <Nav className="ml-auto" navbar>
-          <UncontrolledDropdown nav direction="down">
-            {this.state.userName !== null ? (
-              <>
-                <DropdownToggle nav>
-                  <div style={{ marginRight: "30px" }}>
-                    <b>{this.state.userName.toUpperCase()}</b>
-                  </div>
-                </DropdownToggle>
-                <DropdownMenu right>
-                  <DropdownItem onClick={(e) => this.props.onLogout(e)}>
-                    <i className="fa fa-lock"></i> Logout
-                  </DropdownItem>
-                </DropdownMenu>
-              </>
-            ) : (
-              ""
-            )}
-          </UncontrolledDropdown>
+          <AppHeaderDropdown direction="down">
+            <DropdownToggle nav style={{ marginRight: "30px" }}>
+              <NavLink to="#" className="nav-link text-white font-weight-bold">
+                {this.props.dataLoginAzure.account.name}
+              </NavLink>
+            </DropdownToggle>
+            <DropdownMenu right style={{ right: "auto" }}>
+              <DropdownItem onClick={(e) => this.props.onLogout(e)}>
+                <i className="fa fa-sign-out-alt"></i>Logout
+              </DropdownItem>
+            </DropdownMenu>
+          </AppHeaderDropdown>
         </Nav>
-        {/* <AppAsideToggler className="d-md-down-none" /> */}
-        {/*<AppAsideToggler className="d-lg-none" mobile />*/}
       </React.Fragment>
     );
   }

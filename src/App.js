@@ -13,6 +13,8 @@ import Keycloak from "keycloak-js";
 import { connect } from "react-redux";
 import ActionType from "./redux/reducer/globalActionType";
 import SSOLogin from "./containers/DefaultLayout/LoginSSO";
+import { AzureAD, AuthenticationState } from "react-aad-msal";
+import { authProvider } from "./authProvider";
 
 const loading = () => (
   <div className="animated fadeIn pt-3 text-center">Loading...</div>
@@ -53,71 +55,100 @@ class App extends Component {
   render() {
     console.log("LOGIN SUKSES", this.props);
     return (
-      <BrowserRouter>
-        <React.Suspense fallback={loading()}>
-          <Switch>
-            <Route
-              exact
-              path="/login"
-              name="Login Page"
-              render={(props) => <Login {...props} />}
-            />
-            <Route
-              exact
-              path="/register"
-              name="Register Page"
-              render={(props) => <Register {...props} />}
-            />
-            <Route
-              exact
-              path="/404"
-              name="Page 404"
-              render={(props) => <Page404 {...props} />}
-            />
-            <Route
-              exact
-              path="/500"
-              name="Page 500"
-              render={(props) => <Page500 {...props} />}
-            />
-            <Route
-              exact
-              path="/LoginError"
-              name="Login Error"
-              render={(props) => (
-                <LogError {...props} keycloak={this.state.key} />
-              )}
-            />
-            {/* <Route
+      <AzureAD provider={authProvider} forceLogin={true}>
+        {({ login, logout, authenticationState, error, accountInfo }) => {
+          switch (authenticationState) {
+            case AuthenticationState.Authenticated:
+              return (
+                <BrowserRouter basename="bam-myslbd">
+                  <React.Suspense fallback={loading()}>
+                    <Switch>
+                      <Route
+                        exact
+                        path="/login"
+                        name="Login Page"
+                        render={(props) => <Login {...props} />}
+                      />
+                      <Route
+                        exact
+                        path="/register"
+                        name="Register Page"
+                        render={(props) => <Register {...props} />}
+                      />
+                      <Route
+                        exact
+                        path="/404"
+                        name="Page 404"
+                        render={(props) => <Page404 {...props} />}
+                      />
+                      <Route
+                        exact
+                        path="/500"
+                        name="Page 500"
+                        render={(props) => <Page500 {...props} />}
+                      />
+                      <Route
+                        exact
+                        path="/LoginError"
+                        name="Login Error"
+                        render={(props) => (
+                          <LogError {...props} keycloak={this.state.key} />
+                        )}
+                      />
+                      {/* <Route
               path="/LoginSSO"
               name="Login SSO"
               render={(props) => <SSOLogin {...props} />}
             /> */}
-            {this.props.authenticatedBAM === false && (
-              <Redirect from="/" to="/LoginError" />
-            )}
-            {this.props.token === undefined || this.state.key === undefined ? (
-              <Route
-                path="/"
-                name="Login SSO"
-                render={(props) => <SSOLogin {...props} />}
-              />
-            ) : (
-              <Route
-                path="/"
-                name="Home"
-                render={(props) => (
-                  <DefaultLayout
-                    {...props}
-                    keycloak={this.state.key}
-                    dataLogin={this.state.dataLogin}
-                  />
-                )}
-              />
-            )}
-          </Switch>
-        </React.Suspense>
-      </BrowserRouter>
+                      {this.props.authenticatedBAM === false && (
+                        <Redirect from="/" to="/LoginError" />
+                      )}
+                      {this.props.token === undefined ||
+                      this.state.key === undefined ? (
+                        <Route
+                          path="/"
+                          name="Login SSO"
+                          render={(props) => <SSOLogin {...props} />}
+                        />
+                      ) : (
+                        <Route
+                          path="/"
+                          name="Home"
+                          render={(props) => (
+                            <DefaultLayout
+                              {...props}
+                              keycloak={this.state.key}
+                              dataLogin={this.state.dataLogin}
+                            />
+                          )}
+                        />
+                      )}
+                    </Switch>
+                  </React.Suspense>
+                </BrowserRouter>
+              );
+            case AuthenticationState.Unauthenticated:
+              return (
+                <div>
+                  {error && (
+                    <p>
+                      <span>
+                        An error occured during authentication, please try
+                        again!
+                      </span>
+                    </p>
+                  )}
+                  <p>
+                    <span>Hey stranger, you look new!</span>
+                    <button onClick={login}>Login</button>
+                  </p>
+                </div>
+              );
+            case AuthenticationState.InProgress:
+              return <p>Authenticating...</p>;
+          }
+        }}
+      </AzureAD>
     );
   }
 }
