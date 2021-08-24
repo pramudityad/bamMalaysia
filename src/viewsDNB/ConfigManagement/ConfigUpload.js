@@ -1462,6 +1462,9 @@ class ConfigUpload extends React.Component {
                             <th>SAP</th>
                             <th>Program</th>
                             <th>Bundle ID</th>
+                            <th>Region</th>
+                            <th>Type</th>
+
                             <th>Bundle Name</th>
                             <th>Qty</th>
                             <th>Config Cust Name</th>
@@ -1500,6 +1503,12 @@ class ConfigUpload extends React.Component {
                                 <td style={{ textAlign: "center" }}>{}</td>
                                 <td style={{ textAlign: "center" }}>
                                   {pp.config_type}
+                                </td>
+                                <td style={{ textAlign: "center" }}>
+                                  {pp.region}
+                                </td>
+                                <td style={{ textAlign: "center" }}>
+                                  {pp.config_mm_type}
                                 </td>
                                 <td></td>
                                 <td></td>

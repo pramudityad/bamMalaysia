@@ -614,6 +614,7 @@ class MRCreation extends Component {
   componentDidMount() {
     // this.getDataCD();
     // this.getDataTower();
+    this.filterDataProject();
     this.getDSPList();
     this.getDataProject();
     this.getDataWarehouse();
@@ -652,13 +653,24 @@ class MRCreation extends Component {
   }
 
   getDataProject() {
-    this.getDatafromAPIXL("/project_sorted_non_page").then((resProject) => {
-      if (resProject.data !== undefined) {
-        this.setState({ list_project: resProject.data._items }, () => {
-          this.filterDataProject("");
-        });
-      }
-    });
+    // this.getDatafromAPIXL("/project_sorted_non_page").then((resProject) => {
+    //   if (resProject.data !== undefined) {
+    //     this.setState({ list_project: resProject.data._items }, () => {
+    //       this.filterDataProject("");
+    //     });
+    //   }
+    // this.setState(
+    //   {
+    //     list_project: [
+    //       { label: "ISAT AOP 2019", value: "ISAT AOP 2019" },
+    //       { label: "PROJECT TEST DNB1", value: "PROJECT TEST DNB1" },
+    //     ],
+    //   },
+    //   () => {
+    //     this.filterDataProject();
+    //   }
+    // );
+    // });
   }
 
   filterDataTower = (inputValue) => {
@@ -677,18 +689,21 @@ class MRCreation extends Component {
   };
 
   filterDataProject = (inputValue) => {
-    const list = [];
+    const list = [
+      { label: "ISAT AOP 2019", value: "ISAT AOP 2019" },
+      { label: "PROJECT TEST DNB1", value: "PROJECT TEST DNB1" },
+    ];
     this.state.list_project.map((i) =>
       list.push({ label: i.Project, value: i.Project })
     );
     this.setState({ list_project_selection: list });
-    if (inputValue.length === 0) {
-      return list;
-    } else {
-      return this.state.list_project_selection.filter((i) =>
-        i.label.toLowerCase().includes(inputValue.toLowerCase())
-      );
-    }
+    // if (inputValue.length === 0) {
+    //   return list;
+    // } else {
+    return this.state.list_project_selection.filter((i) =>
+      i.label.toLowerCase().includes(inputValue.toLowerCase())
+    );
+    // }
   };
 
   handleChangeProjectXL(e) {
