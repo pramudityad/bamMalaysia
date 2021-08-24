@@ -21,14 +21,37 @@ export const getDatafromAPIMY = async (url) => {
   }
 };
 
-export const getDatafromAPINODE = async (url, props) => {
+export const getDatafromAPIMY_DNB = async (url) => {
   try {
-    let respond = await axios.get(process.env.REACT_APP_API_URL_NODE_Digi + url, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + props,
+    let respond = await axios.get(process.env.REACT_APP_API_URL_DNB + url, {
+      headers: { "Content-Type": "application/json" },
+      auth: {
+        username: process.env.REACT_APP_usernameDNB,
+        password: process.env.REACT_APP_passwordDNB,
       },
     });
+    if (respond.status >= 200 && respond.status < 300) {
+      console.log("respond Get Data", respond);
+    }
+    return respond;
+  } catch (err) {
+    let respond = err;
+    console.log("respond Get Data", err);
+    return respond;
+  }
+};
+
+export const getDatafromAPINODE = async (url, props) => {
+  try {
+    let respond = await axios.get(
+      process.env.REACT_APP_API_URL_NODE_Digi + url,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + props,
+        },
+      }
+    );
     if (respond.status >= 200 && respond.status < 300) {
       console.log("respond Post Data", respond);
     }
@@ -42,13 +65,16 @@ export const getDatafromAPINODE = async (url, props) => {
 
 export const getDatafromAPINODEFile = async (url, props, con_type) => {
   try {
-    let respond = await axios.get(process.env.REACT_APP_API_URL_NODE_Digi + url, {
-      responseType: "blob",
-      headers: {
-        // "Content-Type": con_type,
-        Authorization: "Bearer " + props,
-      },
-    });
+    let respond = await axios.get(
+      process.env.REACT_APP_API_URL_NODE_Digi + url,
+      {
+        responseType: "blob",
+        headers: {
+          // "Content-Type": con_type,
+          Authorization: "Bearer " + props,
+        },
+      }
+    );
     if (respond.status >= 200 && respond.status < 300) {
       console.log("respond Post Data", respond);
     }
@@ -131,12 +157,15 @@ export const patchDatatoAPINODE = async (url, data, props) => {
 
 export const deleteDataFromAPINODE = async (url, props) => {
   try {
-    let respond = await axios.delete(process.env.REACT_APP_API_URL_NODE_Digi + url, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + props,
-      },
-    });
+    let respond = await axios.delete(
+      process.env.REACT_APP_API_URL_NODE_Digi + url,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + props,
+        },
+      }
+    );
     if (respond.status >= 200 && respond.status < 300) {
       console.log("respond delete Data", respond);
     }
@@ -150,13 +179,16 @@ export const deleteDataFromAPINODE = async (url, props) => {
 
 export const deleteDataFromAPINODE2 = async (url, props, data) => {
   try {
-    let respond = await axios.delete(process.env.REACT_APP_API_URL_NODE_Digi + url, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + props,
-      },
-      data,
-    });
+    let respond = await axios.delete(
+      process.env.REACT_APP_API_URL_NODE_Digi + url,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + props,
+        },
+        data,
+      }
+    );
     if (respond.status >= 200 && respond.status < 300) {
       console.log("respond delete Data", respond);
     }
@@ -173,16 +205,16 @@ export const generateTokenACT = async () => {
   const url = "https://api.act.e-dpm.com/api/get_token_auth";
   try {
     let body = {
-      "email": "a.fariz.mursyidan@ericsson.com",
-      "user_cu_id": "MYSLBD",
-      "user_cust_id": "All",
-      "user_type_parent": 1,
-      "user_type_child": "2",
-      "cu_id": "MYSLBD",
-      "account_id": "digi",
-      "project_id": "madd",
-      "project_type": "dynamic"
-    }
+      email: "a.fariz.mursyidan@ericsson.com",
+      user_cu_id: "MYSLBD",
+      user_cust_id: "All",
+      user_type_parent: 1,
+      user_type_child: "2",
+      cu_id: "MYSLBD",
+      account_id: "digi",
+      project_id: "madd",
+      project_type: "dynamic",
+    };
     let respond = await axios.post(proxyurl + url, body, {
       headers: {
         "Content-Type": "application/json",
@@ -198,4 +230,4 @@ export const generateTokenACT = async () => {
     console.log("respond token", err);
     return respond;
   }
-}
+};

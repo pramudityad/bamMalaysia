@@ -1558,6 +1558,8 @@ class PackageUpload extends React.Component {
                             {/* <th>Product Package</th> */}
                             <th>Physical Group</th>
                             <th>Bundle Type/ Material Origin</th>
+                            <th>MM Code</th>
+                            <th>Price</th>
                             <th></th>
                           </tr>
                         </thead>
@@ -1631,6 +1633,12 @@ class PackageUpload extends React.Component {
                                   <td style={{ textAlign: "left" }}></td>
                                   <td style={{ textAlign: "center" }}>
                                     {mat.material_origin}
+                                  </td>
+                                  <td style={{ textAlign: "center" }}>
+                                    {mat.mm_code}
+                                  </td>
+                                  <td style={{ textAlign: "center" }}>
+                                    {mat.material_price}
                                   </td>
                                   <td></td>
                                 </tr>

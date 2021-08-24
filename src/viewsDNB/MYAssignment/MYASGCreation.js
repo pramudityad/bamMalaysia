@@ -24,16 +24,18 @@ import { Link, Redirect } from "react-router-dom";
 import AsyncSelect from "react-select/async";
 import Select from "react-select";
 import "./LMRMY.css";
-import { getDatafromAPINODE, postDatatoAPINODE, generateTokenACT } from "../../helper/asyncFunctionDigi";
+import {
+  getDatafromAPINODE,
+  postDatatoAPINODE,
+  generateTokenACT,
+} from "../../helper/asyncFunctionDigi";
 import { connect } from "react-redux";
 import { number } from "prop-types";
-import debounce from 'lodash.debounce';
-import SweetAlert from 'react-bootstrap-sweetalert';
-import './LMRMY.css';
+import debounce from "lodash.debounce";
+import SweetAlert from "react-bootstrap-sweetalert";
+import "./LMRMY.css";
 
-const DefaultNotif = React.lazy(() =>
-  import("../DefaultView/DefaultNotif")
-);
+const DefaultNotif = React.lazy(() => import("../DefaultView/DefaultNotif"));
 
 class MYASGCreation extends Component {
   constructor(props) {
@@ -103,7 +105,7 @@ class MYASGCreation extends Component {
         currency: "MYR",
         tax_code: "I0",
         wp_id: "",
-        delivery_date: convertDateFormat(date)
+        delivery_date: convertDateFormat(date),
       },
       validation_form: {},
       current_material_select: null,
@@ -135,7 +137,7 @@ class MYASGCreation extends Component {
       check_draft: false,
       sweet_alert: null,
       access_token: null,
-      child_selected: null
+      child_selected: null,
     };
     this.handleChangeCD = this.handleChangeCD.bind(this);
     this.loadOptionsCDID = this.loadOptionsCDID.bind(this);
@@ -151,7 +153,10 @@ class MYASGCreation extends Component {
     this.deleteLMR = this.deleteLMR.bind(this);
     this.handleMaterialFilter = this.handleMaterialFilter.bind(this);
     this.decideFilter = this.decideFilter.bind(this);
-    this.onChangeDebouncedPackage = debounce(this.onChangeDebouncedPackage, 500);
+    this.onChangeDebouncedPackage = debounce(
+      this.onChangeDebouncedPackage,
+      500
+    );
   }
 
   toggleLoading = () => {
@@ -164,26 +169,45 @@ class MYASGCreation extends Component {
     const page = this.state.activePagePackage;
     const maxPage = this.state.perPagePackage;
     let filter_array = [];
-    this.state.filter_list_package[0] !== "" && (filter_array.push('"Package_Id":{"$regex" : "' + this.state.filter_list_package[0] + '", "$options" : "i"}'));
-    this.state.filter_list_package[1] !== "" && (filter_array.push('"Package_Name":{"$regex" : "' + this.state.filter_list_package[1] + '", "$options" : "i"}'));
+    this.state.filter_list_package[0] !== "" &&
+      filter_array.push(
+        '"Package_Id":{"$regex" : "' +
+          this.state.filter_list_package[0] +
+          '", "$options" : "i"}'
+      );
+    this.state.filter_list_package[1] !== "" &&
+      filter_array.push(
+        '"Package_Name":{"$regex" : "' +
+          this.state.filter_list_package[1] +
+          '", "$options" : "i"}'
+      );
     if (this.state.region_package !== null) {
       filter_array.push('"Region":"' + this.state.region_package + '"');
     }
-    if (this.state.lmr_form.gl_account_actual === 'ITC + transport - 402603') {
+    if (this.state.lmr_form.gl_account_actual === "ITC + transport - 402603") {
       filter_array.push('"Material_Sub_Type":"ITC %2B Transport"');
     } else {
-      const material_sub_type = this.state.lmr_form.gl_account_actual.split(" - ");
+      const material_sub_type =
+        this.state.lmr_form.gl_account_actual.split(" - ");
       filter_array.push('"Material_Sub_Type":"' + material_sub_type[0] + '"');
     }
-    let whereAnd = '{' + filter_array.join(',') + '}';
-    getDatafromAPINODE('/package/getPackage?srt=_id:-1&q=' + whereAnd + '&lmt=' + maxPage + '&pg=' + page, this.state.tokenUser).then(res => {
+    let whereAnd = "{" + filter_array.join(",") + "}";
+    getDatafromAPINODE(
+      "/package/getPackage?srt=_id:-1&q=" +
+        whereAnd +
+        "&lmt=" +
+        maxPage +
+        "&pg=" +
+        page,
+      this.state.tokenUser
+    ).then((res) => {
       console.log("Package List", res);
       if (res.data !== undefined) {
         const items = res.data.data;
         const totalData = res.data.totalResults;
         this.setState({ package_list: items, totalDataPackage: totalData });
       }
-    })
+    });
   }
 
   decideToggleMaterial = (number_child_form) => {
@@ -227,7 +251,9 @@ class MYASGCreation extends Component {
 
   toggleMaterialNRO = (number_child_form) => {
     if (number_child_form !== undefined && isNaN(number_child_form) === false) {
-      this.setState({ current_material_select: number_child_form }, () => this.getMaterialListNRO(number_child_form));
+      this.setState({ current_material_select: number_child_form }, () =>
+        this.getMaterialListNRO(number_child_form)
+      );
     } else {
       this.setState({ current_material_select: null });
     }
@@ -238,7 +264,9 @@ class MYASGCreation extends Component {
 
   toggleMaterialNDO = (number_child_form) => {
     if (number_child_form !== undefined && isNaN(number_child_form) === false) {
-      this.setState({ current_material_select: number_child_form }, () => this.getMaterialListNDO(number_child_form));
+      this.setState({ current_material_select: number_child_form }, () =>
+        this.getMaterialListNDO(number_child_form)
+      );
     } else {
       this.setState({ current_material_select: null });
     }
@@ -249,7 +277,9 @@ class MYASGCreation extends Component {
 
   toggleMaterialSurvey = (number_child_form) => {
     if (number_child_form !== undefined && isNaN(number_child_form) === false) {
-      this.setState({ current_material_select: number_child_form }, () => this.getMaterialListSurvey(number_child_form));
+      this.setState({ current_material_select: number_child_form }, () =>
+        this.getMaterialListSurvey(number_child_form)
+      );
     } else {
       this.setState({ current_material_select: null });
     }
@@ -260,7 +290,9 @@ class MYASGCreation extends Component {
 
   toggleMaterialIntegration = (number_child_form) => {
     if (number_child_form !== undefined && isNaN(number_child_form) === false) {
-      this.setState({ current_material_select: number_child_form }, () => this.getMaterialListIntegration(number_child_form));
+      this.setState({ current_material_select: number_child_form }, () =>
+        this.getMaterialListIntegration(number_child_form)
+      );
     } else {
       this.setState({ current_material_select: null });
     }
@@ -271,7 +303,9 @@ class MYASGCreation extends Component {
 
   toggleMaterialTransport = (number_child_form) => {
     if (number_child_form !== undefined && isNaN(number_child_form) === false) {
-      this.setState({ current_material_select: number_child_form }, () => this.getMaterialListTransport(number_child_form));
+      this.setState({ current_material_select: number_child_form }, () =>
+        this.getMaterialListTransport(number_child_form)
+      );
     } else {
       this.setState({ current_material_select: null });
     }
@@ -288,24 +322,20 @@ class MYASGCreation extends Component {
       }));
     } else {
       const getAlert = () => (
-        <SweetAlert
-          danger
-          title="Error!"
-          onConfirm={() => this.hideAlert()}
-        >
+        <SweetAlert danger title="Error!" onConfirm={() => this.hideAlert()}>
           Please fill all required fields first!
         </SweetAlert>
       );
 
       this.setState({
-        sweet_alert: getAlert()
+        sweet_alert: getAlert(),
       });
     }
-  }
+  };
 
   hideAlert() {
     this.setState({
-      sweet_alert: null
+      sweet_alert: null,
     });
   }
 
@@ -313,7 +343,7 @@ class MYASGCreation extends Component {
     this.setState((prevState) => ({
       modal_check_material_package: !prevState.modal_check_material_package,
     }));
-  }
+  };
 
   async postDatatoAPINODE(url, data) {
     try {
@@ -363,14 +393,34 @@ class MYASGCreation extends Component {
     }
   }
 
+  async getDatafromAPIMY_DNB(url) {
+    try {
+      let respond = await axios.get(process.env.REACT_APP_API_URL_DNB + url, {
+        headers: { "Content-Type": "application/json" },
+        auth: {
+          username: process.env.REACT_APP_usernameDNB,
+          password: process.env.REACT_APP_passwordDNB,
+        },
+      });
+      if (respond.status >= 200 && respond.status < 300) {
+        console.log("respond Get Data", respond);
+      }
+      return respond;
+    } catch (err) {
+      let respond = err;
+      console.log("respond Get Data", err);
+      return respond;
+    }
+  }
+
   async getFASfromACT(proxyurl, url) {
     const fas_reqbody = {
       query_param: {
         table: "p_digi_madd_m_site_data",
         columns: [
-          "JSON_UNQUOTE(JSON_EXTRACT(p_digi_madd_m_site_data.custom_property, '$.\"c0edbe63-8616-11eb-9b96-000d3aa2f57d\".\"value\"')) as workplan_id",
-          "JSON_UNQUOTE(JSON_EXTRACT(p_digi_madd_m_site_data.custom_property, '$.\"70b54a94-8b77-11eb-8bb2-000d3aa2f57d\".\"value\"')) as fas_id",
-          "JSON_UNQUOTE(JSON_EXTRACT(p_digi_madd_m_site_data.custom_property, '$.\"c5f952dc-ce6c-11eb-a6bd-000d3aa2f57d\".\"value\"')) as fas_name"
+          'JSON_UNQUOTE(JSON_EXTRACT(p_digi_madd_m_site_data.custom_property, \'$."c0edbe63-8616-11eb-9b96-000d3aa2f57d"."value"\')) as workplan_id',
+          'JSON_UNQUOTE(JSON_EXTRACT(p_digi_madd_m_site_data.custom_property, \'$."70b54a94-8b77-11eb-8bb2-000d3aa2f57d"."value"\')) as fas_id',
+          'JSON_UNQUOTE(JSON_EXTRACT(p_digi_madd_m_site_data.custom_property, \'$."c5f952dc-ce6c-11eb-a6bd-000d3aa2f57d"."value"\')) as fas_name',
         ],
         join: {},
         condition: {},
@@ -400,32 +450,34 @@ class MYASGCreation extends Component {
   async getWPfromACT(proxyurl, url, param) {
     try {
       let body = {
-        "query_param": {
-          "table": "p_digi_madd_m_site_data",
-          "columns": [
-            "JSON_UNQUOTE(JSON_EXTRACT(p_digi_madd_m_site_data.custom_property, '$.\"c0edbe63-8616-11eb-9b96-000d3aa2f57d\".\"value\"')) as workplan_id",
+        query_param: {
+          table: "p_digi_madd_m_site_data",
+          columns: [
+            'JSON_UNQUOTE(JSON_EXTRACT(p_digi_madd_m_site_data.custom_property, \'$."c0edbe63-8616-11eb-9b96-000d3aa2f57d"."value"\')) as workplan_id',
             // "JSON_UNQUOTE(JSON_EXTRACT(p_digi_madd_m_site_data.custom_property, '$.\"c0ef9d14-8616-11eb-9b96-000d3aa2f57d\".\"value\"')) as project_name",
-            "JSON_UNQUOTE(JSON_EXTRACT(p_digi_madd_m_site_data.custom_property, '$.\"298dc641-8adf-11eb-9de5-000d3aa2f57d\".\"value\"')) as project_name",
-            "JSON_UNQUOTE(JSON_EXTRACT(p_digi_madd_m_site_data.custom_property, '$.\"c0f139d6-8616-11eb-9b96-000d3aa2f57d\".\"value\"')) as cd_id",
-            "JSON_UNQUOTE(JSON_EXTRACT(p_digi_madd_m_site_data.custom_property, '$.\"c0f4efd9-8616-11eb-9b96-000d3aa2f57d\".\"value\"')) as site_id",
-            "JSON_UNQUOTE(JSON_EXTRACT(p_digi_madd_m_site_data.custom_property, '$.\"c0f81a00-8616-11eb-9b96-000d3aa2f57d\".\"value\"')) as site_name",
-            "JSON_UNQUOTE(JSON_EXTRACT(p_digi_madd_m_site_data.custom_property, '$.\"208380b6-87b3-11eb-9de5-000d3aa2f57d\".\"value\"')) as region",
-            "JSON_UNQUOTE(JSON_EXTRACT(p_digi_madd_m_site_data.custom_property, '$.\"c0fb474f-8616-11eb-9b96-000d3aa2f57d\".\"value\"')) as lmr_survey_nw_number",
-            "JSON_UNQUOTE(JSON_EXTRACT(p_digi_madd_m_site_data.custom_property, '$.\"c0feffd5-8616-11eb-9b96-000d3aa2f57d\".\"value\"')) as lmr_survey_number",
-            "JSON_UNQUOTE(JSON_EXTRACT(p_digi_madd_m_site_data.custom_property, '$.\"c10794d4-8616-11eb-9b96-000d3aa2f57d\".\"value\"')) as lmr_ti_nw_number",
-            "JSON_UNQUOTE(JSON_EXTRACT(p_digi_madd_m_site_data.custom_property, '$.\"c10aade8-8616-11eb-9b96-000d3aa2f57d\".\"value\"')) as lmr_ti_number",
-            "JSON_UNQUOTE(JSON_EXTRACT(p_digi_madd_m_site_data.custom_property, '$.\"4fe7cc81-8ae4-11eb-9de5-000d3aa2f57d\".\"value\"')) as lmr_ndo_number",
-            "JSON_UNQUOTE(JSON_EXTRACT(p_digi_madd_m_site_data.custom_property, '$.\"fc305b4f-8af5-11eb-9de5-000d3aa2f57d\".\"value\"')) as lmr_integration_number"
+            'JSON_UNQUOTE(JSON_EXTRACT(p_digi_madd_m_site_data.custom_property, \'$."298dc641-8adf-11eb-9de5-000d3aa2f57d"."value"\')) as project_name',
+            'JSON_UNQUOTE(JSON_EXTRACT(p_digi_madd_m_site_data.custom_property, \'$."c0f139d6-8616-11eb-9b96-000d3aa2f57d"."value"\')) as cd_id',
+            'JSON_UNQUOTE(JSON_EXTRACT(p_digi_madd_m_site_data.custom_property, \'$."c0f4efd9-8616-11eb-9b96-000d3aa2f57d"."value"\')) as site_id',
+            'JSON_UNQUOTE(JSON_EXTRACT(p_digi_madd_m_site_data.custom_property, \'$."c0f81a00-8616-11eb-9b96-000d3aa2f57d"."value"\')) as site_name',
+            'JSON_UNQUOTE(JSON_EXTRACT(p_digi_madd_m_site_data.custom_property, \'$."208380b6-87b3-11eb-9de5-000d3aa2f57d"."value"\')) as region',
+            'JSON_UNQUOTE(JSON_EXTRACT(p_digi_madd_m_site_data.custom_property, \'$."c0fb474f-8616-11eb-9b96-000d3aa2f57d"."value"\')) as lmr_survey_nw_number',
+            'JSON_UNQUOTE(JSON_EXTRACT(p_digi_madd_m_site_data.custom_property, \'$."c0feffd5-8616-11eb-9b96-000d3aa2f57d"."value"\')) as lmr_survey_number',
+            'JSON_UNQUOTE(JSON_EXTRACT(p_digi_madd_m_site_data.custom_property, \'$."c10794d4-8616-11eb-9b96-000d3aa2f57d"."value"\')) as lmr_ti_nw_number',
+            'JSON_UNQUOTE(JSON_EXTRACT(p_digi_madd_m_site_data.custom_property, \'$."c10aade8-8616-11eb-9b96-000d3aa2f57d"."value"\')) as lmr_ti_number',
+            'JSON_UNQUOTE(JSON_EXTRACT(p_digi_madd_m_site_data.custom_property, \'$."4fe7cc81-8ae4-11eb-9de5-000d3aa2f57d"."value"\')) as lmr_ndo_number',
+            'JSON_UNQUOTE(JSON_EXTRACT(p_digi_madd_m_site_data.custom_property, \'$."fc305b4f-8af5-11eb-9de5-000d3aa2f57d"."value"\')) as lmr_integration_number',
           ],
-          "join": {},
-          "condition": {
-            ["JSON_UNQUOTE(JSON_EXTRACT(p_digi_madd_m_site_data.custom_property, '$.\"c0edbe63-8616-11eb-9b96-000d3aa2f57d\".\"value\"')) like '%" + param + "%' "]: null
+          join: {},
+          condition: {
+            ['JSON_UNQUOTE(JSON_EXTRACT(p_digi_madd_m_site_data.custom_property, \'$."c0edbe63-8616-11eb-9b96-000d3aa2f57d"."value"\')) like \'%' +
+            param +
+            "%' "]: null,
           },
-          "pagination": "page",
-          "page_target": 1,
-          "length_per_page": 1000
-        }
-      }
+          pagination: "page",
+          page_target: 1,
+          length_per_page: 1000,
+        },
+      };
       let respond = await axios.post(proxyurl + url, body, {
         headers: {
           "Content-Type": "application/json",
@@ -464,27 +516,32 @@ class MYASGCreation extends Component {
 
   async updateLMRtoACT(proxyurl, url, m_id, lmr_id, lmr_date) {
     try {
-      let param = '', date = '';
-      if (this.state.lmr_form.gl_account_actual === 'ITC + transport - 402603') {
-        param = 'ti_lmr_number';
-        date = 'ti_lmr_date';
-      } else if (this.state.lmr_form.gl_account_actual === 'Survey - 402603') {
-        param = 'survey_lmr_number';
-        date = 'survey_lmr_date';
-      } else if (this.state.lmr_form.gl_account_actual === 'NDO - 402603') {
-        param = 'ndo_lmr_number';
-        date = 'ndo_lmr_date';
-      } else if (this.state.lmr_form.gl_account_actual === 'Integration - 402603') {
-        param = 'integration_lmr_number';
-        date = 'integration_lmr_date';
+      let param = "",
+        date = "";
+      if (
+        this.state.lmr_form.gl_account_actual === "ITC + transport - 402603"
+      ) {
+        param = "ti_lmr_number";
+        date = "ti_lmr_date";
+      } else if (this.state.lmr_form.gl_account_actual === "Survey - 402603") {
+        param = "survey_lmr_number";
+        date = "survey_lmr_date";
+      } else if (this.state.lmr_form.gl_account_actual === "NDO - 402603") {
+        param = "ndo_lmr_number";
+        date = "ndo_lmr_date";
+      } else if (
+        this.state.lmr_form.gl_account_actual === "Integration - 402603"
+      ) {
+        param = "integration_lmr_number";
+        date = "integration_lmr_date";
       }
       let body = {
-        "m_id": m_id,
-        "query_param": {
+        m_id: m_id,
+        query_param: {
           [param]: lmr_id,
-          [date]: lmr_date
-        }
-      }
+          [date]: lmr_date,
+        },
+      };
       let respond = await axios.patch(proxyurl + url, body, {
         headers: {
           "Content-Type": "application/json",
@@ -503,21 +560,27 @@ class MYASGCreation extends Component {
   }
 
   searchWPID = async (inputValue) => {
-    if (inputValue === '' || inputValue.length < 3) {
+    if (inputValue === "" || inputValue.length < 3) {
       return [];
     } else {
       let wp_id_option = [];
       let wp_id_list = [];
-      let getWPID = await this.getWPfromACT("https://dev-corsanywhere.e-dpm.com/", "https://api.act.e-dpm.com/api/get_data_auth", inputValue);
+      let getWPID = await this.getWPfromACT(
+        "https://dev-corsanywhere.e-dpm.com/",
+        "https://api.act.e-dpm.com/api/get_data_auth",
+        inputValue
+      );
       if (getWPID !== undefined && getWPID.data !== undefined) {
-        getWPID.data.result.raw_data.map(e => wp_id_option.push({ label: e.workplan_id, value: e.workplan_id }));
+        getWPID.data.result.raw_data.map((e) =>
+          wp_id_option.push({ label: e.workplan_id, value: e.workplan_id })
+        );
         wp_id_list = getWPID.data.result.raw_data;
       }
-      console.log('array wp', wp_id_list)
+      console.log("array wp", wp_id_list);
       this.setState({ list_wp_id: wp_id_list });
       return wp_id_option;
     }
-  }
+  };
 
   handleChangeWP = async (e, action) => {
     this.toggleLoading();
@@ -528,23 +591,67 @@ class MYASGCreation extends Component {
     let field = idxField[1];
     dataLMR[parseInt(idx)][field] = value;
     const list_wp_id = this.state.list_wp_id;
-    dataLMR[parseInt(idx)]["project_name"] = value !== "" ? list_wp_id[list_wp_id.findIndex(x => x.workplan_id === value)].project_name : "";
-    dataLMR[parseInt(idx)]["cdid"] = value !== "" ? list_wp_id[list_wp_id.findIndex(x => x.workplan_id === value)].cd_id : "";
-    if (list_wp_id[list_wp_id.findIndex(x => x.workplan_id === value)].region === 'Central') {
+    dataLMR[parseInt(idx)]["project_name"] =
+      value !== ""
+        ? list_wp_id[list_wp_id.findIndex((x) => x.workplan_id === value)]
+            .project_name
+        : "";
+    dataLMR[parseInt(idx)]["cdid"] =
+      value !== ""
+        ? list_wp_id[list_wp_id.findIndex((x) => x.workplan_id === value)].cd_id
+        : "";
+    if (
+      list_wp_id[list_wp_id.findIndex((x) => x.workplan_id === value)]
+        .region === "Central"
+    ) {
       dataLMR[parseInt(idx)]["region"] = "KV";
-    } else if (list_wp_id[list_wp_id.findIndex(x => x.workplan_id === value)].region === 'Northern' || list_wp_id[list_wp_id.findIndex(x => x.workplan_id === value)].region === 'Southern') {
+    } else if (
+      list_wp_id[list_wp_id.findIndex((x) => x.workplan_id === value)]
+        .region === "Northern" ||
+      list_wp_id[list_wp_id.findIndex((x) => x.workplan_id === value)]
+        .region === "Southern"
+    ) {
       dataLMR[parseInt(idx)]["region"] = "SN";
-    } else if (list_wp_id[list_wp_id.findIndex(x => x.workplan_id === value)].region === 'Eastern') {
+    } else if (
+      list_wp_id[list_wp_id.findIndex((x) => x.workplan_id === value)]
+        .region === "Eastern"
+    ) {
       dataLMR[parseInt(idx)]["region"] = "ER";
-    } else if (list_wp_id[list_wp_id.findIndex(x => x.workplan_id === value)].region === 'Sabah' || list_wp_id[list_wp_id.findIndex(x => x.workplan_id === value)].region === 'Sarawak') {
+    } else if (
+      list_wp_id[list_wp_id.findIndex((x) => x.workplan_id === value)]
+        .region === "Sabah" ||
+      list_wp_id[list_wp_id.findIndex((x) => x.workplan_id === value)]
+        .region === "Sarawak"
+    ) {
       dataLMR[parseInt(idx)]["region"] = "EM";
     }
-    dataLMR[parseInt(idx)]["site_id"] = value !== "" ? list_wp_id[list_wp_id.findIndex(x => x.workplan_id === value)].site_id : "";
-    dataLMR[parseInt(idx)]["site_name"] = value !== "" ? list_wp_id[list_wp_id.findIndex(x => x.workplan_id === value)].site_name : "";
-    dataLMR[parseInt(idx)]["nw"] = value !== "" ? list_wp_id[list_wp_id.findIndex(x => x.workplan_id === value)].lmr_ti_nw_number : "";
+    dataLMR[parseInt(idx)]["site_id"] =
+      value !== ""
+        ? list_wp_id[list_wp_id.findIndex((x) => x.workplan_id === value)]
+            .site_id
+        : "";
+    dataLMR[parseInt(idx)]["site_name"] =
+      value !== ""
+        ? list_wp_id[list_wp_id.findIndex((x) => x.workplan_id === value)]
+            .site_name
+        : "";
+    dataLMR[parseInt(idx)]["nw"] =
+      value !== ""
+        ? list_wp_id[list_wp_id.findIndex((x) => x.workplan_id === value)]
+            .lmr_ti_nw_number
+        : "";
 
-    let findWPID = await this.getWPfromACT("https://dev-corsanywhere.e-dpm.com/", "https://act.e-dpm.com/api/find_by_wpid?wp_id=" + value);
-    if (findWPID !== undefined && findWPID.data !== undefined && findWPID.data.result !== undefined && findWPID.data.result.status >= 200 && findWPID.data.result.status <= 300) {
+    let findWPID = await this.getWPfromACT(
+      "https://dev-corsanywhere.e-dpm.com/",
+      "https://act.e-dpm.com/api/find_by_wpid?wp_id=" + value
+    );
+    if (
+      findWPID !== undefined &&
+      findWPID.data !== undefined &&
+      findWPID.data.result !== undefined &&
+      findWPID.data.result.status >= 200 &&
+      findWPID.data.result.status <= 300
+    ) {
       dataLMR[parseInt(idx)]["m_id_wp"] = findWPID.data.result.m_id;
     } else {
       dataLMR[parseInt(idx)]["m_id_wp"] = "";
@@ -554,7 +661,7 @@ class MYASGCreation extends Component {
       console.log(this.state.creation_lmr_child_form)
     );
     this.toggleLoading();
-  }
+  };
 
   handleChangeWPPackage = async (e, action) => {
     this.toggleLoading();
@@ -563,27 +670,71 @@ class MYASGCreation extends Component {
     let field = action.name;
     dataLMR[field] = value;
     const list_wp_id = this.state.list_wp_id;
-    dataLMR["project_name"] = value !== "" ? list_wp_id[list_wp_id.findIndex(x => x.workplan_id === value)].project_name : "";
-    dataLMR["cdid"] = value !== "" ? list_wp_id[list_wp_id.findIndex(x => x.workplan_id === value)].cd_id : "";
-    if (list_wp_id[list_wp_id.findIndex(x => x.workplan_id === value)].region === 'Central') {
+    dataLMR["project_name"] =
+      value !== ""
+        ? list_wp_id[list_wp_id.findIndex((x) => x.workplan_id === value)]
+            .project_name
+        : "";
+    dataLMR["cdid"] =
+      value !== ""
+        ? list_wp_id[list_wp_id.findIndex((x) => x.workplan_id === value)].cd_id
+        : "";
+    if (
+      list_wp_id[list_wp_id.findIndex((x) => x.workplan_id === value)]
+        .region === "Central"
+    ) {
       dataLMR["region"] = "KV";
       this.setState({ region_package: "KV" }, () => this.getPackageList());
-    } else if (list_wp_id[list_wp_id.findIndex(x => x.workplan_id === value)].region === 'Northern' || list_wp_id[list_wp_id.findIndex(x => x.workplan_id === value)].region === 'Southern') {
+    } else if (
+      list_wp_id[list_wp_id.findIndex((x) => x.workplan_id === value)]
+        .region === "Northern" ||
+      list_wp_id[list_wp_id.findIndex((x) => x.workplan_id === value)]
+        .region === "Southern"
+    ) {
       dataLMR["region"] = "SN";
       this.setState({ region_package: "SN" }, () => this.getPackageList());
-    } else if (list_wp_id[list_wp_id.findIndex(x => x.workplan_id === value)].region === 'Eastern') {
+    } else if (
+      list_wp_id[list_wp_id.findIndex((x) => x.workplan_id === value)]
+        .region === "Eastern"
+    ) {
       dataLMR["region"] = "ER";
       this.setState({ region_package: "ER" }, () => this.getPackageList());
-    } else if (list_wp_id[list_wp_id.findIndex(x => x.workplan_id === value)].region === 'Sabah' || list_wp_id[list_wp_id.findIndex(x => x.workplan_id === value)].region === 'Sarawak') {
+    } else if (
+      list_wp_id[list_wp_id.findIndex((x) => x.workplan_id === value)]
+        .region === "Sabah" ||
+      list_wp_id[list_wp_id.findIndex((x) => x.workplan_id === value)]
+        .region === "Sarawak"
+    ) {
       dataLMR["region"] = "EM";
       this.setState({ region_package: "EM" }, () => this.getPackageList());
     }
-    dataLMR["site_id"] = value !== "" ? list_wp_id[list_wp_id.findIndex(x => x.workplan_id === value)].site_id : "";
-    dataLMR["site_name"] = value !== "" ? list_wp_id[list_wp_id.findIndex(x => x.workplan_id === value)].site_name : "";
-    dataLMR["nw"] = value !== "" ? list_wp_id[list_wp_id.findIndex(x => x.workplan_id === value)].lmr_ti_nw_number : "";
+    dataLMR["site_id"] =
+      value !== ""
+        ? list_wp_id[list_wp_id.findIndex((x) => x.workplan_id === value)]
+            .site_id
+        : "";
+    dataLMR["site_name"] =
+      value !== ""
+        ? list_wp_id[list_wp_id.findIndex((x) => x.workplan_id === value)]
+            .site_name
+        : "";
+    dataLMR["nw"] =
+      value !== ""
+        ? list_wp_id[list_wp_id.findIndex((x) => x.workplan_id === value)]
+            .lmr_ti_nw_number
+        : "";
 
-    let findWPID = await this.getWPfromACT("https://dev-corsanywhere.e-dpm.com/", "https://act.e-dpm.com/api/find_by_wpid?wp_id=" + value);
-    if (findWPID !== undefined && findWPID.data !== undefined && findWPID.data.result !== undefined && findWPID.data.result.status >= 200 && findWPID.data.result.status <= 300) {
+    let findWPID = await this.getWPfromACT(
+      "https://dev-corsanywhere.e-dpm.com/",
+      "https://act.e-dpm.com/api/find_by_wpid?wp_id=" + value
+    );
+    if (
+      findWPID !== undefined &&
+      findWPID.data !== undefined &&
+      findWPID.data.result !== undefined &&
+      findWPID.data.result.status >= 200 &&
+      findWPID.data.result.status <= 300
+    ) {
       dataLMR["m_id_wp"] = findWPID.data.result.m_id;
     } else {
       dataLMR["m_id_wp"] = "";
@@ -593,16 +744,19 @@ class MYASGCreation extends Component {
       console.log(this.state.lmr_child_package)
     );
     this.toggleLoading();
-  }
+  };
 
   async getDataFromAPINODE(url) {
     try {
-      let respond = await axios.get(process.env.REACT_APP_API_URL_NODE_Digi + url, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + this.state.tokenUser,
-        },
-      });
+      let respond = await axios.get(
+        process.env.REACT_APP_API_URL_NODE_Digi + url,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + this.state.tokenUser,
+          },
+        }
+      );
       if (respond.status >= 200 && respond.status < 300) {
         console.log("respond data", respond);
       }
@@ -616,14 +770,21 @@ class MYASGCreation extends Component {
 
   getDataCDACT_Fas() {
     this.toggleLoading();
-    this.getFASfromACT("https://dev-corsanywhere.e-dpm.com/", "https://api.act.e-dpm.com/api/get_data_auth").then((resCD) => {
+    this.getFASfromACT(
+      "https://dev-corsanywhere.e-dpm.com/",
+      "https://api.act.e-dpm.com/api/get_data_auth"
+    ).then((resCD) => {
       if (resCD.data !== undefined) {
         if (resCD.data.result !== undefined) {
           const list_fas = resCD.data.result.raw_data;
-          console.log('list_fas', list_fas)
-          const unique_fas = [...new Set(list_fas.map((item) => item.fas_id + ' - ' + item.fas_name))];
+          console.log("list_fas", list_fas);
+          const unique_fas = [
+            ...new Set(
+              list_fas.map((item) => item.fas_id + " - " + item.fas_name)
+            ),
+          ];
           for (let i = 0; i < unique_fas.length; i++) {
-            if (unique_fas[i].includes('null')) {
+            if (unique_fas[i].includes("null")) {
               unique_fas.splice(i, 1);
             }
           }
@@ -659,35 +820,49 @@ class MYASGCreation extends Component {
       ) {
         return (
           <>
-            <option value="" disabled selected hidden>Select GL Account</option>
+            <option value="" disabled selected hidden>
+              Select GL Account
+            </option>
             <option value="NRO service - 402603">NRO service - 402603</option>
             <option value="NDO service - 402603">NDO service - 402603</option>
-            <option value="NRO local material - 402201">NRO local material - 402201</option>
+            <option value="NRO local material - 402201">
+              NRO local material - 402201
+            </option>
           </>
         );
       }
       if (role.includes("BAM-IM") === true) {
         return (
           <>
-            <option value="" disabled selected hidden>Select GL Account</option>
+            <option value="" disabled selected hidden>
+              Select GL Account
+            </option>
             <option value="NRO service - 402603">NRO service - 402603</option>
-            <option value="NRO local material - 402201">NRO local material - 402201</option>
+            <option value="NRO local material - 402201">
+              NRO local material - 402201
+            </option>
           </>
         );
       }
       if (role.includes("BAM-IE Lead") === true) {
         return (
           <>
-            <option value="" disabled selected hidden>Select GL Account</option>
+            <option value="" disabled selected hidden>
+              Select GL Account
+            </option>
             <option value="NRO service - 402603">NRO service - 402603</option>
-            <option value="NRO local material - 402201">NRO local material - 402201</option>
+            <option value="NRO local material - 402201">
+              NRO local material - 402201
+            </option>
           </>
         );
       }
       if (role.includes("BAM-NDO IM") === true) {
         return (
           <>
-            <option value="" disabled selected hidden>Select GL Account</option>
+            <option value="" disabled selected hidden>
+              Select GL Account
+            </option>
             <option value="NDO service - 402603">NDO service - 402603</option>
           </>
         );
@@ -703,7 +878,9 @@ class MYASGCreation extends Component {
       ) {
         return (
           <>
-            <option value="" disabled selected hidden>Select GL Account</option>
+            <option value="" disabled selected hidden>
+              Select GL Account
+            </option>
             <option value="NRO">NRO</option>
             <option value="NDO">NDO</option>
             <option value="HW">HW</option>
@@ -714,7 +891,9 @@ class MYASGCreation extends Component {
       if (role.includes("BAM-IM") === true) {
         return (
           <>
-            <option value="" disabled selected hidden>Select GL Account</option>
+            <option value="" disabled selected hidden>
+              Select GL Account
+            </option>
             <option value="NRO">NRO</option>
           </>
         );
@@ -722,7 +901,9 @@ class MYASGCreation extends Component {
       if (role.includes("BAM-IE Lead") === true) {
         return (
           <>
-            <option value="" disabled selected hidden>Select GL Account</option>
+            <option value="" disabled selected hidden>
+              Select GL Account
+            </option>
             <option value="NRO Service">NRO Service</option>
             <option value="NRO LM">NRO LM</option>
           </>
@@ -731,7 +912,9 @@ class MYASGCreation extends Component {
       if (role.includes("BAM-MP") === true) {
         return (
           <>
-            <option value="" disabled selected hidden>Select GL Account</option>
+            <option value="" disabled selected hidden>
+              Select GL Account
+            </option>
             <option value="HW">HW</option>
           </>
         );
@@ -739,7 +922,9 @@ class MYASGCreation extends Component {
       if (role.includes("BAM-PA") === true) {
         return (
           <>
-            <option value="" disabled selected hidden>Select GL Account</option>
+            <option value="" disabled selected hidden>
+              Select GL Account
+            </option>
             <option value="ARP">ARP</option>
           </>
         );
@@ -755,7 +940,9 @@ class MYASGCreation extends Component {
       ) {
         return (
           <>
-            <option value="" disabled selected hidden>Select GL Account</option>
+            <option value="" disabled selected hidden>
+              Select GL Account
+            </option>
             <option value="Transport - 402102">Transport - 402102</option>
             <option value="ARP - 402693">ARP - 402693</option>
             <option value="3PP Hardware - 402201">3PP Hardware - 402201</option>
@@ -765,7 +952,9 @@ class MYASGCreation extends Component {
       if (role.includes("BAM-IM") === true) {
         return (
           <>
-            <option value="" disabled selected hidden>Select GL Account</option>
+            <option value="" disabled selected hidden>
+              Select GL Account
+            </option>
             <option value="Transport - 402102">Transport - 402102</option>
           </>
         );
@@ -773,7 +962,9 @@ class MYASGCreation extends Component {
       if (role.includes("BAM-PA") === true) {
         return (
           <>
-            <option value="" disabled selected hidden>Select GL Account</option>
+            <option value="" disabled selected hidden>
+              Select GL Account
+            </option>
             <option value="ARP - 402693">ARP - 402693</option>
           </>
         );
@@ -781,7 +972,9 @@ class MYASGCreation extends Component {
       if (role.includes("BAM-MP") === true) {
         return (
           <>
-            <option value="" disabled selected hidden>Select GL Account</option>
+            <option value="" disabled selected hidden>
+              Select GL Account
+            </option>
             <option value="3PP Hardware - 402201">3PP Hardware - 402201</option>
           </>
         );
@@ -789,9 +982,13 @@ class MYASGCreation extends Component {
       if (role.includes("BAM-GR-PA") === true) {
         return (
           <>
-            <option value="" disabled selected hidden>Select GL Account</option>
+            <option value="" disabled selected hidden>
+              Select GL Account
+            </option>
             <option value="NRO service - 402603">NRO service - 402603</option>
-            <option value="NRO local material - 402201">NRO local material - 402201</option>
+            <option value="NRO local material - 402201">
+              NRO local material - 402201
+            </option>
             <option value="Transport - 402102">Transport - 402102</option>
           </>
         );
@@ -803,7 +1000,10 @@ class MYASGCreation extends Component {
     this.toggleLoading();
     this.getVendorList();
     this.CheckDraft();
-    this.setState({ access_token: await generateTokenACT() }, () => { this.getDataCDACT_Fas(); this.toggleLoading(); });
+    this.setState({ access_token: await generateTokenACT() }, () => {
+      this.getDataCDACT_Fas();
+      this.toggleLoading();
+    });
     // this.getProjectList();
     // this.getMaterialList();
     // this.getDataCDACT(); enable this again later
@@ -857,13 +1057,13 @@ class MYASGCreation extends Component {
     this.setState({ activePagePackage: pageNumber }, () => {
       this.getPackageList();
     });
-  }
+  };
 
   handlePageChangeCheckMaterialPackage = (pageNumber) => {
     this.setState({ activePageCheckMaterialPackage: pageNumber }, () => {
       this.getPackageList();
     });
-  }
+  };
 
   handleFilterList(e) {
     const index = e.target.name;
@@ -885,7 +1085,7 @@ class MYASGCreation extends Component {
   }
 
   getVendorList() {
-    this.getDatafromAPIMY("/vendor_data").then((res) => {
+    this.getDatafromAPIMY_DNB("/vendor_data").then((res) => {
       if (res.data !== undefined) {
         const items = res.data._items;
         const vendor_sort = items
@@ -902,58 +1102,65 @@ class MYASGCreation extends Component {
     // this.state.creation_lmr_child_form[number_child_form].transport === "yes" && filter_array.push('"BB":"Transport"');
     // vendor
     this.state.lmr_form.vendor_code_actual !== "" &&
-      filter_array.push('"$and":[{"$or":[{"Vendor_List.Vendor_Code":"' + this.state.lmr_form.vendor_code_actual + '"},{"Vendor_ID":"' + this.state.lmr_form.vendor_code_actual + '"}]},{"$or":[{"Region":"' + this.state.creation_lmr_child_form[this.state.current_material_select].region + '"},{"Region":null}]}]');
+      filter_array.push(
+        '"$and":[{"$or":[{"Vendor_List.Vendor_Code":"' +
+          this.state.lmr_form.vendor_code_actual +
+          '"},{"Vendor_ID":"' +
+          this.state.lmr_form.vendor_code_actual +
+          '"}]},{"$or":[{"Region":"' +
+          this.state.creation_lmr_child_form[this.state.current_material_select]
+            .region +
+          '"},{"Region":null}]}]'
+      );
     filter_array.push('"Material_Sub_Type":{"$in":["Survey"]}');
     this.state.filter_list[0] !== "" &&
       filter_array.push(
         '"MM_Code":{"$regex" : "' +
-        this.state.filter_list[0] +
-        '", "$options" : "i"}'
+          this.state.filter_list[0] +
+          '", "$options" : "i"}'
       );
     this.state.filter_list[1] !== "" &&
       filter_array.push(
         '"MM_Description":{"$regex" : "' +
-        this.state.filter_list[1] +
-        '", "$options" : "i"}'
+          this.state.filter_list[1] +
+          '", "$options" : "i"}'
       );
     this.state.filter_list[2] !== "" &&
       filter_array.push(
         '"BB":{"$regex" : "' +
-        this.state.filter_list[2] +
-        '", "$options" : "i"}'
+          this.state.filter_list[2] +
+          '", "$options" : "i"}'
       );
     this.state.filter_list[3] !== "" &&
       filter_array.push(
         '"BB_Sub":{"$regex" : "' +
-        this.state.filter_list[3] +
-        '", "$options" : "i"}'
+          this.state.filter_list[3] +
+          '", "$options" : "i"}'
       );
     // filter_array.push('"Region":"' + this.state.creation_lmr_child_form[this.state.current_material_select].region + '"');
 
     this.state.filter_list[5] !== "" &&
       filter_array.push(
         '"SoW_Description":{"$regex" : "' +
-        this.state.filter_list[5] +
-        '", "$options" : "i"}'
+          this.state.filter_list[5] +
+          '", "$options" : "i"}'
       );
     this.state.filter_list[6] !== "" &&
       filter_array.push(
         '"UoM":{"$regex" : "' +
-        this.state.filter_list[6] +
-        '", "$options" : "i"}'
+          this.state.filter_list[6] +
+          '", "$options" : "i"}'
       );
     this.state.filter_list[7] !== "" &&
-      filter_array.push(
-        '"Unit_Price":' + this.state.filter_list[7]
-      );
+      filter_array.push('"Unit_Price":' + this.state.filter_list[7]);
     let whereAnd = "{" + filter_array.join(",") + "}";
     getDatafromAPINODE(
       "/mmCode/getMm?q=" +
-      whereAnd +
-      "&lmt=" +
-      this.state.perPage +
-      "&pg=" +
-      this.state.activePage,
+        whereAnd +
+        "&lmt=" +
+        this.state.perPage +
+        "&pg=" +
+        this.state.activePage,
       this.state.tokenUser
     ).then((res) => {
       if (res.data !== undefined) {
@@ -973,58 +1180,65 @@ class MYASGCreation extends Component {
     // this.state.lmr_form.vendor_code_actual !== "" &&
     //   filter_array.push('"$or":[{"Vendor_List.Vendor_Code":"' + this.state.lmr_form.vendor_code_actual + '"},{"Vendor_ID":"' + this.state.lmr_form.vendor_code_actual + '"}]');
     this.state.lmr_form.vendor_code_actual !== "" &&
-      filter_array.push('"$and":[{"$or":[{"Vendor_List.Vendor_Code":"' + this.state.lmr_form.vendor_code_actual + '"},{"Vendor_ID":"' + this.state.lmr_form.vendor_code_actual + '"}]},{"$or":[{"Region":"' + this.state.creation_lmr_child_form[this.state.current_material_select].region + '"},{"Region":null}]}]');
+      filter_array.push(
+        '"$and":[{"$or":[{"Vendor_List.Vendor_Code":"' +
+          this.state.lmr_form.vendor_code_actual +
+          '"},{"Vendor_ID":"' +
+          this.state.lmr_form.vendor_code_actual +
+          '"}]},{"$or":[{"Region":"' +
+          this.state.creation_lmr_child_form[this.state.current_material_select]
+            .region +
+          '"},{"Region":null}]}]'
+      );
     filter_array.push('"Material_Sub_Type":{"$in":["Integration"]}');
     this.state.filter_list[0] !== "" &&
       filter_array.push(
         '"MM_Code":{"$regex" : "' +
-        this.state.filter_list[0] +
-        '", "$options" : "i"}'
+          this.state.filter_list[0] +
+          '", "$options" : "i"}'
       );
     this.state.filter_list[1] !== "" &&
       filter_array.push(
         '"MM_Description":{"$regex" : "' +
-        this.state.filter_list[1] +
-        '", "$options" : "i"}'
+          this.state.filter_list[1] +
+          '", "$options" : "i"}'
       );
     this.state.filter_list[2] !== "" &&
       filter_array.push(
         '"BB":{"$regex" : "' +
-        this.state.filter_list[2] +
-        '", "$options" : "i"}'
+          this.state.filter_list[2] +
+          '", "$options" : "i"}'
       );
     this.state.filter_list[3] !== "" &&
       filter_array.push(
         '"BB_Sub":{"$regex" : "' +
-        this.state.filter_list[3] +
-        '", "$options" : "i"}'
+          this.state.filter_list[3] +
+          '", "$options" : "i"}'
       );
     // filter_array.push('"Region":"' + this.state.creation_lmr_child_form[this.state.current_material_select].region + '"');
 
     this.state.filter_list[5] !== "" &&
       filter_array.push(
         '"SoW_Description":{"$regex" : "' +
-        this.state.filter_list[5] +
-        '", "$options" : "i"}'
+          this.state.filter_list[5] +
+          '", "$options" : "i"}'
       );
     this.state.filter_list[6] !== "" &&
       filter_array.push(
         '"UoM":{"$regex" : "' +
-        this.state.filter_list[6] +
-        '", "$options" : "i"}'
+          this.state.filter_list[6] +
+          '", "$options" : "i"}'
       );
     this.state.filter_list[7] !== "" &&
-      filter_array.push(
-        '"Unit_Price":' + this.state.filter_list[7]
-      );
+      filter_array.push('"Unit_Price":' + this.state.filter_list[7]);
     let whereAnd = "{" + filter_array.join(",") + "}";
     getDatafromAPINODE(
       "/mmCode/getMm?q=" +
-      whereAnd +
-      "&lmt=" +
-      this.state.perPage +
-      "&pg=" +
-      this.state.activePage,
+        whereAnd +
+        "&lmt=" +
+        this.state.perPage +
+        "&pg=" +
+        this.state.activePage,
       this.state.tokenUser
     ).then((res) => {
       if (res.data !== undefined) {
@@ -1044,58 +1258,65 @@ class MYASGCreation extends Component {
     // this.state.lmr_form.vendor_code_actual !== "" &&
     //   filter_array.push('"$or":[{"Vendor_List.Vendor_Code":"' + this.state.lmr_form.vendor_code_actual + '"},{"Vendor_ID":"' + this.state.lmr_form.vendor_code_actual + '"}]');
     this.state.lmr_form.vendor_code_actual !== "" &&
-      filter_array.push('"$and":[{"$or":[{"Vendor_List.Vendor_Code":"' + this.state.lmr_form.vendor_code_actual + '"},{"Vendor_ID":"' + this.state.lmr_form.vendor_code_actual + '"}]},{"$or":[{"Region":"' + this.state.creation_lmr_child_form[this.state.current_material_select].region + '"},{"Region":null}]}]');
+      filter_array.push(
+        '"$and":[{"$or":[{"Vendor_List.Vendor_Code":"' +
+          this.state.lmr_form.vendor_code_actual +
+          '"},{"Vendor_ID":"' +
+          this.state.lmr_form.vendor_code_actual +
+          '"}]},{"$or":[{"Region":"' +
+          this.state.creation_lmr_child_form[this.state.current_material_select]
+            .region +
+          '"},{"Region":null}]}]'
+      );
     filter_array.push('"Material_Sub_Type":{"$in":["NDO"]}');
     this.state.filter_list[0] !== "" &&
       filter_array.push(
         '"MM_Code":{"$regex" : "' +
-        this.state.filter_list[0] +
-        '", "$options" : "i"}'
+          this.state.filter_list[0] +
+          '", "$options" : "i"}'
       );
     this.state.filter_list[1] !== "" &&
       filter_array.push(
         '"MM_Description":{"$regex" : "' +
-        this.state.filter_list[1] +
-        '", "$options" : "i"}'
+          this.state.filter_list[1] +
+          '", "$options" : "i"}'
       );
     this.state.filter_list[2] !== "" &&
       filter_array.push(
         '"BB":{"$regex" : "' +
-        this.state.filter_list[2] +
-        '", "$options" : "i"}'
+          this.state.filter_list[2] +
+          '", "$options" : "i"}'
       );
     this.state.filter_list[3] !== "" &&
       filter_array.push(
         '"BB_Sub":{"$regex" : "' +
-        this.state.filter_list[3] +
-        '", "$options" : "i"}'
+          this.state.filter_list[3] +
+          '", "$options" : "i"}'
       );
     // filter_array.push('"Region":"' + this.state.creation_lmr_child_form[this.state.current_material_select].region + '"');
 
     this.state.filter_list[5] !== "" &&
       filter_array.push(
         '"SoW_Description":{"$regex" : "' +
-        this.state.filter_list[5] +
-        '", "$options" : "i"}'
+          this.state.filter_list[5] +
+          '", "$options" : "i"}'
       );
     this.state.filter_list[6] !== "" &&
       filter_array.push(
         '"UoM":{"$regex" : "' +
-        this.state.filter_list[6] +
-        '", "$options" : "i"}'
+          this.state.filter_list[6] +
+          '", "$options" : "i"}'
       );
     this.state.filter_list[7] !== "" &&
-      filter_array.push(
-        '"Unit_Price":' + this.state.filter_list[7]
-      );
+      filter_array.push('"Unit_Price":' + this.state.filter_list[7]);
     let whereAnd = "{" + filter_array.join(",") + "}";
     getDatafromAPINODE(
       "/mmCode/getMm?q=" +
-      whereAnd +
-      "&lmt=" +
-      this.state.perPage +
-      "&pg=" +
-      this.state.activePage,
+        whereAnd +
+        "&lmt=" +
+        this.state.perPage +
+        "&pg=" +
+        this.state.activePage,
       this.state.tokenUser
     ).then((res) => {
       if (res.data !== undefined) {
@@ -1113,35 +1334,54 @@ class MYASGCreation extends Component {
     // vendor
     // this.state.lmr_form.vendor_code_actual !== "" &&
     //   filter_array.push('"$or":[{"Vendor_List.Vendor_Code":"' + this.state.lmr_form.vendor_code_actual + '"},{"Vendor_ID":"' + this.state.lmr_form.vendor_code_actual + '"}]');
-    this.state.lmr_form.vendor_code_actual !== "" && filter_array.push('"$and":[{"$or":[{"Vendor_List.Vendor_Code":"' + this.state.lmr_form.vendor_code_actual + '"},{"Vendor_ID":"' + this.state.lmr_form.vendor_code_actual + '"}]},{"$or":[{"Region":"' + this.state.creation_lmr_child_form[this.state.current_material_select].region + '"},{"Region":null}]}]');
-    if (this.state.creation_lmr_child_form[this.state.child_selected].transport === 'yes') {
-      this.state.mm_data_type !== "" && filter_array.push('"Material_Sub_Type":{"$in":["Transport","Special Transport"]}');
+    this.state.lmr_form.vendor_code_actual !== "" &&
+      filter_array.push(
+        '"$and":[{"$or":[{"Vendor_List.Vendor_Code":"' +
+          this.state.lmr_form.vendor_code_actual +
+          '"},{"Vendor_ID":"' +
+          this.state.lmr_form.vendor_code_actual +
+          '"}]},{"$or":[{"Region":"' +
+          this.state.creation_lmr_child_form[this.state.current_material_select]
+            .region +
+          '"},{"Region":null}]}]'
+      );
+    if (
+      this.state.creation_lmr_child_form[this.state.child_selected]
+        .transport === "yes"
+    ) {
+      this.state.mm_data_type !== "" &&
+        filter_array.push(
+          '"Material_Sub_Type":{"$in":["Transport","Special Transport"]}'
+        );
     } else {
-      this.state.mm_data_type !== "" && filter_array.push('"Material_Sub_Type":{"$in":["ITC","Transport","Special Transport"]}');
+      this.state.mm_data_type !== "" &&
+        filter_array.push(
+          '"Material_Sub_Type":{"$in":["ITC","Transport","Special Transport"]}'
+        );
     }
     this.state.filter_list[0] !== "" &&
       filter_array.push(
         '"MM_Code":{"$regex" : "' +
-        this.state.filter_list[0] +
-        '", "$options" : "i"}'
+          this.state.filter_list[0] +
+          '", "$options" : "i"}'
       );
     this.state.filter_list[1] !== "" &&
       filter_array.push(
         '"MM_Description":{"$regex" : "' +
-        this.state.filter_list[1] +
-        '", "$options" : "i"}'
+          this.state.filter_list[1] +
+          '", "$options" : "i"}'
       );
     this.state.filter_list[2] !== "" &&
       filter_array.push(
         '"BB":{"$regex" : "' +
-        this.state.filter_list[2] +
-        '", "$options" : "i"}'
+          this.state.filter_list[2] +
+          '", "$options" : "i"}'
       );
     this.state.filter_list[3] !== "" &&
       filter_array.push(
         '"BB_Sub":{"$regex" : "' +
-        this.state.filter_list[3] +
-        '", "$options" : "i"}'
+          this.state.filter_list[3] +
+          '", "$options" : "i"}'
       );
     // filter_array.push('"$or":[{"Region":"' + this.state.creation_lmr_child_form[this.state.current_material_select].region + '"}]');
     this.state.matfilter.region === "All" &&
@@ -1150,33 +1390,31 @@ class MYASGCreation extends Component {
       this.state.matfilter.region !== "All" &&
       filter_array.push(
         '"Region":{"$regex" : "' +
-        this.state.matfilter.region +
-        '", "$options" : "i"}'
+          this.state.matfilter.region +
+          '", "$options" : "i"}'
       );
     this.state.filter_list[5] !== "" &&
       filter_array.push(
         '"SoW_Description_or_Site_Type":{"$regex" : "' +
-        this.state.filter_list[5] +
-        '", "$options" : "i"}'
+          this.state.filter_list[5] +
+          '", "$options" : "i"}'
       );
     this.state.filter_list[6] !== "" &&
       filter_array.push(
         '"UoM":{"$regex" : "' +
-        this.state.filter_list[6] +
-        '", "$options" : "i"}'
+          this.state.filter_list[6] +
+          '", "$options" : "i"}'
       );
     this.state.filter_list[7] !== "" &&
-      filter_array.push(
-        '"Unit_Price":' + this.state.filter_list[7]
-      );
+      filter_array.push('"Unit_Price":' + this.state.filter_list[7]);
     let whereAnd = "{" + filter_array.join(",") + "}";
     getDatafromAPINODE(
       "/mmCode/getMm?q=" +
-      whereAnd +
-      "&lmt=" +
-      this.state.perPage +
-      "&pg=" +
-      this.state.activePage,
+        whereAnd +
+        "&lmt=" +
+        this.state.perPage +
+        "&pg=" +
+        this.state.activePage,
       this.state.tokenUser
     ).then((res) => {
       if (res.data !== undefined) {
@@ -1194,58 +1432,67 @@ class MYASGCreation extends Component {
     // this.state.lmr_form.vendor_code_actual !== "" &&
     //   filter_array.push('"$or":[{"Vendor_List.Vendor_Code":"' + this.state.lmr_form.vendor_code_actual + '"},{"Vendor_ID":"' + this.state.lmr_form.vendor_code_actual + '"}]');
     this.state.lmr_form.vendor_code_actual !== "" &&
-      filter_array.push('"$and":[{"$or":[{"Vendor_List.Vendor_Code":"' + this.state.lmr_form.vendor_code_actual + '"},{"Vendor_ID":"' + this.state.lmr_form.vendor_code_actual + '"}]},{"$or":[{"Region":"' + this.state.creation_lmr_child_form[this.state.current_material_select].region + '"},{"Region":null}]}]');
-    filter_array.push('"Material_Sub_Type":{"$in":["Transport","Special Transport"]}');
+      filter_array.push(
+        '"$and":[{"$or":[{"Vendor_List.Vendor_Code":"' +
+          this.state.lmr_form.vendor_code_actual +
+          '"},{"Vendor_ID":"' +
+          this.state.lmr_form.vendor_code_actual +
+          '"}]},{"$or":[{"Region":"' +
+          this.state.creation_lmr_child_form[this.state.current_material_select]
+            .region +
+          '"},{"Region":null}]}]'
+      );
+    filter_array.push(
+      '"Material_Sub_Type":{"$in":["Transport","Special Transport"]}'
+    );
     this.state.filter_list[0] !== "" &&
       filter_array.push(
         '"MM_Code":{"$regex" : "' +
-        this.state.filter_list[0] +
-        '", "$options" : "i"}'
+          this.state.filter_list[0] +
+          '", "$options" : "i"}'
       );
     this.state.filter_list[1] !== "" &&
       filter_array.push(
         '"MM_Description":{"$regex" : "' +
-        this.state.filter_list[1] +
-        '", "$options" : "i"}'
+          this.state.filter_list[1] +
+          '", "$options" : "i"}'
       );
     this.state.filter_list[2] !== "" &&
       filter_array.push(
         '"BB":{"$regex" : "' +
-        this.state.filter_list[2] +
-        '", "$options" : "i"}'
+          this.state.filter_list[2] +
+          '", "$options" : "i"}'
       );
     this.state.filter_list[3] !== "" &&
       filter_array.push(
         '"BB_Sub":{"$regex" : "' +
-        this.state.filter_list[3] +
-        '", "$options" : "i"}'
+          this.state.filter_list[3] +
+          '", "$options" : "i"}'
       );
     // filter_array.push('"Region":"' + this.state.creation_lmr_child_form[this.state.current_material_select].region + '"');
 
     this.state.filter_list[5] !== "" &&
       filter_array.push(
         '"SoW_Description":{"$regex" : "' +
-        this.state.filter_list[5] +
-        '", "$options" : "i"}'
+          this.state.filter_list[5] +
+          '", "$options" : "i"}'
       );
     this.state.filter_list[6] !== "" &&
       filter_array.push(
         '"UoM":{"$regex" : "' +
-        this.state.filter_list[6] +
-        '", "$options" : "i"}'
+          this.state.filter_list[6] +
+          '", "$options" : "i"}'
       );
     this.state.filter_list[7] !== "" &&
-      filter_array.push(
-        '"Unit_Price":' + this.state.filter_list[7]
-      );
+      filter_array.push('"Unit_Price":' + this.state.filter_list[7]);
     let whereAnd = "{" + filter_array.join(",") + "}";
     getDatafromAPINODE(
       "/mmCode/getMm?q=" +
-      whereAnd +
-      "&lmt=" +
-      this.state.perPage +
-      "&pg=" +
-      this.state.activePage,
+        whereAnd +
+        "&lmt=" +
+        this.state.perPage +
+        "&pg=" +
+        this.state.activePage,
       this.state.tokenUser
     ).then((res) => {
       if (res.data !== undefined) {
@@ -1293,11 +1540,11 @@ class MYASGCreation extends Component {
       return [];
     } else {
       let wp_id_list = [];
-      // const getSSOWID = await this.getDatafromAPIMY('/ssow_sorted_nonpage?where={"ssow_id":{"$regex":"'+inputValue+'", "$options":"i"}, "sow_type":"'+this.state.list_activity_selected.CD_Info_SOW_Type +'"}');
-      const getWPID = await this.getDatafromAPIMY(
+      // const getSSOWID = await this.getDatafromAPIMY_DNB('/ssow_sorted_nonpage?where={"ssow_id":{"$regex":"'+inputValue+'", "$options":"i"}, "sow_type":"'+this.state.list_activity_selected.CD_Info_SOW_Type +'"}');
+      const getWPID = await this.getDatafromAPIMY_DNB(
         '/custdel_sorted_non_page?where={"WP_ID":{"$regex":"' +
-        inputValue +
-        '", "$options":"i"}}'
+          inputValue +
+          '", "$options":"i"}}'
       );
       if (getWPID !== undefined && getWPID.data !== undefined) {
         getWPID.data._items.map((wp) =>
@@ -1346,23 +1593,28 @@ class MYASGCreation extends Component {
       fas_id: this.state.lmr_form.fas_id,
       total_price: this.state.lmr_form.total_price,
     };
-    let dataLMRChild = [], empty_nw = false, check_duplicate = false;
+    let dataLMRChild = [],
+      empty_nw = false,
+      check_duplicate = false;
 
     for (let i = 0; i < dataChildForm.length; i++) {
       // dataChildForm[i].duplicate = 'no';
-      dataChildForm[i].blank_material = 'no';
-      dataChildForm[i].zero_qty = 'no';
+      dataChildForm[i].blank_material = "no";
+      dataChildForm[i].zero_qty = "no";
     }
 
     for (let i = 0; i < dataChildForm.length; i++) {
-      if (dataChildForm[i].material === '' || dataChildForm[i].material_code_doc === '') {
-        dataChildForm[i].blank_material = 'yes';
+      if (
+        dataChildForm[i].material === "" ||
+        dataChildForm[i].material_code_doc === ""
+      ) {
+        dataChildForm[i].blank_material = "yes";
       }
     }
 
     for (let i = 0; i < dataChildForm.length; i++) {
       if (dataChildForm[i].qty === 0) {
-        dataChildForm[i].zero_qty = 'yes';
+        dataChildForm[i].zero_qty = "yes";
       }
     }
 
@@ -1375,7 +1627,12 @@ class MYASGCreation extends Component {
       //   }
       // }
 
-      if (dataChildForm[i].nw === '' || dataChildForm[i].nw === null || dataChildForm[i].cdid === '' || dataChildForm[i].cdid === null) {
+      if (
+        dataChildForm[i].nw === "" ||
+        dataChildForm[i].nw === null ||
+        dataChildForm[i].cdid === "" ||
+        dataChildForm[i].cdid === null
+      ) {
         empty_nw = true;
       }
 
@@ -1422,57 +1679,45 @@ class MYASGCreation extends Component {
 
     if (empty_nw) {
       const getAlert = () => (
-        <SweetAlert
-          danger
-          title="Error!"
-          onConfirm={() => this.hideAlert()}
-        >
+        <SweetAlert danger title="Error!" onConfirm={() => this.hideAlert()}>
           Empty CD ID and SO / NW cannot be allowed!
         </SweetAlert>
       );
 
       this.setState({
-        sweet_alert: getAlert()
+        sweet_alert: getAlert(),
       });
       this.toggleLoading();
-    } else if (dataChildForm.some(e => e.blank_material === 'yes')) {
+    } else if (dataChildForm.some((e) => e.blank_material === "yes")) {
       const getAlert = () => (
-        <SweetAlert
-          danger
-          title="Error!"
-          onConfirm={() => this.hideAlert()}
-        >
+        <SweetAlert danger title="Error!" onConfirm={() => this.hideAlert()}>
           Please select a material first!
         </SweetAlert>
       );
 
       this.setState({
-        sweet_alert: getAlert()
+        sweet_alert: getAlert(),
       });
 
       for (let i = 0; i < dataChildForm.length; i++) {
         // dataChildForm[i].duplicate = 'no';
-        dataChildForm[i].zero_qty = 'no';
+        dataChildForm[i].zero_qty = "no";
       }
       this.toggleLoading();
-    } else if (dataChildForm.some(e => e.zero_qty === 'yes')) {
+    } else if (dataChildForm.some((e) => e.zero_qty === "yes")) {
       const getAlert = () => (
-        <SweetAlert
-          danger
-          title="Error!"
-          onConfirm={() => this.hideAlert()}
-        >
+        <SweetAlert danger title="Error!" onConfirm={() => this.hideAlert()}>
           Please input the qty to be more than 0!
         </SweetAlert>
       );
 
       this.setState({
-        sweet_alert: getAlert()
+        sweet_alert: getAlert(),
       });
 
       for (let i = 0; i < dataChildForm.length; i++) {
         // dataChildForm[i].duplicate = 'no';
-        dataChildForm[i].blank_material = 'no';
+        dataChildForm[i].blank_material = "no";
       }
       this.toggleLoading();
     } else {
@@ -1482,14 +1727,14 @@ class MYASGCreation extends Component {
       let check_wp_id = [];
       let gl_account_to_be_checked;
 
-      if (dataLMR.gl_type === 'ITC + Transport') {
-        gl_account_to_be_checked = 'lmr_ti_number';
-      } else if (dataLMR.gl_type === 'Survey') {
-        gl_account_to_be_checked = 'lmr_survey_number';
-      } else if (dataLMR.gl_type === 'NDO') {
-        gl_account_to_be_checked = 'lmr_ndo_number';
-      } else if (dataLMR.gl_type === 'Integration') {
-        gl_account_to_be_checked = 'lmr_integration_number';
+      if (dataLMR.gl_type === "ITC + Transport") {
+        gl_account_to_be_checked = "lmr_ti_number";
+      } else if (dataLMR.gl_type === "Survey") {
+        gl_account_to_be_checked = "lmr_survey_number";
+      } else if (dataLMR.gl_type === "NDO") {
+        gl_account_to_be_checked = "lmr_ndo_number";
+      } else if (dataLMR.gl_type === "Integration") {
+        gl_account_to_be_checked = "lmr_integration_number";
       }
 
       // disabled temporarily
@@ -1589,57 +1834,95 @@ class MYASGCreation extends Component {
       // }
 
       // temporary create LMR
-      const respondSaveLMR = await this.postDatatoAPINODE("/aspassignment/createOneAspAssignment", { asp_data: dataLMR, asp_data_child: dataLMRChild });
-      if (respondSaveLMR.data !== undefined && respondSaveLMR.status >= 200 && respondSaveLMR.status <= 300) {
+      const respondSaveLMR = await this.postDatatoAPINODE(
+        "/aspassignment/createOneAspAssignment",
+        { asp_data: dataLMR, asp_data_child: dataLMRChild }
+      );
+      if (
+        respondSaveLMR.data !== undefined &&
+        respondSaveLMR.status >= 200 &&
+        respondSaveLMR.status <= 300
+      ) {
         localStorage.removeItem("asp_data");
         localStorage.removeItem("asp_data_child");
 
         let failed_update_wp = [];
         let failed_update_wp_message = [];
 
-        for (let i = 0; i < dataChildForm.length; i++) {
-          let date = new Date();
-          if (this.state.lmr_form.gl_account_actual !== 'Transport - 402603') {
-            let updateLMRtoACT = await this.updateLMRtoACT("https://dev-corsanywhere.e-dpm.com/", "https://api.act.e-dpm.com/api/update_site_data", dataChildForm[i].m_id_wp, respondSaveLMR.data.parent.lmr_id, convertDateFormat(date));
-            let data_log = {
-              lmr_id: respondSaveLMR.data.parent.lmr_id,
-              wp_id: dataChildForm[i].wp_id,
-              response_act: JSON.stringify(updateLMRtoACT)
-            }
-            await postDatatoAPINODE("/aspassignment/submitLogErisite", { data: data_log }, this.state.tokenUser);
-            if (updateLMRtoACT !== undefined && updateLMRtoACT.data !== undefined && updateLMRtoACT.data.result.status >= 200 && updateLMRtoACT.data.result.status <= 300) {
-              console.log('success update WP', dataChildForm[i].wp_id);
-            } else {
-              failed_update_wp.push(dataChildForm[i].wp_id);
-              failed_update_wp_message.push(JSON.stringify(updateLMRtoACT.data));
-            }
-          }
-        }
+        // for (let i = 0; i < dataChildForm.length; i++) {
+        //   let date = new Date();
+        //   if (this.state.lmr_form.gl_account_actual !== "Transport - 402603") {
+        //     let updateLMRtoACT = await this.updateLMRtoACT(
+        //       "https://dev-corsanywhere.e-dpm.com/",
+        //       "https://api.act.e-dpm.com/api/update_site_data",
+        //       dataChildForm[i].m_id_wp,
+        //       respondSaveLMR.data.parent.lmr_id,
+        //       convertDateFormat(date)
+        //     );
+        //     let data_log = {
+        //       lmr_id: respondSaveLMR.data.parent.lmr_id,
+        //       wp_id: dataChildForm[i].wp_id,
+        //       response_act: JSON.stringify(updateLMRtoACT),
+        //     };
+        //     await postDatatoAPINODE(
+        //       "/aspassignment/submitLogErisite",
+        //       { data: data_log },
+        //       this.state.tokenUser
+        //     );
+        //     if (
+        //       updateLMRtoACT !== undefined &&
+        //       updateLMRtoACT.data !== undefined &&
+        //       updateLMRtoACT.data.result.status >= 200 &&
+        //       updateLMRtoACT.data.result.status <= 300
+        //     ) {
+        //       console.log("success update WP", dataChildForm[i].wp_id);
+        //     } else {
+        //       failed_update_wp.push(dataChildForm[i].wp_id);
+        //       failed_update_wp_message.push(
+        //         JSON.stringify(updateLMRtoACT.data)
+        //       );
+        //     }
+        //   }
+        // }
 
-        if (failed_update_wp.length === 0) {
-          this.setState({ action_status: "success", action_message: "LMR has been created!", redirect: "lmr-detail/" + respondSaveLMR.data.parent._id });
-        } else {
-          const getAlert = () => (
-            <SweetAlert
-              danger
-              title="Successfully created LMR but failed to update to Erisite!"
-              onConfirm={() => this.hideAlert()}
-            >
-              WP ID: {failed_update_wp.join(', ')}
-              Message: {failed_update_wp_message.join(', ')}
-            </SweetAlert>
-          );
+        // if (failed_update_wp.length === 0) {
+        //   this.setState({
+        //     action_status: "success",
+        //     action_message: "LMR has been created!",
+        //     redirect: "lmr-detail/" + respondSaveLMR.data.parent._id,
+        //   });
+        // } else {
+        //   const getAlert = () => (
+        //     <SweetAlert
+        //       danger
+        //       title="Successfully created LMR but failed to update to Erisite!"
+        //       onConfirm={() => this.hideAlert()}
+        //     >
+        //       WP ID: {failed_update_wp.join(", ")}
+        //       Message: {failed_update_wp_message.join(", ")}
+        //     </SweetAlert>
+        //   );
 
-          this.setState({
-            sweet_alert: getAlert()
-          });
-        }
+        //   this.setState({
+        //     sweet_alert: getAlert(),
+        //   });
+        // }
+
+        this.setState({
+          action_status: "success",
+          action_message: "LMR has been created!",
+          redirect: "lmr-detail/" + respondSaveLMR.data.parent._id,
+        });
 
         this.toggleLoading();
       } else {
         localStorage.setItem("asp_data", JSON.stringify(dataLMR));
         localStorage.setItem("asp_data_child", JSON.stringify(dataLMRChild));
-        if (respondSaveLMR.response !== undefined && respondSaveLMR.response.data !== undefined && respondSaveLMR.response.data.error !== undefined) {
+        if (
+          respondSaveLMR.response !== undefined &&
+          respondSaveLMR.response.data !== undefined &&
+          respondSaveLMR.response.data.error !== undefined
+        ) {
           if (respondSaveLMR.response.data.error.message !== undefined) {
             this.setState({
               action_status: "failed",
@@ -1656,7 +1939,8 @@ class MYASGCreation extends Component {
         } else {
           this.setState({
             action_status: "failed",
-            action_message: "There is something error. Don't worry, we saved a draft for you. Please refresh the page"
+            action_message:
+              "There is something error. Don't worry, we saved a draft for you. Please refresh the page",
           });
           this.toggleLoading();
         }
@@ -1744,17 +2028,13 @@ class MYASGCreation extends Component {
     //   action_message: "Draft Saved",
     // });
     const getAlert = () => (
-      <SweetAlert
-        success
-        title="Success!"
-        onConfirm={() => this.hideAlert()}
-      >
+      <SweetAlert success title="Success!" onConfirm={() => this.hideAlert()}>
         Draft Saved
       </SweetAlert>
     );
 
     this.setState({
-      sweet_alert: getAlert()
+      sweet_alert: getAlert(),
     });
   };
 
@@ -1780,22 +2060,18 @@ class MYASGCreation extends Component {
         unit_price: 0,
         total_value: 0,
         delivery_date: convertDateFormat(date),
-        transport: "no"
+        transport: "no",
       });
       this.setState({ creation_lmr_child_form: dataLMR, key_child: key });
     } else {
       const getAlert = () => (
-        <SweetAlert
-          danger
-          title="Error!"
-          onConfirm={() => this.hideAlert()}
-        >
+        <SweetAlert danger title="Error!" onConfirm={() => this.hideAlert()}>
           Please fill all required fields first!
         </SweetAlert>
       );
 
       this.setState({
-        sweet_alert: getAlert()
+        sweet_alert: getAlert(),
       });
     }
   };
@@ -1869,7 +2145,7 @@ class MYASGCreation extends Component {
     if (name === "gl_account" && value !== null) {
       lmr_form[name.toString()] = value.split(" - ")[1];
     } else if (name === "fas_id") {
-      lmr_form["fas_id"] = value.split(" - ")[0]
+      lmr_form["fas_id"] = value.split(" - ")[0];
     } else {
       lmr_form[name.toString()] = value;
     }
@@ -1914,7 +2190,7 @@ class MYASGCreation extends Component {
         // so_nw_updated: dataLMR[parseInt(idx)]["nw"],
       },
       () => {
-        console.log(this.state.creation_lmr_child_form)
+        console.log(this.state.creation_lmr_child_form);
         this.sumTotalPrice();
       }
     );
@@ -1929,7 +2205,7 @@ class MYASGCreation extends Component {
     }
     lmr_child_package[name.toString()] = value;
     this.setState({ lmr_child_package: lmr_child_package });
-  }
+  };
 
   handleChangeCDFormLMRChild = (e, action) => {
     let dataLMR = this.state.creation_lmr_child_form;
@@ -1981,11 +2257,17 @@ class MYASGCreation extends Component {
       (e) => e.MM_Code === value
     );
     let dataLMR = this.state.creation_lmr_child_form;
-    dataLMR[parseInt(this.state.current_material_select)]["material_code_doc"] = data_material._id;
-    dataLMR[parseInt(this.state.current_material_select)]["material"] = data_material.MM_Code;
-    dataLMR[parseInt(this.state.current_material_select)]["description"] = data_material.MM_Description;
-    dataLMR[parseInt(this.state.current_material_select)]["unit_price"] = data_material.Unit_Price;
-    dataLMR[parseInt(this.state.current_material_select)]["total_value"] = dataLMR[parseInt(this.state.current_material_select)]["qty"] * dataLMR[parseInt(this.state.current_material_select)]["unit_price"];
+    dataLMR[parseInt(this.state.current_material_select)]["material_code_doc"] =
+      data_material._id;
+    dataLMR[parseInt(this.state.current_material_select)]["material"] =
+      data_material.MM_Code;
+    dataLMR[parseInt(this.state.current_material_select)]["description"] =
+      data_material.MM_Description;
+    dataLMR[parseInt(this.state.current_material_select)]["unit_price"] =
+      data_material.Unit_Price;
+    dataLMR[parseInt(this.state.current_material_select)]["total_value"] =
+      dataLMR[parseInt(this.state.current_material_select)]["qty"] *
+      dataLMR[parseInt(this.state.current_material_select)]["unit_price"];
     this.setState({ creation_lmr_child_form: dataLMR });
     this.decideToggleMaterial();
   }
@@ -2144,8 +2426,8 @@ class MYASGCreation extends Component {
     dataFilter[parseInt(index)] = value;
     this.setState({ filter_list_package: dataFilter, activePage: 1 }, () => {
       this.onChangeDebouncedPackage(e);
-    })
-  }
+    });
+  };
 
   onChangeDebouncedPackage(e) {
     this.getPackageList();
@@ -2160,11 +2442,16 @@ class MYASGCreation extends Component {
 
     let LMRChild = this.state.creation_lmr_child_form;
     let lmr_form = this.state.lmr_form;
-    lmr_form['total_price'] = lmr_form['total_price'] - LMRChild[index]['total_value'];
+    lmr_form["total_price"] =
+      lmr_form["total_price"] - LMRChild[index]["total_value"];
     LMRChild.splice(index, 1);
-    this.setState({ creation_lmr_child_form: LMRChild }, () => console.log(this.state.creation_lmr_child_form));
-    this.setState({ lmr_form: lmr_form }, () => console.log(this.state.lmr_form));
-  }
+    this.setState({ creation_lmr_child_form: LMRChild }, () =>
+      console.log(this.state.creation_lmr_child_form)
+    );
+    this.setState({ lmr_form: lmr_form }, () =>
+      console.log(this.state.lmr_form)
+    );
+  };
 
   handleMaterialFilter(e) {
     let value = e.target.value;
@@ -2265,7 +2552,7 @@ class MYASGCreation extends Component {
       "fas_id",
       "vendor_name",
       "header_text",
-      "l1_approver"
+      "l1_approver",
     ];
 
     for (let i = 0; i < form_to_validate.length; i++) {
@@ -2282,30 +2569,55 @@ class MYASGCreation extends Component {
         error.slice(0, this.state.count_form_validate.length - 1);
       }
     }
-    if (param === 'select_package') {
-      this.setState({ formvalidate: dataValidate, count_form_validate: error }, () => this.toggleModalPackage());
+    if (param === "select_package") {
+      this.setState(
+        { formvalidate: dataValidate, count_form_validate: error },
+        () => this.toggleModalPackage()
+      );
     } else {
-      this.setState({ formvalidate: dataValidate, count_form_validate: error }, () => this.addChildLMR());
+      this.setState(
+        { formvalidate: dataValidate, count_form_validate: error },
+        () => this.addChildLMR()
+      );
     }
   };
 
   handleSelectPackage = async (e) => {
     this.toggleLoading();
     const value = e.target.value;
-    const response = await postDatatoAPINODE("/package/getManyPackagebyId", { package_data: [value] }, this.state.tokenUser);
-    if (response.data !== undefined && response.status >= 200 && response.status <= 300) {
+    const response = await postDatatoAPINODE(
+      "/package/getManyPackagebyId",
+      { package_data: [value] },
+      this.state.tokenUser
+    );
+    if (
+      response.data !== undefined &&
+      response.status >= 200 &&
+      response.status <= 300
+    ) {
       let selectedPackage = response.data.data;
       let lmrChildAll = [...this.state.creation_lmr_child_form];
       let materialsNotAssignedToVendor = [];
       for (let i = 0; i < selectedPackage.MM_Data.length; i++) {
-        if (selectedPackage.MM_Data[i].Transport === 'no') {
+        if (selectedPackage.MM_Data[i].Transport === "no") {
           if (selectedPackage.MM_Data[i].Vendor_ID !== null) {
-            if (selectedPackage.MM_Data[i].Vendor_ID !== this.state.lmr_form.vendor_code_actual) {
-              materialsNotAssignedToVendor.push(selectedPackage.MM_Data[i].MM_Code);
+            if (
+              selectedPackage.MM_Data[i].Vendor_ID !==
+              this.state.lmr_form.vendor_code_actual
+            ) {
+              materialsNotAssignedToVendor.push(
+                selectedPackage.MM_Data[i].MM_Code
+              );
             }
           } else {
-            if (!selectedPackage.MM_Data[i].Vendor_List.some(e => e.Vendor_Code === this.state.lmr_form.vendor_code_actual)) {
-              materialsNotAssignedToVendor.push(selectedPackage.MM_Data[i].MM_Code);
+            if (
+              !selectedPackage.MM_Data[i].Vendor_List.some(
+                (e) => e.Vendor_Code === this.state.lmr_form.vendor_code_actual
+              )
+            ) {
+              materialsNotAssignedToVendor.push(
+                selectedPackage.MM_Data[i].MM_Code
+              );
             }
           }
         }
@@ -2328,17 +2640,21 @@ class MYASGCreation extends Component {
           m_id_wp: this.state.lmr_child_package.m_id_wp,
           project_name: this.state.lmr_child_package.project_name,
           tax_code: this.state.lmr_child_package.tax_code,
-          total_value: selectedPackage.MM_Data[i].Qty * selectedPackage.MM_Data[i].Price,
+          total_value:
+            selectedPackage.MM_Data[i].Qty * selectedPackage.MM_Data[i].Price,
           unit_price: selectedPackage.MM_Data[i].Price,
           work_status: "Waiting for PR-PO creation",
-          transport: selectedPackage.MM_Data[i].Transport
-        }
+          transport: selectedPackage.MM_Data[i].Transport,
+        };
         lmrChildAll.push(lmrChild);
       }
       if (materialsNotAssignedToVendor.length === 0) {
-        this.setState({ creation_lmr_child_form: lmrChildAll }, () => { this.toggleModalPackage(); this.sumTotalPrice(); });
+        this.setState({ creation_lmr_child_form: lmrChildAll }, () => {
+          this.toggleModalPackage();
+          this.sumTotalPrice();
+        });
       } else {
-        let list_material = materialsNotAssignedToVendor.join(', ');
+        let list_material = materialsNotAssignedToVendor.join(", ");
         const getAlert = () => (
           <SweetAlert
             danger
@@ -2349,11 +2665,15 @@ class MYASGCreation extends Component {
           </SweetAlert>
         );
         this.setState({
-          sweet_alert: getAlert()
+          sweet_alert: getAlert(),
         });
       }
     } else {
-      if (response.response !== undefined && response.response.data !== undefined && response.response.data.error !== undefined) {
+      if (
+        response.response !== undefined &&
+        response.response.data !== undefined &&
+        response.response.data.error !== undefined
+      ) {
         if (response.response.data.error.message !== undefined) {
           let message = response.response.data.error.message;
           const getAlert = () => (
@@ -2367,7 +2687,7 @@ class MYASGCreation extends Component {
           );
 
           this.setState({
-            sweet_alert: getAlert()
+            sweet_alert: getAlert(),
           });
         } else {
           let message = response.response.data.error;
@@ -2382,28 +2702,24 @@ class MYASGCreation extends Component {
           );
 
           this.setState({
-            sweet_alert: getAlert()
+            sweet_alert: getAlert(),
           });
         }
       } else {
-        let message = 'Error!';
+        let message = "Error!";
         const getAlert = () => (
-          <SweetAlert
-            danger
-            title="Error!"
-            onConfirm={() => this.hideAlert()}
-          >
+          <SweetAlert danger title="Error!" onConfirm={() => this.hideAlert()}>
             {message}
           </SweetAlert>
         );
 
         this.setState({
-          sweet_alert: getAlert()
+          sweet_alert: getAlert(),
         });
       }
     }
     this.toggleLoading();
-  }
+  };
 
   findVendorName = (vendor_id) => {
     let vendordata = this.state.vendor_list.find(
@@ -2414,21 +2730,35 @@ class MYASGCreation extends Component {
     } else {
       return null;
     }
-  }
+  };
 
   handleCheckMaterialPackage = async (e) => {
     this.toggleLoading();
     const value = e.target.value;
-    const response = await postDatatoAPINODE("/package/getManyPackagebyId", { package_data: [value] }, this.state.tokenUser);
-    if (response.data !== undefined && response.status >= 200 && response.status <= 300) {
+    const response = await postDatatoAPINODE(
+      "/package/getManyPackagebyId",
+      { package_data: [value] },
+      this.state.tokenUser
+    );
+    if (
+      response.data !== undefined &&
+      response.status >= 200 &&
+      response.status <= 300
+    ) {
       let selectedPackage = response.data.data;
       let allMaterials = [];
       for (let i = 0; i < selectedPackage.MM_Data.length; i++) {
         let vendors = [];
         if (selectedPackage.MM_Data[i].Vendor_ID !== null) {
-          vendors.push(this.findVendorName(selectedPackage.MM_Data[i].Vendor_ID));
+          vendors.push(
+            this.findVendorName(selectedPackage.MM_Data[i].Vendor_ID)
+          );
         } else {
-          for (let x = 0; x < selectedPackage.MM_Data[i].Vendor_List.length; x++) {
+          for (
+            let x = 0;
+            x < selectedPackage.MM_Data[i].Vendor_List.length;
+            x++
+          ) {
             vendors.push(selectedPackage.MM_Data[i].Vendor_List[x].Vendor_Name);
           }
         }
@@ -2437,20 +2767,30 @@ class MYASGCreation extends Component {
           Description: selectedPackage.MM_Data[i].Description,
           Price: selectedPackage.MM_Data[i].Price,
           Qty: selectedPackage.MM_Data[i].Qty,
-          Vendors: vendors.join(', ')
-        }
-        allMaterials.push(material)
+          Vendors: vendors.join(", "),
+        };
+        allMaterials.push(material);
       }
       let check_material_package_list = {
         Package_Id: selectedPackage.Package_Id,
         Package_Name: selectedPackage.Package_Name,
         Region: selectedPackage.Region,
-        Materials: allMaterials
-      }
-      this.setState({ check_material_package_list: check_material_package_list, totalDataCheckMaterialPackage: allMaterials.length }, () => this.toggleModalCheckMaterialPackage());
+        Materials: allMaterials,
+      };
+      this.setState(
+        {
+          check_material_package_list: check_material_package_list,
+          totalDataCheckMaterialPackage: allMaterials.length,
+        },
+        () => this.toggleModalCheckMaterialPackage()
+      );
       this.toggleLoading();
     } else {
-      if (response.response !== undefined && response.response.data !== undefined && response.response.data.error !== undefined) {
+      if (
+        response.response !== undefined &&
+        response.response.data !== undefined &&
+        response.response.data.error !== undefined
+      ) {
         if (response.response.data.error.message !== undefined) {
           this.toggleLoading();
           let message = response.response.data.error.message;
@@ -2465,7 +2805,7 @@ class MYASGCreation extends Component {
           );
 
           this.setState({
-            sweet_alert: getAlert()
+            sweet_alert: getAlert(),
           });
         } else {
           this.toggleLoading();
@@ -2481,28 +2821,24 @@ class MYASGCreation extends Component {
           );
 
           this.setState({
-            sweet_alert: getAlert()
+            sweet_alert: getAlert(),
           });
         }
       } else {
         this.toggleLoading();
-        let message = 'Error!';
+        let message = "Error!";
         const getAlert = () => (
-          <SweetAlert
-            danger
-            title="Error!"
-            onConfirm={() => this.hideAlert()}
-          >
+          <SweetAlert danger title="Error!" onConfirm={() => this.hideAlert()}>
             {message}
           </SweetAlert>
         );
 
         this.setState({
-          sweet_alert: getAlert()
+          sweet_alert: getAlert(),
         });
       }
     }
-  }
+  };
 
   render() {
     const matfilter = this.state.matfilter;
@@ -2630,7 +2966,9 @@ class MYASGCreation extends Component {
                           value={this.state.lmr_form.item_category}
                           onChange={this.handleChangeFormLMR}
                         >
-                          <option value="" disabled selected hidden>Select Item Category</option>
+                          <option value="" disabled selected hidden>
+                            Select Item Category
+                          </option>
                           <option value="Service">Service</option>
                           <option value="3PP">3PP</option>
                         </Input>
@@ -2645,7 +2983,11 @@ class MYASGCreation extends Component {
                           id="lmr_type"
                           value={this.state.lmr_form.lmr_type}
                           onChange={this.handleChangeFormLMR}
-                          style={this.state.formvalidate.lmr_type === false ? { borderColor: "red" } : {}}
+                          style={
+                            this.state.formvalidate.lmr_type === false
+                              ? { borderColor: "red" }
+                              : {}
+                          }
                         >
                           <option value="" disabled selected hidden>
                             Select LMR Type
@@ -2708,17 +3050,33 @@ class MYASGCreation extends Component {
                           id="gl_account"
                           value={this.state.lmr_form.gl_account_actual}
                           onChange={this.handleChangeFormLMR}
-                          style={this.state.formvalidate.gl_account === false ? { borderColor: "red" } : {}}
-                          disabled={this.state.creation_lmr_child_form.length > 0}
+                          style={
+                            this.state.formvalidate.gl_account === false
+                              ? { borderColor: "red" }
+                              : {}
+                          }
+                          disabled={
+                            this.state.creation_lmr_child_form.length > 0
+                          }
                         >
-                          <option value="" disabled selected hidden>Select GL Account</option>
-                          {this.state.lmr_form.lmr_type === 'Per Site' && (
+                          <option value="" disabled selected hidden>
+                            Select GL Account
+                          </option>
+                          {this.state.lmr_form.lmr_type === "Per Site" && (
                             <>
-                              <option value="ITC + transport - 402603">ITC + transport - 402603</option>
+                              <option value="ITC + transport - 402603">
+                                ITC + transport - 402603
+                              </option>
                               <option value="NDO - 402603">NDO - 402603</option>
-                              <option value="Survey - 402603">Survey - 402603</option>
-                              <option value="Integration - 402603">Integration - 402603</option>
-                              <option value="Transport - 402603">Transport - 402603</option>
+                              <option value="Survey - 402603">
+                                Survey - 402603
+                              </option>
+                              <option value="Integration - 402603">
+                                Integration - 402603
+                              </option>
+                              <option value="Transport - 402603">
+                                Transport - 402603
+                              </option>
                             </>
                           )}
                         </Input>
@@ -2735,9 +3093,15 @@ class MYASGCreation extends Component {
                           id="fas_id"
                           value={this.state.lmr_form.fas_id}
                           onChange={this.handleChangeFormLMR}
-                          style={this.state.formvalidate.fas_id === false ? { borderColor: "red" } : {}}
+                          style={
+                            this.state.formvalidate.fas_id === false
+                              ? { borderColor: "red" }
+                              : {}
+                          }
                         >
-                          <option value="" disabled selected hidden>Select Fas</option>
+                          <option value="" disabled selected hidden>
+                            Select Fas
+                          </option>
                           {this.state.list_fas.map((fas) => (
                             <option value={fas}>{fas}</option>
                           ))}
@@ -2753,7 +3117,11 @@ class MYASGCreation extends Component {
                           id="header_text"
                           value={this.state.lmr_form.header_text}
                           onChange={this.handleChangeFormLMR}
-                          style={this.state.formvalidate.header_text === false ? { borderColor: "red" } : {}}
+                          style={
+                            this.state.formvalidate.header_text === false
+                              ? { borderColor: "red" }
+                              : {}
+                          }
                         />
                       </FormGroup>
                     </Col>
@@ -2766,8 +3134,14 @@ class MYASGCreation extends Component {
                           id="vendor_name"
                           value={this.state.lmr_form.vendor_code_actual}
                           onChange={this.handleChangeVendor}
-                          style={this.state.formvalidate.vendor_name === false ? { borderColor: "red" } : {}}
-                          disabled={this.state.creation_lmr_child_form.length > 0}
+                          style={
+                            this.state.formvalidate.vendor_name === false
+                              ? { borderColor: "red" }
+                              : {}
+                          }
+                          disabled={
+                            this.state.creation_lmr_child_form.length > 0
+                          }
                         >
                           <option value="" disabled selected hidden>
                             Select Vendor Name
@@ -2842,9 +3216,15 @@ class MYASGCreation extends Component {
                           id="l1_approver"
                           value={this.state.lmr_form.l1_approver}
                           onChange={this.handleChangeFormLMR}
-                          style={this.state.formvalidate.l1_approver === false ? { borderColor: "red" } : {}}
+                          style={
+                            this.state.formvalidate.l1_approver === false
+                              ? { borderColor: "red" }
+                              : {}
+                          }
                         >
-                          <option disabled selected hidden>Select L1 Approver</option>
+                          <option disabled selected hidden>
+                            Select L1 Approver
+                          </option>
                           <option value="ESLSBUE">ESLSBUE</option>
                           <option value="EKHXPHS">EKHXPHS</option>
                         </Input>
@@ -2860,7 +3240,9 @@ class MYASGCreation extends Component {
                           value={this.state.lmr_form.l2_approver}
                           onChange={this.handleChangeFormLMR}
                         >
-                          <option disabled selected hidden>Select L2 Approver</option>
+                          <option disabled selected hidden>
+                            Select L2 Approver
+                          </option>
                           <option value="ERAMZUL">ERAMZUL</option>
                         </Input>
                       </FormGroup>
@@ -2875,7 +3257,9 @@ class MYASGCreation extends Component {
                           value={this.state.lmr_form.l3_approver}
                           onChange={this.handleChangeFormLMR}
                         >
-                          <option disabled selected hidden>Select L3 Approver</option>
+                          <option disabled selected hidden>
+                            Select L3 Approver
+                          </option>
                           <option value="EILGAGS">EILGAGS</option>
                         </Input>
                       </FormGroup>
@@ -2890,7 +3274,9 @@ class MYASGCreation extends Component {
                           value={this.state.lmr_form.l4_approver}
                           onChange={this.handleChangeFormLMR}
                         >
-                          <option disabled selected hidden>Select L4 Approver</option>
+                          <option disabled selected hidden>
+                            Select L4 Approver
+                          </option>
                           <option value="QDAVHAG">QDAVHAG</option>
                         </Input>
                       </FormGroup>
@@ -2905,7 +3291,9 @@ class MYASGCreation extends Component {
                           value={this.state.lmr_form.l5_approver}
                           onChange={this.handleChangeFormLMR}
                         >
-                          <option disabled selected hidden>Select L5 Approver</option>
+                          <option disabled selected hidden>
+                            Select L5 Approver
+                          </option>
                           <option value="TEIMIR">TEIMIR</option>
                         </Input>
                       </FormGroup>
@@ -2917,11 +3305,17 @@ class MYASGCreation extends Component {
                 <hr className="upload-line--lmr"></hr>
                 {this.state.creation_lmr_child_form.map((lmr, i) => (
                   <Form>
-                    {lmr.transport === "yes" && (<Alert color="danger" pill>Please Select Transport Material!</Alert>)}
+                    {lmr.transport === "yes" && (
+                      <Alert color="danger" pill>
+                        Please Select Transport Material!
+                      </Alert>
+                    )}
                     <Row form>
                       <Col md={2}>
                         <FormGroup>
-                          <Label>WP ID <small>(type min. 3 characters)</small></Label>
+                          <Label>
+                            WP ID <small>(type min. 3 characters)</small>
+                          </Label>
                           <AsyncSelect
                             cacheOptions
                             defaultOptions
@@ -2943,7 +3337,11 @@ class MYASGCreation extends Component {
                             value={lmr.cdid}
                             onChange={this.handleChangeFormLMRChild}
                             disabled
-                            style={lmr.cdid === '' || lmr.cdid === null ? { border: "2px solid red" } : {}}
+                            style={
+                              lmr.cdid === "" || lmr.cdid === null
+                                ? { border: "2px solid red" }
+                                : {}
+                            }
                           />
                         </FormGroup>
                       </Col>
@@ -3009,7 +3407,11 @@ class MYASGCreation extends Component {
                             value={lmr.nw}
                             onChange={this.handleChangeFormLMRChild}
                             disabled
-                            style={lmr.nw === '' || lmr.nw === null ? { border: "2px solid red" } : {}}
+                            style={
+                              lmr.nw === "" || lmr.nw === null
+                                ? { border: "2px solid red" }
+                                : {}
+                            }
                           />
                         </FormGroup>
                       </Col>
@@ -3022,9 +3424,9 @@ class MYASGCreation extends Component {
                             id={i + " /// activity"}
                             value={lmr.activity}
                             onChange={this.handleChangeFormLMRChild}
-                          // disabled={
-                          //   this.state.lmr_form.lmr_type === "Cost Collector"
-                          // }
+                            // disabled={
+                            //   this.state.lmr_form.lmr_type === "Cost Collector"
+                            // }
                           />
                         </FormGroup>
                       </Col>
@@ -3077,8 +3479,12 @@ class MYASGCreation extends Component {
                             id={i + " /// material"}
                             value={lmr.material}
                             onClick={() => this.decideToggleMaterial(i)}
-                            style={lmr.blank_material === 'yes' ? { border: "2px solid red" } : {}}
-                          // onChange={this.handleChangeFormLMRChild}
+                            style={
+                              lmr.blank_material === "yes"
+                                ? { border: "2px solid red" }
+                                : {}
+                            }
+                            // onChange={this.handleChangeFormLMRChild}
                           />
                         </FormGroup>
                       </Col>
@@ -3118,7 +3524,11 @@ class MYASGCreation extends Component {
                             id={i + " /// qty"}
                             value={lmr.qty}
                             onChange={this.handleChangeFormLMRChild}
-                            style={lmr.zero_qty === 'yes' ? { border: "2px solid red" } : {}}
+                            style={
+                              lmr.zero_qty === "yes"
+                                ? { border: "2px solid red" }
+                                : {}
+                            }
                           />
                         </FormGroup>
                       </Col>
@@ -3145,7 +3555,9 @@ class MYASGCreation extends Component {
                             value={lmr.currency}
                             onChange={this.handleChangeFormLMRChild}
                           >
-                            <option value="MYR" selected>MYR</option>
+                            <option value="MYR" selected>
+                              MYR
+                            </option>
                             <option value="USD">USD</option>
                             <option value="EUR">EUR</option>
                           </Input>
@@ -3178,10 +3590,19 @@ class MYASGCreation extends Component {
                   </Form>
                 ))}
                 <div>
-                  <Button color="primary" size="sm" onClick={this.addLMR} style={{ marginRight: 8 }}>
+                  <Button
+                    color="primary"
+                    size="sm"
+                    onClick={this.addLMR}
+                    style={{ marginRight: 8 }}
+                  >
                     <i className="fa fa-plus"></i>&nbsp;Add LMR Child
                   </Button>
-                  <Button color="primary" size="sm" onClick={() => this.handleCheckForm('select_package')}>
+                  <Button
+                    color="primary"
+                    size="sm"
+                    onClick={() => this.handleCheckForm("select_package")}
+                  >
                     <i className="fa fa-plus"></i>&nbsp;Add Package
                   </Button>
                 </div>
@@ -3238,7 +3659,9 @@ class MYASGCreation extends Component {
                       value={matfilter.region}
                       onChange={this.handleMaterialFilter}
                     >
-                      <option value="" disabled selected hidden>Select Region</option>
+                      <option value="" disabled selected hidden>
+                        Select Region
+                      </option>
                       <option value="All">All</option>
                       <option value="KV">KV</option>
                       <option value="SN">SN</option>
@@ -3252,7 +3675,13 @@ class MYASGCreation extends Component {
               </Row>
             </div>
             <div class="table-container">
-              <Table responsive striped bordered size="sm" id="asg-detail-table">
+              <Table
+                responsive
+                striped
+                bordered
+                size="sm"
+                id="asg-detail-table"
+              >
                 <thead>
                   <tr>
                     <th rowSpan="2">Action</th>
@@ -3265,9 +3694,7 @@ class MYASGCreation extends Component {
                     <th>UoM</th>
                     <th>Unit Price</th>
                   </tr>
-                  <tr>
-                    {this.loopSearchBar()}
-                  </tr>
+                  <tr>{this.loopSearchBar()}</tr>
                 </thead>
                 <tbody>
                   {this.state.material_list !== null &&
@@ -3341,7 +3768,9 @@ class MYASGCreation extends Component {
                       value={matfilter.region}
                       onChange={this.handleMaterialFilter}
                     >
-                      <option value="" disabled selected hidden>Select Region</option>
+                      <option value="" disabled selected hidden>
+                        Select Region
+                      </option>
                       <option value="All">All</option>
                       <option value="KV">KV</option>
                       <option value="SN">SN</option>
@@ -3355,7 +3784,13 @@ class MYASGCreation extends Component {
               </Row>
             </div>
             <div class="table-container">
-              <Table responsive striped bordered size="sm" id="asg-detail-table">
+              <Table
+                responsive
+                striped
+                bordered
+                size="sm"
+                id="asg-detail-table"
+              >
                 <thead>
                   <tr>
                     <th rowSpan="2">Action</th>
@@ -3368,9 +3803,7 @@ class MYASGCreation extends Component {
                     <th>UoM</th>
                     <th>Unit Price</th>
                   </tr>
-                  <tr>
-                    {this.loopSearchBarNRO()}
-                  </tr>
+                  <tr>{this.loopSearchBarNRO()}</tr>
                 </thead>
                 <tbody>
                   {this.state.material_list !== null &&
@@ -3443,7 +3876,9 @@ class MYASGCreation extends Component {
                       value={matfilter.region}
                       onChange={this.handleMaterialFilter}
                     >
-                      <option value="" disabled selected hidden>Select Region</option>
+                      <option value="" disabled selected hidden>
+                        Select Region
+                      </option>
                       <option value="All">All</option>
                       <option value="KV">KV</option>
                       <option value="SN">SN</option>
@@ -3457,7 +3892,13 @@ class MYASGCreation extends Component {
               </Row>
             </div>
             <div class="table-container">
-              <Table responsive striped bordered size="sm" id="asg-detail-table">
+              <Table
+                responsive
+                striped
+                bordered
+                size="sm"
+                id="asg-detail-table"
+              >
                 <thead>
                   <tr>
                     <th rowSpan="2">Action</th>
@@ -3470,9 +3911,7 @@ class MYASGCreation extends Component {
                     <th>UoM</th>
                     <th>Unit Price</th>
                   </tr>
-                  <tr>
-                    {this.loopSearchBar()}
-                  </tr>
+                  <tr>{this.loopSearchBar()}</tr>
                 </thead>
                 <tbody>
                   {this.state.material_list !== null &&
@@ -3545,7 +3984,9 @@ class MYASGCreation extends Component {
                       value={matfilter.region}
                       onChange={this.handleMaterialFilter}
                     >
-                      <option value="" disabled selected hidden>Select Region</option>
+                      <option value="" disabled selected hidden>
+                        Select Region
+                      </option>
                       <option value="All">All</option>
                       <option value="KV">KV</option>
                       <option value="SN">SN</option>
@@ -3559,7 +4000,13 @@ class MYASGCreation extends Component {
               </Row>
             </div>
             <div class="table-container">
-              <Table responsive striped bordered size="sm" id="asg-detail-table">
+              <Table
+                responsive
+                striped
+                bordered
+                size="sm"
+                id="asg-detail-table"
+              >
                 <thead>
                   <tr>
                     <th rowSpan="2">Action</th>
@@ -3572,9 +4019,7 @@ class MYASGCreation extends Component {
                     <th>UoM</th>
                     <th>Unit Price</th>
                   </tr>
-                  <tr>
-                    {this.loopSearchBar()}
-                  </tr>
+                  <tr>{this.loopSearchBar()}</tr>
                 </thead>
                 <tbody>
                   {this.state.material_list !== null &&
@@ -3647,7 +4092,9 @@ class MYASGCreation extends Component {
                       value={matfilter.region}
                       onChange={this.handleMaterialFilter}
                     >
-                      <option value="" disabled selected hidden>Select Region</option>
+                      <option value="" disabled selected hidden>
+                        Select Region
+                      </option>
                       <option value="All">All</option>
                       <option value="KV">KV</option>
                       <option value="SN">SN</option>
@@ -3661,7 +4108,13 @@ class MYASGCreation extends Component {
               </Row>
             </div>
             <div class="table-container">
-              <Table responsive striped bordered size="sm" id="asg-detail-table">
+              <Table
+                responsive
+                striped
+                bordered
+                size="sm"
+                id="asg-detail-table"
+              >
                 <thead>
                   <tr>
                     <th rowSpan="2">Action</th>
@@ -3674,9 +4127,7 @@ class MYASGCreation extends Component {
                     <th>UoM</th>
                     <th>Unit Price</th>
                   </tr>
-                  <tr>
-                    {this.loopSearchBar()}
-                  </tr>
+                  <tr>{this.loopSearchBar()}</tr>
                 </thead>
                 <tbody>
                   {this.state.material_list !== null &&
@@ -3749,7 +4200,9 @@ class MYASGCreation extends Component {
                       value={matfilter.region}
                       onChange={this.handleMaterialFilter}
                     >
-                      <option value="" disabled selected hidden>Select Region</option>
+                      <option value="" disabled selected hidden>
+                        Select Region
+                      </option>
                       <option value="All">All</option>
                       <option value="KV">KV</option>
                       <option value="SN">SN</option>
@@ -3763,7 +4216,13 @@ class MYASGCreation extends Component {
               </Row>
             </div>
             <div class="table-container">
-              <Table responsive striped bordered size="sm" id="asg-detail-table">
+              <Table
+                responsive
+                striped
+                bordered
+                size="sm"
+                id="asg-detail-table"
+              >
                 <thead>
                   <tr>
                     <th rowSpan="2">Action</th>
@@ -3776,9 +4235,7 @@ class MYASGCreation extends Component {
                     <th>UoM</th>
                     <th>Unit Price</th>
                   </tr>
-                  <tr>
-                    {this.loopSearchBar()}
-                  </tr>
+                  <tr>{this.loopSearchBar()}</tr>
                 </thead>
                 <tbody>
                   {this.state.material_list !== null &&
@@ -3851,7 +4308,9 @@ class MYASGCreation extends Component {
                       value={matfilter.region}
                       onChange={this.handleMaterialFilter}
                     >
-                      <option value="" disabled selected hidden>Select Region</option>
+                      <option value="" disabled selected hidden>
+                        Select Region
+                      </option>
                       <option value="All">All</option>
                       <option value="KV">KV</option>
                       <option value="SN">SN</option>
@@ -3865,7 +4324,13 @@ class MYASGCreation extends Component {
               </Row>
             </div>
             <div class="table-container">
-              <Table responsive striped bordered size="sm" id="asg-detail-table">
+              <Table
+                responsive
+                striped
+                bordered
+                size="sm"
+                id="asg-detail-table"
+              >
                 <thead>
                   <tr>
                     <th rowSpan="2">Action</th>
@@ -3878,9 +4343,7 @@ class MYASGCreation extends Component {
                     <th>UoM</th>
                     <th>Unit Price</th>
                   </tr>
-                  <tr>
-                    {this.loopSearchBar()}
-                  </tr>
+                  <tr>{this.loopSearchBar()}</tr>
                 </thead>
                 <tbody>
                   {this.state.material_list !== null &&
@@ -3944,7 +4407,13 @@ class MYASGCreation extends Component {
               <Row md={1}>&nbsp;&nbsp;&nbsp;</Row>
             </div>
             <div class="table-container">
-              <Table responsive striped bordered size="sm" id="asg-detail-table">
+              <Table
+                responsive
+                striped
+                bordered
+                size="sm"
+                id="asg-detail-table"
+              >
                 <thead>
                   <tr>
                     <th rowSpan="2">Action</th>
@@ -3958,9 +4427,7 @@ class MYASGCreation extends Component {
                     <th>Created_By</th>
                     <th>Status_Price_in_SAP</th>
                   </tr>
-                  <tr>
-                    {this.loopSearchBarHW()}
-                  </tr>
+                  <tr>{this.loopSearchBarHW()}</tr>
                 </thead>
                 <tbody>
                   {this.state.material_list !== null &&
@@ -4025,7 +4492,13 @@ class MYASGCreation extends Component {
               <Row md={1}>&nbsp;&nbsp;&nbsp;</Row>
             </div>
             <div class="table-container">
-              <Table responsive striped bordered size="sm" id="asg-detail-table">
+              <Table
+                responsive
+                striped
+                bordered
+                size="sm"
+                id="asg-detail-table"
+              >
                 <thead>
                   <tr>
                     <th rowSpan="2">Action</th>
@@ -4036,9 +4509,7 @@ class MYASGCreation extends Component {
                     <th>Currency</th>
                     <th>Remarks</th>
                   </tr>
-                  <tr>
-                    {this.loopSearchBarARP()}
-                  </tr>
+                  <tr>{this.loopSearchBarARP()}</tr>
                 </thead>
                 <tbody>
                   {this.state.material_list !== null &&
@@ -4121,7 +4592,9 @@ class MYASGCreation extends Component {
               <Row>
                 <Col md={3}>
                   <FormGroup>
-                    <Label>WP ID <small>(type min. 3 characters)</small></Label>
+                    <Label>
+                      WP ID <small>(type min. 3 characters)</small>
+                    </Label>
                     <AsyncSelect
                       cacheOptions
                       defaultOptions
@@ -4256,47 +4729,59 @@ class MYASGCreation extends Component {
               <Table responsive striped bordered size="sm">
                 <thead>
                   <tr>
-                    <th rowSpan="2" style={{ verticalAlign: "middle", minWidth: 210 }}>Action</th>
+                    <th
+                      rowSpan="2"
+                      style={{ verticalAlign: "middle", minWidth: 210 }}
+                    >
+                      Action
+                    </th>
                     <th>Package ID</th>
                     <th>Package Name</th>
                     <th>Region</th>
                     <th>MM Type</th>
                   </tr>
-                  <tr>
-                    {this.loopSearchBarPackage()}
-                  </tr>
+                  <tr>{this.loopSearchBarPackage()}</tr>
                 </thead>
                 <tbody>
-                  {
-                    this.state.package_list.map((e) => (
-                      <tr>
-                        <td>
-                          <Button
-                            color="success"
-                            size="sm"
-                            value={e._id}
-                            onClick={this.handleSelectPackage}
-                            disabled={this.state.lmr_child_package.wp_id === '' || this.state.lmr_child_package.wp_id === null}
-                          >
-                            <i className="fa fa-check-square" style={{ marginRight: "8px" }}></i>Select
-                          </Button>
-                          <Button
-                            color="primary"
-                            size="sm"
-                            value={e._id}
-                            onClick={this.handleCheckMaterialPackage}
-                            style={{ marginLeft: 8 }}
-                          >
-                            <i className="fa fa-cubes" style={{ marginRight: "8px" }}></i>Check Material
-                          </Button>
-                        </td>
-                        <td>{e.Package_Id}</td>
-                        <td>{e.Package_Name}</td>
-                        <td>{e.Region}</td>
-                        <td>{e.Material_Sub_Type}</td>
-                      </tr>
-                    ))
-                  }
+                  {this.state.package_list.map((e) => (
+                    <tr>
+                      <td>
+                        <Button
+                          color="success"
+                          size="sm"
+                          value={e._id}
+                          onClick={this.handleSelectPackage}
+                          disabled={
+                            this.state.lmr_child_package.wp_id === "" ||
+                            this.state.lmr_child_package.wp_id === null
+                          }
+                        >
+                          <i
+                            className="fa fa-check-square"
+                            style={{ marginRight: "8px" }}
+                          ></i>
+                          Select
+                        </Button>
+                        <Button
+                          color="primary"
+                          size="sm"
+                          value={e._id}
+                          onClick={this.handleCheckMaterialPackage}
+                          style={{ marginLeft: 8 }}
+                        >
+                          <i
+                            className="fa fa-cubes"
+                            style={{ marginRight: "8px" }}
+                          ></i>
+                          Check Material
+                        </Button>
+                      </td>
+                      <td>{e.Package_Id}</td>
+                      <td>{e.Package_Name}</td>
+                      <td>{e.Region}</td>
+                      <td>{e.Material_Sub_Type}</td>
+                    </tr>
+                  ))}
                 </tbody>
               </Table>
             </div>
@@ -4327,9 +4812,16 @@ class MYASGCreation extends Component {
           <ModalBody>
             <div class="table-container">
               <div>
-                <strong>Package ID</strong> : {this.state.check_material_package_list.Package_Id}<br />
-                <strong>Package Name</strong> : {this.state.check_material_package_list.Package_Name}<br />
-                <strong>Region</strong> : {this.state.check_material_package_list.Region}<br /><br />
+                <strong>Package ID</strong> :{" "}
+                {this.state.check_material_package_list.Package_Id}
+                <br />
+                <strong>Package Name</strong> :{" "}
+                {this.state.check_material_package_list.Package_Name}
+                <br />
+                <strong>Region</strong> :{" "}
+                {this.state.check_material_package_list.Region}
+                <br />
+                <br />
               </div>
               <Table responsive striped bordered size="sm">
                 <thead>
@@ -4342,18 +4834,19 @@ class MYASGCreation extends Component {
                   </tr>
                 </thead>
                 <tbody>
-                  {
-                    this.state.check_material_package_list.Materials !== undefined &&
-                    this.state.check_material_package_list.Materials.map((e) => (
-                      <tr>
-                        <td>{e.MM_Code}</td>
-                        <td>{e.Description}</td>
-                        <td>{e.Price}</td>
-                        <td>{e.Qty}</td>
-                        <td>{e.Vendors}</td>
-                      </tr>
-                    ))
-                  }
+                  {this.state.check_material_package_list.Materials !==
+                    undefined &&
+                    this.state.check_material_package_list.Materials.map(
+                      (e) => (
+                        <tr>
+                          <td>{e.MM_Code}</td>
+                          <td>{e.Description}</td>
+                          <td>{e.Price}</td>
+                          <td>{e.Qty}</td>
+                          <td>{e.Vendors}</td>
+                        </tr>
+                      )
+                    )}
                 </tbody>
               </Table>
             </div>
@@ -4368,7 +4861,10 @@ class MYASGCreation extends Component {
             />
           </ModalBody>
           <ModalFooter>
-            <Button color="secondary" onClick={this.toggleModalCheckMaterialPackage}>
+            <Button
+              color="secondary"
+              onClick={this.toggleModalCheckMaterialPackage}
+            >
               Close
             </Button>
           </ModalFooter>

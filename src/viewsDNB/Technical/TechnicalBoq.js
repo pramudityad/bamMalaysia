@@ -31,6 +31,7 @@ import jsonData from "./TechnicalNewFormat.js";
 
 import ModalDelete from "../components/ModalDelete";
 import { convertDateFormatfull } from "../../helper/basicFunction";
+// import { convertDateFormatfull } from "../../helper/asyncFunction";
 
 const API_EMAIL =
   "https://prod-37.westeurope.logic.azure.com:443/workflows/7700be82ef7b4bdab6eb986e970e2fc8/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=wndx4N_qNLEZ9fpCR73BBR-5T1QHjx7xxshdyrvJ20c";
@@ -297,7 +298,10 @@ class TechnicalBoq extends Component {
       note_version: null,
       list_commercial_tech: [],
       summaryQTYTech: [],
-      project_all: [],
+      project_all: [
+        { _id: "012619283asd", Project: "TEST DNB1" },
+        { _id: "12398703asd", Project: "TEST DNB2" },
+      ],
       project_select: null,
       project_name_selected: null,
       progress_count: null,
@@ -1160,7 +1164,7 @@ class TechnicalBoq extends Component {
   componentDidMount() {
     // this.getAllSites();
     if (this.props.match.params.id === undefined) {
-      this.getProjectAll();
+      // this.getProjectAll();
     } else {
       // this.setState({data_tech_boq : jsonData.data, data_tech_boq_sites : jsonData.data.techBoqSite}, () => {
       //   this.viewTechBoqData(jsonData.data.techBoqSite);

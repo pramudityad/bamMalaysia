@@ -143,6 +143,12 @@ export default {
       ],
     },
     {
+      name: "Package",
+      url: "/package",
+      icon: "icon-list",
+      roles: ["BAM-CPM", "BAM-GR PA"],
+    },
+    {
       name: "Material Request",
       icon: "fas fa-tools",
       roles: [

@@ -304,7 +304,8 @@ class TssrBOM extends Component {
   }
 
   componentDidMount() {
-    this.getDataProject();
+    // this.getDataProject();
+    this.filterDataProject();
     // this.getDataTech();
   }
 
@@ -335,18 +336,21 @@ class TssrBOM extends Component {
   }
 
   filterDataProject = (inputValue) => {
-    const list = [];
+    const list = [
+      { label: "ISAT AOP 2019", value: "5d11cf5506501eba67038d99" },
+      { label: "PROJECT TEST DNB1", value: "611ca693b89f17df309c1b1b" },
+    ];
     this.state.list_project.map((i) =>
       list.push({ label: i.Project, value: i._id })
     );
     this.setState({ list_project_selection: list });
-    if (inputValue.length === 0) {
-      return list;
-    } else {
-      return this.state.list_project_selection.filter((i) =>
-        i.label.toLowerCase().includes(inputValue.toLowerCase())
-      );
-    }
+    // if (inputValue.length === 0) {
+    //   return list;
+    // } else {
+    return this.state.list_project_selection.filter((i) =>
+      i.label.toLowerCase().includes(inputValue.toLowerCase())
+    );
+    // }
   };
 
   prepareView(dataSiteTech) {
@@ -576,7 +580,9 @@ class TssrBOM extends Component {
       data: dataTSSRforGet,
     }).then((res) => {
       if (res.data !== undefined) {
-        this.setState({ data_tssr_selected: res.data.psData });
+        this.setState({ data_tssr_selected: res.data.psData }, () =>
+          console.log("data_tssr_selected ", this.state.data_tssr_selected)
+        );
       } else {
         if (
           res.response !== undefined &&
