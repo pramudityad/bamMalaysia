@@ -124,68 +124,68 @@ class MatHW extends React.PureComponent {
       this.state.filter_list["Vendor_ID"] !== undefined &&
       filter_array.push(
         '"Vendor_ID":{"$regex" : "' +
-          this.state.filter_list["Vendor_ID"] +
-          '", "$options" : "i"}'
+        this.state.filter_list["Vendor_ID"] +
+        '", "$options" : "i"}'
       );
     this.state.filter_list["Vendor_Name"] !== null &&
       this.state.filter_list["Vendor_Name"] !== undefined &&
       filter_array.push(
         '"Vendor_Name":{"$regex" : "' +
-          this.state.filter_list["Vendor_Name"] +
-          '", "$options" : "i"}'
+        this.state.filter_list["Vendor_Name"] +
+        '", "$options" : "i"}'
       );
     this.state.filter_list["MM_Code"] !== null &&
       this.state.filter_list["MM_Code"] !== undefined &&
       filter_array.push(
         '"MM_Code":{"$regex" : "' +
-          this.state.filter_list["MM_Code"] +
-          '", "$options" : "i"}'
+        this.state.filter_list["MM_Code"] +
+        '", "$options" : "i"}'
       );
     this.state.filter_list["MM_Description"] !== null &&
       this.state.filter_list["MM_Description"] !== undefined &&
       filter_array.push(
         '"MM_Description":{"$regex" : "' +
-          this.state.filter_list["MM_Description"] +
-          '", "$options" : "i"}'
+        this.state.filter_list["MM_Description"] +
+        '", "$options" : "i"}'
       );
     this.state.filter_list["Unit_Price"] !== null &&
       this.state.filter_list["Unit_Price"] !== undefined &&
       filter_array.push(
         '"Unit_Price":{"$regex" : "' +
-          this.state.filter_list["Unit_Price"] +
-          '", "$options" : "i"}'
+        this.state.filter_list["Unit_Price"] +
+        '", "$options" : "i"}'
       );
     this.state.filter_list["Currency"] !== null &&
       this.state.filter_list["Currency"] !== undefined &&
       filter_array.push(
         '"Currency":{"$regex" : "' +
-          this.state.filter_list["Currency"] +
-          '", "$options" : "i"}'
+        this.state.filter_list["Currency"] +
+        '", "$options" : "i"}'
       );
     this.state.filter_list["Valid_To"] !== null &&
       this.state.filter_list["Valid_To"] !== undefined &&
       filter_array.push(
         '"Valid_To":{"$regex" : "' +
-          this.state.filter_list["Valid_To"] +
-          '", "$options" : "i"}'
+        this.state.filter_list["Valid_To"] +
+        '", "$options" : "i"}'
       );
     this.state.filter_list["Created_On"] !== null &&
       this.state.filter_list["Created_On"] !== undefined &&
       filter_array.push(
         '"Created_On":{"$regex" : "' +
-          this.state.filter_list["Created_On"] +
-          '", "$options" : "i"}'
+        this.state.filter_list["Created_On"] +
+        '", "$options" : "i"}'
       );
 
     let whereAnd = "{" + filter_array.join(",") + "}";
 
     getDatafromAPINODE(
       "/mmCode/getMm?q=" +
-        whereAnd +
-        "&max_results=" +
-        this.state.perPage +
-        "&page=" +
-        this.state.activePage,
+      whereAnd +
+      "&max_results=" +
+      this.state.perPage +
+      "&page=" +
+      this.state.activePage,
       this.state.tokenUser
     ).then((res) => {
       if (res.data !== undefined) {
@@ -608,7 +608,7 @@ class MatHW extends React.PureComponent {
 
   loopSearchBar = () => {
     let searchBar = [];
-    for (let i = 0; i < 12; i++) {
+    for (let i = 0; i < 8; i++) {
       searchBar.push(
         <td>
           <div className="controls" style={{ width: "150px" }}>
