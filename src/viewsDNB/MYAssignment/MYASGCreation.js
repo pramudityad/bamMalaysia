@@ -563,22 +563,22 @@ class MYASGCreation extends Component {
     if (inputValue === "" || inputValue.length < 3) {
       return [];
     } else {
-      let wp_id_option = [];
-      let wp_id_list = [];
-      let getWPID = await this.getWPfromACT(
-        "https://dev-corsanywhere.e-dpm.com/",
-        "https://api.act.e-dpm.com/api/get_data_auth",
-        inputValue
+      let id_options = [];
+      let id_list = [];
+      let getWPID = await this.getDatafromAPIMY_DNB(
+        '/custdel_sorted_non_page?where={"CDID":{"$regex":"' +
+          inputValue +
+          '", "$options":"i"}}'
       );
       if (getWPID !== undefined && getWPID.data !== undefined) {
-        getWPID.data.result.raw_data.map((e) =>
-          wp_id_option.push({ label: e.workplan_id, value: e.workplan_id })
+        getWPID.data._items.map((e) =>
+          id_options.push({ label: e.CDID, value: e.CDID })
         );
-        wp_id_list = getWPID.data.result.raw_data;
+        id_list = getWPID.data._items;
       }
-      console.log("array wp", wp_id_list);
-      this.setState({ list_wp_id: wp_id_list });
-      return wp_id_option;
+      console.log("array wp", id_list);
+      this.setState({ list_wp_id: id_list });
+      return id_options;
     }
   };
 
@@ -593,69 +593,65 @@ class MYASGCreation extends Component {
     const list_wp_id = this.state.list_wp_id;
     dataLMR[parseInt(idx)]["project_name"] =
       value !== ""
-        ? list_wp_id[list_wp_id.findIndex((x) => x.workplan_id === value)]
-            .project_name
+        ? list_wp_id[list_wp_id.findIndex((x) => x.CDID === value)].Project_Name
         : "";
     dataLMR[parseInt(idx)]["cdid"] =
       value !== ""
-        ? list_wp_id[list_wp_id.findIndex((x) => x.workplan_id === value)].cd_id
+        ? list_wp_id[list_wp_id.findIndex((x) => x.CDID === value)].CDID
         : "";
     if (
-      list_wp_id[list_wp_id.findIndex((x) => x.workplan_id === value)]
-        .region === "Central"
+      list_wp_id[list_wp_id.findIndex((x) => x.CDID === value)].Region ===
+      "Central"
     ) {
       dataLMR[parseInt(idx)]["region"] = "KV";
     } else if (
-      list_wp_id[list_wp_id.findIndex((x) => x.workplan_id === value)]
-        .region === "Northern" ||
-      list_wp_id[list_wp_id.findIndex((x) => x.workplan_id === value)]
-        .region === "Southern"
+      list_wp_id[list_wp_id.findIndex((x) => x.CDID === value)].Region ===
+        "Northern" ||
+      list_wp_id[list_wp_id.findIndex((x) => x.CDID === value)].Region ===
+        "Southern"
     ) {
       dataLMR[parseInt(idx)]["region"] = "SN";
     } else if (
-      list_wp_id[list_wp_id.findIndex((x) => x.workplan_id === value)]
-        .region === "Eastern"
+      list_wp_id[list_wp_id.findIndex((x) => x.CDID === value)].Region ===
+      "Eastern"
     ) {
       dataLMR[parseInt(idx)]["region"] = "ER";
     } else if (
-      list_wp_id[list_wp_id.findIndex((x) => x.workplan_id === value)]
-        .region === "Sabah" ||
-      list_wp_id[list_wp_id.findIndex((x) => x.workplan_id === value)]
-        .region === "Sarawak"
+      list_wp_id[list_wp_id.findIndex((x) => x.CDID === value)].Region ===
+        "Sabah" ||
+      list_wp_id[list_wp_id.findIndex((x) => x.CDID === value)].Region ===
+        "Sarawak"
     ) {
       dataLMR[parseInt(idx)]["region"] = "EM";
     }
     dataLMR[parseInt(idx)]["site_id"] =
       value !== ""
-        ? list_wp_id[list_wp_id.findIndex((x) => x.workplan_id === value)]
-            .site_id
+        ? list_wp_id[list_wp_id.findIndex((x) => x.CDID === value)].Site_ID
         : "";
     dataLMR[parseInt(idx)]["site_name"] =
       value !== ""
-        ? list_wp_id[list_wp_id.findIndex((x) => x.workplan_id === value)]
-            .site_name
+        ? list_wp_id[list_wp_id.findIndex((x) => x.CDID === value)].Site_Name
         : "";
     dataLMR[parseInt(idx)]["nw"] =
       value !== ""
-        ? list_wp_id[list_wp_id.findIndex((x) => x.workplan_id === value)]
-            .lmr_ti_nw_number
+        ? list_wp_id[list_wp_id.findIndex((x) => x.CDID === value)].NRO_NW
         : "";
 
-    let findWPID = await this.getWPfromACT(
-      "https://dev-corsanywhere.e-dpm.com/",
-      "https://act.e-dpm.com/api/find_by_wpid?wp_id=" + value
-    );
-    if (
-      findWPID !== undefined &&
-      findWPID.data !== undefined &&
-      findWPID.data.result !== undefined &&
-      findWPID.data.result.status >= 200 &&
-      findWPID.data.result.status <= 300
-    ) {
-      dataLMR[parseInt(idx)]["m_id_wp"] = findWPID.data.result.m_id;
-    } else {
-      dataLMR[parseInt(idx)]["m_id_wp"] = "";
-    }
+    // let findWPID = await this.getWPfromACT(
+    //   "https://dev-corsanywhere.e-dpm.com/",
+    //   "https://act.e-dpm.com/api/find_by_wpid?wp_id=" + value
+    // );
+    // if (
+    //   findWPID !== undefined &&
+    //   findWPID.data !== undefined &&
+    //   findWPID.data.result !== undefined &&
+    //   findWPID.data.result.status >= 200 &&
+    //   findWPID.data.result.status <= 300
+    // ) {
+    //   dataLMR[parseInt(idx)]["m_id_wp"] = findWPID.data.result.m_id;
+    // } else {
+    //   dataLMR[parseInt(idx)]["m_id_wp"] = "";
+    // }
 
     this.setState({ creation_lmr_child_form: dataLMR }, () =>
       console.log(this.state.creation_lmr_child_form)
@@ -999,16 +995,17 @@ class MYASGCreation extends Component {
   async componentDidMount() {
     this.toggleLoading();
     this.getVendorList();
+    this.getFASID();
     this.CheckDraft();
-    this.setState({ access_token: await generateTokenACT() }, () => {
-      this.getDataCDACT_Fas();
-      this.toggleLoading();
-    });
+    // this.setState({ access_token: await generateTokenACT() }, () => {
+    //   this.getDataCDACT_Fas();
+    //   this.toggleLoading();
+    // });
     // this.getProjectList();
     // this.getMaterialList();
     // this.getDataCDACT(); enable this again later
     // this.getDataCD();
-    // this.toggleLoading();
+    this.toggleLoading();
     document.title = "LMR Creation | BAM";
   }
 
@@ -1092,6 +1089,17 @@ class MYASGCreation extends Component {
           .sort((a, b) => (a.Name > b.Name ? 1 : -1))
           .filter((e) => e.Name !== "");
         this.setState({ vendor_list: vendor_sort });
+      }
+    });
+    // this.setState({vendor_list : vendorList});
+  }
+
+  getFASID() {
+    this.getDatafromAPIMY_DNB("/fas_id_non_page").then((res) => {
+      if (res.data !== undefined) {
+        const items = res.data._items;
+        const data = items.filter((e) => e._id.FAS_ID !== "");
+        this.setState({ list_fas: data });
       }
     });
     // this.setState({vendor_list : vendorList});
@@ -1628,8 +1636,8 @@ class MYASGCreation extends Component {
       // }
 
       if (
-        dataChildForm[i].nw === "" ||
-        dataChildForm[i].nw === null ||
+        // dataChildForm[i].nw === "" ||
+        // dataChildForm[i].nw === null ||
         dataChildForm[i].cdid === "" ||
         dataChildForm[i].cdid === null
       ) {
@@ -3103,7 +3111,9 @@ class MYASGCreation extends Component {
                             Select Fas
                           </option>
                           {this.state.list_fas.map((fas) => (
-                            <option value={fas}>{fas}</option>
+                            <option value={fas._id.FAS_ID}>
+                              {fas._id.FAS_ID}
+                            </option>
                           ))}
                         </Input>
                       </FormGroup>
@@ -3314,20 +3324,20 @@ class MYASGCreation extends Component {
                       <Col md={2}>
                         <FormGroup>
                           <Label>
-                            WP ID <small>(type min. 3 characters)</small>
+                            CD ID <small>(type min. 3 characters)</small>
                           </Label>
                           <AsyncSelect
                             cacheOptions
                             defaultOptions
                             loadOptions={this.searchWPID}
                             onChange={this.handleChangeWP}
-                            name={i + " /// wp_id"}
-                            id={i + " /// wp_id"}
-                            placeholder={lmr.wp_id}
+                            name={i + " /// cd_id"}
+                            id={i + " /// cd_id"}
+                            placeholder={lmr.cd_id}
                           />
                         </FormGroup>
                       </Col>
-                      <Col md={1}>
+                      {/* <Col md={1}>
                         <FormGroup>
                           <Label>CD ID</Label>
                           <Input
@@ -3344,7 +3354,7 @@ class MYASGCreation extends Component {
                             }
                           />
                         </FormGroup>
-                      </Col>
+                      </Col> */}
                       <Col md={1}>
                         <FormGroup>
                           <Label>Region</Label>
